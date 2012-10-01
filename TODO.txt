@@ -1,0 +1,6 @@
+TODO
+
+- Verify signed files
+- CLI
+- Ant Task
+- GUI
