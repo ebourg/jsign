@@ -2,5 +2,5 @@ TODO
 
 - Verify signed files
 - CLI
-- Ant Task
 - GUI
+- RFC 3161 timestamping for Windows 7 and later

@@ -1,0 +1,63 @@
+<project name="JSign Ant tests">
+
+  <taskdef name="signexe" classname="net.jsign.PESignerTask"/>
+
+  <target name="missing-keystore">
+    <signexe file="wineyes-signed-with-ant.exe"/>
+  </target>
+
+  <target name="unsupported-keystore">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" storetype="ABC"/>
+  </target>
+
+  <target name="keystore-not-found">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore2.jks"/>
+  </target>
+
+  <target name="corrupted-keystore">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="wineyes.exe"/>
+  </target>
+
+  <target name="missing-alias">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks"/>
+  </target>
+
+  <target name="certificate-not-found">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" storepass="" alias="foo"/>
+  </target>
+
+  <target name="missing-file">
+    <signexe keystore="keystore.jks" alias="test" keypass="password"/>
+  </target>
+
+  <target name="file-not-found">
+    <signexe file="wineyes-foo.exe" keystore="keystore.jks" alias="test" keypass="password"/>
+  </target>
+
+  <target name="corrupted-file">
+    <signexe file="keystore.jks" keystore="keystore.jks" alias="test" keypass="password"/>
+  </target>
+
+  <target name="invalid-timestamping-authority">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="test" keypass="password" tsaurl="https://github.com/authenticode"/>
+  </target>
+
+  <target name="signing">
+    <signexe file="wineyes-signed-with-ant.exe"
+             name="WinEyes"
+             url="http://www.steelblue.com/WinEyes"
+             keystore="keystore.jks"
+             alias="test"
+             keypass="password"/>
+  </target>
+
+  <target name="timestamping">
+    <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant.exe" overwrite="true"/>
+    <signexe file="wineyes-timestamped-with-ant.exe"
+             keystore="keystore.jks"
+             alias="test"
+             keypass="password"
+             tsaurl="http://timestamp.comodoca.com/authenticode"/>
+  </target>
+
+</project>
