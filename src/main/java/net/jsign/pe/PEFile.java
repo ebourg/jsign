@@ -388,6 +388,8 @@ public class PEFile implements Closeable {
             long checksum = 0;
             long top = (long) Math.pow(2, 32);
             long length = raf.length();
+            
+            byte[] buffer = new byte[4];            
 
             raf.seek(0);
             for (long i = 0; i < length / 4; i++) {
@@ -395,12 +397,14 @@ public class PEFile implements Closeable {
                     raf.skipBytes(4);
                     continue;
                 }
-    
-                long ch1 = raf.read();
-                long ch2 = raf.read();
-                long ch3 = raf.read();
-                long ch4 = raf.read();
-    
+                
+                raf.readFully(buffer);
+                
+                long ch1 = buffer[0] & 0xFF;
+                long ch2 = buffer[1] & 0xFF;
+                long ch3 = buffer[2] & 0xFF;
+                long ch4 = buffer[3] & 0xFF;
+                
                 long dword = ch1 + (ch2 << 8) + (ch3 << 16) + (ch4 << 24);
     
                 checksum = (checksum & 0xffffffffL) + dword + (checksum >> 32);
