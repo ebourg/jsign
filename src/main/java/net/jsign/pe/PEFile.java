@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -384,34 +385,48 @@ public class PEFile implements Closeable {
     public long computeChecksum() {
         try {
             long checksumOffset = peHeaderOffset + 88;
-
+            boolean checksumOffsetSkipped = false;
+            
             long checksum = 0;
             long top = (long) Math.pow(2, 32);
             long length = raf.length();
             
-            byte[] buffer = new byte[4];            
-
-            raf.seek(0);
-            for (long i = 0; i < length / 4; i++) {
-                if (i == checksumOffset / 4) {
-                    raf.skipBytes(4);
-                    continue;
+            ByteBuffer buffer = ByteBuffer.allocate(16 * 1024);
+            
+            FileChannel channel = raf.getChannel();
+            channel.position(0);
+            
+            int l;
+            long offset = 0;
+            
+            while ((l = channel.read(buffer)) > 0) {
+                buffer.rewind();
+                
+                for (int i = 0; i < l / 4; i++) {
+                    if (!checksumOffsetSkipped && offset + 4 * i == checksumOffset) {
+                        buffer.position(buffer.position() + 4);
+                        checksumOffsetSkipped = true;
+                        
+                    } else {
+                        
+                        long ch1 = buffer.get() & 0xFF;
+                        long ch2 = buffer.get() & 0xFF;
+                        long ch3 = buffer.get() & 0xFF;
+                        long ch4 = buffer.get() & 0xFF;
+                        
+                        long dword = ch1 + (ch2 << 8) + (ch3 << 16) + (ch4 << 24);
+                        
+                        checksum = (checksum & 0xffffffffL) + dword + (checksum >> 32);
+                        
+                        if (checksum > top) {
+                            checksum = (checksum & 0xffffffffL) + (checksum >> 32);
+                        }
+                    }
                 }
                 
-                raf.readFully(buffer);
+                buffer.rewind();
                 
-                long ch1 = buffer[0] & 0xFF;
-                long ch2 = buffer[1] & 0xFF;
-                long ch3 = buffer[2] & 0xFF;
-                long ch4 = buffer[3] & 0xFF;
-                
-                long dword = ch1 + (ch2 << 8) + (ch3 << 16) + (ch4 << 24);
-    
-                checksum = (checksum & 0xffffffffL) + dword + (checksum >> 32);
-                
-                if (checksum > top) {
-                    checksum = (checksum & 0xffffffffL) + (checksum >> 32);
-                }
+                offset += l;
             }
 
             checksum = (checksum & 0xffff) + (checksum >> 16);
@@ -693,7 +708,7 @@ public class PEFile implements Closeable {
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
         // load the file in a buffer
-        byte[] signedContent = new byte[(int) raf.length()];
+        byte[] signedContent = new byte[(int) raf.length()]; // todo don't load the whole file in memory, use smaller chunks
         raf.seek(0);
         raf.read(signedContent);
         
