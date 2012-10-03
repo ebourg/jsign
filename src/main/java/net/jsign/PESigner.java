@@ -79,6 +79,9 @@ import org.bouncycastle.util.Store;
  * Sign a portable executable file. Timestamping is enabled by default
  * and relies on the Comodo server (http://timestamp.comodoca.com/authenticode).
  * 
+ * @see <a href="http://download.microsoft.com/download/9/c/5/9c5b2167-8017-4bae-9fde-d599bac8184a/Authenticode_PE.docx">Windows Authenticode Portable Executable Signature Format</a>
+ * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb931395%28v=vs.85%29.aspx?ppud=4">Time Stamping Authenticode Signatures</a>
+ * 
  * @author Emmanuel Bourg
  * @since 1.0
  */
@@ -126,7 +129,8 @@ public class PESigner {
     }
 
     /**
-     * Set the URL of the timestamping authority.
+     * Set the URL of the timestamping authority. RFC 3161 servers as used
+     * for jar signing are not compatible with Authenticode signatures.
      */
     public PESigner withTimestampingAutority(String url) {
         this.tsaurl = url;

@@ -55,7 +55,7 @@ public class PEFile implements Closeable {
     private long peHeaderOffset;
 
     private File file;
-    public ExtendedRandomAccessFile raf;
+    private ExtendedRandomAccessFile raf;
 
     public PEFile(File file) throws IOException {
         this.file = file;
