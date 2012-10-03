@@ -17,7 +17,7 @@ small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
+table, caption, tbody, tfoot, thead, tr, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
@@ -60,7 +60,7 @@ body {
   color:#373737;
   background: #212121;
   font-size: 16px;
-  font-family: 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif;
+  font-family: /*'Myriad Pro', Calibri,*/ Helvetica, Arial, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -102,6 +102,7 @@ h6 {
 
 p {
   margin: 10px 0 15px 0;
+  text-align: justify;
 }
 
 footer p {
@@ -176,7 +177,8 @@ pre, code {
 
 pre {
   width: 100%;
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   box-shadow: 0 0 10px rgba(0,0,0,.1);
   overflow: auto;
 }
@@ -242,13 +244,15 @@ table {
 
 th {
   font-family: 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  padding: 10px;
-  background: #373737;
+  padding: 5px;
+  background-color: #474747;
   color: #fff;
+  border-color: #373737;
+  font-weight: bold;
  }
 
 td {
-  padding: 10px;
+  padding: 5px;
   border: 1px solid #373737;
  }
 
@@ -272,7 +276,7 @@ Full-Width Styles
 
 .inner {
   position: relative;
-  max-width: 640px;
+  max-width: 800px;
   padding: 20px 10px;
   margin: 0 auto;
 }
@@ -323,7 +327,7 @@ Full-Width Styles
 
 #downloads {
   position: absolute;
-  width: 210px;
+  width: 115px;
   z-index: 10;
   bottom: -40px;
   right: 0;
