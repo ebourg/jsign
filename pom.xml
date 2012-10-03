@@ -140,4 +140,8 @@
     </plugins>
   </reporting>
 
+  <properties>
+    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+  </properties>
+  
 </project>
