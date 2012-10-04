@@ -30,7 +30,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.bouncycastle.cms.CMSSignedData;
 
-public class PEsignerTaskTest extends TestCase {
+public class PESignerTaskTest extends TestCase {
 
     private Project project;
 
@@ -174,7 +174,24 @@ public class PEsignerTaskTest extends TestCase {
             peFile.close();
         }
     }
-    
+
+    public void testSigningPKCS12() throws Exception {
+        project.executeTarget("signing-pkcs12");
+
+        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-ant.exe"));
+        try {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        } finally {
+            peFile.close();
+        }
+    }
+
     public void testTimestamping() throws Exception {
         project.executeTarget("timestamping");
 

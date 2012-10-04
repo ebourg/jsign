@@ -51,6 +51,16 @@
              keypass="password"/>
   </target>
 
+  <target name="signing-pkcs12">
+    <signexe file="wineyes-signed-with-ant.exe"
+             name="WinEyes"
+             url="http://www.steelblue.com/WinEyes"
+             keystore="keystore.p12"
+             storetype="PKCS12"
+             alias="test"
+             storepass="password"/>
+  </target>
+
   <target name="timestamping">
     <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant.exe" overwrite="true"/>
     <signexe file="wineyes-timestamped-with-ant.exe"

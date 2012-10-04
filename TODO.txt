@@ -5,4 +5,4 @@ TODO
 - GUI
 - RFC 3161 timestamping for Windows 7 and later
 - SPC/PVK file support
-- Test with a PKCS12 keystore
+- Timestamp retries
