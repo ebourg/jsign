@@ -370,82 +370,41 @@ public class PEFile implements Closeable {
     }
 
     /**
-     * The image file checksum. The algorithm for computing the checksum
-     * is incorporated into IMAGHELP.DLL. The following are checked for
-     * validation at load time: all drivers, any DLL loaded at boot time,
-     * and any DLL that is loaded into a critical Windows process.
+     * The image file checksum.
      */
     public long getCheckSum() {
         return readDWord(peHeaderOffset, 88);
     }
 
     /**
-     * Compute the checksum of the image file.
+     * Compute the checksum of the image file. The algorithm for computing
+     * the checksum is incorporated into IMAGHELP.DLL.
      */
     public long computeChecksum() {
+        PEImageChecksum checksum = new PEImageChecksum(peHeaderOffset + 88);
+        
+        byte[] b = new byte[64 * 1024];
+        
         try {
-            long checksumOffset = peHeaderOffset + 88;
-            boolean checksumOffsetSkipped = false;
+            raf.seek(0);
             
-            long checksum = 0;
-            long top = (long) Math.pow(2, 32);
-            long length = raf.length();
-            
-            ByteBuffer buffer = ByteBuffer.allocate(16 * 1024);
-            
-            FileChannel channel = raf.getChannel();
-            channel.position(0);
-            
-            int l;
-            long offset = 0;
-            
-            while ((l = channel.read(buffer)) > 0) {
-                buffer.rewind();
-                
-                for (int i = 0; i < l / 4; i++) {
-                    if (!checksumOffsetSkipped && offset + 4 * i == checksumOffset) {
-                        buffer.position(buffer.position() + 4);
-                        checksumOffsetSkipped = true;
-                        
-                    } else {
-                        
-                        long ch1 = buffer.get() & 0xFF;
-                        long ch2 = buffer.get() & 0xFF;
-                        long ch3 = buffer.get() & 0xFF;
-                        long ch4 = buffer.get() & 0xFF;
-                        
-                        long dword = ch1 + (ch2 << 8) + (ch3 << 16) + (ch4 << 24);
-                        
-                        checksum = (checksum & 0xffffffffL) + dword + (checksum >> 32);
-                        
-                        if (checksum > top) {
-                            checksum = (checksum & 0xffffffffL) + (checksum >> 32);
-                        }
-                    }
-                }
-                
-                buffer.rewind();
-                
-                offset += l;
+            int len;
+            while ((len = raf.read(b)) > 0) {
+                checksum.update(b, 0, len);
             }
-
-            checksum = (checksum & 0xffff) + (checksum >> 16);
-            checksum = checksum + (checksum >> 16);
-            checksum = checksum & 0xffff;
-            checksum += length;
-
-            return checksum;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        
+        return checksum.getValue();
     }
-    
+
     public void updateChecksum() {
-        try {
-            ByteBuffer buffer = ByteBuffer.allocate(4);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-            buffer.putInt((int) computeChecksum());
-            
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt((int) computeChecksum());
+        
+        try {            
             raf.seek(peHeaderOffset + 88);
             raf.write(buffer.array());
         } catch (IOException e) {

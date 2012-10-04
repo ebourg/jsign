@@ -64,9 +64,9 @@ public class PEFileTest extends TestCase {
         System.out.println(out);
     }
 
-    public void _testComputeChecksum() throws Exception {
+    public void testComputeChecksum() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
-        assertEquals(file.computeChecksum(), file.getCheckSum());
+        assertEquals(file.computeChecksum(), 0x0000E7F5);
     }
 }
