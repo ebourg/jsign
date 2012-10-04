@@ -56,7 +56,6 @@
              name="WinEyes"
              url="http://www.steelblue.com/WinEyes"
              keystore="keystore.p12"
-             storetype="PKCS12"
              alias="test"
              storepass="password"/>
   </target>

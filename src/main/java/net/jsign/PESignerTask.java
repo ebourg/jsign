@@ -87,6 +87,12 @@ public class PESignerTask extends Task {
 
     public void setKeystore(File keystore) {
         this.keystore = keystore;
+        
+        // guess the type of the keystore from the extension of the file
+        String name = keystore.getName().toLowerCase();
+        if (name.endsWith(".p12") || name.endsWith(".pfx")) {
+            storetype = "PKCS12";
+        }
     }
 
     public void setStorepass(String storepass) {
