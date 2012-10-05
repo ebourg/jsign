@@ -113,6 +113,15 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    public void testAliasNotFound() {
+        try {
+            project.executeTarget("alias-not-found");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
     public void testCertificateNotFound() {
         try {
             project.executeTarget("certificate-not-found");
@@ -158,6 +167,69 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    public void testConflictingAttributes() {
+        try {
+            project.executeTarget("conflicting-attributes");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
+    public void testMissingCertFile() {
+        try {
+            project.executeTarget("missing-certfile");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
+    public void testMissingKeyFile() {
+        try {
+            project.executeTarget("missing-keyfile");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
+    public void testCertFileNotFound() {
+        try {
+            project.executeTarget("certfile-not-found");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
+    public void testKeyFileNotFound() {
+        try {
+            project.executeTarget("keyfile-not-found");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
+    public void testCorruptedCertFile() {
+        try {
+            project.executeTarget("corrupted-certfile");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
+    public void testCorruptedKeyFile() {
+        try {
+            project.executeTarget("corrupted-keyfile");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
     public void testSigning() throws Exception {
         project.executeTarget("signing");
 
@@ -192,6 +264,23 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    public void testSigningPVKSPC() throws Exception {
+        project.executeTarget("signing-pvk-spc");
+
+        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-ant.exe"));
+        try {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        } finally {
+            peFile.close();
+        }
+    }
+    
     public void testTimestamping() throws Exception {
         project.executeTarget("timestamping");
 

@@ -22,6 +22,10 @@
     <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks"/>
   </target>
 
+  <target name="alias-not-found">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="unknown"/>
+  </target>
+
   <target name="certificate-not-found">
     <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" storepass="" alias="foo"/>
   </target>
@@ -42,6 +46,34 @@
     <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="test" keypass="password" tsaurl="https://github.com/authenticode"/>
   </target>
 
+  <target name="conflicting-attributes">
+    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="test" keyfile="privatekey.pvk" certfile="certificates.spc"/>
+  </target>
+
+  <target name="missing-certfile">
+    <signexe file="wineyes-signed-with-ant.exe" keyfile="privatekey.pvk"/>
+  </target>
+
+  <target name="missing-keyfile">
+    <signexe file="wineyes-signed-with-ant.exe" certfile="certificates.spc"/>
+  </target>
+
+  <target name="certfile-not-found">
+    <signexe file="wineyes-signed-with-ant.exe" certfile="certificate2.spc" keyfile="privatekey.pvk"/>
+  </target>
+
+  <target name="keyfile-not-found">
+    <signexe file="wineyes-signed-with-ant.exe" certfile="certificate.spc" keyfile="privatekey2.pvk"/>
+  </target>
+
+  <target name="corrupted-certfile">
+    <signexe file="wineyes-signed-with-ant.exe" certfile="privatekey.pvk" keyfile="privatekey.pvk"/>
+  </target>
+
+  <target name="corrupted-keyfile">
+    <signexe file="wineyes-signed-with-ant.exe" certfile="certificate.spc" keyfile="certificate.spc"/>
+  </target>
+
   <target name="signing">
     <signexe file="wineyes-signed-with-ant.exe"
              name="WinEyes"
@@ -58,6 +90,13 @@
              keystore="keystore.p12"
              alias="test"
              storepass="password"/>
+  </target>
+
+  <target name="signing-pvk-spc">
+    <signexe file="wineyes-signed-with-ant.exe"
+             certfile="certificate.spc"
+             keyfile="privatekey-encrypted.pvk"
+             keypass="password"/>
   </target>
 
   <target name="timestamping">
