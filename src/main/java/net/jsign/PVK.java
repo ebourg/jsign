@@ -42,7 +42,10 @@ import javax.crypto.spec.SecretKeySpec;
 public class PVK {
 
     /** Header signature of PVK files */
-    public static final long PVK_MAGIC = 0xB0B5F11EL;
+    private static final long PVK_MAGIC = 0xB0B5F11EL;
+
+    private PVK() {
+    }
 
     public static PrivateKey parse(File file, String password) throws GeneralSecurityException, IOException {
         ByteBuffer buffer = ByteBuffer.allocate((int) file.length());
