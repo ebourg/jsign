@@ -292,37 +292,38 @@
 <FONT color="green">289</FONT>            byte[] request = Base64.encodeBase64(timestampRequest.getEncoded("DER"), true);        <a name="line.289"></a>
 <FONT color="green">290</FONT>            <a name="line.290"></a>
 <FONT color="green">291</FONT>            HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();<a name="line.291"></a>
-<FONT color="green">292</FONT>            <a name="line.292"></a>
-<FONT color="green">293</FONT>            conn.setDoOutput(true);<a name="line.293"></a>
-<FONT color="green">294</FONT>            conn.setDoInput(true);<a name="line.294"></a>
-<FONT color="green">295</FONT>            conn.setUseCaches(false);<a name="line.295"></a>
-<FONT color="green">296</FONT>            conn.setRequestMethod("POST");<a name="line.296"></a>
-<FONT color="green">297</FONT>            conn.setRequestProperty("Content-type", "application/octet-stream");<a name="line.297"></a>
-<FONT color="green">298</FONT>            conn.setRequestProperty("Content-length", String.valueOf(request.length));<a name="line.298"></a>
-<FONT color="green">299</FONT>            conn.setRequestProperty("Accept", "application/octet-stream");<a name="line.299"></a>
-<FONT color="green">300</FONT>            conn.setRequestProperty("User-Agent", "Transport");<a name="line.300"></a>
-<FONT color="green">301</FONT>            <a name="line.301"></a>
-<FONT color="green">302</FONT>            conn.getOutputStream().write(request);<a name="line.302"></a>
-<FONT color="green">303</FONT>            conn.getOutputStream().flush();<a name="line.303"></a>
-<FONT color="green">304</FONT>            <a name="line.304"></a>
-<FONT color="green">305</FONT>            if (conn.getResponseCode() &gt;= 400) {<a name="line.305"></a>
-<FONT color="green">306</FONT>                throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());<a name="line.306"></a>
-<FONT color="green">307</FONT>            }<a name="line.307"></a>
-<FONT color="green">308</FONT>            <a name="line.308"></a>
-<FONT color="green">309</FONT>            InputStream in = conn.getInputStream();<a name="line.309"></a>
-<FONT color="green">310</FONT>            ByteArrayOutputStream bout = new ByteArrayOutputStream();<a name="line.310"></a>
-<FONT color="green">311</FONT>            <a name="line.311"></a>
-<FONT color="green">312</FONT>            byte[] buffer = new byte[4096];<a name="line.312"></a>
-<FONT color="green">313</FONT>            int n;<a name="line.313"></a>
-<FONT color="green">314</FONT>            while ((n = in.read(buffer)) != -1) {<a name="line.314"></a>
-<FONT color="green">315</FONT>                bout.write(buffer, 0, n);<a name="line.315"></a>
-<FONT color="green">316</FONT>            }<a name="line.316"></a>
-<FONT color="green">317</FONT>            <a name="line.317"></a>
-<FONT color="green">318</FONT>            byte[] response = Base64.decodeBase64(bout.toByteArray());<a name="line.318"></a>
-<FONT color="green">319</FONT>            <a name="line.319"></a>
-<FONT color="green">320</FONT>            return new CMSSignedData(response);<a name="line.320"></a>
-<FONT color="green">321</FONT>        }<a name="line.321"></a>
-<FONT color="green">322</FONT>    }<a name="line.322"></a>
+<FONT color="green">292</FONT>            conn.setConnectTimeout(10000);<a name="line.292"></a>
+<FONT color="green">293</FONT>            conn.setReadTimeout(10000);<a name="line.293"></a>
+<FONT color="green">294</FONT>            conn.setDoOutput(true);<a name="line.294"></a>
+<FONT color="green">295</FONT>            conn.setDoInput(true);<a name="line.295"></a>
+<FONT color="green">296</FONT>            conn.setUseCaches(false);<a name="line.296"></a>
+<FONT color="green">297</FONT>            conn.setRequestMethod("POST");<a name="line.297"></a>
+<FONT color="green">298</FONT>            conn.setRequestProperty("Content-type", "application/octet-stream");<a name="line.298"></a>
+<FONT color="green">299</FONT>            conn.setRequestProperty("Content-length", String.valueOf(request.length));<a name="line.299"></a>
+<FONT color="green">300</FONT>            conn.setRequestProperty("Accept", "application/octet-stream");<a name="line.300"></a>
+<FONT color="green">301</FONT>            conn.setRequestProperty("User-Agent", "Transport");<a name="line.301"></a>
+<FONT color="green">302</FONT>            <a name="line.302"></a>
+<FONT color="green">303</FONT>            conn.getOutputStream().write(request);<a name="line.303"></a>
+<FONT color="green">304</FONT>            conn.getOutputStream().flush();<a name="line.304"></a>
+<FONT color="green">305</FONT>            <a name="line.305"></a>
+<FONT color="green">306</FONT>            if (conn.getResponseCode() &gt;= 400) {<a name="line.306"></a>
+<FONT color="green">307</FONT>                throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());<a name="line.307"></a>
+<FONT color="green">308</FONT>            }<a name="line.308"></a>
+<FONT color="green">309</FONT>            <a name="line.309"></a>
+<FONT color="green">310</FONT>            InputStream in = conn.getInputStream();<a name="line.310"></a>
+<FONT color="green">311</FONT>            ByteArrayOutputStream bout = new ByteArrayOutputStream();<a name="line.311"></a>
+<FONT color="green">312</FONT>            <a name="line.312"></a>
+<FONT color="green">313</FONT>            byte[] buffer = new byte[4096];<a name="line.313"></a>
+<FONT color="green">314</FONT>            int n;<a name="line.314"></a>
+<FONT color="green">315</FONT>            while ((n = in.read(buffer)) != -1) {<a name="line.315"></a>
+<FONT color="green">316</FONT>                bout.write(buffer, 0, n);<a name="line.316"></a>
+<FONT color="green">317</FONT>            }<a name="line.317"></a>
+<FONT color="green">318</FONT>            <a name="line.318"></a>
+<FONT color="green">319</FONT>            byte[] response = Base64.decodeBase64(bout.toByteArray());<a name="line.319"></a>
+<FONT color="green">320</FONT>            <a name="line.320"></a>
+<FONT color="green">321</FONT>            return new CMSSignedData(response);<a name="line.321"></a>
+<FONT color="green">322</FONT>        }<a name="line.322"></a>
+<FONT color="green">323</FONT>    }<a name="line.323"></a>
 
 
 
