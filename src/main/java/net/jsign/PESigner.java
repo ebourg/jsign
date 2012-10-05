@@ -289,7 +289,8 @@ public class PESigner {
         byte[] request = Base64.encodeBase64(timestampRequest.getEncoded("DER"), true);        
         
         HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();
-        
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(10000);
         conn.setDoOutput(true);
         conn.setDoInput(true);
         conn.setUseCaches(false);
