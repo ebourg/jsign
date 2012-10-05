@@ -48,7 +48,7 @@ or <a href="http://jsmooth.sourceforge.net">JSmooth</a>.</p>
 
 <h3>Ant task</h3>
 
-<p>Here is an example showing how the signing works with Ant:</p>
+<p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
           
 <pre>
  &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-1.0.jar"/>
@@ -62,13 +62,25 @@ or <a href="http://jsmooth.sourceforge.net">JSmooth</a>.</p>
           tsaurl="http://timestamp.comodoca.com/authenticode"/>
 </pre>
 
+<br>
+
+<p>Another example with <code>SPC</code> and <code>PVK</code> files commonly used with <code>signcode.exe</code>:</p>
+
+<pre>
+ &lt;signexe file="application.exe"
+          certfile="certificate.spc"
+          keyfile="key.pvk"
+          keypass="password"
+          tsaurl="http://timestamp.verisign.com/scripts/timstamp.dll"/>
+</pre>
+
 <br><br>
 
   <table border="1" style="border-collapse: collapse; width: 100%">
     <tr>
       <th valign="top">Attribute</th>
       <th valign="top">Description</th>
-      <th align="center" valign="top">Required</th>
+      <th align="center" valign="top" width="25%">Required</th>
     </tr>
     <tr>
       <td valign="top">file</td>
@@ -88,7 +100,7 @@ or <a href="http://jsmooth.sourceforge.net">JSmooth</a>.</p>
     <tr>
       <td valign="top">keystore</td>
       <td valign="top">The keystore file</td>
-      <td valign="top" align="center">Yes</td>
+      <td valign="top" align="center">Yes, unless <code>certfile</code> and <code>keyfile</code> are specified.</td>
     </tr>
     <tr>
       <td valign="top">storepass</td>
@@ -97,17 +109,34 @@ or <a href="http://jsmooth.sourceforge.net">JSmooth</a>.</p>
     </tr>
     <tr>
       <td valign="top">storetype</td>
-      <td valign="top">The type of the keystore (<code>JKS</code> or <code>PKCS12</code>)</td>
+      <td valign="top">
+        The type of the keystore:
+        <ul>
+          <li><code>JKS</code>: Java keystore</li>
+          <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
+        </ul>
+      </td>
       <td valign="top" align="center">No; defaults to "JKS".</td>
     </tr>
     <tr>
       <td valign="top">alias</td>
       <td valign="top">The alias of the certificate used for signing in the keystore. Java code signing certificates can be used for Authenticode signatures.</td>
-      <td valign="top" align="center">Yes</td>
+      <td valign="top" align="center">Yes, if <code>keystore</code> is specified</td>
+    </tr>
+    <tr>
+      <td valign="top">certfile</td>
+      <td valign="top">The file containing the PKCS#7 certificate chain (<code>.p7b</code> or <code>.spc</code> files).</td>
+      <td valign="top" align="center" rowspan="2">Yes, unless <code>keystore</code> is specified.</td>
+    </tr>
+    <tr>
+      <td valign="top">keyfile</td>
+      <td valign="top">
+        The file containing the private key. Only <code>PVK</code> files are supported.
+      </td>
     </tr>
     <tr>
       <td valign="top">keypass</td>
-      <td valign="top">The password of the private key, if different from the password of the keystore.</td>
+      <td valign="top">The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password.</td>
       <td valign="top" align="center">No</td>
     </tr>
     <tr>
@@ -130,7 +159,9 @@ be embedded in another application.<br>See the <a href="apidocs/index.html">Java
           
 <h3>Credits</h3>     
 
-<p>Jsign leverages the APIs developed by the <a href="http://www.bouncycastle.org">Bouncy Castle</a> project.</p>
+<p>Jsign leverages the APIs developed by the <a href="http://www.bouncycastle.org">Bouncy Castle</a> project.<br>
+PVK parsing is based on the <a href="http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.</p>
+          
 
           
 <h3>Contact</h3>
