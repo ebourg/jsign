@@ -1,0 +1,9 @@
+Package: jsign
+Version: [[version]]
+Section: utils
+Priority: optional
+Architecture: all
+Depends: java6-runtime-headless
+Maintainer: Emmanuel Bourg <ebourg@apache.org>
+Homepage: http://ebourg.github.com/jsign
+Description: Cross platform implementation of Microsoft Authenticode for signing Windows executable files.
