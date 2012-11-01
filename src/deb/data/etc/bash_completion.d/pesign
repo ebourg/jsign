@@ -1,0 +1,41 @@
+# pesign completion
+
+have pesign &&
+_pesign()
+{
+    COMPREPLY=()
+    local cur prev
+    _get_comp_words_by_ref cur prev
+
+    local opts="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -n --name -u --url -h --help"
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
+        return 0
+    fi
+
+    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv)"
+
+    case $prev in
+        -s|--keystore|--keyfile|-c|--certfile)
+            _filedir
+            return 0
+            ;;
+        --storetype)
+            COMPREPLY=( $( compgen -W 'JKS PKCS12' -- "$cur" ) )
+            return 0
+            ;;
+        --storepass|-a|--alias|--keypass|-t|--tsaurl|-n|--name|-u|--url)
+            # argument required but no completions available
+            return 0
+            ;;
+        -h|--help)
+            # no argument
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -f -X "$pattern" -- "$cur" ) $( compgen -d -- "$cur" ) )
+
+} &&
+complete -F _pesign -o filenames pesign
