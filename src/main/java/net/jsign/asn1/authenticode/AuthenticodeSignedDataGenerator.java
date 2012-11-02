@@ -19,7 +19,6 @@ package net.jsign.asn1.authenticode;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import net.jsign.asn1.authenticode.AuthenticodeSignedData;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Set;
