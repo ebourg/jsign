@@ -34,7 +34,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Command line interface for signing PE files.
@@ -137,7 +136,13 @@ public class PESignerCLI {
                 } catch (Exception e) {
                     throw new SignerException("Unable to load the keystore " + keystore, e);
                 } finally {
-                    IOUtils.closeQuietly(in);
+                    try {
+                        if (in != null) {
+                            in.close();
+                        }
+                    } catch (IOException e) {
+                        // ignore
+                    }
                 }
                 
                 if (alias == null) {
@@ -256,7 +261,13 @@ public class PESignerCLI {
             Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
             return certificates.toArray(new Certificate[certificates.size()]);
         } finally {
-            IOUtils.closeQuietly(in);
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                // ignore
+            }
         }
     }
 }

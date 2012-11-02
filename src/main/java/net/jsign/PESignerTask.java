@@ -28,7 +28,6 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
 import net.jsign.pe.PEFile;
-import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -157,7 +156,13 @@ public class PESignerTask extends Task {
             } catch (Exception e) {
                 throw new BuildException("Unable to load the keystore " + keystore, e);
             } finally {
-                IOUtils.closeQuietly(in);
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException e) {
+                    // ignore
+                }
             }
             
             if (alias == null) {

@@ -49,12 +49,6 @@
     </dependency>
 
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.4</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
       <version>1.47</version>
@@ -77,6 +71,13 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
