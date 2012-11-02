@@ -101,7 +101,8 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>META-INF/*</exclude>
+                    <exclude>META-INF/**</exclude>
+                    <exclude>**/*_de.properties</exclude>
                   </excludes>
                 </filter>
               </filters>
