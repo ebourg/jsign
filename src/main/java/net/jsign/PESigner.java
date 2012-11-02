@@ -44,7 +44,6 @@ import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
-import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -74,6 +73,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
+import org.bouncycastle.util.encoders.Base64;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
@@ -286,7 +286,7 @@ public class PESigner {
     private CMSSignedData timestamp(byte[] encryptedDigest, URL tsaurl) throws IOException, CMSException {
         AuthenticodeTimeStampRequest timestampRequest = new AuthenticodeTimeStampRequest(encryptedDigest);
         
-        byte[] request = Base64.encodeBase64(timestampRequest.getEncoded("DER"), true);        
+        byte[] request = Base64.encode(timestampRequest.getEncoded("DER"));
         
         HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();
         conn.setConnectTimeout(10000);
@@ -316,7 +316,7 @@ public class PESigner {
             bout.write(buffer, 0, n);
         }
         
-        byte[] response = Base64.decodeBase64(bout.toByteArray());
+        byte[] response = Base64.decode(bout.toByteArray());
         
         return new CMSSignedData(response);
     }
