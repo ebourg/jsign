@@ -47,10 +47,11 @@ public class PESignerCLI {
         try {
             new PESignerCLI().execute(args);
         } catch (SignerException e) {
-            System.err.println(e.getMessage());
+            System.err.println("pesign: " + e.getMessage());
             if (e.getCause() != null) {
                 e.getCause().printStackTrace(System.err);
             }
+            System.err.println("Try `pesign --help' for more information.");
             System.exit(1);
         }
     }
