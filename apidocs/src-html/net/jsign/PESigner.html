@@ -47,36 +47,36 @@
 <FONT color="green">044</FONT>    import net.jsign.asn1.authenticode.SpcStatementType;<a name="line.44"></a>
 <FONT color="green">045</FONT>    import net.jsign.pe.DataDirectoryType;<a name="line.45"></a>
 <FONT color="green">046</FONT>    import net.jsign.pe.PEFile;<a name="line.46"></a>
-<FONT color="green">047</FONT>    import org.apache.commons.codec.binary.Base64;<a name="line.47"></a>
-<FONT color="green">048</FONT>    import org.bouncycastle.asn1.ASN1Encodable;<a name="line.48"></a>
-<FONT color="green">049</FONT>    import org.bouncycastle.asn1.ASN1ObjectIdentifier;<a name="line.49"></a>
-<FONT color="green">050</FONT>    import org.bouncycastle.asn1.ASN1Sequence;<a name="line.50"></a>
-<FONT color="green">051</FONT>    import org.bouncycastle.asn1.DERNull;<a name="line.51"></a>
-<FONT color="green">052</FONT>    import org.bouncycastle.asn1.DERSet;<a name="line.52"></a>
-<FONT color="green">053</FONT>    import org.bouncycastle.asn1.cms.Attribute;<a name="line.53"></a>
-<FONT color="green">054</FONT>    import org.bouncycastle.asn1.cms.AttributeTable;<a name="line.54"></a>
-<FONT color="green">055</FONT>    import org.bouncycastle.asn1.cms.CMSAttributes;<a name="line.55"></a>
-<FONT color="green">056</FONT>    import org.bouncycastle.asn1.x509.AlgorithmIdentifier;<a name="line.56"></a>
-<FONT color="green">057</FONT>    import org.bouncycastle.asn1.x509.DigestInfo;<a name="line.57"></a>
-<FONT color="green">058</FONT>    import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;<a name="line.58"></a>
-<FONT color="green">059</FONT>    import org.bouncycastle.cert.X509CertificateHolder;<a name="line.59"></a>
-<FONT color="green">060</FONT>    import org.bouncycastle.cert.jcajce.JcaCertStore;<a name="line.60"></a>
-<FONT color="green">061</FONT>    import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;<a name="line.61"></a>
-<FONT color="green">062</FONT>    import org.bouncycastle.cms.CMSAttributeTableGenerator;<a name="line.62"></a>
-<FONT color="green">063</FONT>    import org.bouncycastle.cms.CMSException;<a name="line.63"></a>
-<FONT color="green">064</FONT>    import org.bouncycastle.cms.CMSSignedData;<a name="line.64"></a>
-<FONT color="green">065</FONT>    import org.bouncycastle.cms.DefaultAuthenticatedAttributeTableGenerator;<a name="line.65"></a>
-<FONT color="green">066</FONT>    import org.bouncycastle.cms.SignerInfoGenerator;<a name="line.66"></a>
-<FONT color="green">067</FONT>    import org.bouncycastle.cms.SignerInfoGeneratorBuilder;<a name="line.67"></a>
-<FONT color="green">068</FONT>    import org.bouncycastle.cms.SignerInformation;<a name="line.68"></a>
-<FONT color="green">069</FONT>    import org.bouncycastle.cms.SignerInformationStore;<a name="line.69"></a>
-<FONT color="green">070</FONT>    import org.bouncycastle.operator.ContentSigner;<a name="line.70"></a>
-<FONT color="green">071</FONT>    import org.bouncycastle.operator.DigestCalculatorProvider;<a name="line.71"></a>
-<FONT color="green">072</FONT>    import org.bouncycastle.operator.OperatorCreationException;<a name="line.72"></a>
-<FONT color="green">073</FONT>    import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;<a name="line.73"></a>
-<FONT color="green">074</FONT>    import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;<a name="line.74"></a>
-<FONT color="green">075</FONT>    import org.bouncycastle.util.CollectionStore;<a name="line.75"></a>
-<FONT color="green">076</FONT>    import org.bouncycastle.util.Store;<a name="line.76"></a>
+<FONT color="green">047</FONT>    import org.bouncycastle.asn1.ASN1Encodable;<a name="line.47"></a>
+<FONT color="green">048</FONT>    import org.bouncycastle.asn1.ASN1ObjectIdentifier;<a name="line.48"></a>
+<FONT color="green">049</FONT>    import org.bouncycastle.asn1.ASN1Sequence;<a name="line.49"></a>
+<FONT color="green">050</FONT>    import org.bouncycastle.asn1.DERNull;<a name="line.50"></a>
+<FONT color="green">051</FONT>    import org.bouncycastle.asn1.DERSet;<a name="line.51"></a>
+<FONT color="green">052</FONT>    import org.bouncycastle.asn1.cms.Attribute;<a name="line.52"></a>
+<FONT color="green">053</FONT>    import org.bouncycastle.asn1.cms.AttributeTable;<a name="line.53"></a>
+<FONT color="green">054</FONT>    import org.bouncycastle.asn1.cms.CMSAttributes;<a name="line.54"></a>
+<FONT color="green">055</FONT>    import org.bouncycastle.asn1.x509.AlgorithmIdentifier;<a name="line.55"></a>
+<FONT color="green">056</FONT>    import org.bouncycastle.asn1.x509.DigestInfo;<a name="line.56"></a>
+<FONT color="green">057</FONT>    import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;<a name="line.57"></a>
+<FONT color="green">058</FONT>    import org.bouncycastle.cert.X509CertificateHolder;<a name="line.58"></a>
+<FONT color="green">059</FONT>    import org.bouncycastle.cert.jcajce.JcaCertStore;<a name="line.59"></a>
+<FONT color="green">060</FONT>    import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;<a name="line.60"></a>
+<FONT color="green">061</FONT>    import org.bouncycastle.cms.CMSAttributeTableGenerator;<a name="line.61"></a>
+<FONT color="green">062</FONT>    import org.bouncycastle.cms.CMSException;<a name="line.62"></a>
+<FONT color="green">063</FONT>    import org.bouncycastle.cms.CMSSignedData;<a name="line.63"></a>
+<FONT color="green">064</FONT>    import org.bouncycastle.cms.DefaultAuthenticatedAttributeTableGenerator;<a name="line.64"></a>
+<FONT color="green">065</FONT>    import org.bouncycastle.cms.SignerInfoGenerator;<a name="line.65"></a>
+<FONT color="green">066</FONT>    import org.bouncycastle.cms.SignerInfoGeneratorBuilder;<a name="line.66"></a>
+<FONT color="green">067</FONT>    import org.bouncycastle.cms.SignerInformation;<a name="line.67"></a>
+<FONT color="green">068</FONT>    import org.bouncycastle.cms.SignerInformationStore;<a name="line.68"></a>
+<FONT color="green">069</FONT>    import org.bouncycastle.operator.ContentSigner;<a name="line.69"></a>
+<FONT color="green">070</FONT>    import org.bouncycastle.operator.DigestCalculatorProvider;<a name="line.70"></a>
+<FONT color="green">071</FONT>    import org.bouncycastle.operator.OperatorCreationException;<a name="line.71"></a>
+<FONT color="green">072</FONT>    import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;<a name="line.72"></a>
+<FONT color="green">073</FONT>    import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;<a name="line.73"></a>
+<FONT color="green">074</FONT>    import org.bouncycastle.util.CollectionStore;<a name="line.74"></a>
+<FONT color="green">075</FONT>    import org.bouncycastle.util.Store;<a name="line.75"></a>
+<FONT color="green">076</FONT>    import org.bouncycastle.util.encoders.Base64;<a name="line.76"></a>
 <FONT color="green">077</FONT>    <a name="line.77"></a>
 <FONT color="green">078</FONT>    /**<a name="line.78"></a>
 <FONT color="green">079</FONT>     * Sign a portable executable file. Timestamping is enabled by default<a name="line.79"></a>
@@ -289,7 +289,7 @@
 <FONT color="green">286</FONT>        private CMSSignedData timestamp(byte[] encryptedDigest, URL tsaurl) throws IOException, CMSException {<a name="line.286"></a>
 <FONT color="green">287</FONT>            AuthenticodeTimeStampRequest timestampRequest = new AuthenticodeTimeStampRequest(encryptedDigest);<a name="line.287"></a>
 <FONT color="green">288</FONT>            <a name="line.288"></a>
-<FONT color="green">289</FONT>            byte[] request = Base64.encodeBase64(timestampRequest.getEncoded("DER"), true);        <a name="line.289"></a>
+<FONT color="green">289</FONT>            byte[] request = Base64.encode(timestampRequest.getEncoded("DER"));<a name="line.289"></a>
 <FONT color="green">290</FONT>            <a name="line.290"></a>
 <FONT color="green">291</FONT>            HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();<a name="line.291"></a>
 <FONT color="green">292</FONT>            conn.setConnectTimeout(10000);<a name="line.292"></a>
@@ -319,7 +319,7 @@
 <FONT color="green">316</FONT>                bout.write(buffer, 0, n);<a name="line.316"></a>
 <FONT color="green">317</FONT>            }<a name="line.317"></a>
 <FONT color="green">318</FONT>            <a name="line.318"></a>
-<FONT color="green">319</FONT>            byte[] response = Base64.decodeBase64(bout.toByteArray());<a name="line.319"></a>
+<FONT color="green">319</FONT>            byte[] response = Base64.decode(bout.toByteArray());<a name="line.319"></a>
 <FONT color="green">320</FONT>            <a name="line.320"></a>
 <FONT color="green">321</FONT>            return new CMSSignedData(response);<a name="line.321"></a>
 <FONT color="green">322</FONT>        }<a name="line.322"></a>

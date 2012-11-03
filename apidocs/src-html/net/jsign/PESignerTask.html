@@ -152,117 +152,127 @@
 <FONT color="green">149</FONT>                if (!keystore.exists()) {<a name="line.149"></a>
 <FONT color="green">150</FONT>                    throw new BuildException("The keystore " + keystore + " couldn't be found");<a name="line.150"></a>
 <FONT color="green">151</FONT>                }<a name="line.151"></a>
-<FONT color="green">152</FONT>                try {<a name="line.152"></a>
-<FONT color="green">153</FONT>                    ks.load(new FileInputStream(keystore), storepass != null ? storepass.toCharArray() : null);<a name="line.153"></a>
-<FONT color="green">154</FONT>                } catch (Exception e) {<a name="line.154"></a>
-<FONT color="green">155</FONT>                    throw new BuildException("Unable to load the keystore " + keystore, e);<a name="line.155"></a>
-<FONT color="green">156</FONT>                }<a name="line.156"></a>
-<FONT color="green">157</FONT>                <a name="line.157"></a>
-<FONT color="green">158</FONT>                if (alias == null) {<a name="line.158"></a>
-<FONT color="green">159</FONT>                    throw new BuildException("alias attribute must be set");<a name="line.159"></a>
-<FONT color="green">160</FONT>                }<a name="line.160"></a>
-<FONT color="green">161</FONT>                <a name="line.161"></a>
-<FONT color="green">162</FONT>                try {<a name="line.162"></a>
-<FONT color="green">163</FONT>                    chain = ks.getCertificateChain(alias);<a name="line.163"></a>
-<FONT color="green">164</FONT>                } catch (KeyStoreException e) {<a name="line.164"></a>
-<FONT color="green">165</FONT>                    throw new BuildException(e);<a name="line.165"></a>
+<FONT color="green">152</FONT>                FileInputStream in = null;<a name="line.152"></a>
+<FONT color="green">153</FONT>                try {<a name="line.153"></a>
+<FONT color="green">154</FONT>                    in = new FileInputStream(keystore);<a name="line.154"></a>
+<FONT color="green">155</FONT>                    ks.load(in, storepass != null ? storepass.toCharArray() : null);<a name="line.155"></a>
+<FONT color="green">156</FONT>                } catch (Exception e) {<a name="line.156"></a>
+<FONT color="green">157</FONT>                    throw new BuildException("Unable to load the keystore " + keystore, e);<a name="line.157"></a>
+<FONT color="green">158</FONT>                } finally {<a name="line.158"></a>
+<FONT color="green">159</FONT>                    try {<a name="line.159"></a>
+<FONT color="green">160</FONT>                        if (in != null) {<a name="line.160"></a>
+<FONT color="green">161</FONT>                            in.close();<a name="line.161"></a>
+<FONT color="green">162</FONT>                        }<a name="line.162"></a>
+<FONT color="green">163</FONT>                    } catch (IOException e) {<a name="line.163"></a>
+<FONT color="green">164</FONT>                        // ignore<a name="line.164"></a>
+<FONT color="green">165</FONT>                    }<a name="line.165"></a>
 <FONT color="green">166</FONT>                }<a name="line.166"></a>
-<FONT color="green">167</FONT>                if (chain == null) {<a name="line.167"></a>
-<FONT color="green">168</FONT>                    throw new BuildException("No certificate found under the alias '" + alias + "' in the keystore " + keystore);<a name="line.168"></a>
-<FONT color="green">169</FONT>                }<a name="line.169"></a>
-<FONT color="green">170</FONT>                <a name="line.170"></a>
-<FONT color="green">171</FONT>                char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();<a name="line.171"></a>
-<FONT color="green">172</FONT>                <a name="line.172"></a>
-<FONT color="green">173</FONT>                try {<a name="line.173"></a>
-<FONT color="green">174</FONT>                    privateKey = (PrivateKey) ks.getKey(alias, password);<a name="line.174"></a>
-<FONT color="green">175</FONT>                } catch (Exception e) {<a name="line.175"></a>
-<FONT color="green">176</FONT>                    throw new BuildException("Failed to retrieve the private key from the keystore", e);<a name="line.176"></a>
-<FONT color="green">177</FONT>                }<a name="line.177"></a>
-<FONT color="green">178</FONT>                <a name="line.178"></a>
-<FONT color="green">179</FONT>            } else {<a name="line.179"></a>
-<FONT color="green">180</FONT>                // separate private key and certificate files (PVK/SPC)<a name="line.180"></a>
-<FONT color="green">181</FONT>                if (keyfile == null) {<a name="line.181"></a>
-<FONT color="green">182</FONT>                    throw new BuildException("keyfile attribute must be set");<a name="line.182"></a>
-<FONT color="green">183</FONT>                }<a name="line.183"></a>
-<FONT color="green">184</FONT>                if (!keyfile.exists()) {<a name="line.184"></a>
-<FONT color="green">185</FONT>                    throw new BuildException("The keyfile " + keyfile + " couldn't be found");<a name="line.185"></a>
-<FONT color="green">186</FONT>                }<a name="line.186"></a>
-<FONT color="green">187</FONT>                if (certfile == null) {<a name="line.187"></a>
-<FONT color="green">188</FONT>                    throw new BuildException("certfile attribute must be set");<a name="line.188"></a>
-<FONT color="green">189</FONT>                }<a name="line.189"></a>
-<FONT color="green">190</FONT>                if (!certfile.exists()) {<a name="line.190"></a>
-<FONT color="green">191</FONT>                    throw new BuildException("The certfile " + certfile + " couldn't be found");<a name="line.191"></a>
-<FONT color="green">192</FONT>                }<a name="line.192"></a>
-<FONT color="green">193</FONT>                <a name="line.193"></a>
-<FONT color="green">194</FONT>                // load the certificate chain<a name="line.194"></a>
-<FONT color="green">195</FONT>                try {<a name="line.195"></a>
-<FONT color="green">196</FONT>                    chain = loadCertificateChain(certfile);<a name="line.196"></a>
-<FONT color="green">197</FONT>                } catch (Exception e) {<a name="line.197"></a>
-<FONT color="green">198</FONT>                    throw new BuildException("Failed to load the certificate from " + certfile, e);<a name="line.198"></a>
+<FONT color="green">167</FONT>                <a name="line.167"></a>
+<FONT color="green">168</FONT>                if (alias == null) {<a name="line.168"></a>
+<FONT color="green">169</FONT>                    throw new BuildException("alias attribute must be set");<a name="line.169"></a>
+<FONT color="green">170</FONT>                }<a name="line.170"></a>
+<FONT color="green">171</FONT>                <a name="line.171"></a>
+<FONT color="green">172</FONT>                try {<a name="line.172"></a>
+<FONT color="green">173</FONT>                    chain = ks.getCertificateChain(alias);<a name="line.173"></a>
+<FONT color="green">174</FONT>                } catch (KeyStoreException e) {<a name="line.174"></a>
+<FONT color="green">175</FONT>                    throw new BuildException(e);<a name="line.175"></a>
+<FONT color="green">176</FONT>                }<a name="line.176"></a>
+<FONT color="green">177</FONT>                if (chain == null) {<a name="line.177"></a>
+<FONT color="green">178</FONT>                    throw new BuildException("No certificate found under the alias '" + alias + "' in the keystore " + keystore);<a name="line.178"></a>
+<FONT color="green">179</FONT>                }<a name="line.179"></a>
+<FONT color="green">180</FONT>                <a name="line.180"></a>
+<FONT color="green">181</FONT>                char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();<a name="line.181"></a>
+<FONT color="green">182</FONT>                <a name="line.182"></a>
+<FONT color="green">183</FONT>                try {<a name="line.183"></a>
+<FONT color="green">184</FONT>                    privateKey = (PrivateKey) ks.getKey(alias, password);<a name="line.184"></a>
+<FONT color="green">185</FONT>                } catch (Exception e) {<a name="line.185"></a>
+<FONT color="green">186</FONT>                    throw new BuildException("Failed to retrieve the private key from the keystore", e);<a name="line.186"></a>
+<FONT color="green">187</FONT>                }<a name="line.187"></a>
+<FONT color="green">188</FONT>                <a name="line.188"></a>
+<FONT color="green">189</FONT>            } else {<a name="line.189"></a>
+<FONT color="green">190</FONT>                // separate private key and certificate files (PVK/SPC)<a name="line.190"></a>
+<FONT color="green">191</FONT>                if (keyfile == null) {<a name="line.191"></a>
+<FONT color="green">192</FONT>                    throw new BuildException("keyfile attribute must be set");<a name="line.192"></a>
+<FONT color="green">193</FONT>                }<a name="line.193"></a>
+<FONT color="green">194</FONT>                if (!keyfile.exists()) {<a name="line.194"></a>
+<FONT color="green">195</FONT>                    throw new BuildException("The keyfile " + keyfile + " couldn't be found");<a name="line.195"></a>
+<FONT color="green">196</FONT>                }<a name="line.196"></a>
+<FONT color="green">197</FONT>                if (certfile == null) {<a name="line.197"></a>
+<FONT color="green">198</FONT>                    throw new BuildException("certfile attribute must be set");<a name="line.198"></a>
 <FONT color="green">199</FONT>                }<a name="line.199"></a>
-<FONT color="green">200</FONT>                <a name="line.200"></a>
-<FONT color="green">201</FONT>                // load the private key<a name="line.201"></a>
-<FONT color="green">202</FONT>                try {<a name="line.202"></a>
-<FONT color="green">203</FONT>                    privateKey = PVK.parse(keyfile, keypass);<a name="line.203"></a>
-<FONT color="green">204</FONT>                } catch (Exception e) {<a name="line.204"></a>
-<FONT color="green">205</FONT>                    throw new BuildException("Failed to load the private key from " + keyfile, e);<a name="line.205"></a>
-<FONT color="green">206</FONT>                }<a name="line.206"></a>
-<FONT color="green">207</FONT>            }<a name="line.207"></a>
-<FONT color="green">208</FONT>            <a name="line.208"></a>
-<FONT color="green">209</FONT>            if (file == null) {<a name="line.209"></a>
-<FONT color="green">210</FONT>                throw new BuildException("file attribute must be set");<a name="line.210"></a>
-<FONT color="green">211</FONT>            }<a name="line.211"></a>
-<FONT color="green">212</FONT>            if (!file.exists()) {<a name="line.212"></a>
-<FONT color="green">213</FONT>                throw new BuildException("The file " + file + " couldn't be found");<a name="line.213"></a>
-<FONT color="green">214</FONT>            }<a name="line.214"></a>
-<FONT color="green">215</FONT>            <a name="line.215"></a>
-<FONT color="green">216</FONT>            PEFile peFile;<a name="line.216"></a>
-<FONT color="green">217</FONT>            try {<a name="line.217"></a>
-<FONT color="green">218</FONT>                peFile = new PEFile(file);<a name="line.218"></a>
-<FONT color="green">219</FONT>            } catch (IOException e) {<a name="line.219"></a>
-<FONT color="green">220</FONT>                throw new BuildException("Couldn't open the executable file " + file, e);<a name="line.220"></a>
+<FONT color="green">200</FONT>                if (!certfile.exists()) {<a name="line.200"></a>
+<FONT color="green">201</FONT>                    throw new BuildException("The certfile " + certfile + " couldn't be found");<a name="line.201"></a>
+<FONT color="green">202</FONT>                }<a name="line.202"></a>
+<FONT color="green">203</FONT>                <a name="line.203"></a>
+<FONT color="green">204</FONT>                // load the certificate chain<a name="line.204"></a>
+<FONT color="green">205</FONT>                try {<a name="line.205"></a>
+<FONT color="green">206</FONT>                    chain = loadCertificateChain(certfile);<a name="line.206"></a>
+<FONT color="green">207</FONT>                } catch (Exception e) {<a name="line.207"></a>
+<FONT color="green">208</FONT>                    throw new BuildException("Failed to load the certificate from " + certfile, e);<a name="line.208"></a>
+<FONT color="green">209</FONT>                }<a name="line.209"></a>
+<FONT color="green">210</FONT>                <a name="line.210"></a>
+<FONT color="green">211</FONT>                // load the private key<a name="line.211"></a>
+<FONT color="green">212</FONT>                try {<a name="line.212"></a>
+<FONT color="green">213</FONT>                    privateKey = PVK.parse(keyfile, keypass);<a name="line.213"></a>
+<FONT color="green">214</FONT>                } catch (Exception e) {<a name="line.214"></a>
+<FONT color="green">215</FONT>                    throw new BuildException("Failed to load the private key from " + keyfile, e);<a name="line.215"></a>
+<FONT color="green">216</FONT>                }<a name="line.216"></a>
+<FONT color="green">217</FONT>            }<a name="line.217"></a>
+<FONT color="green">218</FONT>            <a name="line.218"></a>
+<FONT color="green">219</FONT>            if (file == null) {<a name="line.219"></a>
+<FONT color="green">220</FONT>                throw new BuildException("file attribute must be set");<a name="line.220"></a>
 <FONT color="green">221</FONT>            }<a name="line.221"></a>
-<FONT color="green">222</FONT>            <a name="line.222"></a>
-<FONT color="green">223</FONT>            // and now the actual work!<a name="line.223"></a>
-<FONT color="green">224</FONT>            PESigner signer = new PESigner(chain, privateKey)<a name="line.224"></a>
-<FONT color="green">225</FONT>                    .withProgramName(name)<a name="line.225"></a>
-<FONT color="green">226</FONT>                    .withProgramURL(url)<a name="line.226"></a>
-<FONT color="green">227</FONT>                    .withTimestamping(tsaurl != null)<a name="line.227"></a>
-<FONT color="green">228</FONT>                    .withTimestampingAutority(tsaurl);<a name="line.228"></a>
-<FONT color="green">229</FONT>    <a name="line.229"></a>
-<FONT color="green">230</FONT>    <a name="line.230"></a>
-<FONT color="green">231</FONT>            try {<a name="line.231"></a>
-<FONT color="green">232</FONT>                log("Adding Authenticode signature to " + FileUtils.getRelativePath(getProject().getBaseDir(), file));<a name="line.232"></a>
-<FONT color="green">233</FONT>                signer.sign(peFile);<a name="line.233"></a>
-<FONT color="green">234</FONT>            } catch (Exception e) {<a name="line.234"></a>
-<FONT color="green">235</FONT>                throw new BuildException("Couldn't sign " + file, e);<a name="line.235"></a>
-<FONT color="green">236</FONT>            } finally {<a name="line.236"></a>
-<FONT color="green">237</FONT>                try {<a name="line.237"></a>
-<FONT color="green">238</FONT>                    peFile.close();<a name="line.238"></a>
-<FONT color="green">239</FONT>                } catch (IOException e) {<a name="line.239"></a>
-<FONT color="green">240</FONT>                    log("Couldn't close " + file, e, Project.MSG_WARN);<a name="line.240"></a>
-<FONT color="green">241</FONT>                }<a name="line.241"></a>
-<FONT color="green">242</FONT>            }<a name="line.242"></a>
-<FONT color="green">243</FONT>        }<a name="line.243"></a>
-<FONT color="green">244</FONT>    <a name="line.244"></a>
-<FONT color="green">245</FONT>        /**<a name="line.245"></a>
-<FONT color="green">246</FONT>         * Load the certificate chain from the specified PKCS#7 files.<a name="line.246"></a>
-<FONT color="green">247</FONT>         */<a name="line.247"></a>
-<FONT color="green">248</FONT>        @SuppressWarnings("unchecked")<a name="line.248"></a>
-<FONT color="green">249</FONT>        private Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {<a name="line.249"></a>
-<FONT color="green">250</FONT>            FileInputStream in = null;<a name="line.250"></a>
-<FONT color="green">251</FONT>            try {<a name="line.251"></a>
-<FONT color="green">252</FONT>                in = new FileInputStream(file);<a name="line.252"></a>
-<FONT color="green">253</FONT>                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");<a name="line.253"></a>
-<FONT color="green">254</FONT>                Collection&lt;Certificate&gt; certificates = (Collection&lt;Certificate&gt;) certificateFactory.generateCertificates(in);<a name="line.254"></a>
-<FONT color="green">255</FONT>                return certificates.toArray(new Certificate[certificates.size()]);<a name="line.255"></a>
-<FONT color="green">256</FONT>            } finally {<a name="line.256"></a>
-<FONT color="green">257</FONT>                if (in != null) {<a name="line.257"></a>
-<FONT color="green">258</FONT>                    in.close();<a name="line.258"></a>
-<FONT color="green">259</FONT>                }<a name="line.259"></a>
-<FONT color="green">260</FONT>            }<a name="line.260"></a>
-<FONT color="green">261</FONT>        }<a name="line.261"></a>
-<FONT color="green">262</FONT>    }<a name="line.262"></a>
+<FONT color="green">222</FONT>            if (!file.exists()) {<a name="line.222"></a>
+<FONT color="green">223</FONT>                throw new BuildException("The file " + file + " couldn't be found");<a name="line.223"></a>
+<FONT color="green">224</FONT>            }<a name="line.224"></a>
+<FONT color="green">225</FONT>            <a name="line.225"></a>
+<FONT color="green">226</FONT>            PEFile peFile;<a name="line.226"></a>
+<FONT color="green">227</FONT>            try {<a name="line.227"></a>
+<FONT color="green">228</FONT>                peFile = new PEFile(file);<a name="line.228"></a>
+<FONT color="green">229</FONT>            } catch (IOException e) {<a name="line.229"></a>
+<FONT color="green">230</FONT>                throw new BuildException("Couldn't open the executable file " + file, e);<a name="line.230"></a>
+<FONT color="green">231</FONT>            }<a name="line.231"></a>
+<FONT color="green">232</FONT>            <a name="line.232"></a>
+<FONT color="green">233</FONT>            // and now the actual work!<a name="line.233"></a>
+<FONT color="green">234</FONT>            PESigner signer = new PESigner(chain, privateKey)<a name="line.234"></a>
+<FONT color="green">235</FONT>                    .withProgramName(name)<a name="line.235"></a>
+<FONT color="green">236</FONT>                    .withProgramURL(url)<a name="line.236"></a>
+<FONT color="green">237</FONT>                    .withTimestamping(tsaurl != null)<a name="line.237"></a>
+<FONT color="green">238</FONT>                    .withTimestampingAutority(tsaurl);<a name="line.238"></a>
+<FONT color="green">239</FONT>    <a name="line.239"></a>
+<FONT color="green">240</FONT>    <a name="line.240"></a>
+<FONT color="green">241</FONT>            try {<a name="line.241"></a>
+<FONT color="green">242</FONT>                log("Adding Authenticode signature to " + FileUtils.getRelativePath(getProject().getBaseDir(), file));<a name="line.242"></a>
+<FONT color="green">243</FONT>                signer.sign(peFile);<a name="line.243"></a>
+<FONT color="green">244</FONT>            } catch (Exception e) {<a name="line.244"></a>
+<FONT color="green">245</FONT>                throw new BuildException("Couldn't sign " + file, e);<a name="line.245"></a>
+<FONT color="green">246</FONT>            } finally {<a name="line.246"></a>
+<FONT color="green">247</FONT>                try {<a name="line.247"></a>
+<FONT color="green">248</FONT>                    peFile.close();<a name="line.248"></a>
+<FONT color="green">249</FONT>                } catch (IOException e) {<a name="line.249"></a>
+<FONT color="green">250</FONT>                    log("Couldn't close " + file, e, Project.MSG_WARN);<a name="line.250"></a>
+<FONT color="green">251</FONT>                }<a name="line.251"></a>
+<FONT color="green">252</FONT>            }<a name="line.252"></a>
+<FONT color="green">253</FONT>        }<a name="line.253"></a>
+<FONT color="green">254</FONT>    <a name="line.254"></a>
+<FONT color="green">255</FONT>        /**<a name="line.255"></a>
+<FONT color="green">256</FONT>         * Load the certificate chain from the specified PKCS#7 files.<a name="line.256"></a>
+<FONT color="green">257</FONT>         */<a name="line.257"></a>
+<FONT color="green">258</FONT>        @SuppressWarnings("unchecked")<a name="line.258"></a>
+<FONT color="green">259</FONT>        private Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {<a name="line.259"></a>
+<FONT color="green">260</FONT>            FileInputStream in = null;<a name="line.260"></a>
+<FONT color="green">261</FONT>            try {<a name="line.261"></a>
+<FONT color="green">262</FONT>                in = new FileInputStream(file);<a name="line.262"></a>
+<FONT color="green">263</FONT>                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");<a name="line.263"></a>
+<FONT color="green">264</FONT>                Collection&lt;Certificate&gt; certificates = (Collection&lt;Certificate&gt;) certificateFactory.generateCertificates(in);<a name="line.264"></a>
+<FONT color="green">265</FONT>                return certificates.toArray(new Certificate[certificates.size()]);<a name="line.265"></a>
+<FONT color="green">266</FONT>            } finally {<a name="line.266"></a>
+<FONT color="green">267</FONT>                if (in != null) {<a name="line.267"></a>
+<FONT color="green">268</FONT>                    in.close();<a name="line.268"></a>
+<FONT color="green">269</FONT>                }<a name="line.269"></a>
+<FONT color="green">270</FONT>            }<a name="line.270"></a>
+<FONT color="green">271</FONT>        }<a name="line.271"></a>
+<FONT color="green">272</FONT>    }<a name="line.272"></a>
 
 
 
