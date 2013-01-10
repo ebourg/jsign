@@ -42,7 +42,7 @@ import org.bouncycastle.cms.SignerInformation;
 /**
  * Portable Executable File.
  * 
- * This class is not thread safe, read access must be synchronized.
+ * This class is thread safe.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/windows/hardware/gg463119.aspx">Microsoft PE and COFF Specification </a>
  * 
@@ -52,10 +52,10 @@ import org.bouncycastle.cms.SignerInformation;
 public class PEFile implements Closeable {
 
     /** The position of the PE header in the file */
-    private long peHeaderOffset;
+    private final long peHeaderOffset;
 
-    private File file;
-    private ExtendedRandomAccessFile raf;
+    private final File file;
+    private final ExtendedRandomAccessFile raf;
 
     public PEFile(File file) throws IOException {
         this.file = file;
@@ -84,11 +84,11 @@ public class PEFile implements Closeable {
         }
     }
 
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         raf.close();
     }
     
-    int read(byte[] buffer, int offset) {
+    synchronized int read(byte[] buffer, int offset) {
         try {
             raf.seek(offset);
             return raf.read(buffer);
@@ -97,7 +97,7 @@ public class PEFile implements Closeable {
         }
     }
 
-    int read(long base, int offset) {
+    synchronized int read(long base, int offset) {
         try {
             raf.seek(base + offset);
             return raf.read();
@@ -106,7 +106,7 @@ public class PEFile implements Closeable {
         }
     }
 
-    int readWord(long base, int offset) {
+    synchronized int readWord(long base, int offset) {
         try {
             raf.seek(base + offset);
             return raf.readWord();
@@ -115,7 +115,7 @@ public class PEFile implements Closeable {
         }
     }
 
-    long readDWord(long base, int offset) {
+    synchronized long readDWord(long base, int offset) {
         try {
             raf.seek(base + offset);
             return raf.readDWord();
@@ -124,7 +124,7 @@ public class PEFile implements Closeable {
         }
     }
 
-    long readQWord(long base, int offset) {
+    synchronized long readQWord(long base, int offset) {
         try {
             raf.seek(base + offset);
             return raf.readQWord();
@@ -133,7 +133,7 @@ public class PEFile implements Closeable {
         }
     }
 
-    void write(long base, byte[] data) {
+    synchronized void write(long base, byte[] data) {
         try {
             raf.seek(base);
             raf.write(data);
@@ -379,7 +379,7 @@ public class PEFile implements Closeable {
      * Compute the checksum of the image file. The algorithm for computing
      * the checksum is incorporated into IMAGHELP.DLL.
      */
-    public long computeChecksum() {
+    public synchronized long computeChecksum() {
         PEImageChecksum checksum = new PEImageChecksum(peHeaderOffset + 88);
         
         byte[] b = new byte[64 * 1024];
@@ -398,7 +398,7 @@ public class PEFile implements Closeable {
         return checksum.getValue();
     }
 
-    public void updateChecksum() {
+    public synchronized void updateChecksum() {
         ByteBuffer buffer = ByteBuffer.allocate(4);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) computeChecksum());
@@ -508,7 +508,7 @@ public class PEFile implements Closeable {
      * @param data
      * @throws IOException
      */
-    public void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {
+    public synchronized void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {
         // todo overwrite an existing entry at the end of the file
         
         // append the data directory at the end of the file
@@ -527,7 +527,7 @@ public class PEFile implements Closeable {
     /**
      * Returns the authenticode signatures on the file.
      */
-    public List<CMSSignedData> getSignatures() {
+    public synchronized List<CMSSignedData> getSignatures() {
         List<CMSSignedData> signatures = new ArrayList<CMSSignedData>();
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
@@ -658,7 +658,7 @@ public class PEFile implements Closeable {
      * directory table entry and the certificate table are excluded from
      * the digest.
      */
-    private byte[] computeDigest(MessageDigest digest) throws IOException {
+    private synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         long checksumLocation = peHeaderOffset + 88;
         
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
@@ -732,7 +732,7 @@ public class PEFile implements Closeable {
      * 
      * @param multiple
      */
-    public void pad(int multiple) throws IOException {
+    public synchronized void pad(int multiple) throws IOException {
         long padding = multiple - raf.length() % multiple;
         raf.seek(raf.length());
         for (int i = 0; i < padding; i++) {
