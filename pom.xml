@@ -118,7 +118,7 @@
       <plugin>
         <artifactId>jdeb</artifactId>
         <groupId>org.vafer</groupId>
-        <version>0.12-SNAPSHOT</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <phase>package</phase>
