@@ -45,7 +45,7 @@
 <FONT color="green">042</FONT>    /**<a name="line.42"></a>
 <FONT color="green">043</FONT>     * Portable Executable File.<a name="line.43"></a>
 <FONT color="green">044</FONT>     * <a name="line.44"></a>
-<FONT color="green">045</FONT>     * This class is not thread safe, read access must be synchronized.<a name="line.45"></a>
+<FONT color="green">045</FONT>     * This class is thread safe.<a name="line.45"></a>
 <FONT color="green">046</FONT>     * <a name="line.46"></a>
 <FONT color="green">047</FONT>     * @see &lt;a href="http://msdn.microsoft.com/en-us/library/windows/hardware/gg463119.aspx"&gt;Microsoft PE and COFF Specification &lt;/a&gt;<a name="line.47"></a>
 <FONT color="green">048</FONT>     * <a name="line.48"></a>
@@ -55,10 +55,10 @@
 <FONT color="green">052</FONT>    public class PEFile implements Closeable {<a name="line.52"></a>
 <FONT color="green">053</FONT>    <a name="line.53"></a>
 <FONT color="green">054</FONT>        /** The position of the PE header in the file */<a name="line.54"></a>
-<FONT color="green">055</FONT>        private long peHeaderOffset;<a name="line.55"></a>
+<FONT color="green">055</FONT>        private final long peHeaderOffset;<a name="line.55"></a>
 <FONT color="green">056</FONT>    <a name="line.56"></a>
-<FONT color="green">057</FONT>        private File file;<a name="line.57"></a>
-<FONT color="green">058</FONT>        private ExtendedRandomAccessFile raf;<a name="line.58"></a>
+<FONT color="green">057</FONT>        private final File file;<a name="line.57"></a>
+<FONT color="green">058</FONT>        private final ExtendedRandomAccessFile raf;<a name="line.58"></a>
 <FONT color="green">059</FONT>    <a name="line.59"></a>
 <FONT color="green">060</FONT>        public PEFile(File file) throws IOException {<a name="line.60"></a>
 <FONT color="green">061</FONT>            this.file = file;<a name="line.61"></a>
@@ -87,11 +87,11 @@
 <FONT color="green">084</FONT>            }<a name="line.84"></a>
 <FONT color="green">085</FONT>        }<a name="line.85"></a>
 <FONT color="green">086</FONT>    <a name="line.86"></a>
-<FONT color="green">087</FONT>        public void close() throws IOException {<a name="line.87"></a>
+<FONT color="green">087</FONT>        public synchronized void close() throws IOException {<a name="line.87"></a>
 <FONT color="green">088</FONT>            raf.close();<a name="line.88"></a>
 <FONT color="green">089</FONT>        }<a name="line.89"></a>
 <FONT color="green">090</FONT>        <a name="line.90"></a>
-<FONT color="green">091</FONT>        int read(byte[] buffer, int offset) {<a name="line.91"></a>
+<FONT color="green">091</FONT>        synchronized int read(byte[] buffer, int offset) {<a name="line.91"></a>
 <FONT color="green">092</FONT>            try {<a name="line.92"></a>
 <FONT color="green">093</FONT>                raf.seek(offset);<a name="line.93"></a>
 <FONT color="green">094</FONT>                return raf.read(buffer);<a name="line.94"></a>
@@ -100,7 +100,7 @@
 <FONT color="green">097</FONT>            }<a name="line.97"></a>
 <FONT color="green">098</FONT>        }<a name="line.98"></a>
 <FONT color="green">099</FONT>    <a name="line.99"></a>
-<FONT color="green">100</FONT>        int read(long base, int offset) {<a name="line.100"></a>
+<FONT color="green">100</FONT>        synchronized int read(long base, int offset) {<a name="line.100"></a>
 <FONT color="green">101</FONT>            try {<a name="line.101"></a>
 <FONT color="green">102</FONT>                raf.seek(base + offset);<a name="line.102"></a>
 <FONT color="green">103</FONT>                return raf.read();<a name="line.103"></a>
@@ -109,7 +109,7 @@
 <FONT color="green">106</FONT>            }<a name="line.106"></a>
 <FONT color="green">107</FONT>        }<a name="line.107"></a>
 <FONT color="green">108</FONT>    <a name="line.108"></a>
-<FONT color="green">109</FONT>        int readWord(long base, int offset) {<a name="line.109"></a>
+<FONT color="green">109</FONT>        synchronized int readWord(long base, int offset) {<a name="line.109"></a>
 <FONT color="green">110</FONT>            try {<a name="line.110"></a>
 <FONT color="green">111</FONT>                raf.seek(base + offset);<a name="line.111"></a>
 <FONT color="green">112</FONT>                return raf.readWord();<a name="line.112"></a>
@@ -118,7 +118,7 @@
 <FONT color="green">115</FONT>            }<a name="line.115"></a>
 <FONT color="green">116</FONT>        }<a name="line.116"></a>
 <FONT color="green">117</FONT>    <a name="line.117"></a>
-<FONT color="green">118</FONT>        long readDWord(long base, int offset) {<a name="line.118"></a>
+<FONT color="green">118</FONT>        synchronized long readDWord(long base, int offset) {<a name="line.118"></a>
 <FONT color="green">119</FONT>            try {<a name="line.119"></a>
 <FONT color="green">120</FONT>                raf.seek(base + offset);<a name="line.120"></a>
 <FONT color="green">121</FONT>                return raf.readDWord();<a name="line.121"></a>
@@ -127,7 +127,7 @@
 <FONT color="green">124</FONT>            }<a name="line.124"></a>
 <FONT color="green">125</FONT>        }<a name="line.125"></a>
 <FONT color="green">126</FONT>    <a name="line.126"></a>
-<FONT color="green">127</FONT>        long readQWord(long base, int offset) {<a name="line.127"></a>
+<FONT color="green">127</FONT>        synchronized long readQWord(long base, int offset) {<a name="line.127"></a>
 <FONT color="green">128</FONT>            try {<a name="line.128"></a>
 <FONT color="green">129</FONT>                raf.seek(base + offset);<a name="line.129"></a>
 <FONT color="green">130</FONT>                return raf.readQWord();<a name="line.130"></a>
@@ -136,7 +136,7 @@
 <FONT color="green">133</FONT>            }<a name="line.133"></a>
 <FONT color="green">134</FONT>        }<a name="line.134"></a>
 <FONT color="green">135</FONT>    <a name="line.135"></a>
-<FONT color="green">136</FONT>        void write(long base, byte[] data) {<a name="line.136"></a>
+<FONT color="green">136</FONT>        synchronized void write(long base, byte[] data) {<a name="line.136"></a>
 <FONT color="green">137</FONT>            try {<a name="line.137"></a>
 <FONT color="green">138</FONT>                raf.seek(base);<a name="line.138"></a>
 <FONT color="green">139</FONT>                raf.write(data);<a name="line.139"></a>
@@ -382,7 +382,7 @@
 <FONT color="green">379</FONT>         * Compute the checksum of the image file. The algorithm for computing<a name="line.379"></a>
 <FONT color="green">380</FONT>         * the checksum is incorporated into IMAGHELP.DLL.<a name="line.380"></a>
 <FONT color="green">381</FONT>         */<a name="line.381"></a>
-<FONT color="green">382</FONT>        public long computeChecksum() {<a name="line.382"></a>
+<FONT color="green">382</FONT>        public synchronized long computeChecksum() {<a name="line.382"></a>
 <FONT color="green">383</FONT>            PEImageChecksum checksum = new PEImageChecksum(peHeaderOffset + 88);<a name="line.383"></a>
 <FONT color="green">384</FONT>            <a name="line.384"></a>
 <FONT color="green">385</FONT>            byte[] b = new byte[64 * 1024];<a name="line.385"></a>
@@ -401,7 +401,7 @@
 <FONT color="green">398</FONT>            return checksum.getValue();<a name="line.398"></a>
 <FONT color="green">399</FONT>        }<a name="line.399"></a>
 <FONT color="green">400</FONT>    <a name="line.400"></a>
-<FONT color="green">401</FONT>        public void updateChecksum() {<a name="line.401"></a>
+<FONT color="green">401</FONT>        public synchronized void updateChecksum() {<a name="line.401"></a>
 <FONT color="green">402</FONT>            ByteBuffer buffer = ByteBuffer.allocate(4);<a name="line.402"></a>
 <FONT color="green">403</FONT>            buffer.order(ByteOrder.LITTLE_ENDIAN);<a name="line.403"></a>
 <FONT color="green">404</FONT>            buffer.putInt((int) computeChecksum());<a name="line.404"></a>
@@ -511,7 +511,7 @@
 <FONT color="green">508</FONT>         * @param data<a name="line.508"></a>
 <FONT color="green">509</FONT>         * @throws IOException<a name="line.509"></a>
 <FONT color="green">510</FONT>         */<a name="line.510"></a>
-<FONT color="green">511</FONT>        public void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {<a name="line.511"></a>
+<FONT color="green">511</FONT>        public synchronized void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {<a name="line.511"></a>
 <FONT color="green">512</FONT>            // todo overwrite an existing entry at the end of the file<a name="line.512"></a>
 <FONT color="green">513</FONT>            <a name="line.513"></a>
 <FONT color="green">514</FONT>            // append the data directory at the end of the file<a name="line.514"></a>
@@ -530,7 +530,7 @@
 <FONT color="green">527</FONT>        /**<a name="line.527"></a>
 <FONT color="green">528</FONT>         * Returns the authenticode signatures on the file.<a name="line.528"></a>
 <FONT color="green">529</FONT>         */<a name="line.529"></a>
-<FONT color="green">530</FONT>        public List&lt;CMSSignedData&gt; getSignatures() {<a name="line.530"></a>
+<FONT color="green">530</FONT>        public synchronized List&lt;CMSSignedData&gt; getSignatures() {<a name="line.530"></a>
 <FONT color="green">531</FONT>            List&lt;CMSSignedData&gt; signatures = new ArrayList&lt;CMSSignedData&gt;();<a name="line.531"></a>
 <FONT color="green">532</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.532"></a>
 <FONT color="green">533</FONT>            <a name="line.533"></a>
@@ -660,72 +660,89 @@
 <FONT color="green">657</FONT>         * Compute the digest of the file. The checksum field, the certificate<a name="line.657"></a>
 <FONT color="green">658</FONT>         * directory table entry and the certificate table are excluded from<a name="line.658"></a>
 <FONT color="green">659</FONT>         * the digest.<a name="line.659"></a>
-<FONT color="green">660</FONT>         * <a name="line.660"></a>
-<FONT color="green">661</FONT>         * todo Handle files &gt; 2GB<a name="line.661"></a>
-<FONT color="green">662</FONT>         */<a name="line.662"></a>
-<FONT color="green">663</FONT>        private byte[] computeDigest(MessageDigest digest) throws IOException {<a name="line.663"></a>
-<FONT color="green">664</FONT>            int checksumLocation = (int) peHeaderOffset + 88;<a name="line.664"></a>
+<FONT color="green">660</FONT>         */<a name="line.660"></a>
+<FONT color="green">661</FONT>        private synchronized byte[] computeDigest(MessageDigest digest) throws IOException {<a name="line.661"></a>
+<FONT color="green">662</FONT>            long checksumLocation = peHeaderOffset + 88;<a name="line.662"></a>
+<FONT color="green">663</FONT>            <a name="line.663"></a>
+<FONT color="green">664</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.664"></a>
 <FONT color="green">665</FONT>            <a name="line.665"></a>
-<FONT color="green">666</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.666"></a>
-<FONT color="green">667</FONT>            <a name="line.667"></a>
-<FONT color="green">668</FONT>            // load the file in a buffer<a name="line.668"></a>
-<FONT color="green">669</FONT>            byte[] signedContent = new byte[(int) raf.length()]; // todo don't load the whole file in memory, use smaller chunks<a name="line.669"></a>
-<FONT color="green">670</FONT>            raf.seek(0);<a name="line.670"></a>
-<FONT color="green">671</FONT>            raf.read(signedContent);<a name="line.671"></a>
-<FONT color="green">672</FONT>            <a name="line.672"></a>
-<FONT color="green">673</FONT>            // digest from the beginning to the checksum field (excluded)<a name="line.673"></a>
-<FONT color="green">674</FONT>            digest.update(signedContent, 0, checksumLocation);<a name="line.674"></a>
+<FONT color="green">666</FONT>            // digest from the beginning to the checksum field (excluded)<a name="line.666"></a>
+<FONT color="green">667</FONT>            updateDigest(digest, 0, checksumLocation);<a name="line.667"></a>
+<FONT color="green">668</FONT>            <a name="line.668"></a>
+<FONT color="green">669</FONT>            // skip the checksum field<a name="line.669"></a>
+<FONT color="green">670</FONT>            long position = checksumLocation + 4;<a name="line.670"></a>
+<FONT color="green">671</FONT>            <a name="line.671"></a>
+<FONT color="green">672</FONT>            // digest from the end of the checksum field to the beginning of the certificate table entry<a name="line.672"></a>
+<FONT color="green">673</FONT>            int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();<a name="line.673"></a>
+<FONT color="green">674</FONT>            updateDigest(digest, position, certificateTableOffset);<a name="line.674"></a>
 <FONT color="green">675</FONT>            <a name="line.675"></a>
-<FONT color="green">676</FONT>            // skip the checksum field<a name="line.676"></a>
-<FONT color="green">677</FONT>            int position = checksumLocation + 4;<a name="line.677"></a>
+<FONT color="green">676</FONT>            // skip the certificate entry<a name="line.676"></a>
+<FONT color="green">677</FONT>            position = certificateTableOffset + 8;<a name="line.677"></a>
 <FONT color="green">678</FONT>            <a name="line.678"></a>
-<FONT color="green">679</FONT>            // digest from the end of the checksum field to the beginning of the certificate table entry<a name="line.679"></a>
-<FONT color="green">680</FONT>            int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();<a name="line.680"></a>
-<FONT color="green">681</FONT>            digest.update(signedContent, position, certificateTableOffset - position);<a name="line.681"></a>
-<FONT color="green">682</FONT>            <a name="line.682"></a>
-<FONT color="green">683</FONT>            // skip the certificate entry<a name="line.683"></a>
-<FONT color="green">684</FONT>            position = certificateTableOffset + 8;<a name="line.684"></a>
-<FONT color="green">685</FONT>            <a name="line.685"></a>
-<FONT color="green">686</FONT>            // todo digest the sections in ascending address order<a name="line.686"></a>
-<FONT color="green">687</FONT>            <a name="line.687"></a>
-<FONT color="green">688</FONT>            // digest from the end of the certificate table entry to the beginning of the certificate table<a name="line.688"></a>
-<FONT color="green">689</FONT>            if (certificateTable != null &amp;&amp; certificateTable.getVirtualAddress() != 0) {<a name="line.689"></a>
-<FONT color="green">690</FONT>                digest.update(signedContent, position, (int) certificateTable.getVirtualAddress() - position);<a name="line.690"></a>
-<FONT color="green">691</FONT>                position = (int) certificateTable.getVirtualAddress() + certificateTable.getSize();<a name="line.691"></a>
-<FONT color="green">692</FONT>            }<a name="line.692"></a>
-<FONT color="green">693</FONT>    <a name="line.693"></a>
-<FONT color="green">694</FONT>            // digest from the end of the certificate table to the end of the file<a name="line.694"></a>
-<FONT color="green">695</FONT>            digest.update(signedContent, position, (int) raf.length() - position);<a name="line.695"></a>
-<FONT color="green">696</FONT>            <a name="line.696"></a>
-<FONT color="green">697</FONT>            return digest.digest();<a name="line.697"></a>
-<FONT color="green">698</FONT>        }<a name="line.698"></a>
-<FONT color="green">699</FONT>        <a name="line.699"></a>
-<FONT color="green">700</FONT>        /**<a name="line.700"></a>
-<FONT color="green">701</FONT>         * Compute the checksum of the file using the specified digest algorithm.<a name="line.701"></a>
-<FONT color="green">702</FONT>         * <a name="line.702"></a>
-<FONT color="green">703</FONT>         * @param algorithm the digest algorithm, typically SHA1<a name="line.703"></a>
-<FONT color="green">704</FONT>         */<a name="line.704"></a>
-<FONT color="green">705</FONT>        public byte[] computeDigest(String algorithm) throws IOException {<a name="line.705"></a>
-<FONT color="green">706</FONT>            try {<a name="line.706"></a>
-<FONT color="green">707</FONT>                return computeDigest(MessageDigest.getInstance(algorithm));<a name="line.707"></a>
-<FONT color="green">708</FONT>            } catch (NoSuchAlgorithmException e) {<a name="line.708"></a>
-<FONT color="green">709</FONT>                throw new RuntimeException(e);<a name="line.709"></a>
-<FONT color="green">710</FONT>            }<a name="line.710"></a>
-<FONT color="green">711</FONT>        }<a name="line.711"></a>
-<FONT color="green">712</FONT>    <a name="line.712"></a>
-<FONT color="green">713</FONT>        /**<a name="line.713"></a>
-<FONT color="green">714</FONT>         * Increase the size of the file up to a size that is a multiple of the specified value.<a name="line.714"></a>
-<FONT color="green">715</FONT>         * <a name="line.715"></a>
-<FONT color="green">716</FONT>         * @param multiple<a name="line.716"></a>
-<FONT color="green">717</FONT>         */<a name="line.717"></a>
-<FONT color="green">718</FONT>        public void pad(int multiple) throws IOException {<a name="line.718"></a>
-<FONT color="green">719</FONT>            long padding = multiple - raf.length() % multiple;<a name="line.719"></a>
-<FONT color="green">720</FONT>            raf.seek(raf.length());<a name="line.720"></a>
-<FONT color="green">721</FONT>            for (int i = 0; i &lt; padding; i++) {<a name="line.721"></a>
-<FONT color="green">722</FONT>                raf.writeByte(0);<a name="line.722"></a>
-<FONT color="green">723</FONT>            }<a name="line.723"></a>
-<FONT color="green">724</FONT>        }<a name="line.724"></a>
-<FONT color="green">725</FONT>    }<a name="line.725"></a>
+<FONT color="green">679</FONT>            // todo digest the sections in ascending address order<a name="line.679"></a>
+<FONT color="green">680</FONT>            <a name="line.680"></a>
+<FONT color="green">681</FONT>            // digest from the end of the certificate table entry to the beginning of the certificate table<a name="line.681"></a>
+<FONT color="green">682</FONT>            if (certificateTable != null &amp;&amp; certificateTable.getVirtualAddress() != 0) {<a name="line.682"></a>
+<FONT color="green">683</FONT>                updateDigest(digest, position, certificateTable.getVirtualAddress());<a name="line.683"></a>
+<FONT color="green">684</FONT>                position = certificateTable.getVirtualAddress() + certificateTable.getSize();<a name="line.684"></a>
+<FONT color="green">685</FONT>            }<a name="line.685"></a>
+<FONT color="green">686</FONT>            <a name="line.686"></a>
+<FONT color="green">687</FONT>            // digest from the end of the certificate table to the end of the file<a name="line.687"></a>
+<FONT color="green">688</FONT>            updateDigest(digest, position, raf.length());<a name="line.688"></a>
+<FONT color="green">689</FONT>            <a name="line.689"></a>
+<FONT color="green">690</FONT>            return digest.digest();<a name="line.690"></a>
+<FONT color="green">691</FONT>        }<a name="line.691"></a>
+<FONT color="green">692</FONT>    <a name="line.692"></a>
+<FONT color="green">693</FONT>        /**<a name="line.693"></a>
+<FONT color="green">694</FONT>         * Update the specified digest by reading the underlying RandomAccessFile<a name="line.694"></a>
+<FONT color="green">695</FONT>         * from the start offset included to the end offset excluded.<a name="line.695"></a>
+<FONT color="green">696</FONT>         * <a name="line.696"></a>
+<FONT color="green">697</FONT>         * @param digest<a name="line.697"></a>
+<FONT color="green">698</FONT>         * @param startOffset<a name="line.698"></a>
+<FONT color="green">699</FONT>         * @param endOffset<a name="line.699"></a>
+<FONT color="green">700</FONT>         */<a name="line.700"></a>
+<FONT color="green">701</FONT>        private void updateDigest(MessageDigest digest, long startOffset, long endOffset) throws IOException {<a name="line.701"></a>
+<FONT color="green">702</FONT>            raf.seek(startOffset);<a name="line.702"></a>
+<FONT color="green">703</FONT>            <a name="line.703"></a>
+<FONT color="green">704</FONT>            byte[] buffer = new byte[8192];<a name="line.704"></a>
+<FONT color="green">705</FONT>            <a name="line.705"></a>
+<FONT color="green">706</FONT>            long position = startOffset;<a name="line.706"></a>
+<FONT color="green">707</FONT>            while (position &lt; endOffset) {<a name="line.707"></a>
+<FONT color="green">708</FONT>                int length = (int) Math.min(buffer.length, endOffset - position);<a name="line.708"></a>
+<FONT color="green">709</FONT>                raf.read(buffer, 0, length);<a name="line.709"></a>
+<FONT color="green">710</FONT>                <a name="line.710"></a>
+<FONT color="green">711</FONT>                digest.update(buffer, 0, length);<a name="line.711"></a>
+<FONT color="green">712</FONT>                <a name="line.712"></a>
+<FONT color="green">713</FONT>                position += length;<a name="line.713"></a>
+<FONT color="green">714</FONT>            }<a name="line.714"></a>
+<FONT color="green">715</FONT>        }<a name="line.715"></a>
+<FONT color="green">716</FONT>    <a name="line.716"></a>
+<FONT color="green">717</FONT>        /**<a name="line.717"></a>
+<FONT color="green">718</FONT>         * Compute the checksum of the file using the specified digest algorithm.<a name="line.718"></a>
+<FONT color="green">719</FONT>         * <a name="line.719"></a>
+<FONT color="green">720</FONT>         * @param algorithm the digest algorithm, typically SHA1<a name="line.720"></a>
+<FONT color="green">721</FONT>         */<a name="line.721"></a>
+<FONT color="green">722</FONT>        public byte[] computeDigest(String algorithm) throws IOException {<a name="line.722"></a>
+<FONT color="green">723</FONT>            try {<a name="line.723"></a>
+<FONT color="green">724</FONT>                return computeDigest(MessageDigest.getInstance(algorithm));<a name="line.724"></a>
+<FONT color="green">725</FONT>            } catch (NoSuchAlgorithmException e) {<a name="line.725"></a>
+<FONT color="green">726</FONT>                throw new RuntimeException(e);<a name="line.726"></a>
+<FONT color="green">727</FONT>            }<a name="line.727"></a>
+<FONT color="green">728</FONT>        }<a name="line.728"></a>
+<FONT color="green">729</FONT>    <a name="line.729"></a>
+<FONT color="green">730</FONT>        /**<a name="line.730"></a>
+<FONT color="green">731</FONT>         * Increase the size of the file up to a size that is a multiple of the specified value.<a name="line.731"></a>
+<FONT color="green">732</FONT>         * <a name="line.732"></a>
+<FONT color="green">733</FONT>         * @param multiple<a name="line.733"></a>
+<FONT color="green">734</FONT>         */<a name="line.734"></a>
+<FONT color="green">735</FONT>        public synchronized void pad(int multiple) throws IOException {<a name="line.735"></a>
+<FONT color="green">736</FONT>            long padding = multiple - raf.length() % multiple;<a name="line.736"></a>
+<FONT color="green">737</FONT>            raf.seek(raf.length());<a name="line.737"></a>
+<FONT color="green">738</FONT>            for (int i = 0; i &lt; padding; i++) {<a name="line.738"></a>
+<FONT color="green">739</FONT>                raf.writeByte(0);<a name="line.739"></a>
+<FONT color="green">740</FONT>            }<a name="line.740"></a>
+<FONT color="green">741</FONT>        }<a name="line.741"></a>
+<FONT color="green">742</FONT>    }<a name="line.742"></a>
 
 
 
