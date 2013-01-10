@@ -7,5 +7,3 @@ TODO
 - Timestamp failover
 - Support private keys exported with PKCS#8 
 - Detect the type of the keystore automatically (guess from the extension and try all the other types as a fallback)
-- Debian package for the command line
-- Bash completion
