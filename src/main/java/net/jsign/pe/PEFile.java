@@ -657,28 +657,21 @@ public class PEFile implements Closeable {
      * Compute the digest of the file. The checksum field, the certificate
      * directory table entry and the certificate table are excluded from
      * the digest.
-     * 
-     * todo Handle files > 2GB
      */
     private byte[] computeDigest(MessageDigest digest) throws IOException {
-        int checksumLocation = (int) peHeaderOffset + 88;
+        long checksumLocation = peHeaderOffset + 88;
         
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
-        // load the file in a buffer
-        byte[] signedContent = new byte[(int) raf.length()]; // todo don't load the whole file in memory, use smaller chunks
-        raf.seek(0);
-        raf.read(signedContent);
-        
         // digest from the beginning to the checksum field (excluded)
-        digest.update(signedContent, 0, checksumLocation);
+        updateDigest(digest, 0, checksumLocation);
         
         // skip the checksum field
-        int position = checksumLocation + 4;
+        long position = checksumLocation + 4;
         
         // digest from the end of the checksum field to the beginning of the certificate table entry
         int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();
-        digest.update(signedContent, position, certificateTableOffset - position);
+        updateDigest(digest, position, certificateTableOffset);
         
         // skip the certificate entry
         position = certificateTableOffset + 8;
@@ -687,16 +680,40 @@ public class PEFile implements Closeable {
         
         // digest from the end of the certificate table entry to the beginning of the certificate table
         if (certificateTable != null && certificateTable.getVirtualAddress() != 0) {
-            digest.update(signedContent, position, (int) certificateTable.getVirtualAddress() - position);
-            position = (int) certificateTable.getVirtualAddress() + certificateTable.getSize();
+            updateDigest(digest, position, certificateTable.getVirtualAddress());
+            position = certificateTable.getVirtualAddress() + certificateTable.getSize();
         }
-
+        
         // digest from the end of the certificate table to the end of the file
-        digest.update(signedContent, position, (int) raf.length() - position);
+        updateDigest(digest, position, raf.length());
         
         return digest.digest();
     }
-    
+
+    /**
+     * Update the specified digest by reading the underlying RandomAccessFile
+     * from the start offset included to the end offset excluded.
+     * 
+     * @param digest
+     * @param startOffset
+     * @param endOffset
+     */
+    private void updateDigest(MessageDigest digest, long startOffset, long endOffset) throws IOException {
+        raf.seek(startOffset);
+        
+        byte[] buffer = new byte[8192];
+        
+        long position = startOffset;
+        while (position < endOffset) {
+            int length = (int) Math.min(buffer.length, endOffset - position);
+            raf.read(buffer, 0, length);
+            
+            digest.update(buffer, 0, length);
+            
+            position += length;
+        }
+    }
+
     /**
      * Compute the checksum of the file using the specified digest algorithm.
      * 
