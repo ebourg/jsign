@@ -39,7 +39,7 @@ import org.apache.commons.cli.ParseException;
  * Command line interface for signing PE files.
  *
  * @author Emmanuel Bourg
- * @version $Revision$, $Date$
+ * @since 1.1
  */
 public class PESignerCLI {
 
