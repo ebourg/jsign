@@ -22,7 +22,7 @@
           <h2 id="project_tagline">Java implementation of Microsoft Authenticode<br>for signing Windows executable files</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/ebourg/jsign/downloads">Download Jsign</a>
+              <a class="zip_download_link" href="#files">Download Jsign</a>
             </section>
         </header>
     </div>
@@ -53,7 +53,7 @@ with Maven using the Antrun plugin, or standalone as a command line tool.</p>
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
           
 <pre>
- &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-1.1.jar"/>
+ &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-1.2.jar"/>
 
  &lt;signexe file="application.exe"
           name="My Application"
@@ -151,20 +151,18 @@ with Maven using the Antrun plugin, or standalone as a command line tool.</p>
     </tr>
   </table>
 
-The Ant task is available for download <a href="https://github.com/downloads/ebourg/jsign/jsign-1.1.jar">here</a>.
-
 
 <h3>Command Line Tool</h3>
 
-<p>Jsign can also be used as a command line tool. A <a href="https://github.com/downloads/ebourg/jsign/jsign_1.1.deb">Debian package</a>
-and a <a href="https://github.com/downloads/ebourg/jsign/jsign-1.1-1.noarch.rpm">RPM package</a>
+<p>Jsign can also be used as a command line tool. A <a href="http://people.apache.org/~ebourg/jsign/jsign_1.2_all.deb">Debian package</a>
+and a <a href="http://people.apache.org/~ebourg/jsign/jsign-1.2-1.noarch.rpm">RPM package</a>
 are provided to install it easily on most Linux distributions. On these systems the command line is invoked with:</p>
 
 <pre> pesign [OPTIONS] FILE</pre>
 
 <p>On other systems the command line is invoked by running the jar with:</p>
     
-<pre> java -jar jsign-1.1.jar [OPTIONS] FILE</pre>
+<pre> java -jar jsign-1.2.jar [OPTIONS] FILE</pre>
     
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
@@ -212,6 +210,15 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <p>Jsign also provides a simple API for signing executable files and can
 be embedded in another application.<br>See the <a href="apidocs/index.html">Javadoc</a></p>
+
+
+<h3 id="files">Downloads</h3>
+
+<ul>
+  <li><a href="http://people.apache.org/~ebourg/jsign/jsign-1.2-1.noarch.rpm">jsign-1.2-1.noarch.rpm</a> - Jsign command line tool for Debian/Ubuntu </li>
+  <li><a href="http://people.apache.org/~ebourg/jsign/jsign_1.2_all.deb">jsign_1.2_all.deb</a> - Jsign command line tool for RedHat/Fedora</li>
+  <li><a href="http://people.apache.org/~ebourg/jsign/jsign-1.2.jar">jsign-1.2.jar</a> - Jsign Ant Task</li>
+</ul>
 
 
 <h3>Credits</h3>     
