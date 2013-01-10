@@ -20,14 +20,14 @@ See http://ebourg.github.com/jsign for more information.
 Changes
 =======
 
-Jsign 1.2
+Version 1.2, 2013-01-10
 * Reduced the memory usage when signing large files
 * Files over 2GB are now supported
 * Improved the thread safety
 
-Jsign 1.1
+Version 1.1, 2012-11-02
 * Command line interface with bash completion for signing files (available as RPM and DEB packages)
 * The keystore is no longer locked if the signing fails
 
-Jsign 1.0
+Version 1.0, 2012-10-03
 * Initial release
