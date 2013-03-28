@@ -168,29 +168,29 @@ are provided to install it easily on most Linux distributions. On these systems 
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
 <pre>
-    usage: pesign [OPTIONS] FILE
-    Sign and timestamp a Windows executable file.
-    
-    -s,--keystore &lt;FILE>      The keystore file
-       --storepass &lt;PASSWORD> The password to open the keystore
-       --storetype &lt;TYPE>     The type of the keystore:
-                              - JKS: Java keystore (.jks files)
-                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
-    -a,--alias &lt;NAME>         The alias of the certificate used for signing in the keystore.
-       --keypass &lt;PASSWORD>   The password of the private key. When using a keystore,
-                              this parameter can be omitted if the keystore shares the
-                              same password.
-       --keyfile &lt;FILE>       The file containing the private key. Only PVK files are supported.
-    -c,--certfile &lt;FILE>      The file containing the PKCS#7 certificate chain
-                              (.p7b or .spc files).
-    -t,--tsaurl &lt;URL>         The URL of the timestamping authority. RFC 3161 servers
-                              used for jar signing are not compatible with Authenticode
-                              signatures. You can use the COMODO or the Verisign services:
-                              - http://timestamp.comodoca.com/authenticode
-                              - http://timestamp.verisign.com/scripts/timstamp.dll
-    -n,--name &lt;NAME>          The name of the application
-    -u,--url &lt;URL>            The URL of the application
-    -h,--help                 Print the help
+  usage: pesign [OPTIONS] FILE
+  Sign and timestamp a Windows executable file.
+  
+  -s,--keystore &lt;FILE>      The keystore file
+     --storepass &lt;PASSWORD> The password to open the keystore
+     --storetype &lt;TYPE>     The type of the keystore:
+                            - JKS: Java keystore (.jks files)
+                            - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
+  -a,--alias &lt;NAME>         The alias of the certificate used for signing in the keystore.
+     --keypass &lt;PASSWORD>   The password of the private key. When using a keystore,
+                            this parameter can be omitted if the keystore shares the
+                            same password.
+     --keyfile &lt;FILE>       The file containing the private key. Only PVK files are supported.
+  -c,--certfile &lt;FILE>      The file containing the PKCS#7 certificate chain
+                            (.p7b or .spc files).
+  -t,--tsaurl &lt;URL>         The URL of the timestamping authority. RFC 3161 servers
+                            used for jar signing are not compatible with Authenticode
+                            signatures. You can use the COMODO or the Verisign services:
+                            - http://timestamp.comodoca.com/authenticode
+                            - http://timestamp.verisign.com/scripts/timstamp.dll
+  -n,--name &lt;NAME>          The name of the application
+  -u,--url &lt;URL>            The URL of the application
+  -h,--help                 Print the help
 </pre>
 
 <p>Example using a Java keystore:</p>
