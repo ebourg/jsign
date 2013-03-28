@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
     <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files" />
 
+    <script src="scripts/prettify/run_prettify.js"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Jsign - Authenticode implementation in Java</title>
@@ -52,7 +53,7 @@ with Maven using the Antrun plugin, or standalone as a command line tool.</p>
 
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
           
-<pre>
+<pre class="prettyprint lang-xml">
  &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-1.2.jar"/>
 
  &lt;signexe file="application.exe"
@@ -68,7 +69,7 @@ with Maven using the Antrun plugin, or standalone as a command line tool.</p>
 
 <p>Another example with <code>SPC</code> and <code>PVK</code> files commonly used with <code>signcode.exe</code>:</p>
 
-<pre>
+<pre class="prettyprint lang-xml">
  &lt;signexe file="application.exe"
           certfile="certificate.spc"
           keyfile="key.pvk"
