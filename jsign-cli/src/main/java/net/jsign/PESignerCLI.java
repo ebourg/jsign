@@ -62,6 +62,8 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_ALG).withArgName("ALGORITHM").withDescription("The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)").create('d'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_TSAURL).withArgName("URL").withDescription("The URL of the timestamping authority.").create('t'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_TSMODE).withArgName("MODE").withDescription("The timestamping mode (RFC3161 or Authenticode)").create('m'));
+        options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_TSRETRIES).withArgName("NUMBER").withDescription("The number of retries for timestamping").create('r'));
+        options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_TSRETRY_WAIT).withArgName("SECONDS").withDescription("The number of seconds to wait between timestamping retries").create('w'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_NAME).withArgName("NAME").withDescription("The name of the application").create('n'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_URL).withArgName("URL").withDescription("The URL of the application").create('u'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_PROXY_URL).withArgName("URL").withDescription("The URL of the HTTP proxy").create());
@@ -93,6 +95,8 @@ public class PESignerCLI {
             setOption(PARAM_ALG, helper, cmd);
             setOption(PARAM_TSAURL, helper, cmd);
             setOption(PARAM_TSMODE, helper, cmd);
+            setOption(PARAM_TSRETRIES, helper, cmd);
+            setOption(PARAM_TSRETRY_WAIT, helper, cmd);
             setOption(PARAM_NAME, helper, cmd);
             setOption(PARAM_URL, helper, cmd);
             setOption(PARAM_PROXY_URL, helper, cmd);

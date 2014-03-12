@@ -93,6 +93,8 @@ public class PESigner {
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
     private String tsaurlOverride;
     private Timestamper timestamper;
+    private int timestampingRetries = -1;
+    private int timestampingRetryWait = -1;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
@@ -161,6 +163,22 @@ public class PESigner {
      */
     public PESigner withTimestamper(Timestamper timestamper) {
         this.timestamper = timestamper;
+        return this;
+    }
+
+    /**
+     * Set the number of retries for timestamping.
+     */
+    public PESigner withTimestampingRetries(int timestampingRetries) {
+        this.timestampingRetries = timestampingRetries;
+        return this;
+    }
+
+    /**
+     * Set the number of seconds to wait between timestamping retries.
+     */
+    public PESigner withTimestampingRetryWait(int timestampingRetryWait) {
+        this.timestampingRetryWait = timestampingRetryWait;
         return this;
     }
 
@@ -234,6 +252,12 @@ public class PESigner {
             }
             if (tsaurlOverride != null) {
                 ts.setURL(tsaurlOverride);
+            }
+            if (timestampingRetries != -1) {
+            	ts.setRetries(timestampingRetries);
+            }
+            if (timestampingRetryWait != -1) {
+            	ts.setRetryWait(timestampingRetryWait);
             }
             sigData = ts.timestamp(digestAlgorithm, sigData);
         }

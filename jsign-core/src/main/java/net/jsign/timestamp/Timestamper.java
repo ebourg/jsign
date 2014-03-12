@@ -48,6 +48,12 @@ public abstract class Timestamper {
     /** The URL of the timestamping service */
     protected URL tsaurl;
 
+    /** The number of retries */
+    protected int retries = 3;
+
+    /** Seconds to wait between retries */
+    protected int retryWait = 10;
+
     public void setURL(String tsaurl) {
         try {
             this.tsaurl = new URL(tsaurl);
@@ -57,6 +63,20 @@ public abstract class Timestamper {
     }
 
     /**
+     * Set the number of retries.
+     */
+    public void setRetries(int retries) {
+    	this.retries = retries;
+    }
+
+    /**
+     * Set the number of seconds to wait between retries.
+     */
+	public void setRetryWait(int retryWait) {
+		this.retryWait = retryWait;
+	}
+
+    /**
      * Timestamp the specified signature.
      * 
      * @param algo    the digest algorithm used for the timestamp
@@ -64,7 +84,26 @@ public abstract class Timestamper {
      * @return        the signed data with the timestamp added
      */
     public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws IOException, CMSException {
-        CMSSignedData token = timestamp(algo, getEncryptedDigest(sigData));
+        CMSSignedData token = null;
+
+        // It happens quite frequently that a TSA is unavailable for a short period of time
+        IOException exception = null;
+        for (int i = 0; i < retries; i++) {
+            try {
+                token = timestamp(algo, getEncryptedDigest(sigData));
+                exception = null;
+                break;
+            } catch (IOException e) {
+                exception = e;
+                try {
+                    Thread.sleep(retryWait * 1000);
+                } catch (InterruptedException ie) {
+                }
+            }
+        }
+        if (exception != null) {
+            throw exception;
+        }
         return modifySignedData(sigData, getUnsignedAttributes(token), getExtraCertificates(token));
     }
 

@@ -68,6 +68,12 @@ public class PESignerTask extends Task {
     /** The protocol used for  the timestamping */
     private String tsmode;
 
+    /** The number of retries for timestamping */
+    private int tsretries = -1;
+
+    /** The number of seconds to wait between timestamping retries */
+    private int tsretrywait = -1;
+
     /** Tells if previous signatures should be replaced */
     private boolean replace;
 
@@ -123,6 +129,14 @@ public class PESignerTask extends Task {
         this.tsaurl = tsaurl;
     }
 
+    public void setTsretries(int tsretries) {
+        this.tsretries = tsretries;
+    }
+
+    public void setTsretrywait(int tsretrywait) {
+        this.tsretrywait = tsretrywait;
+    }
+
     public void setReplace(boolean replace) {
         this.replace = replace;
     }
@@ -144,6 +158,8 @@ public class PESignerTask extends Task {
             helper.keypass(keypass);
             helper.tsaurl(tsaurl);
             helper.tsmode(tsmode);
+            helper.tsretries(tsretries);
+            helper.tsretrywait(tsretrywait);
             helper.replace(replace);
             
             helper.sign(file);

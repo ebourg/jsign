@@ -59,6 +59,8 @@ class PESignerHelper {
     public static final String PARAM_ALG = "alg";
     public static final String PARAM_TSAURL = "tsaurl";
     public static final String PARAM_TSMODE = "tsmode";
+    public static final String PARAM_TSRETRIES = "tsretries";
+    public static final String PARAM_TSRETRY_WAIT = "tsretrywait";
     public static final String PARAM_NAME = "name";
     public static final String PARAM_URL = "url";
     public static final String PARAM_PROXY_URL = "proxyUrl";
@@ -80,6 +82,8 @@ class PESignerHelper {
     private File certfile;
     private String tsaurl;
     private String tsmode;
+    private int tsretries = -1;
+    private int tsretrywait = -1;
     private String alg;
     private String name;
     private String url;
@@ -158,6 +162,16 @@ class PESignerHelper {
         return this;
     }
 
+    public PESignerHelper tsretries(int tsretries) {
+        this.tsretries = tsretries;
+        return this;
+    }
+
+    public PESignerHelper tsretrywait(int tsretrywait) {
+        this.tsretrywait = tsretrywait;
+        return this;
+    }
+
     public PESignerHelper name(String name) {
         this.name = name;
         return this;
@@ -189,6 +203,10 @@ class PESignerHelper {
     }
 
     public PESignerHelper param(String key, String value) {
+        if (value == null) {
+            return this;
+        }
+        
         switch (key) {
             case PARAM_KEYSTORE:   return keystore(value);
             case PARAM_STOREPASS:  return storepass(value);
@@ -200,6 +218,8 @@ class PESignerHelper {
             case PARAM_ALG:        return alg(value);
             case PARAM_TSAURL:     return tsaurl(value);
             case PARAM_TSMODE:     return tsmode(value);
+            case PARAM_TSRETRIES:  return tsretries(Integer.parseInt(value));
+            case PARAM_TSRETRY_WAIT: return tsretrywait(Integer.parseInt(value));
             case PARAM_NAME:       return name(value);
             case PARAM_URL:        return url(value);
             case PARAM_PROXY_URL:  return proxyUrl(value);
@@ -299,6 +319,8 @@ class PESignerHelper {
                 .withSignaturesReplaced(replace)
                 .withTimestamping(tsaurl != null || tsmode != null)
                 .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
+                .withTimestampingRetries(tsretries)
+                .withTimestampingRetryWait(tsretrywait)
                 .withTimestampingAutority(tsaurl);
     }
 

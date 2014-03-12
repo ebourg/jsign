@@ -85,6 +85,14 @@ public class PESignerMojo extends AbstractMojo {
     @Parameter(defaultValue = "authenticode")
     private String tsmode;
 
+    /** The number of retries for timestamping */
+    @Parameter
+    private int tsretries = -1;
+
+    /** The number of seconds to wait between timestamping retries */
+    @Parameter
+    private int tsretrywait = -1;
+
     /** Tells if previous signatures should be replaced */
     @Parameter(defaultValue = "false")
     private boolean replace;
@@ -104,6 +112,8 @@ public class PESignerMojo extends AbstractMojo {
         helper.keypass(keypass);
         helper.tsaurl(tsaurl);
         helper.tsmode(tsmode);
+        helper.tsretries(tsretries);
+        helper.tsretrywait(tsretrywait);
         helper.replace(replace);
         
         try {
