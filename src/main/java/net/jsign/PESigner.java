@@ -46,6 +46,7 @@ import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
@@ -54,7 +55,6 @@ import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
@@ -186,13 +186,13 @@ public class PESigner {
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
-        byte[] sha1 = file.computeDigest("SHA1");
+        byte[] sha = file.computeDigest("SHA-256");
         
-        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha1);
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(NISTObjectIdentifiers.id_sha256, DERNull.INSTANCE);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(digestInfo);
         
-        ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA1with" + privateKey.getAlgorithm()).build(privateKey);
+        ContentSigner shaSigner = new JcaContentSignerBuilder("SHA256with" + privateKey.getAlgorithm()).build(privateKey);
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
@@ -204,7 +204,7 @@ public class PESigner {
         // prepare the signerInfo with the extra authenticated attributes
         SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider);
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
-        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(sha1Signer, certificate);
+        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
         
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(removeRoot(chain)));
