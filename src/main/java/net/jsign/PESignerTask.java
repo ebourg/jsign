@@ -50,6 +50,9 @@ public class PESignerTask extends Task {
     /** The program URL embedded in the signature. */
     private String url;
 
+    /** The hash algorithm to use for the signature. */
+    private String algo;
+
     /** The keystore file. */
     private File keystore;
 
@@ -84,6 +87,10 @@ public class PESignerTask extends Task {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public void setAlgo(String algo) {
+        this.algo = algo;
     }
 
     public void setKeystore(File keystore) {
@@ -231,7 +238,7 @@ public class PESignerTask extends Task {
         }
         
         // and now the actual work!
-        PESigner signer = new PESigner(chain, privateKey)
+        PESigner signer = new PESigner(chain, privateKey,algo)
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withTimestamping(tsaurl != null)

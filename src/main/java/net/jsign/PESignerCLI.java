@@ -68,6 +68,7 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
         options.addOption(OptionBuilder.hasArg().withLongOpt("certfile").withArgName("FILE").withDescription("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").withType(File.class).create('c'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
+        options.addOption(OptionBuilder.hasArg().withLongOpt("algo").withArgName("ALGO").withDescription("The hash function to use (SHA1 or SHA265)").create("b"));
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsaurl").withArgName("URL").withDescription("The URL of the timestamping authority. RFC 3161 servers used for jar signing are not compatible with Authenticode signatures. You can use the COMODO or the Verisign services:\n- http://timestamp.comodoca.com/authenticode\n- http://timestamp.verisign.com/scripts/timstamp.dll").create('t'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("name").withArgName("NAME").withDescription("The name of the application").create('n'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("url").withArgName("URL").withDescription("The URL of the application").create('u'));
@@ -92,6 +93,7 @@ public class PESignerCLI {
             File keyfile = cmd.hasOption("keyfile") ? new File(cmd.getOptionValue("keyfile")) : null;
             File certfile = cmd.hasOption("certfile") ? new File(cmd.getOptionValue("certfile")) : null;
             String tsaurl = cmd.getOptionValue("tsaurl");
+            String algo = cmd.getOptionValue("algo");
             String name = cmd.getOptionValue("name");
             String url = cmd.getOptionValue("url");
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
@@ -212,7 +214,7 @@ public class PESignerCLI {
             }
 
             // and now the actual work!
-            PESigner signer = new PESigner(chain, privateKey)
+            PESigner signer = new PESigner(chain, privateKey, algo)
                     .withProgramName(name)
                     .withProgramURL(url)
                     .withTimestamping(tsaurl != null)

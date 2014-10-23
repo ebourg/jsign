@@ -31,9 +31,11 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
@@ -46,8 +48,10 @@ import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -86,22 +90,72 @@ import org.bouncycastle.util.encoders.Base64;
  * @since 1.0
  */
 public class PESigner {
+    public enum hashAlgo {
+        SHA1("SHA-1",X509ObjectIdentifiers.id_SHA1),
+        SHA256("SHA-256", NISTObjectIdentifiers.id_sha256);
+
+        public final String id;
+        public final DERObjectIdentifier oid;
+
+        hashAlgo(String id, DERObjectIdentifier oid) {
+            this.id = id;
+            this.oid = oid;
+	}
+
+        public static hashAlgo asMyEnum(String str) {
+            if (str == null)
+                return null;
+            for (hashAlgo me : hashAlgo.values())
+                if(me.name().equals(str))
+                    return me;
+            return null;
+        }
+
+        /*
+             If no algorithm is specified, pick a smart default
+             @see http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx
+             @see http://support.microsoft.com/kb/2763674
+        */
+        public static hashAlgo getDefault() {
+            try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    Date cutoff = sdf.parse("2016-01-01");
+                    Date now = new Date();
+                    return (now.before(cutoff) ? hashAlgo.SHA1 : hashAlgo.SHA256);
+            } catch(java.text.ParseException e) {
+                    e.printStackTrace();
+                    return hashAlgo.SHA256;
+            }
+        }
+    }
 
     private Certificate[] chain;
     private PrivateKey privateKey;
+    private hashAlgo algo;
     private String programName;
     private String programURL;
 
     private boolean timestamping = true;
     private String tsaurl = "http://timestamp.comodoca.com/authenticode";
 
-    public PESigner(Certificate[] chain, PrivateKey privateKey) {
+    public PESigner(Certificate[] chain, PrivateKey privateKey, String algo) {
         this.chain = chain;
         this.privateKey = privateKey;
+	hashAlgo h = hashAlgo.asMyEnum(algo);
+        // if the algorithm is not supported use the default instead of erroring out
+        this.algo = (h == null ? hashAlgo.getDefault() : h);
+    }
+
+    public PESigner(Certificate[] chain, PrivateKey privateKey) {
+        this(chain, privateKey, hashAlgo.getDefault().name());
+    }
+
+    public PESigner(KeyStore keystore, String alias, String password, String algo) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()), algo);
     }
 
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
+        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()), hashAlgo.getDefault().name());
     }
 
     /**
@@ -186,13 +240,13 @@ public class PESigner {
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
-        byte[] sha1 = file.computeDigest("SHA1");
+        byte[] sha = file.computeDigest(algo.id);
         
-        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(X509ObjectIdentifiers.id_SHA1, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha1);
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(digestInfo);
         
-        ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA1with" + privateKey.getAlgorithm()).build(privateKey);
+        ContentSigner shaSigner = new JcaContentSignerBuilder(algo+"with" + privateKey.getAlgorithm()).build(privateKey);
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
@@ -204,7 +258,7 @@ public class PESigner {
         // prepare the signerInfo with the extra authenticated attributes
         SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider);
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
-        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(sha1Signer, certificate);
+        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
         
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(removeRoot(chain)));
