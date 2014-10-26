@@ -19,15 +19,13 @@ package net.jsign;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableKeyException;
+import java.nio.charset.Charset;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -46,16 +44,12 @@ import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
@@ -70,11 +64,16 @@ import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+import org.bouncycastle.tsp.TSPAlgorithms;
+import org.bouncycastle.tsp.TimeStampRequest;
+import org.bouncycastle.tsp.TimeStampRequestGenerator;
+import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.util.encoders.Base64;
@@ -91,15 +90,17 @@ import org.bouncycastle.util.encoders.Base64;
  */
 public class PESigner {
     public enum hashAlgo {
-        SHA1("SHA-1",X509ObjectIdentifiers.id_SHA1),
-        SHA256("SHA-256", NISTObjectIdentifiers.id_sha256);
+        SHA1("SHA-1",X509ObjectIdentifiers.id_SHA1, TSPAlgorithms.SHA1),
+        SHA256("SHA-256", NISTObjectIdentifiers.id_sha256, TSPAlgorithms.SHA256);
 
         public final String id;
         public final DERObjectIdentifier oid;
+        public final ASN1ObjectIdentifier tsp;
 
-        hashAlgo(String id, DERObjectIdentifier oid) {
+        hashAlgo(String id, DERObjectIdentifier oid, ASN1ObjectIdentifier tsp) {
             this.id = id;
             this.oid = oid;
+            this.tsp = tsp;
 	}
 
         public static hashAlgo asMyEnum(String str) {
@@ -136,7 +137,8 @@ public class PESigner {
     private String programURL;
 
     private boolean timestamping = true;
-    private String tsaurl = "http://timestamp.comodoca.com/authenticode";
+    private boolean timestampingRFC = false;
+    private String tsaurlOverride;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey, String algo) {
         this.chain = chain;
@@ -183,11 +185,19 @@ public class PESigner {
     }
 
     /**
+     * RFC3161 or Authenticode (Authenticode by default).
+     */
+    public PESigner withTimestampingProtocol(boolean useRFC3161TimestampingServer) {
+        this.timestampingRFC = useRFC3161TimestampingServer;
+        return this;
+    }
+
+    /**
      * Set the URL of the timestamping authority. RFC 3161 servers as used
      * for jar signing are not compatible with Authenticode signatures.
      */
     public PESigner withTimestampingAutority(String url) {
-        this.tsaurl = url;
+        this.tsaurlOverride = url;
         return this;
     }
 
@@ -313,7 +323,14 @@ public class PESigner {
     private CMSSignedData timestamp(CMSSignedData sigData) throws IOException, CMSException {
         SignerInformation signerInformation = ((SignerInformation) sigData.getSignerInfos().getSigners().iterator().next());
 
-        CMSSignedData token = timestamp(signerInformation.toASN1Structure().getEncryptedDigest().getOctets(), new URL(tsaurl));
+        CMSSignedData token;
+        if(timestampingRFC) {
+            String tsaurl = (tsaurlOverride == null ? "http://timestamp.comodoca.com/rfc3161" : tsaurlOverride);
+            token = timestampRFC(signerInformation.toASN1Structure().getEncryptedDigest().getOctets(), new URL(tsaurl));
+        } else {
+            String tsaurl = (tsaurlOverride == null ? "http://timestamp.comodoca.com/authenticode" : tsaurlOverride);
+            token = timestampAuthenticode(signerInformation.toASN1Structure().getEncryptedDigest().getOctets(), new URL(tsaurl));
+        }
 
         SignerInformation timestampSignerInformation = (SignerInformation) token.getSignerInfos().getSigners().iterator().next();
 
@@ -337,7 +354,7 @@ public class PESigner {
         return generator.generate(contentType, content);
     }
 
-    private CMSSignedData timestamp(byte[] encryptedDigest, URL tsaurl) throws IOException, CMSException {
+    private CMSSignedData timestampAuthenticode(byte[] encryptedDigest, URL tsaurl) throws IOException, CMSException {
         AuthenticodeTimeStampRequest timestampRequest = new AuthenticodeTimeStampRequest(encryptedDigest);
         
         byte[] request = Base64.encode(timestampRequest.getEncoded("DER"));
@@ -373,5 +390,46 @@ public class PESigner {
         byte[] response = Base64.decode(bout.toByteArray());
         
         return new CMSSignedData(response);
+    }
+
+    private CMSSignedData timestampRFC(byte[] encryptedDigest, URL tsaurl) throws IOException, CMSException {
+        OutputStream out = null;
+
+        try {
+            MessageDigest md = MessageDigest.getInstance(algo.id);
+            TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
+            TimeStampRequest req = reqgen.generate(algo.tsp, md.digest(encryptedDigest));
+            byte request[] = req.getEncoded();
+
+            HttpURLConnection con = (HttpURLConnection) tsaurl.openConnection();
+            con.setConnectTimeout(10000);
+            con.setReadTimeout(10000);
+            con.setDoOutput(true);
+            con.setDoInput(true);
+            con.setUseCaches(false);
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Content-type", "application/timestamp-query");
+            con.setRequestProperty("Content-length", String.valueOf(request.length));
+            con.setRequestProperty("Accept", "application/timestamp-query");
+            con.setRequestProperty("User-Agent", "Transport");
+            out = con.getOutputStream();
+            out.write(request);
+            out.flush();
+
+            if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new IOException("Received HTTP error: " + con.getResponseCode() + " - " + con.getResponseMessage());
+            }
+            InputStream in = con.getInputStream();
+            TimeStampResp resp = TimeStampResp.getInstance(new ASN1InputStream(in).readObject());
+            TimeStampResponse response = new TimeStampResponse(resp);
+            response.validate(req);
+            if (response.getStatus() != 0) {
+                throw new IOException("Received an invalid timestamp (status="+response.getStatusString()+")");
+            }
+            return response.getTimeStampToken().toCMSSignedData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
