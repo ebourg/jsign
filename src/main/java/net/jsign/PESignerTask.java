@@ -245,9 +245,10 @@ public class PESignerTask extends Task {
         }
         
         // and now the actual work!
-        PESigner signer = new PESigner(chain, privateKey,algo)
+        PESigner signer = new PESigner(chain, privateKey)
                 .withProgramName(name)
                 .withProgramURL(url)
+                .withHashAlgorith(algo)
                 .withTimestamping(tsaurl != null)
                 .withTimestampingProtocol(useRFC3161TimestampingServer)
                 .withTimestampingAutority(tsaurl);

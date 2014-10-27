@@ -121,7 +121,7 @@ public class PESigner {
 
     private Certificate[] chain;
     private PrivateKey privateKey;
-    private HashAlgo algo;
+    private HashAlgo algo = HashAlgo.getDefault();
     private String programName;
     private String programURL;
 
@@ -129,24 +129,13 @@ public class PESigner {
     private boolean timestampingRFC = false;
     private String tsaurlOverride;
 
-    public PESigner(Certificate[] chain, PrivateKey privateKey, String algo) {
+    public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
         this.privateKey = privateKey;
-	HashAlgo h = HashAlgo.asMyEnum(algo);
-        // if the algorithm is not supported use the default instead of erroring out
-        this.algo = (h == null ? HashAlgo.getDefault() : h);
-    }
-
-    public PESigner(Certificate[] chain, PrivateKey privateKey) {
-        this(chain, privateKey, HashAlgo.getDefault().name());
-    }
-
-    public PESigner(KeyStore keystore, String alias, String password, String algo) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()), algo);
     }
 
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()), HashAlgo.getDefault().name());
+        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
     }
 
     /**
@@ -187,6 +176,18 @@ public class PESigner {
      */
     public PESigner withTimestampingAutority(String url) {
         this.tsaurlOverride = url;
+        return this;
+    }
+
+    /**
+     * Set the HashAlgorithm to use (default is SHA1)
+     */
+    public PESigner withHashAlgorith(String algorithm) {
+        HashAlgo selectedAlgo = HashAlgo.asMyEnum(algorithm);
+         // if the algorithm is not supported use the default instead of erroring out
+        if (selectedAlgo != null) {
+            this.algo = selectedAlgo;
+        }
         return this;
     }
 
