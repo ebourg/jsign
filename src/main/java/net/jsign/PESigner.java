@@ -24,7 +24,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
@@ -64,7 +63,6 @@ import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -89,7 +87,7 @@ import org.bouncycastle.util.encoders.Base64;
  * @since 1.0
  */
 public class PESigner {
-    public enum hashAlgo {
+    public enum HashAlgo {
         SHA1("SHA-1",X509ObjectIdentifiers.id_SHA1, TSPAlgorithms.SHA1),
         SHA256("SHA-256", NISTObjectIdentifiers.id_sha256, TSPAlgorithms.SHA256);
 
@@ -97,16 +95,16 @@ public class PESigner {
         public final DERObjectIdentifier oid;
         public final ASN1ObjectIdentifier tsp;
 
-        hashAlgo(String id, DERObjectIdentifier oid, ASN1ObjectIdentifier tsp) {
+        HashAlgo(String id, DERObjectIdentifier oid, ASN1ObjectIdentifier tsp) {
             this.id = id;
             this.oid = oid;
             this.tsp = tsp;
 	}
 
-        public static hashAlgo asMyEnum(String str) {
+        public static HashAlgo asMyEnum(String str) {
             if (str == null)
                 return null;
-            for (hashAlgo me : hashAlgo.values())
+            for (HashAlgo me : HashAlgo.values())
                 if(me.name().equals(str))
                     return me;
             return null;
@@ -117,22 +115,22 @@ public class PESigner {
              @see http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx
              @see http://support.microsoft.com/kb/2763674
         */
-        public static hashAlgo getDefault() {
+        public static HashAlgo getDefault() {
             try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     Date cutoff = sdf.parse("2016-01-01");
                     Date now = new Date();
-                    return (now.before(cutoff) ? hashAlgo.SHA1 : hashAlgo.SHA256);
+                    return (now.before(cutoff) ? HashAlgo.SHA1 : HashAlgo.SHA256);
             } catch(java.text.ParseException e) {
                     e.printStackTrace();
-                    return hashAlgo.SHA256;
+                    return HashAlgo.SHA256;
             }
         }
     }
 
     private Certificate[] chain;
     private PrivateKey privateKey;
-    private hashAlgo algo;
+    private HashAlgo algo;
     private String programName;
     private String programURL;
 
@@ -143,13 +141,13 @@ public class PESigner {
     public PESigner(Certificate[] chain, PrivateKey privateKey, String algo) {
         this.chain = chain;
         this.privateKey = privateKey;
-	hashAlgo h = hashAlgo.asMyEnum(algo);
+	HashAlgo h = HashAlgo.asMyEnum(algo);
         // if the algorithm is not supported use the default instead of erroring out
-        this.algo = (h == null ? hashAlgo.getDefault() : h);
+        this.algo = (h == null ? HashAlgo.getDefault() : h);
     }
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
-        this(chain, privateKey, hashAlgo.getDefault().name());
+        this(chain, privateKey, HashAlgo.getDefault().name());
     }
 
     public PESigner(KeyStore keystore, String alias, String password, String algo) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
@@ -157,7 +155,7 @@ public class PESigner {
     }
 
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()), hashAlgo.getDefault().name());
+        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()), HashAlgo.getDefault().name());
     }
 
     /**
