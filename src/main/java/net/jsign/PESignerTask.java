@@ -77,6 +77,9 @@ public class PESignerTask extends Task {
     /** The URL of the timestamping authority. */
     private String tsaurl;
 
+    /** Whether the timestamping authority uses RFC3161 or authenticode */
+    private boolean useRFC3161TimestampingServer;
+
     public void setFile(File file) {
         this.file = file;
     }
@@ -91,6 +94,10 @@ public class PESignerTask extends Task {
 
     public void setAlgo(String algo) {
         this.algo = algo;
+    }
+
+    public void setTimestampingProtocol(boolean useRFC3161TimestampingServer) {
+        this.useRFC3161TimestampingServer = useRFC3161TimestampingServer;
     }
 
     public void setKeystore(File keystore) {
@@ -242,6 +249,7 @@ public class PESignerTask extends Task {
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withTimestamping(tsaurl != null)
+                .withTimestampingProtocol(useRFC3161TimestampingServer)
                 .withTimestampingAutority(tsaurl);
 
 
