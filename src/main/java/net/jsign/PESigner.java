@@ -28,7 +28,6 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
@@ -123,7 +122,7 @@ public class PESigner {
     private String programURL;
 
     private boolean timestamping = true;
-    private boolean timestampingRFC = false;
+    private boolean tsUseRFC3161Server = false;
     private String tsaurlOverride;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
@@ -163,7 +162,7 @@ public class PESigner {
      * RFC3161 or Authenticode (Authenticode by default).
      */
     public PESigner withTimestampingProtocol(boolean useRFC3161TimestampingServer) {
-        this.timestampingRFC = useRFC3161TimestampingServer;
+        this.tsUseRFC3161Server = useRFC3161TimestampingServer;
         return this;
     }
 
@@ -311,7 +310,7 @@ public class PESigner {
         SignerInformation signerInformation = ((SignerInformation) sigData.getSignerInfos().getSigners().iterator().next());
 
         CMSSignedData token;
-        if(timestampingRFC) {
+        if(tsUseRFC3161Server) {
             String tsaurl = (tsaurlOverride == null ? "http://timestamp.comodoca.com/rfc3161" : tsaurlOverride);
             token = timestampRFC(signerInformation.toASN1Structure().getEncryptedDigest().getOctets(), new URL(tsaurl));
         } else {
