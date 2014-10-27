@@ -64,10 +64,7 @@ import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.tsp.TSPAlgorithms;
-import org.bouncycastle.tsp.TimeStampRequest;
-import org.bouncycastle.tsp.TimeStampRequestGenerator;
-import org.bouncycastle.tsp.TimeStampResponse;
+import org.bouncycastle.tsp.*;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.util.encoders.Base64;
@@ -417,9 +414,11 @@ public class PESigner {
                 throw new IOException("Received an invalid timestamp (status="+response.getStatusString()+")");
             }
             return response.getTimeStampToken().toCMSSignedData();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            // This should never happen
+            throw new CMSException(e.getMessage(), e);
+        } catch (TSPException e) {
+            throw  new CMSException("Unexpected TSPException caught:"+e.getMessage(), e);
         }
-        return null;
     }
 }
