@@ -29,11 +29,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
@@ -115,16 +111,11 @@ public class PESigner {
              @see http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx
              @see http://support.microsoft.com/kb/2763674
         */
-        public static HashAlgo getDefault() {
-            try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date cutoff = sdf.parse("2016-01-01");
-                    Date now = new Date();
-                    return (now.before(cutoff) ? HashAlgo.SHA1 : HashAlgo.SHA256);
-            } catch(java.text.ParseException e) {
-                    e.printStackTrace();
-                    return HashAlgo.SHA256;
-            }
+        public static final HashAlgo getDefault() {
+            Calendar now = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            Calendar cutoff = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            cutoff.set(2016, 1, 1);
+            return (now.before(cutoff) ? HashAlgo.SHA1 : HashAlgo.SHA256);
         }
     }
 
