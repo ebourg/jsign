@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import net.jsign.HashAlgo;
+import net.jsign.DigestAlgorithm;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -58,7 +58,7 @@ public abstract class Timestamper {
         }
     }
 
-    public CMSSignedData timestamp(HashAlgo algo, CMSSignedData sigData) throws IOException, CMSException {
+    public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws IOException, CMSException {
         SignerInformation signerInformation = ((SignerInformation) sigData.getSignerInfos().getSigners().iterator().next());
 
         CMSSignedData token = timestamp(algo, signerInformation.toASN1Structure().getEncryptedDigest().getOctets());
@@ -85,5 +85,5 @@ public abstract class Timestamper {
         return generator.generate(contentType, content);
     }
 
-    protected abstract CMSSignedData timestamp(HashAlgo algo, byte[] encryptedDigest) throws IOException, CMSException;
+    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, CMSException;
 }

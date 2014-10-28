@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 
-import net.jsign.HashAlgo;
+import net.jsign.DigestAlgorithm;
 import net.jsign.asn1.authenticode.AuthenticodeTimeStampRequest;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
@@ -39,7 +39,7 @@ public class AuthenticodeTimestamper extends Timestamper {
         setURL("http://timestamp.comodoca.com/authenticode");
     }
 
-    protected CMSSignedData timestamp(HashAlgo algo, byte[] encryptedDigest) throws IOException, TimestampingException {
+    protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
         AuthenticodeTimeStampRequest timestampRequest = new AuthenticodeTimeStampRequest(encryptedDigest);
 
         byte[] request = Base64.encode(timestampRequest.getEncoded("DER"));

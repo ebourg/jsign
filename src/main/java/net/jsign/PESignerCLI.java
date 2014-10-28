@@ -219,7 +219,7 @@ public class PESignerCLI {
             PESigner signer = new PESigner(chain, privateKey)
                     .withProgramName(name)
                     .withProgramURL(url)
-                    .withHashAlgorith(algo)
+                    .withDigestAlgorithm(DigestAlgorithm.asMyEnum(algo))
                     .withTimestamping(tsaurl != null || tsamode != null)
                     .withTimestampingProtocol(tsamode != null && "RFC3161".equalsIgnoreCase(tsamode))
                     .withTimestampingAutority(tsaurl);

@@ -24,25 +24,27 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.tsp.TSPAlgorithms;
 
 /**
+ * Digest algorithm.
+ * 
 * @author Florent Daigniere
 * @since 1.3
 */
-public enum HashAlgo {
+public enum DigestAlgorithm {
     SHA1("SHA-1", TSPAlgorithms.SHA1),
     SHA256("SHA-256", TSPAlgorithms.SHA256);
 
     public final String id;
     public final ASN1ObjectIdentifier oid;
 
-    HashAlgo(String id, ASN1ObjectIdentifier oid) {
+    private DigestAlgorithm(String id, ASN1ObjectIdentifier oid) {
         this.id = id;
         this.oid = oid;
     }
 
-    public static HashAlgo asMyEnum(String str) {
+    public static DigestAlgorithm asMyEnum(String str) {
         if (str == null)
             return null;
-        for (HashAlgo me : HashAlgo.values())
+        for (DigestAlgorithm me : DigestAlgorithm.values())
             if(me.name().equals(str))
                 return me;
         return null;
@@ -56,7 +58,7 @@ public enum HashAlgo {
      * @see <a href="http://social.technet.microsoft.com/wiki/contents/articles/1760.windows-root-certificate-program-technical-requirements-version-2-0.aspx">Windows Root Certificate Program - Technical Requirements version 2.0</a>
      * @see <a href="http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx">Common Questions about SHA2 and Windows</a>
      */
-    public static HashAlgo getDefault() {
+    public static DigestAlgorithm getDefault() {
         Calendar cutoff = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         cutoff.set(2016, Calendar.JANUARY, 1, 0, 0, 0);
         return (new Date().before(cutoff.getTime()) ? SHA1 : SHA256);

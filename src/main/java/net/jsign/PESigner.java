@@ -76,7 +76,7 @@ public class PESigner {
 
     private Certificate[] chain;
     private PrivateKey privateKey;
-    private HashAlgo algo = HashAlgo.getDefault();
+    private DigestAlgorithm algo = DigestAlgorithm.getDefault();
     private String programName;
     private String programURL;
 
@@ -135,13 +135,11 @@ public class PESigner {
     }
 
     /**
-     * Set the HashAlgorithm to use (default is SHA1)
+     * Set the digest algorithm to use (default is SHA-1 until January 1 2016, SHA-256 afterward)
      */
-    public PESigner withHashAlgorith(String algorithm) {
-        HashAlgo selectedAlgo = HashAlgo.asMyEnum(algorithm);
-         // if the algorithm is not supported use the default instead of erroring out
-        if (selectedAlgo != null) {
-            this.algo = selectedAlgo;
+    public PESigner withDigestAlgorithm(DigestAlgorithm algorithm) {
+        if (algorithm != null) {
+            this.algo = algorithm;
         }
         return this;
     }

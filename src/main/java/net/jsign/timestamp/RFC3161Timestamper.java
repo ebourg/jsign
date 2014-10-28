@@ -23,7 +23,7 @@ import java.net.HttpURLConnection;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import net.jsign.HashAlgo;
+import net.jsign.DigestAlgorithm;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.cms.CMSSignedData;
@@ -45,7 +45,7 @@ public class RFC3161Timestamper extends Timestamper {
         setURL("http://timestamp.comodoca.com/rfc3161");
     }
 
-    protected CMSSignedData timestamp(HashAlgo algo, byte[] encryptedDigest) throws IOException, TimestampingException {
+    protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
         OutputStream out = null;
 
         try {
