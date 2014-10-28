@@ -66,17 +66,43 @@ public class PESignerTest extends TestCase {
         assertNotNull(signature);
     }
 
-    public void testTimestamp() throws Exception {
+    public void testTimestampAuthenticode() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-timestamped.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamped-authenticode.exe");
 
         FileUtils.copyFile(sourceFile, targetFile);
         
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withTimestamping(true);
+        signer.withTimestampingProtocol(false);
         signer.sign(peFile);
         
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+    }
+
+    public void testTimestampRFC3161() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamped-rfc3161.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withTimestamping(true);
+        signer.withTimestampingProtocol(true);
+        signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
         List<CMSSignedData> signatures = peFile.getSignatures();
