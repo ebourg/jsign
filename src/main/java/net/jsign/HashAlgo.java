@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -47,16 +48,17 @@ public enum HashAlgo {
         return null;
     }
 
-    /*
-         If no algorithm is specified, pick a smart default
-         @see http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx
-         @see http://support.microsoft.com/kb/2763674
-    */
+    /**
+     * Return the default algorithm depending on the current date (SHA-1 until
+     * January 1 2016 and SHA-256 afterward). SHA-1 is used as long as possible
+     * to preserve the compatibility with older versions of Windows.
+     * 
+     * @see <a href="http://social.technet.microsoft.com/wiki/contents/articles/1760.windows-root-certificate-program-technical-requirements-version-2-0.aspx">Windows Root Certificate Program - Technical Requirements version 2.0</a>
+     * @see <a href="http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx">Common Questions about SHA2 and Windows</a>
+     */
     public static HashAlgo getDefault() {
-        TimeZone tz = TimeZone.getTimeZone("GMT");
-        Calendar now = Calendar.getInstance(tz);
-        Calendar cutoff = Calendar.getInstance(tz);
-        cutoff.set(2016, Calendar.JANUARY, 1);
-        return (now.before(cutoff) ? SHA1 : SHA256);
+        Calendar cutoff = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        cutoff.set(2016, Calendar.JANUARY, 1, 0, 0, 0);
+        return (new Date().before(cutoff.getTime()) ? SHA1 : SHA256);
     }
 }
