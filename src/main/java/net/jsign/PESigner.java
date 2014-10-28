@@ -108,10 +108,11 @@ public class PESigner {
              @see http://support.microsoft.com/kb/2763674
         */
         public static final HashAlgo getDefault() {
-            Calendar now = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-            Calendar cutoff = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-            cutoff.set(2016, 1, 1);
-            return (now.before(cutoff) ? HashAlgo.SHA1 : HashAlgo.SHA256);
+            TimeZone tz = TimeZone.getTimeZone("GMT");
+            Calendar now = Calendar.getInstance(tz);
+            Calendar cutoff = Calendar.getInstance(tz);
+            cutoff.set(2016, Calendar.JANUARY, 1);
+            return (now.before(cutoff) ? SHA1 : SHA256);
         }
     }
 
