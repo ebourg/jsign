@@ -28,9 +28,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
@@ -43,16 +41,12 @@ import net.jsign.timestamp.AuthenticodeTimestamper;
 import net.jsign.timestamp.RFC3161Timestamper;
 import net.jsign.timestamp.Timestamper;
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
@@ -67,7 +61,6 @@ import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.tsp.TSPAlgorithms;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
@@ -80,42 +73,6 @@ import org.bouncycastle.tsp.TSPAlgorithms;
  * @since 1.0
  */
 public class PESigner {
-    public enum HashAlgo {
-        SHA1("SHA-1",X509ObjectIdentifiers.id_SHA1, TSPAlgorithms.SHA1),
-        SHA256("SHA-256", NISTObjectIdentifiers.id_sha256, TSPAlgorithms.SHA256);
-
-        public final String id;
-        public final DERObjectIdentifier oid;
-        public final ASN1ObjectIdentifier tsp;
-
-        HashAlgo(String id, DERObjectIdentifier oid, ASN1ObjectIdentifier tsp) {
-            this.id = id;
-            this.oid = oid;
-            this.tsp = tsp;
-	}
-
-        public static HashAlgo asMyEnum(String str) {
-            if (str == null)
-                return null;
-            for (HashAlgo me : HashAlgo.values())
-                if(me.name().equals(str))
-                    return me;
-            return null;
-        }
-
-        /*
-             If no algorithm is specified, pick a smart default
-             @see http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx
-             @see http://support.microsoft.com/kb/2763674
-        */
-        public static final HashAlgo getDefault() {
-            TimeZone tz = TimeZone.getTimeZone("GMT");
-            Calendar now = Calendar.getInstance(tz);
-            Calendar cutoff = Calendar.getInstance(tz);
-            cutoff.set(2016, Calendar.JANUARY, 1);
-            return (now.before(cutoff) ? SHA1 : SHA256);
-        }
-    }
 
     private Certificate[] chain;
     private PrivateKey privateKey;
