@@ -16,6 +16,8 @@
 
 package net.jsign;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -61,6 +63,17 @@ public enum DigestAlgorithm {
         }
         
         return null;
+    }
+
+    /**
+     * Return a MessageDigest for this algorithm.
+     */
+    public MessageDigest getMessageDigest() {
+        try {
+            return MessageDigest.getInstance(id);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

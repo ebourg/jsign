@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import net.jsign.DigestAlgorithm;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -49,9 +47,8 @@ public class RFC3161Timestamper extends Timestamper {
         OutputStream out = null;
 
         try {
-            MessageDigest md = MessageDigest.getInstance(algo.id);
             TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
-            TimeStampRequest req = reqgen.generate(algo.oid, md.digest(encryptedDigest));
+            TimeStampRequest req = reqgen.generate(algo.oid, algo.getMessageDigest().digest(encryptedDigest));
             byte request[] = req.getEncoded();
 
             HttpURLConnection con = (HttpURLConnection) tsaurl.openConnection();
@@ -81,9 +78,7 @@ public class RFC3161Timestamper extends Timestamper {
             }
 
             return response.getTimeStampToken().toCMSSignedData();
-        } catch (NoSuchAlgorithmException e) {
-            // This should never happen
-            throw new TimestampingException(e);
+
         } catch (TSPException e) {
             throw new TimestampingException(e);
         }

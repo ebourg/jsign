@@ -197,7 +197,7 @@ public class PESigner {
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
-        byte[] sha = file.computeDigest(algo.id);
+        byte[] sha = file.computeDigest(algo);
         
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);

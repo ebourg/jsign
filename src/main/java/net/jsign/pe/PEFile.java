@@ -24,12 +24,12 @@ import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import net.jsign.DigestAlgorithm;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -719,12 +719,8 @@ public class PEFile implements Closeable {
      * 
      * @param algorithm the digest algorithm, typically SHA1
      */
-    public byte[] computeDigest(String algorithm) throws IOException {
-        try {
-            return computeDigest(MessageDigest.getInstance(algorithm));
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+    public byte[] computeDigest(DigestAlgorithm algorithm) throws IOException {
+        return computeDigest(algorithm.getMessageDigest());
     }
 
     /**
