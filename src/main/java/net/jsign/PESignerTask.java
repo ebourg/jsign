@@ -248,7 +248,7 @@ public class PESignerTask extends Task {
         PESigner signer = new PESigner(chain, privateKey)
                 .withProgramName(name)
                 .withProgramURL(url)
-                .withDigestAlgorithm(DigestAlgorithm.asMyEnum(algo))
+                .withDigestAlgorithm(DigestAlgorithm.of(algo))
                 .withTimestamping(tsaurl != null)
                 .withTimestampingProtocol(useRFC3161TimestampingServer)
                 .withTimestampingAutority(tsaurl);

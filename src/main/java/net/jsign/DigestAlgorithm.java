@@ -41,12 +41,25 @@ public enum DigestAlgorithm {
         this.oid = oid;
     }
 
-    public static DigestAlgorithm asMyEnum(String str) {
-        if (str == null)
+    /**
+     * Parse the specified value and returns the corresponding digest algorithm.
+     * This method is more permissive than {@link #valueOf(String)}, it's case
+     * insensitive and ignores hyphens.
+     * 
+     * @param s
+     * @return
+     */
+    public static DigestAlgorithm of(String s) {
+        if (s == null) {
             return null;
-        for (DigestAlgorithm me : DigestAlgorithm.values())
-            if(me.name().equals(str))
-                return me;
+        }
+        
+        for (DigestAlgorithm algorithm : DigestAlgorithm.values()) {
+            if (algorithm.name().equals(s.toUpperCase().replaceAll("-", ""))) {
+                return algorithm;
+            }
+        }
+        
         return null;
     }
 
