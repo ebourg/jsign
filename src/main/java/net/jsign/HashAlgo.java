@@ -20,9 +20,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.tsp.TSPAlgorithms;
 
 /**
@@ -30,18 +27,16 @@ import org.bouncycastle.tsp.TSPAlgorithms;
 * @since 1.3
 */
 public enum HashAlgo {
-    SHA1("SHA-1", X509ObjectIdentifiers.id_SHA1, TSPAlgorithms.SHA1),
-    SHA256("SHA-256", NISTObjectIdentifiers.id_sha256, TSPAlgorithms.SHA256);
+    SHA1("SHA-1", TSPAlgorithms.SHA1),
+    SHA256("SHA-256", TSPAlgorithms.SHA256);
 
     public final String id;
-    public final DERObjectIdentifier oid;
-    public final ASN1ObjectIdentifier tsp;
+    public final ASN1ObjectIdentifier oid;
 
-    HashAlgo(String id, DERObjectIdentifier oid, ASN1ObjectIdentifier tsp) {
+    HashAlgo(String id, ASN1ObjectIdentifier oid) {
         this.id = id;
         this.oid = oid;
-        this.tsp = tsp;
-}
+    }
 
     public static HashAlgo asMyEnum(String str) {
         if (str == null)
