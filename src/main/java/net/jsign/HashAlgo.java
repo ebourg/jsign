@@ -52,7 +52,7 @@ public enum HashAlgo {
          @see http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx
          @see http://support.microsoft.com/kb/2763674
     */
-    public static final HashAlgo getDefault() {
+    public static HashAlgo getDefault() {
         TimeZone tz = TimeZone.getTimeZone("GMT");
         Calendar now = Calendar.getInstance(tz);
         Calendar cutoff = Calendar.getInstance(tz);
