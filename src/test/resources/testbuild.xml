@@ -74,10 +74,15 @@
     <signexe file="wineyes-signed-with-ant.exe" certfile="certificate.spc" keyfile="certificate.spc"/>
   </target>
 
+  <target name="unsupported-digest-algorithm">
+    <signexe file="wineyes-signed-with-ant.exe" alg="SHA-123" keystore="keystore.jks" alias="test" keypass="password"/>
+  </target>
+
   <target name="signing">
     <signexe file="wineyes-signed-with-ant.exe"
              name="WinEyes"
              url="http://www.steelblue.com/WinEyes"
+             alg="SHA-1"
              keystore="keystore.jks"
              alias="test"
              keypass="password"/>
@@ -87,6 +92,7 @@
     <signexe file="wineyes-signed-with-ant.exe"
              name="WinEyes"
              url="http://www.steelblue.com/WinEyes"
+             alg="SHA-256"
              keystore="keystore.p12"
              alias="test"
              storepass="password"/>

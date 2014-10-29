@@ -207,8 +207,17 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    public void testUnsupportedDigestAlgorithm() {
+        try {
+            cli.execute("--alg=SHA-123", "--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            // expected
+        }
+    }
+
     public void testSigning() throws Exception {
-        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile);
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile);
 
         PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-cli.exe"));
         try {
@@ -225,7 +234,7 @@ public class PESignerCLITest extends TestCase {
     }
 
     public void testSigningPKCS12() throws Exception {
-        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--keystore=target/test-classes/keystore.p12", "--alias=test", "--storepass=password", "" + targetFile);
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystore.p12", "--alias=test", "--storepass=password", "" + targetFile);
 
         PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-cli.exe"));
         try {

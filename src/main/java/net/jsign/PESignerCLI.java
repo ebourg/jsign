@@ -68,7 +68,7 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
         options.addOption(OptionBuilder.hasArg().withLongOpt("certfile").withArgName("FILE").withDescription("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").withType(File.class).create('c'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
-        options.addOption(OptionBuilder.hasArg().withLongOpt("algo").withArgName("ALGO").withDescription("The hash function to use (SHA1 or SHA265)").create("b"));
+        options.addOption(OptionBuilder.hasArg().withLongOpt("alg").withArgName("ALGORITHM").withDescription("The digest algorithm (SHA-1 or SHA-256)").create('d'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsamode").withArgName("MODE").withDescription("RFC3161 or authenticode").create('m'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsaurl").withArgName("URL").withDescription("The URL of the timestamping authority.").create('t'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("name").withArgName("NAME").withDescription("The name of the application").create('n'));
@@ -95,7 +95,7 @@ public class PESignerCLI {
             File certfile = cmd.hasOption("certfile") ? new File(cmd.getOptionValue("certfile")) : null;
             String tsamode = cmd.getOptionValue("tsamode");
             String tsaurl = cmd.getOptionValue("tsaurl");
-            String algo = cmd.getOptionValue("algo");
+            String algorithm = cmd.getOptionValue("alg");
             String name = cmd.getOptionValue("name");
             String url = cmd.getOptionValue("url");
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
@@ -201,6 +201,10 @@ public class PESignerCLI {
                 }
             }
 
+            if (algorithm != null && DigestAlgorithm.of(algorithm) == null) {
+                throw new SignerException("The digest algorithm " + algorithm + " is not supported");
+            }
+            
             if (file == null) {
                 throw new SignerException("missing file argument");
             }
@@ -219,7 +223,7 @@ public class PESignerCLI {
             PESigner signer = new PESigner(chain, privateKey)
                     .withProgramName(name)
                     .withProgramURL(url)
-                    .withDigestAlgorithm(DigestAlgorithm.of(algo))
+                    .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                     .withTimestamping(tsaurl != null || tsamode != null)
                     .withTimestampingProtocol(tsamode != null && "RFC3161".equalsIgnoreCase(tsamode))
                     .withTimestampingAutority(tsaurl);

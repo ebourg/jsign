@@ -50,8 +50,8 @@ public class PESignerTask extends Task {
     /** The program URL embedded in the signature. */
     private String url;
 
-    /** The hash algorithm to use for the signature. */
-    private String algo;
+    /** The digest algorithm to use for the signature. */
+    private String algorithm;
 
     /** The keystore file. */
     private File keystore;
@@ -92,8 +92,8 @@ public class PESignerTask extends Task {
         this.url = url;
     }
 
-    public void setAlgo(String algo) {
-        this.algo = algo;
+    public void setAlg(String alg) {
+        this.algorithm = alg;
     }
 
     public void setTimestampingProtocol(boolean useRFC3161TimestampingServer) {
@@ -229,6 +229,10 @@ public class PESignerTask extends Task {
                 throw new BuildException("Failed to load the private key from " + keyfile, e);
             }
         }
+
+        if (algorithm != null && DigestAlgorithm.of(algorithm) == null) {
+            throw new BuildException("The digest algorithm " + algorithm + " is not supported");
+        }
         
         if (file == null) {
             throw new BuildException("file attribute must be set");
@@ -248,7 +252,7 @@ public class PESignerTask extends Task {
         PESigner signer = new PESigner(chain, privateKey)
                 .withProgramName(name)
                 .withProgramURL(url)
-                .withDigestAlgorithm(DigestAlgorithm.of(algo))
+                .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                 .withTimestamping(tsaurl != null)
                 .withTimestampingProtocol(useRFC3161TimestampingServer)
                 .withTimestampingAutority(tsaurl);

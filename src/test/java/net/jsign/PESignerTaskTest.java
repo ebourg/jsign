@@ -230,6 +230,15 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    public void testUnsupportedDigestAlgorithm() {
+        try {
+            project.executeTarget("unsupported-digest-algorithm");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            // expected
+        }
+    }
+
     public void testSigning() throws Exception {
         project.executeTarget("signing");
 
