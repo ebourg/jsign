@@ -20,6 +20,9 @@ See http://ebourg.github.com/jsign for more information.
 Changes
 =======
 
+In this Branch, 2013-11-29
+* Fixed sign code to work with Launch4j exe on Java 6
+
 Version 1.2, 2013-01-10
 * Reduced the memory usage when signing large files
 * Files over 2GB are now supported

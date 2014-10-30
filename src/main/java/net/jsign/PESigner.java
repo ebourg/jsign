@@ -151,12 +151,21 @@ public class PESigner {
     public void sign(PEFile file) throws Exception {
         // pad the file on a 8 byte boundary
         // todo only if there was no previous certificate table
+        long originalSize = file.getLength();
+
         file.pad(8);
         
         // compute the signature
         byte[] certificateTable = createCertificateTable(file);
         
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort((short) ((file.getLength() + certificateTable.length) - originalSize));
+        file.write(originalSize - buffer.capacity(), buffer.array());
+
+        certificateTable = createCertificateTable(file);
         file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, certificateTable);
+
         file.close();
     }
 

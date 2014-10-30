@@ -133,7 +133,7 @@ public class PEFile implements Closeable {
         }
     }
 
-    synchronized void write(long base, byte[] data) {
+    synchronized public void write(long base, byte[] data) {
         try {
             raf.seek(base);
             raf.write(data);
@@ -520,7 +520,7 @@ public class PEFile implements Closeable {
         // add the entry in the data directory table
         DataDirectory entry = getDataDirectory(type);
         entry.write(offset, data.length);
-        
+
         updateChecksum();
     }
 
@@ -735,4 +735,9 @@ public class PEFile implements Closeable {
             raf.writeByte(0);
         }
     }
+
+    public long getLength() throws IOException {
+        return raf.length();
+    }
+
 }
