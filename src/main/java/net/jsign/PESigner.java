@@ -37,9 +37,8 @@ import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
-import net.jsign.timestamp.AuthenticodeTimestamper;
-import net.jsign.timestamp.RFC3161Timestamper;
 import net.jsign.timestamp.Timestamper;
+import net.jsign.timestamp.TimestampingMode;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
@@ -81,7 +80,7 @@ public class PESigner {
     private String programURL;
 
     private boolean timestamping = true;
-    private boolean tsUseRFC3161Server = false;
+    private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
     private String tsaurlOverride;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
@@ -119,9 +118,11 @@ public class PESigner {
 
     /**
      * RFC3161 or Authenticode (Authenticode by default).
+     * 
+     * @since 1.3
      */
-    public PESigner withTimestampingProtocol(boolean useRFC3161TimestampingServer) {
-        this.tsUseRFC3161Server = useRFC3161TimestampingServer;
+    public PESigner withTimestampingMode(TimestampingMode tsmode) {
+        this.tsmode = tsmode;
         return this;
     }
 
@@ -164,7 +165,7 @@ public class PESigner {
         CMSSignedData sigData = createSignature(file);
         
         if (timestamping) {
-            Timestamper timestamper = tsUseRFC3161Server ? new RFC3161Timestamper() : new AuthenticodeTimestamper();
+            Timestamper timestamper = Timestamper.create(tsmode);
             if (tsaurlOverride != null) {
                 timestamper.setURL(tsaurlOverride);
             }

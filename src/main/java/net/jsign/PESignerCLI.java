@@ -28,6 +28,7 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
 import net.jsign.pe.PEFile;
+import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -69,8 +70,8 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt("certfile").withArgName("FILE").withDescription("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").withType(File.class).create('c'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
         options.addOption(OptionBuilder.hasArg().withLongOpt("alg").withArgName("ALGORITHM").withDescription("The digest algorithm (SHA-1 or SHA-256)").create('d'));
-        options.addOption(OptionBuilder.hasArg().withLongOpt("tsamode").withArgName("MODE").withDescription("RFC3161 or authenticode").create('m'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsaurl").withArgName("URL").withDescription("The URL of the timestamping authority.").create('t'));
+        options.addOption(OptionBuilder.hasArg().withLongOpt("tsmode").withArgName("MODE").withDescription("The timestamping mode (RFC3161 or Authenticode)").create('m'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("name").withArgName("NAME").withDescription("The name of the application").create('n'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("url").withArgName("URL").withDescription("The URL of the application").create('u'));
         options.addOption(OptionBuilder.withLongOpt("help").withDescription("Print the help").create('h'));
@@ -93,8 +94,8 @@ public class PESignerCLI {
             String keypass = cmd.getOptionValue("keypass");
             File keyfile = cmd.hasOption("keyfile") ? new File(cmd.getOptionValue("keyfile")) : null;
             File certfile = cmd.hasOption("certfile") ? new File(cmd.getOptionValue("certfile")) : null;
-            String tsamode = cmd.getOptionValue("tsamode");
             String tsaurl = cmd.getOptionValue("tsaurl");
+            String tsmode = cmd.getOptionValue("tsmode");
             String algorithm = cmd.getOptionValue("alg");
             String name = cmd.getOptionValue("name");
             String url = cmd.getOptionValue("url");
@@ -224,8 +225,8 @@ public class PESignerCLI {
                     .withProgramName(name)
                     .withProgramURL(url)
                     .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
-                    .withTimestamping(tsaurl != null || tsamode != null)
-                    .withTimestampingProtocol(tsamode != null && "RFC3161".equalsIgnoreCase(tsamode))
+                    .withTimestamping(tsaurl != null || tsmode != null)
+                    .withTimestampingMode(TimestampingMode.of(tsmode))
                     .withTimestampingAutority(tsaurl);
 
 

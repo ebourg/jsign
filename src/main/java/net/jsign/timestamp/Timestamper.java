@@ -86,4 +86,15 @@ public abstract class Timestamper {
     }
 
     protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, CMSException;
+
+    /**
+     * Returns the timestamper for the specified mode.
+     */
+    public static Timestamper create(TimestampingMode mode) {
+        if (mode == TimestampingMode.AUTHENTICODE) {
+            return new AuthenticodeTimestamper();
+        } else {
+            return new RFC3161Timestamper();
+        }
+    }
 }

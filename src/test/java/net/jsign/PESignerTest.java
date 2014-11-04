@@ -23,6 +23,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import net.jsign.pe.PEFile;
+import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
 
@@ -77,7 +78,7 @@ public class PESignerTest extends TestCase {
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
         signer.withTimestamping(true);
-        signer.withTimestampingProtocol(false);
+        signer.withTimestampingMode(TimestampingMode.AUTHENTICODE);
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
@@ -101,7 +102,7 @@ public class PESignerTest extends TestCase {
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
         signer.withTimestamping(true);
-        signer.withTimestampingProtocol(true);
+        signer.withTimestampingMode(TimestampingMode.RFC3161);
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
