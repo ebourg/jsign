@@ -30,8 +30,6 @@ import org.bouncycastle.asn1.DERSequence;
  *     classId             SpcUuid,
  *     serializedData      OCTETSTRING
  * }
- * 
- * SpcUuid ::= OCTETSTRING  
  * </pre>
  * 
  * @author Emmanuel Bourg
@@ -39,7 +37,7 @@ import org.bouncycastle.asn1.DERSequence;
  */
 public class SpcSerializedObject extends ASN1Object {
 
-    private DEROctetString classId = new DEROctetString(new BigInteger("a6b586d5b4a12466ae05a217da8e60d6", 16).toByteArray());
+    private SpcUuid classId = new SpcUuid();
 
     /**
      * The serializedData field contains a binary structure. When present in an
