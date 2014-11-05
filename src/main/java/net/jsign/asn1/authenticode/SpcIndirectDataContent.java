@@ -35,10 +35,11 @@ import org.bouncycastle.asn1.x509.DigestInfo;
  */
 public class SpcIndirectDataContent extends ASN1Object {
 
-    private SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue();
+    private SpcAttributeTypeAndOptionalValue data;
     private DigestInfo messageDigest;
 
-    public SpcIndirectDataContent(DigestInfo messageDigest) {
+    public SpcIndirectDataContent(SpcAttributeTypeAndOptionalValue data, DigestInfo messageDigest) {
+        this.data = data;
         this.messageDigest = messageDigest;
     }
 
@@ -46,8 +47,8 @@ public class SpcIndirectDataContent extends ASN1Object {
     public ASN1Primitive toASN1Primitive() {
         ASN1EncodableVector v = new ASN1EncodableVector();
         v.add(data);
-        v.add(messageDigest);       
+        v.add(messageDigest);
         
-        return new BERSequence(v);        
+        return new BERSequence(v);
     }
 }

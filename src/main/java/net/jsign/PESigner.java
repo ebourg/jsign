@@ -32,7 +32,9 @@ import java.util.List;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcPeImageData;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.pe.DataDirectoryType;
@@ -214,9 +216,10 @@ public class PESigner {
         
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
-        SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(digestInfo);
-        
-        ContentSigner shaSigner = new JcaContentSignerBuilder(algo+"with" + privateKey.getAlgorithm()).build(privateKey);
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
+        SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(data, digestInfo);
+
+        ContentSigner shaSigner = new JcaContentSignerBuilder(algo + "with" + privateKey.getAlgorithm()).build(privateKey);
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes

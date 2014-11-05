@@ -23,18 +23,32 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.BERSequence;
 
 /**
+ * <pre>
+ * SpcAttributeTypeAndOptionalValue ::= SEQUENCE {
+ *     type                    OBJECT IDENTIFIER,
+ *     value                   ANY DEFINED BY type OPTIONAL
+ * }
+ * </pre>
+ * 
  * @author Emmanuel Bourg
  * @since 1.0
  */
 public class SpcAttributeTypeAndOptionalValue extends ASN1Object {
-    
-    private ASN1ObjectIdentifier type = AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID;
-    private SpcPeImageData value = new SpcPeImageData();
+
+    private ASN1ObjectIdentifier type;
+    private ASN1Object value;
+
+    public SpcAttributeTypeAndOptionalValue(ASN1ObjectIdentifier type, ASN1Object value) {
+        this.type = type;
+        this.value = value;
+    }
 
     public ASN1Primitive toASN1Primitive() {
         ASN1EncodableVector v = new ASN1EncodableVector();
         v.add(type);
-        v.add(value);
+        if (value != null) {
+            v.add(value);
+        }
         
         return new BERSequence(v);
     }
