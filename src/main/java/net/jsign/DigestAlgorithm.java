@@ -56,10 +56,15 @@ public enum DigestAlgorithm {
             return null;
         }
         
+        s = s.toUpperCase().replaceAll("-", "");
         for (DigestAlgorithm algorithm : DigestAlgorithm.values()) {
-            if (algorithm.name().equals(s.toUpperCase().replaceAll("-", ""))) {
+            if (algorithm.name().equals(s)) {
                 return algorithm;
             }
+        }
+        
+        if ("SHA2".equals(s)) {
+            return SHA256;
         }
         
         return null;

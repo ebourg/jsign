@@ -30,6 +30,7 @@ public class DigestAlgorithmTest extends TestCase {
         assertEquals(DigestAlgorithm.SHA256, DigestAlgorithm.of("SHA256"));
         assertEquals(DigestAlgorithm.SHA256, DigestAlgorithm.of("sha-256"));
         assertEquals(DigestAlgorithm.SHA256, DigestAlgorithm.of("sha256"));
+        assertEquals(DigestAlgorithm.SHA256, DigestAlgorithm.of("SHA-2"));
         
         assertNull(DigestAlgorithm.of(null));
         assertNull(DigestAlgorithm.of("foo"));
