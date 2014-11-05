@@ -71,7 +71,7 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
         options.addOption(OptionBuilder.hasArg().withLongOpt("certfile").withArgName("FILE").withDescription("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").withType(File.class).create('c'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("keyfile").withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
-        options.addOption(OptionBuilder.hasArg().withLongOpt("alg").withArgName("ALGORITHM").withDescription("The digest algorithm (SHA-1 or SHA-256)").create('d'));
+        options.addOption(OptionBuilder.hasArg().withLongOpt("alg").withArgName("ALGORITHM").withDescription("The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)").create('d'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsaurl").withArgName("URL").withDescription("The URL of the timestamping authority.").create('t'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsmode").withArgName("MODE").withDescription("The timestamping mode (RFC3161 or Authenticode)").create('m'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("name").withArgName("NAME").withDescription("The name of the application").create('n'));

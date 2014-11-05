@@ -33,7 +33,9 @@ import org.bouncycastle.tsp.TSPAlgorithms;
 */
 public enum DigestAlgorithm {
     SHA1("SHA-1", TSPAlgorithms.SHA1),
-    SHA256("SHA-256", TSPAlgorithms.SHA256);
+    SHA256("SHA-256", TSPAlgorithms.SHA256),
+    SHA384("SHA-384", TSPAlgorithms.SHA384),
+    SHA512("SHA-512", TSPAlgorithms.SHA512);
 
     public final String id;
     public final ASN1ObjectIdentifier oid;
