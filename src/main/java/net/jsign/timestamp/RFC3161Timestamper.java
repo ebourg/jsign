@@ -44,6 +44,7 @@ public class RFC3161Timestamper extends Timestamper {
 
     protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
         TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
+        reqgen.setCertReq(true);
         TimeStampRequest req = reqgen.generate(algo.oid, algo.getMessageDigest().digest(encryptedDigest));
         byte request[] = req.getEncoded();
 
