@@ -63,7 +63,15 @@ public class AuthenticodeTimestamper extends Timestamper {
             throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());
         }
 
-        InputStream in = conn.getInputStream();
+        try {
+            byte[] response = Base64.decode(toBytes(conn.getInputStream()));
+            return new CMSSignedData(response);
+        } catch (CMSException e) {
+            throw new TimestampingException("Unable to complete the timestamping", e);
+        }
+    }
+
+    private byte[] toBytes(InputStream in) throws IOException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
         byte[] buffer = new byte[4096];
@@ -71,13 +79,7 @@ public class AuthenticodeTimestamper extends Timestamper {
         while ((n = in.read(buffer)) != -1) {
             bout.write(buffer, 0, n);
         }
-
-        byte[] response = Base64.decode(bout.toByteArray());
-
-        try {
-            return new CMSSignedData(response);
-        } catch (CMSException e) {
-            throw new TimestampingException(e);
-        }
+        
+        return bout.toByteArray();
     }
 }

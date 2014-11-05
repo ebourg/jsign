@@ -18,7 +18,6 @@ package net.jsign.timestamp;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 
 import net.jsign.DigestAlgorithm;
@@ -33,8 +32,8 @@ import org.bouncycastle.tsp.TimeStampResponse;
 /**
  * RFC 3161 timestamping.
  *
- * @see <a href="https://www.ietf.org/rfc/rfc3161.txt">Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)</a>
  * @author Florent Daigniere
+ * @see <a href="https://www.ietf.org/rfc/rfc3161.txt">Internet X.509 Public Key Infrastructure Time-Stamp Protocol (TSP)</a>
  * @since 1.3
  */
 public class RFC3161Timestamper extends Timestamper {
@@ -44,43 +43,41 @@ public class RFC3161Timestamper extends Timestamper {
     }
 
     protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
-        OutputStream out = null;
+        TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
+        TimeStampRequest req = reqgen.generate(algo.oid, algo.getMessageDigest().digest(encryptedDigest));
+        byte request[] = req.getEncoded();
+
+        HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(10000);
+        conn.setDoOutput(true);
+        conn.setDoInput(true);
+        conn.setUseCaches(false);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-type", "application/timestamp-query");
+        conn.setRequestProperty("Content-length", String.valueOf(request.length));
+        conn.setRequestProperty("Accept", "application/timestamp-query");
+        conn.setRequestProperty("User-Agent", "Transport");
+        
+        conn.getOutputStream().write(request);
+        conn.getOutputStream().flush();
+
+        if (conn.getResponseCode() >= 400) {
+            throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());
+        }
 
         try {
-            TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
-            TimeStampRequest req = reqgen.generate(algo.oid, algo.getMessageDigest().digest(encryptedDigest));
-            byte request[] = req.getEncoded();
-
-            HttpURLConnection con = (HttpURLConnection) tsaurl.openConnection();
-            con.setConnectTimeout(10000);
-            con.setReadTimeout(10000);
-            con.setDoOutput(true);
-            con.setDoInput(true);
-            con.setUseCaches(false);
-            con.setRequestMethod("POST");
-            con.setRequestProperty("Content-type", "application/timestamp-query");
-            con.setRequestProperty("Content-length", String.valueOf(request.length));
-            con.setRequestProperty("Accept", "application/timestamp-query");
-            con.setRequestProperty("User-Agent", "Transport");
-            out = con.getOutputStream();
-            out.write(request);
-            out.flush();
-
-            if (con.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                throw new IOException("Received HTTP error: " + con.getResponseCode() + " - " + con.getResponseMessage());
-            }
-            InputStream in = con.getInputStream();
-            TimeStampResp resp = TimeStampResp.getInstance(new ASN1InputStream(in).readObject());
+            TimeStampResp resp = TimeStampResp.getInstance(new ASN1InputStream(conn.getInputStream()).readObject());
             TimeStampResponse response = new TimeStampResponse(resp);
             response.validate(req);
             if (response.getStatus() != 0) {
-                throw new IOException("Received an invalid timestamp (status=" + response.getStatusString() + ")");
+                throw new IOException("Unable to complete the timestamping due to an invalid response (" + response.getStatusString() + ")");
             }
 
             return response.getTimeStampToken().toCMSSignedData();
 
         } catch (TSPException e) {
-            throw new TimestampingException(e);
+            throw new TimestampingException("Unable to complete the timestamping", e);
         }
     }
 }
