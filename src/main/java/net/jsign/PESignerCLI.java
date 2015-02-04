@@ -74,6 +74,9 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt("tsmode").withArgName("MODE").withDescription("The timestamping mode (RFC3161 or Authenticode)").create('m'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("name").withArgName("NAME").withDescription("The name of the application").create('n'));
         options.addOption(OptionBuilder.hasArg().withLongOpt("url").withArgName("URL").withDescription("The URL of the application").create('u'));
+        options.addOption(OptionBuilder.hasArg().withLongOpt("proxyUrl").withArgName("URL").withDescription("The URL of the HTTP proxy").create());
+        options.addOption(OptionBuilder.hasArg().withLongOpt("proxyUser").withArgName("NAME").withDescription("The user for the HTTP proxy. If an user is needed.").create());
+        options.addOption(OptionBuilder.hasArg().withLongOpt("proxyPass").withArgName("PASSWORD").withDescription("The password for the HTTP proxy user. If an user is needed.").create());
         options.addOption(OptionBuilder.withLongOpt("help").withDescription("Print the help").create('h'));
     }
 
@@ -99,6 +102,12 @@ public class PESignerCLI {
             String algorithm = cmd.getOptionValue("alg");
             String name = cmd.getOptionValue("name");
             String url = cmd.getOptionValue("url");
+            
+            String proxyUrl = cmd.getOptionValue("proxyUrl");
+            String proxyUser = cmd.getOptionValue("proxyUser");
+            String proxyPass = cmd.getOptionValue("proxyPass");
+            ProxySettings proxySettings = new ProxySettings(proxyUrl, proxyUser, proxyPass);
+            
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
 
             if (keystore != null && storetype == null) {
@@ -227,7 +236,8 @@ public class PESignerCLI {
                     .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                     .withTimestamping(tsaurl != null || tsmode != null)
                     .withTimestampingMode(TimestampingMode.of(tsmode))
-                    .withTimestampingAutority(tsaurl);
+                    .withTimestampingAutority(tsaurl)
+                    .withProxySettings(proxySettings);
 
 
             try {

@@ -80,6 +80,15 @@ public class PESignerTask extends Task {
 
     /** The protocol used for  the timestamping */
     private String tsmode;
+    
+    /** A simple proxy url (format [http://]host:port). */
+	private String proxyUrl;
+
+	/** The user to log on to the proxy. */
+	private String proxyUser;
+
+	/** The password for the proxyUser to log on to the proxy. */
+	private String proxyPassword;
 
     public void setFile(File file) {
         this.file = file;
@@ -139,7 +148,19 @@ public class PESignerTask extends Task {
         this.tsaurl = tsaurl;
     }
 
-    @Override
+    public void setProxyUrl(String proxyUrl) {
+		this.proxyUrl = proxyUrl;
+	}
+
+	public void setProxyUser(String proxyUser) {
+		this.proxyUser = proxyUser;
+	}
+
+	public void setProxyPassword(String proxyPassword) {
+		this.proxyPassword = proxyPassword;
+	}
+
+	@Override
     public void execute() throws BuildException {
         PrivateKey privateKey;
         Certificate[] chain;
@@ -256,7 +277,8 @@ public class PESignerTask extends Task {
                 .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                 .withTimestamping(tsaurl != null)
                 .withTimestampingMode(TimestampingMode.of(tsmode))
-                .withTimestampingAutority(tsaurl);
+                .withTimestampingAutority(tsaurl)
+                .withProxySettings(new ProxySettings(proxyUrl, proxyUser, proxyPassword));
 
 
         try {

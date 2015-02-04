@@ -79,6 +79,7 @@ public class PESignerTest extends TestCase {
         signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(TimestampingMode.AUTHENTICODE);
+//        signer.withProxySettings(new ProxySettings("http://proxy-host:8080", null, null));
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);

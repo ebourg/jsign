@@ -39,6 +39,7 @@ import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
@@ -82,6 +83,7 @@ public class PESigner {
     private boolean timestamping = true;
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
     private String tsaurlOverride;
+	private ProxySettings proxySettings;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
@@ -144,9 +146,15 @@ public class PESigner {
         }
         return this;
     }
-
+    
+    public PESigner withProxySettings(ProxySettings proxySettings) {
+		this.proxySettings = proxySettings;
+		return this;
+	}
+    
     /**
-     * Sign the specified executable file.
+     * Sign the specified executable <code>file</code>.
+     * @param file
      * @throws Exception
      */
     public void sign(PEFile file) throws Exception {
@@ -155,13 +163,13 @@ public class PESigner {
         file.pad(8);
         
         // compute the signature
-        byte[] certificateTable = createCertificateTable(file);
+        byte[] certificateTable = createCertificateTable(file, proxySettings);
         
         file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, certificateTable);
         file.close();
     }
 
-    private byte[] createCertificateTable(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
+    private byte[] createCertificateTable(PEFile file, ProxySettings proxy) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         CMSSignedData sigData = createSignature(file);
         
         if (timestamping) {
@@ -169,7 +177,7 @@ public class PESigner {
             if (tsaurlOverride != null) {
                 timestamper.setURL(tsaurlOverride);
             }
-            sigData = timestamper.timestamp(algo, sigData);
+            sigData = timestamper.timestamp(algo, sigData, proxy);
         }
         
         // pad the table
