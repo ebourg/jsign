@@ -28,7 +28,9 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
 import net.jsign.pe.PEFile;
+import net.jsign.proxy.PESignerProxySettings;
 import net.jsign.timestamp.TimestampingMode;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -105,8 +107,7 @@ public class PESignerCLI {
             
             String proxyUrl = cmd.getOptionValue("proxyUrl");
             String proxyUser = cmd.getOptionValue("proxyUser");
-            String proxyPass = cmd.getOptionValue("proxyPass");
-            ProxySettings proxySettings = new ProxySettings(proxyUrl, proxyUser, proxyPass);
+            String proxyPassword = cmd.getOptionValue("proxyPass");
             
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
 
@@ -236,11 +237,11 @@ public class PESignerCLI {
                     .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                     .withTimestamping(tsaurl != null || tsmode != null)
                     .withTimestampingMode(TimestampingMode.of(tsmode))
-                    .withTimestampingAutority(tsaurl)
-                    .withProxySettings(proxySettings);
+                    .withTimestampingAutority(tsaurl);
 
 
             try {
+            	PESignerProxySettings.initialize(proxyUrl, proxyUser, proxyPassword);
                 System.out.println("Adding Authenticode signature to " + file);
                 signer.sign(peFile);
             } catch (Exception e) {

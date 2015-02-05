@@ -83,9 +83,8 @@ public class PESigner {
     private boolean timestamping = true;
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
     private String tsaurlOverride;
-	private ProxySettings proxySettings;
-
-    public PESigner(Certificate[] chain, PrivateKey privateKey) {
+    
+	public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
         this.privateKey = privateKey;
     }
@@ -147,11 +146,6 @@ public class PESigner {
         return this;
     }
     
-    public PESigner withProxySettings(ProxySettings proxySettings) {
-		this.proxySettings = proxySettings;
-		return this;
-	}
-    
     /**
      * Sign the specified executable <code>file</code>.
      * @param file
@@ -163,13 +157,13 @@ public class PESigner {
         file.pad(8);
         
         // compute the signature
-        byte[] certificateTable = createCertificateTable(file, proxySettings);
+        byte[] certificateTable = createCertificateTable(file);
         
         file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, certificateTable);
         file.close();
     }
 
-    private byte[] createCertificateTable(PEFile file, ProxySettings proxy) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
+    private byte[] createCertificateTable(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         CMSSignedData sigData = createSignature(file);
         
         if (timestamping) {
@@ -177,7 +171,7 @@ public class PESigner {
             if (tsaurlOverride != null) {
                 timestamper.setURL(tsaurlOverride);
             }
-            sigData = timestamper.timestamp(algo, sigData, proxy);
+            sigData = timestamper.timestamp(algo, sigData);
         }
         
         // pad the table

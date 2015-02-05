@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import net.jsign.DigestAlgorithm;
-import net.jsign.ProxySettings;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
@@ -43,13 +42,13 @@ public class RFC3161Timestamper extends Timestamper {
         setURL("http://timestamp.comodoca.com/rfc3161");
     }
 
-    protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest, ProxySettings proxy) throws IOException, TimestampingException {
+    protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
         TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
         reqgen.setCertReq(true);
         TimeStampRequest req = reqgen.generate(algo.oid, algo.getMessageDigest().digest(encryptedDigest));
         byte request[] = req.getEncoded();
         
-        HttpURLConnection conn = proxy.openConnection(tsaurl);
+        HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(10000);
         conn.setDoOutput(true);

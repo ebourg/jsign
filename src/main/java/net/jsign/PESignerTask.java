@@ -28,7 +28,9 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
 import net.jsign.pe.PEFile;
+import net.jsign.proxy.PESignerProxySettings;
 import net.jsign.timestamp.TimestampingMode;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -277,11 +279,11 @@ public class PESignerTask extends Task {
                 .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                 .withTimestamping(tsaurl != null)
                 .withTimestampingMode(TimestampingMode.of(tsmode))
-                .withTimestampingAutority(tsaurl)
-                .withProxySettings(new ProxySettings(proxyUrl, proxyUser, proxyPassword));
+                .withTimestampingAutority(tsaurl);
 
 
         try {
+        	PESignerProxySettings.initialize(proxyUrl, proxyUser, proxyPassword);
             log("Adding Authenticode signature to " + FileUtils.getRelativePath(getProject().getBaseDir(), file));
             signer.sign(peFile);
         } catch (Exception e) {
