@@ -82,6 +82,7 @@ public class PESigner {
     private boolean timestamping = true;
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
     private String tsaurlOverride;
+    private Timestamper timestamper;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
@@ -134,6 +135,14 @@ public class PESigner {
         this.tsaurlOverride = url;
         return this;
     }
+    
+    /**
+     * Set the Timestamper implementation.
+     */
+    public PESigner withTimestamper(Timestamper timestamper) {
+        this.timestamper = timestamper;
+        return this;
+    }
 
     /**
      * Set the digest algorithm to use (default is SHA-1 until January 1 2016, SHA-256 afterward)
@@ -165,11 +174,14 @@ public class PESigner {
         CMSSignedData sigData = createSignature(file);
         
         if (timestamping) {
-            Timestamper timestamper = Timestamper.create(tsmode);
-            if (tsaurlOverride != null) {
-                timestamper.setURL(tsaurlOverride);
+            Timestamper ts = timestamper;
+            if (ts == null) {
+                ts = Timestamper.create(tsmode);
             }
-            sigData = timestamper.timestamp(algo, sigData);
+            if (tsaurlOverride != null) {
+                ts.setURL(tsaurlOverride);
+            }
+            sigData = ts.timestamp(algo, sigData);
         }
         
         // pad the table
