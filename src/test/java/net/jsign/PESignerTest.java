@@ -18,11 +18,15 @@ package net.jsign;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.KeyStore;
+import java.util.HashSet;
 import java.util.List;
 
 import junit.framework.TestCase;
 import net.jsign.pe.PEFile;
+import net.jsign.timestamp.AuthenticodeTimestamper;
+import net.jsign.timestamp.TimestampingException;
 import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
@@ -89,6 +93,46 @@ public class PESignerTest extends TestCase {
         CMSSignedData signature = signatures.get(0);
         
         assertNotNull(signature);
+    }
+    
+    /**
+     * Tests that a custom Timestamper implementation can be provided.
+     * @throws Exception 
+     */
+    public void testWithTimestamper() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamped-authenticode.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+
+        final HashSet<Boolean> called = new HashSet<Boolean>();
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withTimestamping(true);
+        signer.withTimestamper(new AuthenticodeTimestamper() {
+            
+            @Override
+            protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
+                called.add(true);
+                return super.timestamp(algo, encryptedDigest);
+            }
+
+        });
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+        
+        assertTrue("expecting our Timestamper to be used", called.contains(true));
     }
 
     public void testTimestampRFC3161() throws Exception {
