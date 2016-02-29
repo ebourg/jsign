@@ -20,6 +20,9 @@ See http://ebourg.github.com/jsign for more information.
 Changes
 =======
 
+Version 1.3, in development
+* The command line tool now supports HTTP proxies (contributed by Michael Szediwy)
+
 Version 1.2, 2013-01-10
 * Reduced the memory usage when signing large files
 * Files over 2GB are now supported
