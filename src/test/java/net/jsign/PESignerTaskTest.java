@@ -33,6 +33,11 @@ import org.bouncycastle.cms.CMSSignedData;
 public class PESignerTaskTest extends TestCase {
 
     private Project project;
+    
+    private File sourceFile = new File("target/test-classes/wineyes.exe");
+    private File targetFile = new File("target/test-classes/wineyes-signed-with-ant.exe");
+    
+    private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
 
     protected void setUp() throws Exception {
         project = new Project();
@@ -45,14 +50,14 @@ public class PESignerTaskTest extends TestCase {
         final ProjectHelper helper = ProjectHelper.getProjectHelper();
         helper.parse(project, buildFile);
 
-        File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-signed-with-ant.exe");
-
         // remove the files signed previously
         if (targetFile.exists()) {
             assertTrue("Unable to remove the previously signed file", targetFile.delete());
         }
 
+        assertEquals("Source file CRC32", SOURCE_FILE_CRC32, FileUtils.checksumCRC32(sourceFile));
+        Thread.sleep(100);
+        
         FileUtils.copyFile(sourceFile, targetFile);
 
         redirectOutput(System.out);
@@ -241,8 +246,10 @@ public class PESignerTaskTest extends TestCase {
 
     public void testSigning() throws Exception {
         project.executeTarget("signing");
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-ant.exe"));
+        PEFile peFile = new PEFile(targetFile);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
@@ -258,8 +265,10 @@ public class PESignerTaskTest extends TestCase {
 
     public void testSigningPKCS12() throws Exception {
         project.executeTarget("signing-pkcs12");
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-ant.exe"));
+        PEFile peFile = new PEFile(targetFile);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
@@ -275,8 +284,10 @@ public class PESignerTaskTest extends TestCase {
 
     public void testSigningPVKSPC() throws Exception {
         project.executeTarget("signing-pvk-spc");
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-ant.exe"));
+        PEFile peFile = new PEFile(targetFile);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
@@ -292,8 +303,12 @@ public class PESignerTaskTest extends TestCase {
     
     public void testTimestamping() throws Exception {
         project.executeTarget("timestamping");
+        
+        File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant.exe");
+        
+        assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-timestamped-with-ant.exe"));
+        PEFile peFile = new PEFile(targetFile2);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);

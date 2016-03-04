@@ -20,16 +20,19 @@ import java.io.File;
 import java.util.List;
 
 import junit.framework.TestCase;
-import net.jsign.pe.PEFile;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
+
+import net.jsign.pe.PEFile;
 
 public class PESignerCLITest extends TestCase {
 
     private PESignerCLI cli;
     private File sourceFile = new File("target/test-classes/wineyes.exe");
     private File targetFile = new File("target/test-classes/wineyes-signed-with-cli.exe");
-    
+
+    private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
+
     protected void setUp() throws Exception {
         cli = new PESignerCLI();
         
@@ -38,6 +41,8 @@ public class PESignerCLITest extends TestCase {
             assertTrue("Unable to remove the previously signed file", targetFile.delete());
         }
         
+        assertEquals("Source file CRC32", SOURCE_FILE_CRC32, FileUtils.checksumCRC32(sourceFile));
+        Thread.sleep(100);
         FileUtils.copyFile(sourceFile, targetFile);
     }
 
@@ -219,7 +224,9 @@ public class PESignerCLITest extends TestCase {
     public void testSigning() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile);
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-cli.exe"));
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        PEFile peFile = new PEFile(targetFile);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
@@ -235,8 +242,10 @@ public class PESignerCLITest extends TestCase {
 
     public void testSigningPKCS12() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystore.p12", "--alias=test", "--storepass=password", "" + targetFile);
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-cli.exe"));
+        PEFile peFile = new PEFile(targetFile);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
@@ -252,8 +261,10 @@ public class PESignerCLITest extends TestCase {
 
     public void testSigningPVKSPC() throws Exception {
         cli.execute("--certfile=target/test-classes/certificate.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--keypass=password", "" + targetFile);
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-signed-with-cli.exe"));
+        PEFile peFile = new PEFile(targetFile);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
@@ -272,7 +283,9 @@ public class PESignerCLITest extends TestCase {
         FileUtils.copyFile(sourceFile, targetFile2);
         cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--tsaurl=http://timestamp.comodoca.com/authenticode", "" + targetFile2);
         
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes-timestamped-with-cli.exe"));
+        assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+        
+        PEFile peFile = new PEFile(targetFile2);
         try {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
