@@ -19,6 +19,15 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -26,9 +35,10 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import net.jsign.pe.PEFile;
-import net.jsign.proxy.PESignerProxySettings;
 import net.jsign.timestamp.TimestampingMode;
 
 import org.apache.commons.cli.CommandLine;
@@ -241,7 +251,7 @@ public class PESignerCLI {
 
 
             try {
-                PESignerProxySettings.initialize(proxyUrl, proxyUser, proxyPassword);
+                initializeProxy(proxyUrl, proxyUser, proxyPassword);
                 System.out.println("Adding Authenticode signature to " + file);
                 signer.sign(peFile);
             } catch (Exception e) {
@@ -293,4 +303,41 @@ public class PESignerCLI {
             }
         }
     }
+
+    /**
+     * Initializes the proxy.
+     * 
+     * @param proxyUrl       the url of the proxy (either as hostname:port or http[s]://hostname:port)
+     * @param proxyUser      the username for the proxy authentication
+     * @param proxyPassword  the password for the proxy authentication
+     */
+    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
+   		// Do nothing if there is no proxy url.
+   		if (proxyUrl != null && proxyUrl.trim().length() > 0) {
+            if (!proxyUrl.trim().startsWith("http")) {
+                proxyUrl = "http://" + proxyUrl.trim();
+            }
+   			final URL url = new URL(proxyUrl);
+   			final int port = url.getPort() < 0 ? 80 : url.getPort();
+   
+   			ProxySelector.setDefault(new ProxySelector() {
+                private List<Proxy> proxies = Collections.singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port)));
+                
+                public List<Proxy> select(URI uri) {
+                    return proxies;
+                }
+
+                public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                }
+            });
+
+            if (proxyUser != null && proxyUser.length() > 0 && proxyPassword != null) {
+                Authenticator.setDefault(new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+                    }
+                });
+            }
+   		}
+   	}
 }
