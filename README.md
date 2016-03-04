@@ -28,9 +28,9 @@ Version 1.2, 2013-01-10
 * Files over 2GB are now supported
 * Improved the thread safety
 
-Version 1.1, 2012-11-02
+Version 1.1, 2012-11-03
 * Command line interface with bash completion for signing files (available as RPM and DEB packages)
 * The keystore is no longer locked if the signing fails
 
-Version 1.0, 2012-10-03
+Version 1.0, 2012-10-05
 * Initial release
