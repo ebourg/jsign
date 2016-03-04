@@ -54,7 +54,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.DefaultAuthenticatedAttributeTableGenerator;
+import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.operator.ContentSigner;
@@ -223,7 +223,7 @@ public class PESigner {
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
-        CMSAttributeTableGenerator attributeTableGenerator = new DefaultAuthenticatedAttributeTableGenerator(createAuthenticatedAttributes());
+        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
         
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);

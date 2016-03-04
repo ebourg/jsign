@@ -27,7 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 
-import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 
 /**
  * Utility class for fetching human readable descriptions of object identifiers (OID).
@@ -54,7 +54,7 @@ public class OIDResolver {
         }
     }
 
-    public String lookup(DERObjectIdentifier oid) throws IOException {
+    public String lookup(ASN1ObjectIdentifier oid) throws IOException {
         if (!cache.containsKey(oid.getId())) {
 
             URL url = new URL("http://www.oid-info.com/cgi-bin/display?oid=" + oid.getId() + "&action=display");
