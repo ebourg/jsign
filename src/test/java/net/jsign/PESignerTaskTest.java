@@ -301,10 +301,31 @@ public class PESignerTaskTest extends TestCase {
         }
     }
     
-    public void testTimestamping() throws Exception {
-        project.executeTarget("timestamping");
+    public void testTimestampingAuthenticode() throws Exception {
+        project.executeTarget("timestamping-authenticode");
         
-        File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant.exe");
+        File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant-authenticode.exe");
+        
+        assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+
+        PEFile peFile = new PEFile(targetFile2);
+        try {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        } finally {
+            peFile.close();
+        }
+    }
+
+    public void testTimestampingRFC3161() throws Exception {
+        project.executeTarget("timestamping-rfc3161");
+        
+        File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant-rfc3161.exe");
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 

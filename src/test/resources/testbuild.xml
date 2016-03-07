@@ -105,13 +105,22 @@
              keypass="password"/>
   </target>
 
-  <target name="timestamping">
-    <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant.exe" overwrite="true"/>
-    <signexe file="wineyes-timestamped-with-ant.exe"
+  <target name="timestamping-authenticode">
+    <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant-authenticode.exe" overwrite="true"/>
+    <signexe file="wineyes-timestamped-with-ant-authenticode.exe"
              keystore="keystore.jks"
              alias="test"
              keypass="password"
              tsaurl="http://timestamp.comodoca.com/authenticode"/>
+  </target>
+
+  <target name="timestamping-rfc3161">
+    <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant-rfc3161.exe" overwrite="true"/>
+    <signexe file="wineyes-timestamped-with-ant-rfc3161.exe"
+             keystore="keystore.jks"
+             alias="test"
+             keypass="password"
+             tsaurl="http://timestamp.comodoca.com/rfc3161"/>
   </target>
 
 </project>
