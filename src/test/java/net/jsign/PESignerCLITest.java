@@ -30,6 +30,10 @@ public class PESignerCLITest extends TestCase {
     private PESignerCLI cli;
     private File sourceFile = new File("target/test-classes/wineyes.exe");
     private File targetFile = new File("target/test-classes/wineyes-signed-with-cli.exe");
+    
+    private String keystore = "keystore.jks";
+    private String alias    = "test";
+    private String keypass  = "password";
 
     private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
 
@@ -222,7 +226,7 @@ public class PESignerCLITest extends TestCase {
     }
 
     public void testSigning() throws Exception {
-        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile);
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
 
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
@@ -281,7 +285,7 @@ public class PESignerCLITest extends TestCase {
     public void testTimestampingAuthenticode() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
-        cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--tsaurl=http://timestamp.comodoca.com/authenticode", "" + targetFile2);
+        cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.comodoca.com/authenticode", "" + targetFile2);
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
         
@@ -302,7 +306,7 @@ public class PESignerCLITest extends TestCase {
     public void testTimestampingRFC3161() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
-        cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--tsaurl=http://timestamp.comodoca.com/rfc3161", "" + targetFile2);
+        cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.comodoca.com/rfc3161", "" + targetFile2);
 
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 

@@ -1,6 +1,10 @@
 <project name="JSign Ant tests">
 
   <taskdef name="signexe" classname="net.jsign.PESignerTask"/>
+  
+  <property name="keystore" value="keystore.jks"/>
+  <property name="alias"    value="test"/>
+  <property name="keypass"  value="password"/>
 
   <target name="missing-keystore">
     <signexe file="wineyes-signed-with-ant.exe"/>
@@ -83,9 +87,9 @@
              name="WinEyes"
              url="http://www.steelblue.com/WinEyes"
              alg="SHA-1"
-             keystore="keystore.jks"
-             alias="test"
-             keypass="password"/>
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"/>
   </target>
 
   <target name="signing-pkcs12">
@@ -108,18 +112,18 @@
   <target name="timestamping-authenticode">
     <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant-authenticode.exe" overwrite="true"/>
     <signexe file="wineyes-timestamped-with-ant-authenticode.exe"
-             keystore="keystore.jks"
-             alias="test"
-             keypass="password"
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"
              tsaurl="http://timestamp.comodoca.com/authenticode"/>
   </target>
 
   <target name="timestamping-rfc3161">
     <copy file="wineyes.exe" tofile="wineyes-timestamped-with-ant-rfc3161.exe" overwrite="true"/>
     <signexe file="wineyes-timestamped-with-ant-rfc3161.exe"
-             keystore="keystore.jks"
-             alias="test"
-             keypass="password"
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"
              tsaurl="http://timestamp.comodoca.com/rfc3161"/>
   </target>
 
