@@ -246,7 +246,7 @@ public class PESignerCLI {
                     .withProgramURL(url)
                     .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                     .withTimestamping(tsaurl != null || tsmode != null)
-                    .withTimestampingMode(TimestampingMode.of(tsmode))
+                    .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
                     .withTimestampingAutority(tsaurl);
 
 

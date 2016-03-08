@@ -37,6 +37,6 @@ public enum TimestampingMode {
             return RFC3161;
         }
         
-        return null;
+        throw new IllegalArgumentException("Unknown timestamping mode: " + s);
     }
 }

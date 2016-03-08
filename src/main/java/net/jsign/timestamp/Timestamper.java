@@ -91,10 +91,13 @@ public abstract class Timestamper {
      * Returns the timestamper for the specified mode.
      */
     public static Timestamper create(TimestampingMode mode) {
-        if (mode == TimestampingMode.AUTHENTICODE) {
-            return new AuthenticodeTimestamper();
-        } else {
-            return new RFC3161Timestamper();
+        switch (mode) {
+            case AUTHENTICODE:
+                return new AuthenticodeTimestamper();
+            case RFC3161:
+                return new RFC3161Timestamper();
+            default:
+                throw new IllegalArgumentException("Unsupported timestamping mode: " + mode);
         }
     }
 }
