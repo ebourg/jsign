@@ -115,7 +115,8 @@
              keystore="${keystore}"
              alias="${alias}"
              keypass="${keypass}"
-             tsaurl="http://timestamp.comodoca.com/authenticode"/>
+             tsaurl="http://timestamp.comodoca.com/authenticode"
+             tsmode="authenticode"/>
   </target>
 
   <target name="timestamping-rfc3161">
@@ -124,7 +125,8 @@
              keystore="${keystore}"
              alias="${alias}"
              keypass="${keypass}"
-             tsaurl="http://timestamp.comodoca.com/rfc3161"/>
+             tsaurl="http://timestamp.comodoca.com/rfc3161"
+             tsmode="rfc3161"/>
   </target>
 
 </project>
