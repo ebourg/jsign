@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author Emmanuel Bourg
@@ -62,6 +63,30 @@ public class PEFileTest extends TestCase {
         assertFalse(out.toString().isEmpty());
 
         System.out.println(out);
+    }
+
+    public void testPadNoOp() throws Exception {
+        File testFile = new File("target/test-classes/wineyes.exe");
+        File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
+        FileUtils.copyFile(testFile, testFilePadded);
+        
+        PEFile file = new PEFile(testFilePadded);
+        file.pad(8);
+        file.close();
+        
+        assertEquals("Padded file size", testFile.length(), testFilePadded.length());
+    }
+
+    public void testPad() throws Exception {
+        File testFile = new File("target/test-classes/wineyes.exe");
+        File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
+        FileUtils.copyFile(testFile, testFilePadded);
+
+        PEFile file = new PEFile(testFilePadded);
+        file.pad(7);
+        file.close();
+
+        assertEquals("Padded file size", testFile.length() + 4, testFilePadded.length());
     }
 
     public void testComputeChecksum() throws Exception {

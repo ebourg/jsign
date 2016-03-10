@@ -729,7 +729,7 @@ public class PEFile implements Closeable {
      * @param multiple
      */
     public synchronized void pad(int multiple) throws IOException {
-        long padding = multiple - raf.length() % multiple;
+        long padding = (multiple - raf.length() % multiple) % multiple;
         raf.seek(raf.length());
         for (int i = 0; i < padding; i++) {
             raf.writeByte(0);
