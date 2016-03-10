@@ -21,7 +21,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.TestCase;
+import net.jsign.DigestAlgorithm;
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  * @author Emmanuel Bourg
@@ -93,5 +95,15 @@ public class PEFileTest extends TestCase {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
         assertEquals(file.computeChecksum(), 0x0000E7F5);
+    }
+
+    public void testComputeDigest() throws Exception {
+        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
+        
+        String sha1 = Hex.toHexString(file.computeDigest(DigestAlgorithm.SHA1));
+        String sha256 = Hex.toHexString(file.computeDigest(DigestAlgorithm.SHA256));
+        
+        assertEquals("d27ec498912807ddfc4bec2be4f62c42814836f3", sha1);
+        assertEquals("7bb369df020cea757619e1c1d678dbca06b638f2cc45b740b5eacfc21e76b160", sha256);
     }
 }
