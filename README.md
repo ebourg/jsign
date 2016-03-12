@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/ebourg/jsign.png)](http://travis-ci.org/ebourg/jsign)
+
 Jsign - Java implementation of Microsoft Authenticode
 =====================================================
 
