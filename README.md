@@ -1,7 +1,8 @@
-[![Build Status](https://secure.travis-ci.org/ebourg/jsign.png)](http://travis-ci.org/ebourg/jsign)
-
 Jsign - Java implementation of Microsoft Authenticode
 =====================================================
+
+[![Build Status](https://secure.travis-ci.org/ebourg/jsign.png)](http://travis-ci.org/ebourg/jsign)
+[![Coverage Status](https://coveralls.io/repos/github/ebourg/jsign/badge.svg?branch=master)](https://coveralls.io/github/ebourg/jsign?branch=master)
 
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows. Jsign is platform independent and
