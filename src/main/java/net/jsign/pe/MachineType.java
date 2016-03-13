@@ -39,6 +39,9 @@ public enum MachineType {
     /** ARMv7 (or higher) Thumb mode only */
     ARMV7(0x1c4),
 
+    /** ARMv8 in 64-bit mode */
+    ARM64(0xaa64),
+
     /** EFI byte code */
     EBC(0xebc),
 
