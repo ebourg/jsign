@@ -17,7 +17,6 @@
 package net.jsign.timestamp;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import net.jsign.DigestAlgorithm;

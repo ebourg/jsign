@@ -638,7 +638,7 @@ public class PEFile implements Closeable {
         if (!signatures.isEmpty()) {
             out.println("Signatures");
             for (CMSSignedData signedData : signatures) {
-                SignerInformation signerInformation = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();
+                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
                 X509CertificateHolder certificate = (X509CertificateHolder) signedData.getCertificates().getMatches(signerInformation.getSID()).iterator().next();
                 
                 String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();

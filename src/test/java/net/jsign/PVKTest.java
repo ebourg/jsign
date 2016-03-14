@@ -17,9 +17,7 @@
 package net.jsign;
 
 import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 

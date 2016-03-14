@@ -59,11 +59,11 @@ public abstract class Timestamper {
     }
 
     public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws IOException, CMSException {
-        SignerInformation signerInformation = ((SignerInformation) sigData.getSignerInfos().getSigners().iterator().next());
+        SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
 
         CMSSignedData token = timestamp(algo, signerInformation.toASN1Structure().getEncryptedDigest().getOctets());
 
-        SignerInformation timestampSignerInformation = (SignerInformation) token.getSignerInfos().getSigners().iterator().next();
+        SignerInformation timestampSignerInformation = token.getSignerInfos().getSigners().iterator().next();
         
         Attribute counterSignature = new Attribute(CMSAttributes.counterSignature, new DERSet(timestampSignerInformation.toASN1Structure()));
         
