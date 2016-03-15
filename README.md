@@ -25,6 +25,7 @@ Changes
 
 Version 1.3, in development
 * The command line tool now supports HTTP proxies (contributed by Michael Szediwy)
+* RFC 3161 timestamping services are now supported (contributed by Florent Daigniere)
 
 Version 1.2, 2013-01-10
 * Reduced the memory usage when signing large files

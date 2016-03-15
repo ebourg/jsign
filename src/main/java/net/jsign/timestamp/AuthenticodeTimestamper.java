@@ -20,11 +20,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.Collection;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.asn1.authenticode.AuthenticodeTimeStampRequest;
+
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;
 
 /**
@@ -69,6 +77,19 @@ public class AuthenticodeTimestamper extends Timestamper {
         } catch (CMSException e) {
             throw new TimestampingException("Unable to complete the timestamping", e);
         }
+    }
+
+    @Override
+    protected Collection<X509CertificateHolder> getExtraCertificates(CMSSignedData token) {
+        return token.getCertificates().getMatches(null);
+    }
+
+    @Override
+    protected AttributeTable getUnsignedAttributes(CMSSignedData token) {
+        SignerInformation timestampSignerInformation = token.getSignerInfos().getSigners().iterator().next();
+        Attribute counterSignature = new Attribute(CMSAttributes.counterSignature, new DERSet(timestampSignerInformation.toASN1Structure()));
+        
+        return new AttributeTable(counterSignature);
     }
 
     private byte[] toBytes(InputStream in) throws IOException {

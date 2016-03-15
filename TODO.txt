@@ -2,7 +2,6 @@ TODO
 
 - Verify signed files
 - GUI
-- RFC 3161 timestamping for Windows 7 and later
 - Timestamp retries
 - Timestamp failover
 - Support private keys exported with PKCS#8 

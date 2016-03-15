@@ -20,7 +20,12 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import net.jsign.DigestAlgorithm;
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.tsp.TSPException;
@@ -79,5 +84,11 @@ public class RFC3161Timestamper extends Timestamper {
         } catch (TSPException e) {
             throw new TimestampingException("Unable to complete the timestamping", e);
         }
+    }
+
+    @Override
+    protected AttributeTable getUnsignedAttributes(CMSSignedData token) {
+        Attribute rfc3161CounterSignature = new Attribute(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID, new DERSet(token.toASN1Structure()));
+        return new AttributeTable(rfc3161CounterSignature);
     }
 }

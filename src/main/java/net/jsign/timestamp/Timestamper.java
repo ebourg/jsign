@@ -20,24 +20,22 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
-import net.jsign.DigestAlgorithm;
-import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DERSet;
-import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
+
+import net.jsign.DigestAlgorithm;
+import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 
 /**
  * Interface for a timestamping service.
@@ -58,26 +56,53 @@ public abstract class Timestamper {
         }
     }
 
+    /**
+     * Timestamp the specified signature.
+     * 
+     * @param algo    the digest algorithm used for the timestamp
+     * @param sigData the signed data to be timestamped
+     * @return        the signed data with the timestamp added
+     */
     public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws IOException, CMSException {
+        CMSSignedData token = timestamp(algo, getEncryptedDigest(sigData));
+        return modifySignedData(sigData, getUnsignedAttributes(token), getExtraCertificates(token));
+    }
+
+    /**
+     * Return the encrypted digest of the specified signature.
+     */
+    private byte[] getEncryptedDigest(CMSSignedData sigData) {
         SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
+        return signerInformation.toASN1Structure().getEncryptedDigest().getOctets();
+    }
 
-        CMSSignedData token = timestamp(algo, signerInformation.toASN1Structure().getEncryptedDigest().getOctets());
+    /**
+     * Return the certificate chain of the timestamping authority if it isn't included
+     * with the counter signature in the unsigned attributes.
+     */
+    protected Collection<X509CertificateHolder> getExtraCertificates(CMSSignedData token) {
+        return null;
+    }
 
-        SignerInformation timestampSignerInformation = token.getSignerInfos().getSigners().iterator().next();
+    /**
+     * Return the counter signature to be added as an unsigned attribute.
+     */
+    protected abstract AttributeTable getUnsignedAttributes(CMSSignedData token);
+
+    protected CMSSignedData modifySignedData(CMSSignedData sigData, AttributeTable unsignedAttributes, Collection<X509CertificateHolder> extraCertificates) throws IOException, CMSException {
+        SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
+        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         
-        Attribute counterSignature = new Attribute(CMSAttributes.counterSignature, new DERSet(timestampSignerInformation.toASN1Structure()));
-        
-        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, new AttributeTable(new DERSet(counterSignature)));
-        
-        // add the certificates for the timestamp authority
-        Collection<?> certificates = new ArrayList();
+        Collection<X509CertificateHolder> certificates = new ArrayList<X509CertificateHolder>();
         certificates.addAll(sigData.getCertificates().getMatches(null));
-        certificates.addAll(token.getCertificates().getMatches(null));
-        Store certificateStore = new CollectionStore(certificates);
-
+        if (extraCertificates != null) {
+            certificates.addAll(extraCertificates);
+        }
+        Store<X509CertificateHolder> certificateStore = new CollectionStore<X509CertificateHolder>(certificates);
+        
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(certificateStore);
-        generator.addSigners(new SignerInformationStore(Arrays.asList(signerInformation)));
+        generator.addSigners(new SignerInformationStore(signerInformation));
         
         ASN1ObjectIdentifier contentType = new ASN1ObjectIdentifier(sigData.getSignedContentTypeOID());
         ASN1Encodable content = ASN1Sequence.getInstance(sigData.getSignedContent().getContent());
