@@ -18,9 +18,6 @@ package net.jsign;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.tsp.TSPAlgorithms;
@@ -40,7 +37,7 @@ public enum DigestAlgorithm {
     public final String id;
     public final ASN1ObjectIdentifier oid;
 
-    private DigestAlgorithm(String id, ASN1ObjectIdentifier oid) {
+    DigestAlgorithm(String id, ASN1ObjectIdentifier oid) {
         this.id = id;
         this.oid = oid;
     }
@@ -84,16 +81,12 @@ public enum DigestAlgorithm {
     }
 
     /**
-     * Return the default algorithm depending on the current date (SHA-1 until
-     * January 1 2016 and SHA-256 afterward). SHA-1 is used as long as possible
-     * to preserve the compatibility with older versions of Windows.
+     * Return the default algorithm (currently SHA-256, SHA-1 has been deprecated since January 1st 2016).
      * 
      * @see <a href="http://social.technet.microsoft.com/wiki/contents/articles/1760.windows-root-certificate-program-technical-requirements-version-2-0.aspx">Windows Root Certificate Program - Technical Requirements version 2.0</a>
      * @see <a href="http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx">Common Questions about SHA2 and Windows</a>
      */
     public static DigestAlgorithm getDefault() {
-        Calendar cutoff = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        cutoff.set(2016, Calendar.JANUARY, 1, 0, 0, 0);
-        return (new Date().before(cutoff.getTime()) ? SHA1 : SHA256);
+        return SHA256;
     }
 }
