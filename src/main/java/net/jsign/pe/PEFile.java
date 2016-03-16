@@ -30,11 +30,12 @@ import java.util.Date;
 import java.util.List;
 
 import net.jsign.DigestAlgorithm;
-import org.bouncycastle.asn1.cms.Attribute;
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 
@@ -646,12 +647,11 @@ public class PEFile implements Closeable {
                 
                 String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
                 
-                Attribute counterSignature = null;
-                if (signerInformation.getUnsignedAttributes() != null) {
-                    counterSignature = signerInformation.getUnsignedAttributes().get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature);
-                }
-                
-                out.println("  " + commonName + "   " + (counterSignature != null ? "(timestamped)" : ""));
+                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+                boolean timestamped = unsignedAttributes != null &&
+                           (unsignedAttributes.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null
+                         || unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID)  != null);
+                out.println("  " + commonName + "   " +  (timestamped ? "(timestamped)" : ""));
             }
         }
     }
