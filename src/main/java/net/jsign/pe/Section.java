@@ -45,7 +45,7 @@ public class Section {
      */
     public String getName() {
         byte[] buffer = new byte[8];
-        peFile.read(buffer, baseOffset);
+        peFile.read(buffer, baseOffset, 0);
         String name = new String(buffer);
         if (name.indexOf(0) != -1) {
             name = name.substring(0, name.indexOf(0));

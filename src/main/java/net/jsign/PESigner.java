@@ -17,8 +17,6 @@
 package net.jsign;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -37,7 +35,7 @@ import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcPeImageData;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
-import net.jsign.pe.CertificateType;
+import net.jsign.pe.CertificateTableEntry;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
@@ -167,13 +165,13 @@ public class PESigner {
         file.pad(8);
         
         // compute the signature
-        byte[] certificateTable = createCertificateTable(file);
+        CertificateTableEntry entry = createCertificateTableEntry(file);
         
-        file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, certificateTable);
+        file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
         file.close();
     }
 
-    private byte[] createCertificateTable(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
+    private CertificateTableEntry createCertificateTableEntry(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         CMSSignedData sigData = createSignature(file);
         
         if (timestamping) {
@@ -187,29 +185,7 @@ public class PESigner {
             sigData = ts.timestamp(algo, sigData);
         }
         
-        // pad the table
-        byte[] signature = sigData.toASN1Structure().getEncoded("DER");
-        signature = pad(signature, 8);
-        
-        // add the header
-        ByteBuffer buffer = ByteBuffer.allocate(signature.length + 8);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt(buffer.limit());
-        buffer.putShort((short) 0x0200);
-        buffer.putShort(CertificateType.PKCS_SIGNED_DATA.getValue());
-        buffer.put(signature);
-        
-        return buffer.array();
-    }
-
-    private byte[] pad(byte[] data, int multiple) {
-        if (data.length % multiple == 0) {
-            return data;
-        } else {
-            byte[] copy = new byte[data.length + (multiple - data.length % multiple)];
-            System.arraycopy(data, 0, copy, 0, data.length);
-            return copy;
-        }
+        return new CertificateTableEntry(sigData);
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {

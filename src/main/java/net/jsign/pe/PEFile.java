@@ -31,11 +31,10 @@ import java.util.List;
 
 import net.jsign.DigestAlgorithm;
 import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 
@@ -87,10 +86,10 @@ public class PEFile implements Closeable {
     public synchronized void close() throws IOException {
         raf.close();
     }
-    
-    synchronized int read(byte[] buffer, int offset) {
+
+    synchronized int read(byte[] buffer, long base, int offset) {
         try {
-            raf.seek(offset);
+            raf.seek(base + offset);
             return raf.read(buffer);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -529,25 +528,29 @@ public class PEFile implements Closeable {
      */
     public synchronized List<CMSSignedData> getSignatures() {
         List<CMSSignedData> signatures = new ArrayList<CMSSignedData>();
+        
+        for (CertificateTableEntry entry : getCertificateTable()) {
+            try {
+                signatures.add(entry.getSignature());
+            } catch (UnsupportedOperationException e) {
+                // unsupported type, just skip
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return signatures;
+    }
+
+    private synchronized List<CertificateTableEntry> getCertificateTable() {
+        List<CertificateTableEntry> entries = new ArrayList<CertificateTableEntry>();
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
         if (certificateTable != null && certificateTable.getVirtualAddress() != 0 && certificateTable.getSize() != 0) {
             long position = certificateTable.getVirtualAddress();
             
             try {
-                raf.seek(position);
-                int size = (int) raf.readDWord();
-                int revision = raf.readWord();
-                int type = raf.readWord();
-
-                if (revision == 0x0200 && type == CertificateType.PKCS_SIGNED_DATA.getValue()) {
-                    // PKCS#7 SignedData structure
-                    byte[] buffer = new byte[size - 8];
-                    raf.read(buffer);
-
-                    CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(buffer));
-                    signatures.add(signedData);
-                }
+                entries.add(new CertificateTableEntry(this, position));
                 
                 // todo read the remaining signatures
             } catch (Exception e) {
@@ -555,7 +558,7 @@ public class PEFile implements Closeable {
             }
         }
         
-        return signatures;
+        return entries;
     }
 
     /**
