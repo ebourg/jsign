@@ -18,18 +18,13 @@ package net.jsign.pe;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.List;
 
 import junit.framework.TestCase;
 import net.jsign.DigestAlgorithm;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.util.encoders.Hex;
 
-/**
- * @author Emmanuel Bourg
- * @since 1.0
- */
 public class PEFileTest extends TestCase {
 
     public void testLoad() throws Exception {
@@ -57,6 +52,21 @@ public class PEFileTest extends TestCase {
         assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
         assertEquals(0, file.getLoaderFlags());
         assertEquals(16, file.getNumberOfRvaAndSizes());
+    }
+
+    public void testGetSections() throws Exception {
+        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
+        
+        List<Section> sections = file.getSections();
+        assertNotNull(sections);
+        assertFalse("No section found", sections.isEmpty());
+        for (Section section : file.getSections()) {
+            assertNotNull("null section found", section);
+            assertEquals(0, section.getPointerToRelocations());
+            assertEquals(0, section.getPointerToLineNumbers());
+            assertEquals(0, section.getNumberOfRelocations());
+            assertEquals(0, section.getNumberOfLineNumbers());
+        }
     }
 
     public void testPrintInfo() throws Exception {

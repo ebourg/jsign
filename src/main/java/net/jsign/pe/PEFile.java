@@ -562,6 +562,17 @@ public class PEFile implements Closeable {
         return entries;
     }
 
+    public synchronized List<Section> getSections() {
+        List<Section> sections = new ArrayList<Section>();
+        int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes();
+        
+        for (int i = 0; i < getNumberOfSections(); i++) {
+            sections.add(new Section(this, sectionTableOffset + 40 * i));
+        }
+        
+        return sections;
+    }
+
     /**
      * Print detailed informations about the PE file.
      */
@@ -629,11 +640,11 @@ public class PEFile implements Closeable {
         }
         out.println();
         
-        int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes(); 
         out.println("Sections");
         out.println("      Name     Virtual Size  Virtual Address  Raw Data Size  Raw Data Ptr  Characteristics");
-        for (int i = 0; i < getNumberOfSections(); i++) {
-            Section section = new Section(this, sectionTableOffset + 40 * i);
+        List<Section> sections = getSections();
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
             out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s\n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());
         }
         out.println();
