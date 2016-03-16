@@ -17,10 +17,12 @@
 package net.jsign;
 
 import junit.framework.TestCase;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.tsp.TSPAlgorithms;
 
 public class DigestAlgorithmTest extends TestCase {
     
-    public void testValueOf() {
+    public void testOf() {
         assertEquals(DigestAlgorithm.SHA1, DigestAlgorithm.of("SHA-1"));
         assertEquals(DigestAlgorithm.SHA1, DigestAlgorithm.of("SHA1"));
         assertEquals(DigestAlgorithm.SHA1, DigestAlgorithm.of("sha-1"));
@@ -32,7 +34,12 @@ public class DigestAlgorithmTest extends TestCase {
         assertEquals(DigestAlgorithm.SHA256, DigestAlgorithm.of("sha256"));
         assertEquals(DigestAlgorithm.SHA256, DigestAlgorithm.of("SHA-2"));
         
-        assertNull(DigestAlgorithm.of(null));
+        assertNull(DigestAlgorithm.of((String) null));
         assertNull(DigestAlgorithm.of("foo"));
+    }
+
+    public void testOfOID() {
+        assertEquals(DigestAlgorithm.SHA1, DigestAlgorithm.of(TSPAlgorithms.SHA1));
+        assertEquals(null, DigestAlgorithm.of(new ASN1ObjectIdentifier("1.2.3.4.5")));
     }
 }

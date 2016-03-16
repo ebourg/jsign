@@ -29,12 +29,16 @@ import org.bouncycastle.tsp.TSPAlgorithms;
 * @since 1.3
 */
 public enum DigestAlgorithm {
+    MD5("MD5", TSPAlgorithms.MD5),
     SHA1("SHA-1", TSPAlgorithms.SHA1),
     SHA256("SHA-256", TSPAlgorithms.SHA256),
     SHA384("SHA-384", TSPAlgorithms.SHA384),
     SHA512("SHA-512", TSPAlgorithms.SHA512);
 
+    /** The JCE name of the algorithm */
     public final String id;
+
+    /** The object identifier of the algorithm */
     public final ASN1ObjectIdentifier oid;
 
     DigestAlgorithm(String id, ASN1ObjectIdentifier oid) {
@@ -47,8 +51,7 @@ public enum DigestAlgorithm {
      * This method is more permissive than {@link #valueOf(String)}, it's case
      * insensitive and ignores hyphens.
      * 
-     * @param s
-     * @return
+     * @param s the name of the digest algorithm
      */
     public static DigestAlgorithm of(String s) {
         if (s == null) {
@@ -56,7 +59,7 @@ public enum DigestAlgorithm {
         }
         
         s = s.toUpperCase().replaceAll("-", "");
-        for (DigestAlgorithm algorithm : DigestAlgorithm.values()) {
+        for (DigestAlgorithm algorithm : values()) {
             if (algorithm.name().equals(s)) {
                 return algorithm;
             }
@@ -64,6 +67,21 @@ public enum DigestAlgorithm {
         
         if ("SHA2".equals(s)) {
             return SHA256;
+        }
+        
+        return null;
+    }
+
+    /**
+     * Return the algorithm matching the specified object identifier.
+     * 
+     * @param oid the ASN.1 object identifier of the algorithm
+     */
+    public static DigestAlgorithm of(ASN1ObjectIdentifier oid) {
+        for (DigestAlgorithm algorithm : values()) {
+            if (algorithm.oid.equals(oid)) {
+                return algorithm;
+            }
         }
         
         return null;

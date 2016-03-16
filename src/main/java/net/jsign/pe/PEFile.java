@@ -651,7 +651,8 @@ public class PEFile implements Closeable {
                 boolean timestamped = unsignedAttributes != null &&
                            (unsignedAttributes.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null
                          || unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID)  != null);
-                out.println("  " + commonName + "   " +  (timestamped ? "(timestamped)" : ""));
+                DigestAlgorithm algorithm = DigestAlgorithm.of(signerInformation.getDigestAlgorithmID().getAlgorithm());
+                out.println("  " + commonName + "  " + (algorithm != null ? "[" + algorithm.id + "]  " : "") + (timestamped ? "(timestamped)" : ""));
             }
         }
     }
