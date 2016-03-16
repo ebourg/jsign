@@ -46,10 +46,6 @@
     <signexe file="keystore.jks" keystore="keystore.jks" alias="test" keypass="password"/>
   </target>
 
-  <target name="invalid-timestamping-authority">
-    <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="test" keypass="password" tsaurl="https://github.com/authenticode"/>
-  </target>
-
   <target name="conflicting-attributes">
     <signexe file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="test" keyfile="privatekey.pvk" certfile="certificates.spc"/>
   </target>

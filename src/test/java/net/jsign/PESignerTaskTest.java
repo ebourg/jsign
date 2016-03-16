@@ -163,15 +163,6 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
-    public void testInvalidTimestampingAuthority() {
-        try {
-            project.executeTarget("invalid-timestamping-authority");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
-    }
-
     public void testConflictingAttributes() {
         try {
             project.executeTarget("conflicting-attributes");

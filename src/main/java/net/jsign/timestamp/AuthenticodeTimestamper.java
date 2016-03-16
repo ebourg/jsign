@@ -74,7 +74,7 @@ public class AuthenticodeTimestamper extends Timestamper {
         try {
             byte[] response = Base64.decode(toBytes(conn.getInputStream()));
             return new CMSSignedData(response);
-        } catch (CMSException e) {
+        } catch (Exception e) {
             throw new TimestampingException("Unable to complete the timestamping", e);
         }
     }

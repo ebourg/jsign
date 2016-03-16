@@ -50,17 +50,13 @@ public class AuthenticodeSignedDataGenerator extends CMSSignedDataGenerator {
             signerInfo = ((SignerInformation) _signers.get(0)).toASN1Structure();
         } else {
             SignerInfoGenerator signerInfoGenerator = (SignerInfoGenerator) signerGens.get(0);
-
-            try {
-                byte[] signedContent = content.toASN1Primitive().getEncoded("DER");
-                
-                OutputStream out = signerInfoGenerator.getCalculatingOutputStream();
-                out.write(signedContent, 2, signedContent.length - 2); // skip the first 2 bytes as specified
-                out.flush();
-                out.close();
-            } catch (IOException e) {
-                throw new CMSException("data processing exception: " + e.getMessage(), e);
-            }
+            
+            byte[] signedContent = content.toASN1Primitive().getEncoded("DER");
+            
+            OutputStream out = signerInfoGenerator.getCalculatingOutputStream();
+            out.write(signedContent, 2, signedContent.length - 2); // skip the first 2 bytes as specified
+            out.flush();
+            out.close();
             
             signerInfo = signerInfoGenerator.generate(contentTypeOID);
             

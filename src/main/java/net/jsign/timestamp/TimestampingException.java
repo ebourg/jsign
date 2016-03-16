@@ -17,16 +17,14 @@
 package net.jsign.timestamp;
 
 /**
+ * Timestamping exception.
+ * 
  * @author Emmanuel Bourg
- * @version $Revision$, $Date$
+ * @since 1.0
  */
 public class TimestampingException extends RuntimeException {
 
     public TimestampingException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public TimestampingException(Throwable cause) {
-        super(cause);
     }
 }

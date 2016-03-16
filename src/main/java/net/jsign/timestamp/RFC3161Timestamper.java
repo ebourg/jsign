@@ -81,7 +81,7 @@ public class RFC3161Timestamper extends Timestamper {
 
             return response.getTimeStampToken().toCMSSignedData();
 
-        } catch (TSPException e) {
+        } catch (Exception e) {
             throw new TimestampingException("Unable to complete the timestamping", e);
         }
     }

@@ -144,15 +144,6 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
-    public void testInvalidTimestampingAuthority() {
-        try {
-            cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--tsaurl=https://github.com/authenticode", "" + targetFile);
-            fail("No exception thrown");
-        } catch (SignerException e) {
-            // expected
-        }
-    }
-
     public void testConflictingAttributes() {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--keyfile=privatekey.pvk", "--certfile=certificate.spc", "" + targetFile);

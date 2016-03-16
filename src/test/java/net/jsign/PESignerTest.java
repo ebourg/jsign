@@ -31,10 +31,6 @@ import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
 
-/**
- * @author Emmanuel Bourg
- * @since 1.0
- */
 public class PESignerTest extends TestCase {
 
     private static String PRIVATE_KEY_PASSWORD = "password";
@@ -69,6 +65,8 @@ public class PESignerTest extends TestCase {
         CMSSignedData signature = signatures.get(0);
         
         assertNotNull(signature);
+        
+        peFile.printInfo(System.out);
     }
 
     public void testTimestampAuthenticode() throws Exception {
@@ -93,6 +91,8 @@ public class PESignerTest extends TestCase {
         CMSSignedData signature = signatures.get(0);
         
         assertNotNull(signature);
+        
+        peFile.printInfo(System.out);
     }
     
     /**
@@ -157,5 +157,94 @@ public class PESignerTest extends TestCase {
         CMSSignedData signature = signatures.get(0);
         
         assertNotNull(signature);
+        
+        peFile.printInfo(System.out);
+    }
+
+    public void testInvalidAuthenticodeTimestampingAutority() throws Exception {
+        testInvalidTimestampingAutority(TimestampingMode.AUTHENTICODE);
+    }
+
+    public void testInvalidRFC3161TimestampingAutority() throws Exception {
+        testInvalidTimestampingAutority(TimestampingMode.RFC3161);
+    }
+
+    public void testInvalidTimestampingAutority(TimestampingMode mode) throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamped-unavailable-" + mode.name().toLowerCase() + ".exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withTimestamping(true);
+        signer.withTimestampingMode(mode);
+        signer.withTimestampingAutority("http://www.google.com/" + mode.name().toLowerCase());
+        
+        try {
+            signer.sign(peFile);
+            fail("IOException not thrown");
+        } catch (IOException e) {
+            // expected
+        }
+
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertTrue(signatures.isEmpty());
+    }
+
+    public void testBrokenAuthenticodeTimestampingAutority() throws Exception {
+        testBrokenTimestampingAutority(TimestampingMode.AUTHENTICODE);
+    }
+
+    public void testBrokenRFC3161TimestampingAutority() throws Exception {
+        testBrokenTimestampingAutority(TimestampingMode.RFC3161);
+    }
+
+    public void testBrokenTimestampingAutority(TimestampingMode mode) throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamped-broken-" + mode.name().toLowerCase() + ".exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withTimestamping(true);
+        signer.withTimestampingMode(mode);
+        signer.withTimestampingAutority("http://github.com");
+        
+        try {
+            signer.sign(peFile);
+            fail("TimestampingException not thrown");
+        } catch (TimestampingException e) {
+            // expected
+        }
+
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertTrue(signatures.isEmpty());
+    }
+
+    public void testInvalidTimestampingURL() throws Exception {
+        PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"));
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withTimestamping(true);
+        signer.withTimestampingMode(TimestampingMode.RFC3161);
+        signer.withTimestampingAutority("example://example.com");
+        
+        try {
+            signer.sign(peFile);
+            fail("IllegalArgumentException not thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
     }
 }

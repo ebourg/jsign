@@ -52,7 +52,7 @@ public abstract class Timestamper {
         try {
             this.tsaurl = new URL(tsaurl);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Invalid timestamping URL: " + tsaurl, e);
         }
     }
 
