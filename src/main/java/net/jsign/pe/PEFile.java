@@ -540,7 +540,7 @@ public class PEFile implements Closeable {
                 int revision = raf.readWord();
                 int type = raf.readWord();
 
-                if (revision == 0x0200 && type == 2) {
+                if (revision == 0x0200 && type == CertificateType.PKCS_SIGNED_DATA.getValue()) {
                     // PKCS#7 SignedData structure
                     byte[] buffer = new byte[size - 8];
                     raf.read(buffer);

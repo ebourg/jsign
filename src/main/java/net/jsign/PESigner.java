@@ -37,6 +37,7 @@ import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcPeImageData;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
+import net.jsign.pe.CertificateType;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
@@ -195,7 +196,7 @@ public class PESigner {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt(buffer.limit());
         buffer.putShort((short) 0x0200);
-        buffer.putShort((short) 0x0002);
+        buffer.putShort(CertificateType.PKCS_SIGNED_DATA.getValue());
         buffer.put(signature);
         
         return buffer.array();
