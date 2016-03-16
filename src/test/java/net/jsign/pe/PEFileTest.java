@@ -16,6 +16,7 @@
 
 package net.jsign.pe;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -50,17 +51,19 @@ public class PEFileTest extends TestCase {
         assertEquals(0, file.getMinorOperatingSystemVersion());
         assertEquals(4, file.getMajorSubsystemVersion());
         assertEquals(0, file.getMinorSubsystemVersion());
+        assertEquals(0, file.getWin32VersionValue());
         assertEquals(49152, file.getSizeOfImage());
         assertEquals(4096, file.getSizeOfHeaders());
         assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
+        assertEquals(0, file.getLoaderFlags());
         assertEquals(16, file.getNumberOfRvaAndSizes());
     }
 
     public void testPrintInfo() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
-        StringWriter out = new StringWriter();
-        file.printInfo(new PrintWriter(out));
-
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        file.printInfo(out);
+        
         assertNotNull(out.toString());
         assertFalse(out.toString().isEmpty());
 
