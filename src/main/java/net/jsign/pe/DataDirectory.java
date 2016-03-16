@@ -43,6 +43,10 @@ public class DataDirectory {
         return (int) peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8 + 4);
     }
 
+    public boolean exists() {
+        return getVirtualAddress() != 0 && getSize() != 0;
+    }
+
     public void write(long virtualAddress, int size) {
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.order(ByteOrder.LITTLE_ENDIAN);

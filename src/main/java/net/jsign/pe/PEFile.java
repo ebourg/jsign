@@ -547,7 +547,7 @@ public class PEFile implements Closeable {
         List<CertificateTableEntry> entries = new ArrayList<CertificateTableEntry>();
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
-        if (certificateTable != null && certificateTable.getVirtualAddress() != 0 && certificateTable.getSize() != 0) {
+        if (certificateTable != null && certificateTable.exists()) {
             long position = certificateTable.getVirtualAddress();
             
             try {
@@ -634,7 +634,7 @@ public class PEFile implements Closeable {
         out.println("Data Directory");
         for (DataDirectoryType type : DataDirectoryType.values()) {
             DataDirectory entry = getDataDirectory(type);
-            if (entry != null && entry.getVirtualAddress() != 0) {
+            if (entry != null && entry.exists()) {
                 out.printf("  %-30s 0x%08x %8d bytes\n", type, entry.getVirtualAddress(), entry.getSize());
             }
         }
@@ -694,7 +694,7 @@ public class PEFile implements Closeable {
         // todo digest the sections in ascending address order
         
         // digest from the end of the certificate table entry to the beginning of the certificate table
-        if (certificateTable != null && certificateTable.getVirtualAddress() != 0) {
+        if (certificateTable != null && certificateTable.exists()) {
             updateDigest(digest, position, certificateTable.getVirtualAddress());
             position = certificateTable.getVirtualAddress() + certificateTable.getSize();
         }
