@@ -15,12 +15,26 @@
   </description>
   <url>http://ebourg.github.com/jsign</url>
 
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
   <developers>
     <developer>
       <name>Emmanuel Bourg</name>
       <email>ebourg@apache.org</email>
+      <organizationUrl>https://ebourg.github.com/jsign</organizationUrl>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/ebourg/jsign.git</connection>
+    <developerConnection>scm:git:git@github.com:ebourg/jsign.git</developerConnection>
+    <url>https://github.com/ebourg/jsign</url>
+  </scm>
 
   <repositories>
     <repository>
