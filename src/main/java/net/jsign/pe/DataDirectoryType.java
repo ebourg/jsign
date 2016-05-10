@@ -17,7 +17,7 @@
 package net.jsign.pe;
 
 /**
- * Types of structures pointed in the "RVA & Sizes" table (data directory).
+ * Types of structures pointed in the "RVA &amp; Sizes" table (data directory).
  * 
  * @author Emmanuel Bourg
  * @since 1.0
