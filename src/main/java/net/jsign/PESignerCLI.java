@@ -38,15 +38,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.jsign.pe.PEFile;
-import net.jsign.timestamp.TimestampingMode;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
+import net.jsign.pe.PEFile;
+import net.jsign.timestamp.TimestampingMode;
 
 /**
  * Command line interface for signing PE files.
@@ -114,7 +114,7 @@ public class PESignerCLI {
             String algorithm = cmd.getOptionValue("alg");
             String name = cmd.getOptionValue("name");
             String url = cmd.getOptionValue("url");
-            
+
             String proxyUrl = cmd.getOptionValue("proxyUrl");
             String proxyUser = cmd.getOptionValue("proxyUser");
             String proxyPassword = cmd.getOptionValue("proxyPass");
@@ -247,11 +247,12 @@ public class PESignerCLI {
                     .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
                     .withTimestamping(tsaurl != null || tsmode != null)
                     .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
-                    .withTimestampingAutority(tsaurl);
-
+                    .withTimestampingAutority(tsaurl)
+                    .withProxyUrl(proxyUrl)
+                    .withProxyUser(proxyUser)
+                    .withProxyPassword(proxyPassword);
 
             try {
-                initializeProxy(proxyUrl, proxyUser, proxyPassword);
                 System.out.println("Adding Authenticode signature to " + file);
                 signer.sign(peFile);
             } catch (Exception e) {
@@ -303,41 +304,4 @@ public class PESignerCLI {
             }
         }
     }
-
-    /**
-     * Initializes the proxy.
-     * 
-     * @param proxyUrl       the url of the proxy (either as hostname:port or http[s]://hostname:port)
-     * @param proxyUser      the username for the proxy authentication
-     * @param proxyPassword  the password for the proxy authentication
-     */
-    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
-   		// Do nothing if there is no proxy url.
-   		if (proxyUrl != null && proxyUrl.trim().length() > 0) {
-            if (!proxyUrl.trim().startsWith("http")) {
-                proxyUrl = "http://" + proxyUrl.trim();
-            }
-   			final URL url = new URL(proxyUrl);
-   			final int port = url.getPort() < 0 ? 80 : url.getPort();
-   
-   			ProxySelector.setDefault(new ProxySelector() {
-                private List<Proxy> proxies = Collections.singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port)));
-                
-                public List<Proxy> select(URI uri) {
-                    return proxies;
-                }
-
-                public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-                }
-            });
-
-            if (proxyUser != null && proxyUser.length() > 0 && proxyPassword != null) {
-                Authenticator.setDefault(new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-                    }
-                });
-            }
-   		}
-   	}
 }

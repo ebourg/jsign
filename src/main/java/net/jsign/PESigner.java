@@ -17,6 +17,15 @@
 package net.jsign;
 
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
+import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -26,20 +35,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
-import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
-import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
-import net.jsign.asn1.authenticode.SpcIndirectDataContent;
-import net.jsign.asn1.authenticode.SpcPeImageData;
-import net.jsign.asn1.authenticode.SpcSpOpusInfo;
-import net.jsign.asn1.authenticode.SpcStatementType;
-import net.jsign.pe.CertificateTableEntry;
-import net.jsign.pe.DataDirectoryType;
-import net.jsign.pe.PEFile;
-import net.jsign.timestamp.Timestamper;
-import net.jsign.timestamp.TimestampingMode;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
@@ -61,6 +59,19 @@ import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
+
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
+import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcPeImageData;
+import net.jsign.asn1.authenticode.SpcSpOpusInfo;
+import net.jsign.asn1.authenticode.SpcStatementType;
+import net.jsign.pe.CertificateTableEntry;
+import net.jsign.pe.DataDirectoryType;
+import net.jsign.pe.PEFile;
+import net.jsign.timestamp.Timestamper;
+import net.jsign.timestamp.TimestampingMode;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
@@ -84,6 +95,10 @@ public class PESigner {
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
     private String tsaurlOverride;
     private Timestamper timestamper;
+
+    private String proxyUrl;
+    private String proxyUser;
+    private String proxyPassword;
 
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
@@ -120,7 +135,7 @@ public class PESigner {
 
     /**
      * RFC3161 or Authenticode (Authenticode by default).
-     * 
+     *
      * @since 1.3
      */
     public PESigner withTimestampingMode(TimestampingMode tsmode) {
@@ -150,7 +165,37 @@ public class PESigner {
      */
     public PESigner withDigestAlgorithm(DigestAlgorithm algorithm) {
         if (algorithm != null) {
-            this.algo = algorithm;
+        	this.algo = algorithm;
+        }
+        return this;
+    }
+
+    /**
+     * Set the proxy url to use
+     */
+    public PESigner withProxyUrl(String proxyUrl) {
+        if (proxyUrl != null) {
+            this.proxyUrl = proxyUrl;
+        }
+        return this;
+    }
+
+    /**
+     * Set the proxy user to use
+     */
+    public PESigner withProxyUser(String proxyUser) {
+        if (proxyUser != null) {
+            this.proxyUser = proxyUser;
+        }
+        return this;
+    }
+
+    /**
+     * Set the proxy user to use
+     */
+    public PESigner withProxyPassword(String proxyPassword) {
+        if (proxyPassword != null) {
+            this.proxyPassword = proxyPassword;
         }
         return this;
     }
@@ -160,6 +205,9 @@ public class PESigner {
      * @throws Exception
      */
     public void sign(PEFile file) throws Exception {
+        // maybe we are behind a proxy
+        initializeProxy(proxyUrl, proxyUser, proxyPassword);
+
         // pad the file on a 8 byte boundary
         // todo only if there was no previous certificate table
         file.pad(8);
@@ -255,5 +303,51 @@ public class PESigner {
         }
         
         return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[attributes.size()])));
+    }
+
+    /**
+     * Initializes the proxy.
+     *
+     * @param proxyUrl
+     *            the url of the proxy (either as hostname:port or
+     *            http[s]://hostname:port)
+     * @param proxyUser
+     *            the username for the proxy authentication
+     * @param proxyPassword
+     *            the password for the proxy authentication
+     */
+    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
+        // Do nothing if there is no proxy url.
+        if (proxyUrl != null && proxyUrl.trim().length() > 0) {
+            if (!proxyUrl.trim().startsWith("http")) {
+                proxyUrl = "http://" + proxyUrl.trim();
+            }
+            final URL url = new URL(proxyUrl);
+            final int port = url.getPort() < 0 ? 80 : url.getPort();
+
+            ProxySelector.setDefault(new ProxySelector() {
+                private List<Proxy> proxies = Collections.singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port)));
+
+                @Override
+                public List<Proxy> select(URI uri) {
+                    return proxies;
+                }
+
+                @Override
+                public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                }
+            });
+
+            if (proxyUser != null && proxyUser.length() > 0 && proxyPassword != null) {
+                Authenticator.setDefault(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
+                    }
+                });
+            }
+        } else {
+            System.setProperty("java.net.useSystemProxies", "true");
+        }
     }
 }
