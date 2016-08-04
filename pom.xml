@@ -142,6 +142,7 @@
               <goal>jdeb</goal>
             </goals>
             <configuration>
+              <attach>false</attach>
               <dataSet>
                 <data>
                   <type>file</type>
