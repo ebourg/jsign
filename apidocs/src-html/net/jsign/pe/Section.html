@@ -48,7 +48,7 @@
 <FONT color="green">045</FONT>         */<a name="line.45"></a>
 <FONT color="green">046</FONT>        public String getName() {<a name="line.46"></a>
 <FONT color="green">047</FONT>            byte[] buffer = new byte[8];<a name="line.47"></a>
-<FONT color="green">048</FONT>            peFile.read(buffer, baseOffset);<a name="line.48"></a>
+<FONT color="green">048</FONT>            peFile.read(buffer, baseOffset, 0);<a name="line.48"></a>
 <FONT color="green">049</FONT>            String name = new String(buffer);<a name="line.49"></a>
 <FONT color="green">050</FONT>            if (name.indexOf(0) != -1) {<a name="line.50"></a>
 <FONT color="green">051</FONT>                name = name.substring(0, name.indexOf(0));<a name="line.51"></a>

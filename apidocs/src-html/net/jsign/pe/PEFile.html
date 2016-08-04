@@ -27,18 +27,18 @@
 <FONT color="green">024</FONT>    import java.nio.ByteBuffer;<a name="line.24"></a>
 <FONT color="green">025</FONT>    import java.nio.ByteOrder;<a name="line.25"></a>
 <FONT color="green">026</FONT>    import java.security.MessageDigest;<a name="line.26"></a>
-<FONT color="green">027</FONT>    import java.security.NoSuchAlgorithmException;<a name="line.27"></a>
-<FONT color="green">028</FONT>    import java.util.ArrayList;<a name="line.28"></a>
-<FONT color="green">029</FONT>    import java.util.Arrays;<a name="line.29"></a>
-<FONT color="green">030</FONT>    import java.util.Date;<a name="line.30"></a>
-<FONT color="green">031</FONT>    import java.util.List;<a name="line.31"></a>
-<FONT color="green">032</FONT>    <a name="line.32"></a>
-<FONT color="green">033</FONT>    import org.bouncycastle.asn1.cms.Attribute;<a name="line.33"></a>
-<FONT color="green">034</FONT>    import org.bouncycastle.asn1.cms.ContentInfo;<a name="line.34"></a>
-<FONT color="green">035</FONT>    import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;<a name="line.35"></a>
-<FONT color="green">036</FONT>    import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;<a name="line.36"></a>
-<FONT color="green">037</FONT>    import org.bouncycastle.cert.X509CertificateHolder;<a name="line.37"></a>
-<FONT color="green">038</FONT>    import org.bouncycastle.cms.CMSProcessable;<a name="line.38"></a>
+<FONT color="green">027</FONT>    import java.util.ArrayList;<a name="line.27"></a>
+<FONT color="green">028</FONT>    import java.util.Arrays;<a name="line.28"></a>
+<FONT color="green">029</FONT>    import java.util.Date;<a name="line.29"></a>
+<FONT color="green">030</FONT>    import java.util.List;<a name="line.30"></a>
+<FONT color="green">031</FONT>    <a name="line.31"></a>
+<FONT color="green">032</FONT>    import net.jsign.DigestAlgorithm;<a name="line.32"></a>
+<FONT color="green">033</FONT>    import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;<a name="line.33"></a>
+<FONT color="green">034</FONT>    <a name="line.34"></a>
+<FONT color="green">035</FONT>    import org.bouncycastle.asn1.cms.AttributeTable;<a name="line.35"></a>
+<FONT color="green">036</FONT>    import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;<a name="line.36"></a>
+<FONT color="green">037</FONT>    import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;<a name="line.37"></a>
+<FONT color="green">038</FONT>    import org.bouncycastle.cert.X509CertificateHolder;<a name="line.38"></a>
 <FONT color="green">039</FONT>    import org.bouncycastle.cms.CMSSignedData;<a name="line.39"></a>
 <FONT color="green">040</FONT>    import org.bouncycastle.cms.SignerInformation;<a name="line.40"></a>
 <FONT color="green">041</FONT>    <a name="line.41"></a>
@@ -90,10 +90,10 @@
 <FONT color="green">087</FONT>        public synchronized void close() throws IOException {<a name="line.87"></a>
 <FONT color="green">088</FONT>            raf.close();<a name="line.88"></a>
 <FONT color="green">089</FONT>        }<a name="line.89"></a>
-<FONT color="green">090</FONT>        <a name="line.90"></a>
-<FONT color="green">091</FONT>        synchronized int read(byte[] buffer, int offset) {<a name="line.91"></a>
+<FONT color="green">090</FONT>    <a name="line.90"></a>
+<FONT color="green">091</FONT>        synchronized int read(byte[] buffer, long base, int offset) {<a name="line.91"></a>
 <FONT color="green">092</FONT>            try {<a name="line.92"></a>
-<FONT color="green">093</FONT>                raf.seek(offset);<a name="line.93"></a>
+<FONT color="green">093</FONT>                raf.seek(base + offset);<a name="line.93"></a>
 <FONT color="green">094</FONT>                return raf.read(buffer);<a name="line.94"></a>
 <FONT color="green">095</FONT>            } catch (IOException e) {<a name="line.95"></a>
 <FONT color="green">096</FONT>                throw new RuntimeException(e);<a name="line.96"></a>
@@ -532,217 +532,228 @@
 <FONT color="green">529</FONT>         */<a name="line.529"></a>
 <FONT color="green">530</FONT>        public synchronized List&lt;CMSSignedData&gt; getSignatures() {<a name="line.530"></a>
 <FONT color="green">531</FONT>            List&lt;CMSSignedData&gt; signatures = new ArrayList&lt;CMSSignedData&gt;();<a name="line.531"></a>
-<FONT color="green">532</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.532"></a>
-<FONT color="green">533</FONT>            <a name="line.533"></a>
-<FONT color="green">534</FONT>            if (certificateTable != null &amp;&amp; certificateTable.getVirtualAddress() != 0 &amp;&amp; certificateTable.getSize() != 0) {<a name="line.534"></a>
-<FONT color="green">535</FONT>                long position = certificateTable.getVirtualAddress();<a name="line.535"></a>
-<FONT color="green">536</FONT>                <a name="line.536"></a>
-<FONT color="green">537</FONT>                try {<a name="line.537"></a>
-<FONT color="green">538</FONT>                    raf.seek(position);<a name="line.538"></a>
-<FONT color="green">539</FONT>                    int size = (int) raf.readDWord();<a name="line.539"></a>
-<FONT color="green">540</FONT>                    int revision = raf.readWord();<a name="line.540"></a>
-<FONT color="green">541</FONT>                    int type = raf.readWord();<a name="line.541"></a>
-<FONT color="green">542</FONT>    <a name="line.542"></a>
-<FONT color="green">543</FONT>                    if (revision == 0x0200 &amp;&amp; type == 2) {<a name="line.543"></a>
-<FONT color="green">544</FONT>                        // PKCS#7 SignedData structure<a name="line.544"></a>
-<FONT color="green">545</FONT>                        byte[] buffer = new byte[size - 8];<a name="line.545"></a>
-<FONT color="green">546</FONT>                        raf.read(buffer);<a name="line.546"></a>
-<FONT color="green">547</FONT>    <a name="line.547"></a>
-<FONT color="green">548</FONT>                        CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(buffer));<a name="line.548"></a>
-<FONT color="green">549</FONT>                        signatures.add(signedData);<a name="line.549"></a>
-<FONT color="green">550</FONT>                    }<a name="line.550"></a>
-<FONT color="green">551</FONT>                    <a name="line.551"></a>
-<FONT color="green">552</FONT>                    // todo read the remaining signatures<a name="line.552"></a>
-<FONT color="green">553</FONT>                } catch (Exception e) {<a name="line.553"></a>
-<FONT color="green">554</FONT>                    e.printStackTrace();<a name="line.554"></a>
-<FONT color="green">555</FONT>                }<a name="line.555"></a>
-<FONT color="green">556</FONT>            }<a name="line.556"></a>
-<FONT color="green">557</FONT>            <a name="line.557"></a>
-<FONT color="green">558</FONT>            return signatures;<a name="line.558"></a>
-<FONT color="green">559</FONT>        }<a name="line.559"></a>
-<FONT color="green">560</FONT>    <a name="line.560"></a>
-<FONT color="green">561</FONT>        /**<a name="line.561"></a>
-<FONT color="green">562</FONT>         * Print detailed informations about the PE file.<a name="line.562"></a>
-<FONT color="green">563</FONT>         */<a name="line.563"></a>
-<FONT color="green">564</FONT>        public void printInfo(OutputStream out) {<a name="line.564"></a>
-<FONT color="green">565</FONT>            printInfo(new PrintWriter(out, true));<a name="line.565"></a>
-<FONT color="green">566</FONT>        }<a name="line.566"></a>
-<FONT color="green">567</FONT>    <a name="line.567"></a>
-<FONT color="green">568</FONT>        /**<a name="line.568"></a>
-<FONT color="green">569</FONT>         * Print detailed informations about the PE file.<a name="line.569"></a>
-<FONT color="green">570</FONT>         */<a name="line.570"></a>
-<FONT color="green">571</FONT>        public void printInfo(PrintWriter out) {<a name="line.571"></a>
-<FONT color="green">572</FONT>            out.println("PE File");<a name="line.572"></a>
-<FONT color="green">573</FONT>            out.println("  Name:          " + file.getName());<a name="line.573"></a>
-<FONT color="green">574</FONT>            out.println("  Size:          " + file.length());<a name="line.574"></a>
-<FONT color="green">575</FONT>            out.println("  Last Modified: " + new Date(file.lastModified()));<a name="line.575"></a>
-<FONT color="green">576</FONT>            out.println();<a name="line.576"></a>
-<FONT color="green">577</FONT>            <a name="line.577"></a>
-<FONT color="green">578</FONT>            out.println("PE Header");<a name="line.578"></a>
-<FONT color="green">579</FONT>            out.println("  Machine:                    " + getMachineType());<a name="line.579"></a>
-<FONT color="green">580</FONT>            out.println("  Number of sections:         " + getNumberOfSections());<a name="line.580"></a>
-<FONT color="green">581</FONT>            out.println("  Timestamp:                  " + getTimeDateStamp());<a name="line.581"></a>
-<FONT color="green">582</FONT>            out.println("  Pointer to symbol table:    0x" + Long.toHexString(getPointerToSymbolTable()));<a name="line.582"></a>
-<FONT color="green">583</FONT>            out.println("  Number of symbols:          " + getNumberOfSymbols());<a name="line.583"></a>
-<FONT color="green">584</FONT>            out.println("  Size of optional header:    " + getSizeOfOptionalHeader());<a name="line.584"></a>
-<FONT color="green">585</FONT>            out.println("  Characteristics:            0x" + Long.toBinaryString(getCharacteristics()));<a name="line.585"></a>
-<FONT color="green">586</FONT>            out.println();<a name="line.586"></a>
-<FONT color="green">587</FONT>            <a name="line.587"></a>
-<FONT color="green">588</FONT>            out.println("Optional Header");<a name="line.588"></a>
-<FONT color="green">589</FONT>            PEFormat format = getFormat();<a name="line.589"></a>
-<FONT color="green">590</FONT>            out.println("  PE Format:                  0x" + Integer.toHexString(format.value) + " (" + format.label + ")");<a name="line.590"></a>
-<FONT color="green">591</FONT>            out.println("  Linker version:             " + getMajorLinkerVersion() + "." + getMinorLinkerVersion());<a name="line.591"></a>
-<FONT color="green">592</FONT>            out.println("  Size of code:               " + getSizeOfCode());<a name="line.592"></a>
-<FONT color="green">593</FONT>            out.println("  Size of initialized data:   " + getSizeOfInitializedData());<a name="line.593"></a>
-<FONT color="green">594</FONT>            out.println("  Size of uninitialized data: " + getSizeOfUninitializedData());<a name="line.594"></a>
-<FONT color="green">595</FONT>            out.println("  Address of entry point:     0x" + Long.toHexString(getAddressOfEntryPoint()));<a name="line.595"></a>
-<FONT color="green">596</FONT>            out.println("  Base of code:               0x" + Long.toHexString(getBaseOfCode()));<a name="line.596"></a>
-<FONT color="green">597</FONT>            if (PEFormat.PE32.equals(getFormat())) {<a name="line.597"></a>
-<FONT color="green">598</FONT>                out.println("  Base of data:               0x" + Long.toHexString(getBaseOfData()));<a name="line.598"></a>
-<FONT color="green">599</FONT>            }<a name="line.599"></a>
-<FONT color="green">600</FONT>            out.println("  Image base:                 0x" + Long.toHexString(getImageBase()));<a name="line.600"></a>
-<FONT color="green">601</FONT>            out.println("  Section alignment:          " + getSectionAlignment());<a name="line.601"></a>
-<FONT color="green">602</FONT>            out.println("  File alignment:             " + getFileAlignment());<a name="line.602"></a>
-<FONT color="green">603</FONT>            out.println("  Operating system version:   " + getMajorOperatingSystemVersion() + "." + getMinorOperatingSystemVersion());<a name="line.603"></a>
-<FONT color="green">604</FONT>            out.println("  Image version:              " + getMajorImageVersion() + "." + getMinorImageVersion());<a name="line.604"></a>
-<FONT color="green">605</FONT>            out.println("  Subsystem version:          " + getMajorSubsystemVersion() + "." + getMinorSubsystemVersion());<a name="line.605"></a>
-<FONT color="green">606</FONT>            out.println("  Size of image:              " + getSizeOfImage());<a name="line.606"></a>
-<FONT color="green">607</FONT>            out.println("  Size of headers:            " + getSizeOfHeaders());<a name="line.607"></a>
-<FONT color="green">608</FONT>            out.println("  Checksum:                   0x" + Long.toHexString(getCheckSum()));<a name="line.608"></a>
-<FONT color="green">609</FONT>            out.println("  Checksum (computed):        0x" + Long.toHexString(computeChecksum()));<a name="line.609"></a>
-<FONT color="green">610</FONT>            out.println("  Subsystem:                  " + getSubsystem());<a name="line.610"></a>
-<FONT color="green">611</FONT>            out.println("  DLL characteristics:        0x" + Long.toBinaryString(getDllCharacteristics()));<a name="line.611"></a>
-<FONT color="green">612</FONT>            out.println("  Size of stack reserve:      " + getSizeOfStackReserve());<a name="line.612"></a>
-<FONT color="green">613</FONT>            out.println("  Size of stack commit:       " + getSizeOfStackCommit());<a name="line.613"></a>
-<FONT color="green">614</FONT>            out.println("  Size of heap reserve:       " + getSizeOfHeapReserve());<a name="line.614"></a>
-<FONT color="green">615</FONT>            out.println("  Size of heap commit:        " + getSizeOfHeapCommit());<a name="line.615"></a>
-<FONT color="green">616</FONT>            out.println("  Number of RVA and sizes:    " + getNumberOfRvaAndSizes());<a name="line.616"></a>
-<FONT color="green">617</FONT>            out.println();<a name="line.617"></a>
-<FONT color="green">618</FONT>            <a name="line.618"></a>
-<FONT color="green">619</FONT>            out.println("Data Directory");<a name="line.619"></a>
-<FONT color="green">620</FONT>            for (DataDirectoryType type : DataDirectoryType.values()) {<a name="line.620"></a>
-<FONT color="green">621</FONT>                DataDirectory entry = getDataDirectory(type);<a name="line.621"></a>
-<FONT color="green">622</FONT>                if (entry != null &amp;&amp; entry.getVirtualAddress() != 0) {<a name="line.622"></a>
-<FONT color="green">623</FONT>                    out.printf("  %-30s 0x%08x %8d bytes\n", type, entry.getVirtualAddress(), entry.getSize());<a name="line.623"></a>
-<FONT color="green">624</FONT>                }<a name="line.624"></a>
-<FONT color="green">625</FONT>            }<a name="line.625"></a>
-<FONT color="green">626</FONT>            out.println();<a name="line.626"></a>
-<FONT color="green">627</FONT>            <a name="line.627"></a>
-<FONT color="green">628</FONT>            int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes(); <a name="line.628"></a>
-<FONT color="green">629</FONT>            out.println("Sections");<a name="line.629"></a>
-<FONT color="green">630</FONT>            out.println("      Name     Virtual Size  Virtual Address  Raw Data Size  Raw Data Ptr  Characteristics");<a name="line.630"></a>
-<FONT color="green">631</FONT>            for (int i = 0; i &lt; getNumberOfSections(); i++) {<a name="line.631"></a>
-<FONT color="green">632</FONT>                Section section = new Section(this, sectionTableOffset + 40 * i);<a name="line.632"></a>
-<FONT color="green">633</FONT>                out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s\n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());<a name="line.633"></a>
-<FONT color="green">634</FONT>            }<a name="line.634"></a>
-<FONT color="green">635</FONT>            out.println();<a name="line.635"></a>
-<FONT color="green">636</FONT>            <a name="line.636"></a>
-<FONT color="green">637</FONT>            List&lt;CMSSignedData&gt; signatures = getSignatures();<a name="line.637"></a>
-<FONT color="green">638</FONT>            if (!signatures.isEmpty()) {<a name="line.638"></a>
-<FONT color="green">639</FONT>                out.println("Signatures");<a name="line.639"></a>
-<FONT color="green">640</FONT>                for (CMSSignedData signedData : signatures) {<a name="line.640"></a>
-<FONT color="green">641</FONT>                    SignerInformation signerInformation = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();<a name="line.641"></a>
-<FONT color="green">642</FONT>                    X509CertificateHolder certificate = (X509CertificateHolder) signedData.getCertificates().getMatches(signerInformation.getSID()).iterator().next();<a name="line.642"></a>
-<FONT color="green">643</FONT>                    <a name="line.643"></a>
-<FONT color="green">644</FONT>                    String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();<a name="line.644"></a>
-<FONT color="green">645</FONT>                    <a name="line.645"></a>
-<FONT color="green">646</FONT>                    Attribute counterSignature = null;<a name="line.646"></a>
-<FONT color="green">647</FONT>                    if (signerInformation.getUnsignedAttributes() != null) {<a name="line.647"></a>
-<FONT color="green">648</FONT>                        counterSignature = signerInformation.getUnsignedAttributes().get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature);<a name="line.648"></a>
-<FONT color="green">649</FONT>                    }<a name="line.649"></a>
-<FONT color="green">650</FONT>                    <a name="line.650"></a>
-<FONT color="green">651</FONT>                    out.println("  " + commonName + "   " + (counterSignature != null ? "(timestamped)" : ""));<a name="line.651"></a>
-<FONT color="green">652</FONT>                }<a name="line.652"></a>
-<FONT color="green">653</FONT>            }<a name="line.653"></a>
-<FONT color="green">654</FONT>        }<a name="line.654"></a>
-<FONT color="green">655</FONT>    <a name="line.655"></a>
-<FONT color="green">656</FONT>        /**<a name="line.656"></a>
-<FONT color="green">657</FONT>         * Compute the digest of the file. The checksum field, the certificate<a name="line.657"></a>
-<FONT color="green">658</FONT>         * directory table entry and the certificate table are excluded from<a name="line.658"></a>
-<FONT color="green">659</FONT>         * the digest.<a name="line.659"></a>
-<FONT color="green">660</FONT>         */<a name="line.660"></a>
-<FONT color="green">661</FONT>        private synchronized byte[] computeDigest(MessageDigest digest) throws IOException {<a name="line.661"></a>
-<FONT color="green">662</FONT>            long checksumLocation = peHeaderOffset + 88;<a name="line.662"></a>
-<FONT color="green">663</FONT>            <a name="line.663"></a>
-<FONT color="green">664</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.664"></a>
-<FONT color="green">665</FONT>            <a name="line.665"></a>
-<FONT color="green">666</FONT>            // digest from the beginning to the checksum field (excluded)<a name="line.666"></a>
-<FONT color="green">667</FONT>            updateDigest(digest, 0, checksumLocation);<a name="line.667"></a>
-<FONT color="green">668</FONT>            <a name="line.668"></a>
-<FONT color="green">669</FONT>            // skip the checksum field<a name="line.669"></a>
-<FONT color="green">670</FONT>            long position = checksumLocation + 4;<a name="line.670"></a>
-<FONT color="green">671</FONT>            <a name="line.671"></a>
-<FONT color="green">672</FONT>            // digest from the end of the checksum field to the beginning of the certificate table entry<a name="line.672"></a>
-<FONT color="green">673</FONT>            int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();<a name="line.673"></a>
-<FONT color="green">674</FONT>            updateDigest(digest, position, certificateTableOffset);<a name="line.674"></a>
-<FONT color="green">675</FONT>            <a name="line.675"></a>
-<FONT color="green">676</FONT>            // skip the certificate entry<a name="line.676"></a>
-<FONT color="green">677</FONT>            position = certificateTableOffset + 8;<a name="line.677"></a>
+<FONT color="green">532</FONT>            <a name="line.532"></a>
+<FONT color="green">533</FONT>            for (CertificateTableEntry entry : getCertificateTable()) {<a name="line.533"></a>
+<FONT color="green">534</FONT>                try {<a name="line.534"></a>
+<FONT color="green">535</FONT>                    signatures.add(entry.getSignature());<a name="line.535"></a>
+<FONT color="green">536</FONT>                } catch (UnsupportedOperationException e) {<a name="line.536"></a>
+<FONT color="green">537</FONT>                    // unsupported type, just skip<a name="line.537"></a>
+<FONT color="green">538</FONT>                } catch (Exception e) {<a name="line.538"></a>
+<FONT color="green">539</FONT>                    e.printStackTrace();<a name="line.539"></a>
+<FONT color="green">540</FONT>                }<a name="line.540"></a>
+<FONT color="green">541</FONT>            }<a name="line.541"></a>
+<FONT color="green">542</FONT>            <a name="line.542"></a>
+<FONT color="green">543</FONT>            return signatures;<a name="line.543"></a>
+<FONT color="green">544</FONT>        }<a name="line.544"></a>
+<FONT color="green">545</FONT>    <a name="line.545"></a>
+<FONT color="green">546</FONT>        private synchronized List&lt;CertificateTableEntry&gt; getCertificateTable() {<a name="line.546"></a>
+<FONT color="green">547</FONT>            List&lt;CertificateTableEntry&gt; entries = new ArrayList&lt;CertificateTableEntry&gt;();<a name="line.547"></a>
+<FONT color="green">548</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.548"></a>
+<FONT color="green">549</FONT>            <a name="line.549"></a>
+<FONT color="green">550</FONT>            if (certificateTable != null &amp;&amp; certificateTable.exists()) {<a name="line.550"></a>
+<FONT color="green">551</FONT>                long position = certificateTable.getVirtualAddress();<a name="line.551"></a>
+<FONT color="green">552</FONT>                <a name="line.552"></a>
+<FONT color="green">553</FONT>                try {<a name="line.553"></a>
+<FONT color="green">554</FONT>                    entries.add(new CertificateTableEntry(this, position));<a name="line.554"></a>
+<FONT color="green">555</FONT>                    <a name="line.555"></a>
+<FONT color="green">556</FONT>                    // todo read the remaining signatures<a name="line.556"></a>
+<FONT color="green">557</FONT>                } catch (Exception e) {<a name="line.557"></a>
+<FONT color="green">558</FONT>                    e.printStackTrace();<a name="line.558"></a>
+<FONT color="green">559</FONT>                }<a name="line.559"></a>
+<FONT color="green">560</FONT>            }<a name="line.560"></a>
+<FONT color="green">561</FONT>            <a name="line.561"></a>
+<FONT color="green">562</FONT>            return entries;<a name="line.562"></a>
+<FONT color="green">563</FONT>        }<a name="line.563"></a>
+<FONT color="green">564</FONT>    <a name="line.564"></a>
+<FONT color="green">565</FONT>        public synchronized List&lt;Section&gt; getSections() {<a name="line.565"></a>
+<FONT color="green">566</FONT>            List&lt;Section&gt; sections = new ArrayList&lt;Section&gt;();<a name="line.566"></a>
+<FONT color="green">567</FONT>            int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes();<a name="line.567"></a>
+<FONT color="green">568</FONT>            <a name="line.568"></a>
+<FONT color="green">569</FONT>            for (int i = 0; i &lt; getNumberOfSections(); i++) {<a name="line.569"></a>
+<FONT color="green">570</FONT>                sections.add(new Section(this, sectionTableOffset + 40 * i));<a name="line.570"></a>
+<FONT color="green">571</FONT>            }<a name="line.571"></a>
+<FONT color="green">572</FONT>            <a name="line.572"></a>
+<FONT color="green">573</FONT>            return sections;<a name="line.573"></a>
+<FONT color="green">574</FONT>        }<a name="line.574"></a>
+<FONT color="green">575</FONT>    <a name="line.575"></a>
+<FONT color="green">576</FONT>        /**<a name="line.576"></a>
+<FONT color="green">577</FONT>         * Print detailed informations about the PE file.<a name="line.577"></a>
+<FONT color="green">578</FONT>         */<a name="line.578"></a>
+<FONT color="green">579</FONT>        public void printInfo(OutputStream out) {<a name="line.579"></a>
+<FONT color="green">580</FONT>            printInfo(new PrintWriter(out, true));<a name="line.580"></a>
+<FONT color="green">581</FONT>        }<a name="line.581"></a>
+<FONT color="green">582</FONT>    <a name="line.582"></a>
+<FONT color="green">583</FONT>        /**<a name="line.583"></a>
+<FONT color="green">584</FONT>         * Print detailed informations about the PE file.<a name="line.584"></a>
+<FONT color="green">585</FONT>         */<a name="line.585"></a>
+<FONT color="green">586</FONT>        public void printInfo(PrintWriter out) {<a name="line.586"></a>
+<FONT color="green">587</FONT>            out.println("PE File");<a name="line.587"></a>
+<FONT color="green">588</FONT>            out.println("  Name:          " + file.getName());<a name="line.588"></a>
+<FONT color="green">589</FONT>            out.println("  Size:          " + file.length());<a name="line.589"></a>
+<FONT color="green">590</FONT>            out.println("  Last Modified: " + new Date(file.lastModified()));<a name="line.590"></a>
+<FONT color="green">591</FONT>            out.println();<a name="line.591"></a>
+<FONT color="green">592</FONT>            <a name="line.592"></a>
+<FONT color="green">593</FONT>            out.println("PE Header");<a name="line.593"></a>
+<FONT color="green">594</FONT>            out.println("  Machine:                    " + getMachineType());<a name="line.594"></a>
+<FONT color="green">595</FONT>            out.println("  Number of sections:         " + getNumberOfSections());<a name="line.595"></a>
+<FONT color="green">596</FONT>            out.println("  Timestamp:                  " + getTimeDateStamp());<a name="line.596"></a>
+<FONT color="green">597</FONT>            out.println("  Pointer to symbol table:    0x" + Long.toHexString(getPointerToSymbolTable()));<a name="line.597"></a>
+<FONT color="green">598</FONT>            out.println("  Number of symbols:          " + getNumberOfSymbols());<a name="line.598"></a>
+<FONT color="green">599</FONT>            out.println("  Size of optional header:    " + getSizeOfOptionalHeader());<a name="line.599"></a>
+<FONT color="green">600</FONT>            out.println("  Characteristics:            0x" + Long.toBinaryString(getCharacteristics()));<a name="line.600"></a>
+<FONT color="green">601</FONT>            out.println();<a name="line.601"></a>
+<FONT color="green">602</FONT>            <a name="line.602"></a>
+<FONT color="green">603</FONT>            out.println("Optional Header");<a name="line.603"></a>
+<FONT color="green">604</FONT>            PEFormat format = getFormat();<a name="line.604"></a>
+<FONT color="green">605</FONT>            out.println("  PE Format:                  0x" + Integer.toHexString(format.value) + " (" + format.label + ")");<a name="line.605"></a>
+<FONT color="green">606</FONT>            out.println("  Linker version:             " + getMajorLinkerVersion() + "." + getMinorLinkerVersion());<a name="line.606"></a>
+<FONT color="green">607</FONT>            out.println("  Size of code:               " + getSizeOfCode());<a name="line.607"></a>
+<FONT color="green">608</FONT>            out.println("  Size of initialized data:   " + getSizeOfInitializedData());<a name="line.608"></a>
+<FONT color="green">609</FONT>            out.println("  Size of uninitialized data: " + getSizeOfUninitializedData());<a name="line.609"></a>
+<FONT color="green">610</FONT>            out.println("  Address of entry point:     0x" + Long.toHexString(getAddressOfEntryPoint()));<a name="line.610"></a>
+<FONT color="green">611</FONT>            out.println("  Base of code:               0x" + Long.toHexString(getBaseOfCode()));<a name="line.611"></a>
+<FONT color="green">612</FONT>            if (PEFormat.PE32.equals(getFormat())) {<a name="line.612"></a>
+<FONT color="green">613</FONT>                out.println("  Base of data:               0x" + Long.toHexString(getBaseOfData()));<a name="line.613"></a>
+<FONT color="green">614</FONT>            }<a name="line.614"></a>
+<FONT color="green">615</FONT>            out.println("  Image base:                 0x" + Long.toHexString(getImageBase()));<a name="line.615"></a>
+<FONT color="green">616</FONT>            out.println("  Section alignment:          " + getSectionAlignment());<a name="line.616"></a>
+<FONT color="green">617</FONT>            out.println("  File alignment:             " + getFileAlignment());<a name="line.617"></a>
+<FONT color="green">618</FONT>            out.println("  Operating system version:   " + getMajorOperatingSystemVersion() + "." + getMinorOperatingSystemVersion());<a name="line.618"></a>
+<FONT color="green">619</FONT>            out.println("  Image version:              " + getMajorImageVersion() + "." + getMinorImageVersion());<a name="line.619"></a>
+<FONT color="green">620</FONT>            out.println("  Subsystem version:          " + getMajorSubsystemVersion() + "." + getMinorSubsystemVersion());<a name="line.620"></a>
+<FONT color="green">621</FONT>            out.println("  Size of image:              " + getSizeOfImage());<a name="line.621"></a>
+<FONT color="green">622</FONT>            out.println("  Size of headers:            " + getSizeOfHeaders());<a name="line.622"></a>
+<FONT color="green">623</FONT>            out.println("  Checksum:                   0x" + Long.toHexString(getCheckSum()));<a name="line.623"></a>
+<FONT color="green">624</FONT>            out.println("  Checksum (computed):        0x" + Long.toHexString(computeChecksum()));<a name="line.624"></a>
+<FONT color="green">625</FONT>            out.println("  Subsystem:                  " + getSubsystem());<a name="line.625"></a>
+<FONT color="green">626</FONT>            out.println("  DLL characteristics:        0x" + Long.toBinaryString(getDllCharacteristics()));<a name="line.626"></a>
+<FONT color="green">627</FONT>            out.println("  Size of stack reserve:      " + getSizeOfStackReserve());<a name="line.627"></a>
+<FONT color="green">628</FONT>            out.println("  Size of stack commit:       " + getSizeOfStackCommit());<a name="line.628"></a>
+<FONT color="green">629</FONT>            out.println("  Size of heap reserve:       " + getSizeOfHeapReserve());<a name="line.629"></a>
+<FONT color="green">630</FONT>            out.println("  Size of heap commit:        " + getSizeOfHeapCommit());<a name="line.630"></a>
+<FONT color="green">631</FONT>            out.println("  Number of RVA and sizes:    " + getNumberOfRvaAndSizes());<a name="line.631"></a>
+<FONT color="green">632</FONT>            out.println();<a name="line.632"></a>
+<FONT color="green">633</FONT>            <a name="line.633"></a>
+<FONT color="green">634</FONT>            out.println("Data Directory");<a name="line.634"></a>
+<FONT color="green">635</FONT>            for (DataDirectoryType type : DataDirectoryType.values()) {<a name="line.635"></a>
+<FONT color="green">636</FONT>                DataDirectory entry = getDataDirectory(type);<a name="line.636"></a>
+<FONT color="green">637</FONT>                if (entry != null &amp;&amp; entry.exists()) {<a name="line.637"></a>
+<FONT color="green">638</FONT>                    out.printf("  %-30s 0x%08x %8d bytes\n", type, entry.getVirtualAddress(), entry.getSize());<a name="line.638"></a>
+<FONT color="green">639</FONT>                }<a name="line.639"></a>
+<FONT color="green">640</FONT>            }<a name="line.640"></a>
+<FONT color="green">641</FONT>            out.println();<a name="line.641"></a>
+<FONT color="green">642</FONT>            <a name="line.642"></a>
+<FONT color="green">643</FONT>            out.println("Sections");<a name="line.643"></a>
+<FONT color="green">644</FONT>            out.println("      Name     Virtual Size  Virtual Address  Raw Data Size  Raw Data Ptr  Characteristics");<a name="line.644"></a>
+<FONT color="green">645</FONT>            List&lt;Section&gt; sections = getSections();<a name="line.645"></a>
+<FONT color="green">646</FONT>            for (int i = 0; i &lt; sections.size(); i++) {<a name="line.646"></a>
+<FONT color="green">647</FONT>                Section section = sections.get(i);<a name="line.647"></a>
+<FONT color="green">648</FONT>                out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s\n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());<a name="line.648"></a>
+<FONT color="green">649</FONT>            }<a name="line.649"></a>
+<FONT color="green">650</FONT>            out.println();<a name="line.650"></a>
+<FONT color="green">651</FONT>            <a name="line.651"></a>
+<FONT color="green">652</FONT>            List&lt;CMSSignedData&gt; signatures = getSignatures();<a name="line.652"></a>
+<FONT color="green">653</FONT>            if (!signatures.isEmpty()) {<a name="line.653"></a>
+<FONT color="green">654</FONT>                out.println("Signatures");<a name="line.654"></a>
+<FONT color="green">655</FONT>                for (CMSSignedData signedData : signatures) {<a name="line.655"></a>
+<FONT color="green">656</FONT>                    SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();<a name="line.656"></a>
+<FONT color="green">657</FONT>                    X509CertificateHolder certificate = (X509CertificateHolder) signedData.getCertificates().getMatches(signerInformation.getSID()).iterator().next();<a name="line.657"></a>
+<FONT color="green">658</FONT>                    <a name="line.658"></a>
+<FONT color="green">659</FONT>                    String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();<a name="line.659"></a>
+<FONT color="green">660</FONT>                    <a name="line.660"></a>
+<FONT color="green">661</FONT>                    AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();<a name="line.661"></a>
+<FONT color="green">662</FONT>                    boolean timestamped = unsignedAttributes != null &amp;&amp;<a name="line.662"></a>
+<FONT color="green">663</FONT>                               (unsignedAttributes.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null<a name="line.663"></a>
+<FONT color="green">664</FONT>                             || unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID)  != null);<a name="line.664"></a>
+<FONT color="green">665</FONT>                    DigestAlgorithm algorithm = DigestAlgorithm.of(signerInformation.getDigestAlgorithmID().getAlgorithm());<a name="line.665"></a>
+<FONT color="green">666</FONT>                    out.println("  " + commonName + "  " + (algorithm != null ? "[" + algorithm.id + "]  " : "") + (timestamped ? "(timestamped)" : ""));<a name="line.666"></a>
+<FONT color="green">667</FONT>                }<a name="line.667"></a>
+<FONT color="green">668</FONT>            }<a name="line.668"></a>
+<FONT color="green">669</FONT>        }<a name="line.669"></a>
+<FONT color="green">670</FONT>    <a name="line.670"></a>
+<FONT color="green">671</FONT>        /**<a name="line.671"></a>
+<FONT color="green">672</FONT>         * Compute the digest of the file. The checksum field, the certificate<a name="line.672"></a>
+<FONT color="green">673</FONT>         * directory table entry and the certificate table are excluded from<a name="line.673"></a>
+<FONT color="green">674</FONT>         * the digest.<a name="line.674"></a>
+<FONT color="green">675</FONT>         */<a name="line.675"></a>
+<FONT color="green">676</FONT>        private synchronized byte[] computeDigest(MessageDigest digest) throws IOException {<a name="line.676"></a>
+<FONT color="green">677</FONT>            long checksumLocation = peHeaderOffset + 88;<a name="line.677"></a>
 <FONT color="green">678</FONT>            <a name="line.678"></a>
-<FONT color="green">679</FONT>            // todo digest the sections in ascending address order<a name="line.679"></a>
+<FONT color="green">679</FONT>            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.679"></a>
 <FONT color="green">680</FONT>            <a name="line.680"></a>
-<FONT color="green">681</FONT>            // digest from the end of the certificate table entry to the beginning of the certificate table<a name="line.681"></a>
-<FONT color="green">682</FONT>            if (certificateTable != null &amp;&amp; certificateTable.getVirtualAddress() != 0) {<a name="line.682"></a>
-<FONT color="green">683</FONT>                updateDigest(digest, position, certificateTable.getVirtualAddress());<a name="line.683"></a>
-<FONT color="green">684</FONT>                position = certificateTable.getVirtualAddress() + certificateTable.getSize();<a name="line.684"></a>
-<FONT color="green">685</FONT>            }<a name="line.685"></a>
+<FONT color="green">681</FONT>            // digest from the beginning to the checksum field (excluded)<a name="line.681"></a>
+<FONT color="green">682</FONT>            updateDigest(digest, 0, checksumLocation);<a name="line.682"></a>
+<FONT color="green">683</FONT>            <a name="line.683"></a>
+<FONT color="green">684</FONT>            // skip the checksum field<a name="line.684"></a>
+<FONT color="green">685</FONT>            long position = checksumLocation + 4;<a name="line.685"></a>
 <FONT color="green">686</FONT>            <a name="line.686"></a>
-<FONT color="green">687</FONT>            // digest from the end of the certificate table to the end of the file<a name="line.687"></a>
-<FONT color="green">688</FONT>            updateDigest(digest, position, raf.length());<a name="line.688"></a>
-<FONT color="green">689</FONT>            <a name="line.689"></a>
-<FONT color="green">690</FONT>            return digest.digest();<a name="line.690"></a>
-<FONT color="green">691</FONT>        }<a name="line.691"></a>
-<FONT color="green">692</FONT>    <a name="line.692"></a>
-<FONT color="green">693</FONT>        /**<a name="line.693"></a>
-<FONT color="green">694</FONT>         * Update the specified digest by reading the underlying RandomAccessFile<a name="line.694"></a>
-<FONT color="green">695</FONT>         * from the start offset included to the end offset excluded.<a name="line.695"></a>
-<FONT color="green">696</FONT>         * <a name="line.696"></a>
-<FONT color="green">697</FONT>         * @param digest<a name="line.697"></a>
-<FONT color="green">698</FONT>         * @param startOffset<a name="line.698"></a>
-<FONT color="green">699</FONT>         * @param endOffset<a name="line.699"></a>
-<FONT color="green">700</FONT>         */<a name="line.700"></a>
-<FONT color="green">701</FONT>        private void updateDigest(MessageDigest digest, long startOffset, long endOffset) throws IOException {<a name="line.701"></a>
-<FONT color="green">702</FONT>            raf.seek(startOffset);<a name="line.702"></a>
-<FONT color="green">703</FONT>            <a name="line.703"></a>
-<FONT color="green">704</FONT>            byte[] buffer = new byte[8192];<a name="line.704"></a>
-<FONT color="green">705</FONT>            <a name="line.705"></a>
-<FONT color="green">706</FONT>            long position = startOffset;<a name="line.706"></a>
-<FONT color="green">707</FONT>            while (position &lt; endOffset) {<a name="line.707"></a>
-<FONT color="green">708</FONT>                int length = (int) Math.min(buffer.length, endOffset - position);<a name="line.708"></a>
-<FONT color="green">709</FONT>                raf.read(buffer, 0, length);<a name="line.709"></a>
-<FONT color="green">710</FONT>                <a name="line.710"></a>
-<FONT color="green">711</FONT>                digest.update(buffer, 0, length);<a name="line.711"></a>
-<FONT color="green">712</FONT>                <a name="line.712"></a>
-<FONT color="green">713</FONT>                position += length;<a name="line.713"></a>
-<FONT color="green">714</FONT>            }<a name="line.714"></a>
-<FONT color="green">715</FONT>        }<a name="line.715"></a>
-<FONT color="green">716</FONT>    <a name="line.716"></a>
-<FONT color="green">717</FONT>        /**<a name="line.717"></a>
-<FONT color="green">718</FONT>         * Compute the checksum of the file using the specified digest algorithm.<a name="line.718"></a>
-<FONT color="green">719</FONT>         * <a name="line.719"></a>
-<FONT color="green">720</FONT>         * @param algorithm the digest algorithm, typically SHA1<a name="line.720"></a>
-<FONT color="green">721</FONT>         */<a name="line.721"></a>
-<FONT color="green">722</FONT>        public byte[] computeDigest(String algorithm) throws IOException {<a name="line.722"></a>
-<FONT color="green">723</FONT>            try {<a name="line.723"></a>
-<FONT color="green">724</FONT>                return computeDigest(MessageDigest.getInstance(algorithm));<a name="line.724"></a>
-<FONT color="green">725</FONT>            } catch (NoSuchAlgorithmException e) {<a name="line.725"></a>
-<FONT color="green">726</FONT>                throw new RuntimeException(e);<a name="line.726"></a>
-<FONT color="green">727</FONT>            }<a name="line.727"></a>
-<FONT color="green">728</FONT>        }<a name="line.728"></a>
-<FONT color="green">729</FONT>    <a name="line.729"></a>
-<FONT color="green">730</FONT>        /**<a name="line.730"></a>
-<FONT color="green">731</FONT>         * Increase the size of the file up to a size that is a multiple of the specified value.<a name="line.731"></a>
-<FONT color="green">732</FONT>         * <a name="line.732"></a>
-<FONT color="green">733</FONT>         * @param multiple<a name="line.733"></a>
-<FONT color="green">734</FONT>         */<a name="line.734"></a>
-<FONT color="green">735</FONT>        public synchronized void pad(int multiple) throws IOException {<a name="line.735"></a>
-<FONT color="green">736</FONT>            long padding = multiple - raf.length() % multiple;<a name="line.736"></a>
-<FONT color="green">737</FONT>            raf.seek(raf.length());<a name="line.737"></a>
-<FONT color="green">738</FONT>            for (int i = 0; i &lt; padding; i++) {<a name="line.738"></a>
-<FONT color="green">739</FONT>                raf.writeByte(0);<a name="line.739"></a>
-<FONT color="green">740</FONT>            }<a name="line.740"></a>
-<FONT color="green">741</FONT>        }<a name="line.741"></a>
-<FONT color="green">742</FONT>    }<a name="line.742"></a>
+<FONT color="green">687</FONT>            // digest from the end of the checksum field to the beginning of the certificate table entry<a name="line.687"></a>
+<FONT color="green">688</FONT>            int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();<a name="line.688"></a>
+<FONT color="green">689</FONT>            updateDigest(digest, position, certificateTableOffset);<a name="line.689"></a>
+<FONT color="green">690</FONT>            <a name="line.690"></a>
+<FONT color="green">691</FONT>            // skip the certificate entry<a name="line.691"></a>
+<FONT color="green">692</FONT>            position = certificateTableOffset + 8;<a name="line.692"></a>
+<FONT color="green">693</FONT>            <a name="line.693"></a>
+<FONT color="green">694</FONT>            // todo digest the sections in ascending address order<a name="line.694"></a>
+<FONT color="green">695</FONT>            <a name="line.695"></a>
+<FONT color="green">696</FONT>            // digest from the end of the certificate table entry to the beginning of the certificate table<a name="line.696"></a>
+<FONT color="green">697</FONT>            if (certificateTable != null &amp;&amp; certificateTable.exists()) {<a name="line.697"></a>
+<FONT color="green">698</FONT>                updateDigest(digest, position, certificateTable.getVirtualAddress());<a name="line.698"></a>
+<FONT color="green">699</FONT>                position = certificateTable.getVirtualAddress() + certificateTable.getSize();<a name="line.699"></a>
+<FONT color="green">700</FONT>            }<a name="line.700"></a>
+<FONT color="green">701</FONT>            <a name="line.701"></a>
+<FONT color="green">702</FONT>            // digest from the end of the certificate table to the end of the file<a name="line.702"></a>
+<FONT color="green">703</FONT>            updateDigest(digest, position, raf.length());<a name="line.703"></a>
+<FONT color="green">704</FONT>            <a name="line.704"></a>
+<FONT color="green">705</FONT>            return digest.digest();<a name="line.705"></a>
+<FONT color="green">706</FONT>        }<a name="line.706"></a>
+<FONT color="green">707</FONT>    <a name="line.707"></a>
+<FONT color="green">708</FONT>        /**<a name="line.708"></a>
+<FONT color="green">709</FONT>         * Update the specified digest by reading the underlying RandomAccessFile<a name="line.709"></a>
+<FONT color="green">710</FONT>         * from the start offset included to the end offset excluded.<a name="line.710"></a>
+<FONT color="green">711</FONT>         * <a name="line.711"></a>
+<FONT color="green">712</FONT>         * @param digest<a name="line.712"></a>
+<FONT color="green">713</FONT>         * @param startOffset<a name="line.713"></a>
+<FONT color="green">714</FONT>         * @param endOffset<a name="line.714"></a>
+<FONT color="green">715</FONT>         */<a name="line.715"></a>
+<FONT color="green">716</FONT>        private void updateDigest(MessageDigest digest, long startOffset, long endOffset) throws IOException {<a name="line.716"></a>
+<FONT color="green">717</FONT>            raf.seek(startOffset);<a name="line.717"></a>
+<FONT color="green">718</FONT>            <a name="line.718"></a>
+<FONT color="green">719</FONT>            byte[] buffer = new byte[8192];<a name="line.719"></a>
+<FONT color="green">720</FONT>            <a name="line.720"></a>
+<FONT color="green">721</FONT>            long position = startOffset;<a name="line.721"></a>
+<FONT color="green">722</FONT>            while (position &lt; endOffset) {<a name="line.722"></a>
+<FONT color="green">723</FONT>                int length = (int) Math.min(buffer.length, endOffset - position);<a name="line.723"></a>
+<FONT color="green">724</FONT>                raf.read(buffer, 0, length);<a name="line.724"></a>
+<FONT color="green">725</FONT>                <a name="line.725"></a>
+<FONT color="green">726</FONT>                digest.update(buffer, 0, length);<a name="line.726"></a>
+<FONT color="green">727</FONT>                <a name="line.727"></a>
+<FONT color="green">728</FONT>                position += length;<a name="line.728"></a>
+<FONT color="green">729</FONT>            }<a name="line.729"></a>
+<FONT color="green">730</FONT>        }<a name="line.730"></a>
+<FONT color="green">731</FONT>    <a name="line.731"></a>
+<FONT color="green">732</FONT>        /**<a name="line.732"></a>
+<FONT color="green">733</FONT>         * Compute the checksum of the file using the specified digest algorithm.<a name="line.733"></a>
+<FONT color="green">734</FONT>         * <a name="line.734"></a>
+<FONT color="green">735</FONT>         * @param algorithm the digest algorithm, typically SHA1<a name="line.735"></a>
+<FONT color="green">736</FONT>         */<a name="line.736"></a>
+<FONT color="green">737</FONT>        public byte[] computeDigest(DigestAlgorithm algorithm) throws IOException {<a name="line.737"></a>
+<FONT color="green">738</FONT>            return computeDigest(algorithm.getMessageDigest());<a name="line.738"></a>
+<FONT color="green">739</FONT>        }<a name="line.739"></a>
+<FONT color="green">740</FONT>    <a name="line.740"></a>
+<FONT color="green">741</FONT>        /**<a name="line.741"></a>
+<FONT color="green">742</FONT>         * Increase the size of the file up to a size that is a multiple of the specified value.<a name="line.742"></a>
+<FONT color="green">743</FONT>         * <a name="line.743"></a>
+<FONT color="green">744</FONT>         * @param multiple<a name="line.744"></a>
+<FONT color="green">745</FONT>         */<a name="line.745"></a>
+<FONT color="green">746</FONT>        public synchronized void pad(int multiple) throws IOException {<a name="line.746"></a>
+<FONT color="green">747</FONT>            long padding = (multiple - raf.length() % multiple) % multiple;<a name="line.747"></a>
+<FONT color="green">748</FONT>            raf.seek(raf.length());<a name="line.748"></a>
+<FONT color="green">749</FONT>            for (int i = 0; i &lt; padding; i++) {<a name="line.749"></a>
+<FONT color="green">750</FONT>                raf.writeByte(0);<a name="line.750"></a>
+<FONT color="green">751</FONT>            }<a name="line.751"></a>
+<FONT color="green">752</FONT>        }<a name="line.752"></a>
+<FONT color="green">753</FONT>    }<a name="line.753"></a>
 
 
 
