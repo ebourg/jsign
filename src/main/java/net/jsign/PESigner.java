@@ -146,7 +146,7 @@ public class PESigner {
     }
 
     /**
-     * Set the digest algorithm to use (default is SHA-1 until January 1 2016, SHA-256 afterward)
+     * Set the digest algorithm to use (SHA-256 by default)
      */
     public PESigner withDigestAlgorithm(DigestAlgorithm algorithm) {
         if (algorithm != null) {
