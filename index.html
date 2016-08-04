@@ -54,7 +54,7 @@ with Maven using the Antrun plugin, or standalone as a command line tool.</p>
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
           
 <pre class="prettyprint lang-xml">
- &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-1.2.jar"/>
+ &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-1.3.jar"/>
 
  &lt;signexe file="application.exe"
           name="My Application"
@@ -143,27 +143,37 @@ with Maven using the Antrun plugin, or standalone as a command line tool.</p>
       <td valign="top" align="center">No</td>
     </tr>
     <tr>
+      <td valign="top">alg</td>
+      <td valign="top">The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)</td>
+      <td valign="top" align="center">No; defaults to SHA-256</td>
+    </tr>
+    <tr>
       <td valign="top">tsaurl</td>
       <td valign="top">
-          The URL of the timestamping authority. RFC 3161 servers used for jar signing are not compatible
-          with Authenticode signatures. You can use the COMODO (http://timestamp.comodoca.com/authenticode)
+          The URL of the timestamping authority, either RFC 3161 or Authenticode services.
+          You can use for example the COMODO (http://timestamp.comodoca.com/authenticode)
           or the Verisign (http://timestamp.verisign.com/scripts/timstamp.dll) services.</td>
       <td valign="top" align="center">No</td>
+    </tr>
+    <tr>
+      <td valign="top">tsmode</td>
+      <td valign="top">The timestamping mode (RFC3161 or Authenticode)</td>
+      <td valign="top" align="center">No; defaults to Authenticode</td>
     </tr>
   </table>
 
 
 <h3>Command Line Tool</h3>
 
-<p>Jsign can also be used as a command line tool. A <a href="http://people.apache.org/~ebourg/jsign/jsign_1.2_all.deb">Debian package</a>
-and a <a href="http://people.apache.org/~ebourg/jsign/jsign-1.2-1.noarch.rpm">RPM package</a>
+<p>Jsign can also be used as a command line tool. A <a href="https://github.com/ebourg/jsign/releases/download/1.3/jsign_1.3_all.deb">Debian package</a>
+and a <a href="https://github.com/ebourg/jsign/releases/download/1.3/jsign-1.3-1.noarch.rpm">RPM package</a>
 are provided to install it easily on most Linux distributions. On these systems the command line is invoked with:</p>
 
 <pre> pesign [OPTIONS] FILE</pre>
 
 <p>On other systems the command line is invoked by running the jar with:</p>
     
-<pre> java -jar jsign-1.2.jar [OPTIONS] FILE</pre>
+<pre> java -jar jsign-1.3.jar [OPTIONS] FILE</pre>
     
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
@@ -183,13 +193,15 @@ are provided to install it easily on most Linux distributions. On these systems 
      --keyfile &lt;FILE>       The file containing the private key. Only PVK files are supported.
   -c,--certfile &lt;FILE>      The file containing the PKCS#7 certificate chain
                             (.p7b or .spc files).
-  -t,--tsaurl &lt;URL>         The URL of the timestamping authority. RFC 3161 servers
-                            used for jar signing are not compatible with Authenticode
-                            signatures. You can use the COMODO or the Verisign services:
-                            - http://timestamp.comodoca.com/authenticode
-                            - http://timestamp.verisign.com/scripts/timstamp.dll
+  -d,--alg &lt;ALGORITHM>      The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)
+  -t,--tsaurl &lt;URL>         The URL of the timestamping authority.
+  -m,--tsmode &lt;MODE>        The timestamping mode (RFC3161 or Authenticode)
   -n,--name &lt;NAME>          The name of the application
   -u,--url &lt;URL>            The URL of the application
+     --proxyUrl &lt;URL>       The URL of the HTTP proxy
+     --proxyUser &lt;NAME>     The user for the HTTP proxy. If an user is needed.
+     --proxyPass &lt;PASSWORD> The password for the HTTP proxy user. If an user is
+                            needed.
   -h,--help                 Print the help
 </pre>
 
@@ -216,9 +228,9 @@ be embedded in another application.<br>See the <a href="apidocs/index.html">Java
 <h3 id="files">Downloads</h3>
 
 <ul>
-  <li><a href="http://people.apache.org/~ebourg/jsign/jsign_1.2_all.deb">jsign_1.2_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
-  <li><a href="http://people.apache.org/~ebourg/jsign/jsign-1.2-1.noarch.rpm">jsign-1.2-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora/CentOS</li>
-  <li><a href="http://people.apache.org/~ebourg/jsign/jsign-1.2.jar">jsign-1.2.jar</a> - Jsign Ant Task</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/1.3/jsign_1.3_all.deb">jsign_1.3_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/1.3/jsign-1.3-1.noarch.rpm">jsign-1.3-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora/CentOS</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/1.3/jsign-1.3.jar">jsign-1.3.jar</a> - Jsign Ant Task</li>
 </ul>
 
 
