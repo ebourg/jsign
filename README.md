@@ -24,9 +24,13 @@ See http://ebourg.github.com/jsign for more information.
 Changes
 =======
 
-Version 1.3, in development
+Version 1.3, 2016-08-04
 * The command line tool now supports HTTP proxies (contributed by Michael Szediwy)
 * RFC 3161 timestamping services are now supported (contributed by Florent Daigniere)
+* The digest algorithm now defaults to SHA-256
+* The shaded dependencies are now relocated to avoid conflicts
+* Added SHA-384 and SHA-512 checksums support
+* SHA-2 is accepted as an alias for SHA-256
 
 Version 1.2, 2013-01-10
 * Reduced the memory usage when signing large files
