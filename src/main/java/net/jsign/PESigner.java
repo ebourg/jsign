@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -74,6 +75,8 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
  * @since 1.0
  */
 public class PESigner {
+    
+    private Console console;
 
     private Certificate[] chain;
     private PrivateKey privateKey;
@@ -96,6 +99,14 @@ public class PESigner {
 
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
+    }
+
+    /**
+     * Set the console.
+     */
+    public PESigner withConsole(Console console) {
+        this.console = console;
+        return this;
     }
 
     /**
@@ -199,6 +210,43 @@ public class PESigner {
         
         file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
         file.close();
+    }
+
+    public void sign(String file) throws SignerException {
+        if (file == null) {
+            throw new SignerException("file must be set");
+        }
+
+        sign(new File(file));
+    }
+
+    public void sign(File file) throws SignerException {
+        if (file == null) {
+            throw new SignerException("file must be set");
+        }
+        if (!file.exists()) {
+            throw new SignerException("The file " + file + " couldn't be found");
+        }
+
+        PEFile peFile;
+        try {
+            peFile = new PEFile(file);
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the executable file " + file, e);
+        }
+
+        try {
+            console.info("Adding Authenticode signature to " + file);
+            sign(peFile);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't sign " + file, e);
+        } finally {
+            try {
+                peFile.close();
+            } catch (IOException e) {
+                console.warn("Couldn't close " + file, e);
+            }
+        }
     }
 
     private CertificateTableEntry createCertificateTableEntry(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
