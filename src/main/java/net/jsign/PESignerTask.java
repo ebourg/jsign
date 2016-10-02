@@ -17,22 +17,9 @@
 package net.jsign;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.PrivateKey;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.util.Collection;
 
-import net.jsign.pe.PEFile;
-import net.jsign.timestamp.TimestampingMode;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.util.FileUtils;
 
 /**
  * Ant task for signing executable files.
@@ -61,7 +48,7 @@ public class PESignerTask extends Task {
     private String storepass;
 
     /** The type of the keystore. */
-    private String storetype = "JKS";
+    private String storetype;
 
     /** The alias of the certificate in the keystore. */
     private String alias;
@@ -103,12 +90,6 @@ public class PESignerTask extends Task {
 
     public void setKeystore(File keystore) {
         this.keystore = keystore;
-        
-        // guess the type of the keystore from the extension of the file
-        String name = keystore.getName().toLowerCase();
-        if (name.endsWith(".p12") || name.endsWith(".pfx")) {
-            storetype = "PKCS12";
-        }
     }
 
     public void setStorepass(String storepass) {
@@ -141,153 +122,30 @@ public class PESignerTask extends Task {
 
     @Override
     public void execute() throws BuildException {
-        PrivateKey privateKey;
-        Certificate[] chain;
-        
-        // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null) {
-            throw new BuildException("keystore attribute, or keyfile and certfile attributes must be set");
-        }
-        if (keystore != null && (keyfile != null || certfile != null)) {
-            throw new BuildException("keystore attribute can't be mixed with keyfile or certfile");
-        }
-        
-        if (keystore != null) {
-            // JKS or PKCS12 keystore 
-            KeyStore ks;
-            try {
-                ks = KeyStore.getInstance(storetype);
-            } catch (KeyStoreException e) {
-                throw new BuildException("keystore type '" + storetype + "' is not supported", e);
-            }
-            
-            if (!keystore.exists()) {
-                throw new BuildException("The keystore " + keystore + " couldn't be found");
-            }
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(keystore);
-                ks.load(in, storepass != null ? storepass.toCharArray() : null);
-            } catch (Exception e) {
-                throw new BuildException("Unable to load the keystore " + keystore, e);
-            } finally {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
-            
-            if (alias == null) {
-                throw new BuildException("alias attribute must be set");
-            }
-            
-            try {
-                chain = ks.getCertificateChain(alias);
-            } catch (KeyStoreException e) {
-                throw new BuildException(e);
-            }
-            if (chain == null) {
-                throw new BuildException("No certificate found under the alias '" + alias + "' in the keystore " + keystore);
-            }
-            
-            char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();
-            
-            try {
-                privateKey = (PrivateKey) ks.getKey(alias, password);
-            } catch (Exception e) {
-                throw new BuildException("Failed to retrieve the private key from the keystore", e);
-            }
-            
-        } else {
-            // separate private key and certificate files (PVK/SPC)
-            if (keyfile == null) {
-                throw new BuildException("keyfile attribute must be set");
-            }
-            if (!keyfile.exists()) {
-                throw new BuildException("The keyfile " + keyfile + " couldn't be found");
-            }
-            if (certfile == null) {
-                throw new BuildException("certfile attribute must be set");
-            }
-            if (!certfile.exists()) {
-                throw new BuildException("The certfile " + certfile + " couldn't be found");
-            }
-            
-            // load the certificate chain
-            try {
-                chain = loadCertificateChain(certfile);
-            } catch (Exception e) {
-                throw new BuildException("Failed to load the certificate from " + certfile, e);
-            }
-            
-            // load the private key
-            try {
-                privateKey = PVK.parse(keyfile, keypass);
-            } catch (Exception e) {
-                throw new BuildException("Failed to load the private key from " + keyfile, e);
-            }
-        }
 
-        if (algorithm != null && DigestAlgorithm.of(algorithm) == null) {
-            throw new BuildException("The digest algorithm " + algorithm + " is not supported");
-        }
-        
-        if (file == null) {
-            throw new BuildException("file attribute must be set");
-        }
-        if (!file.exists()) {
-            throw new BuildException("The file " + file + " couldn't be found");
-        }
-        
-        PEFile peFile;
-        try {
-            peFile = new PEFile(file);
-        } catch (IOException e) {
-            throw new BuildException("Couldn't open the executable file " + file, e);
-        }
-        
-        // and now the actual work!
-        PESigner signer = new PESigner(chain, privateKey)
-                .withProgramName(name)
-                .withProgramURL(url)
-                .withDigestAlgorithm(DigestAlgorithm.of(algorithm))
-                .withTimestamping(tsaurl != null)
-                .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
-                .withTimestampingAutority(tsaurl);
+        try
+        {
+            final PESignerBuilder builder = new PESignerBuilder();
 
+            builder.name(name);
+            builder.url(url);
+            builder.alg(algorithm);
+            builder.keystore(keystore);
+            builder.storepass(storepass);
+            builder.storetype(storetype);
+            builder.alias(alias);
+            builder.certfile(certfile);
+            builder.keyfile(keyfile);
+            builder.keypass(keypass);
+            builder.tsaurl(tsaurl);
+            builder.tsmode(tsmode);
 
-        try {
-            log("Adding Authenticode signature to " + FileUtils.getRelativePath(getProject().getBaseDir(), file));
-            signer.sign(peFile);
-        } catch (Exception e) {
-            throw new BuildException("Couldn't sign " + file, e);
-        } finally {
-            try {
-                peFile.close();
-            } catch (IOException e) {
-                log("Couldn't close " + file, e, Project.MSG_WARN);
-            }
+            final PESigner signer = builder.build();
+            signer.sign(file);
         }
-    }
-
-    /**
-     * Load the certificate chain from the specified PKCS#7 files.
-     */
-    @SuppressWarnings("unchecked")
-    private Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(file);
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
-            return certificates.toArray(new Certificate[certificates.size()]);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
+        catch (Exception e)
+        {
+            throw new BuildException(e.getMessage(), e);
         }
     }
 }
