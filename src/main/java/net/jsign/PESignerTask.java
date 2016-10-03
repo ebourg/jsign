@@ -21,6 +21,8 @@ import java.io.File;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
+import net.jsign.log.PELogAnt;
+
 /**
  * Ant task for signing executable files.
  *
@@ -125,7 +127,7 @@ public class PESignerTask extends Task {
 
         try
         {
-            final PESignerBuilder builder = new PESignerBuilder();
+            final PESignerBuilder builder = new PESignerBuilder(new PELogAnt(this));
 
             builder.name(name);
             builder.url(url);

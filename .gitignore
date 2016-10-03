@@ -2,3 +2,8 @@
 *.ipr
 *.iws
 target/
+
+# eclipse files
+/.settings
+/.classpath
+/.project

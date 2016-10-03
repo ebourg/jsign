@@ -41,6 +41,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import net.jsign.log.PELogSysout;
+
 /**
  * Command line interface for signing PE files.
  *
@@ -94,7 +96,7 @@ public class PESignerCLI {
                 return;
             }
 
-            final PESignerBuilder builder = new PESignerBuilder();
+            final PESignerBuilder builder = new PESignerBuilder(new PELogSysout());
 
             setOption(PARAM_KEYSTORE, builder, cmd);
             setOption(PARAM_STOREPASS, builder, cmd);

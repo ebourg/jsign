@@ -1,3 +1,19 @@
+/**
+ * Copyright 2016
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.jsign;
 
 import java.io.File;
@@ -23,16 +39,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.jsign.log.PELog;
 import net.jsign.timestamp.TimestampingMode;
-
 
 /**
  * Builder to help create PESigner instance.
  *
  * @since 1.4
  */
-public class PESignerBuilder
-{
+public class PESignerBuilder {
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
@@ -48,6 +63,8 @@ public class PESignerBuilder
     public static final String PARAM_PROXY_URL = "proxyUrl";
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
+
+    private PELog log;
 
     private File keystore;
     private String storepass;
@@ -65,123 +82,106 @@ public class PESignerBuilder
     private String proxyUser;
     private String proxyPass;
 
-    public PESignerBuilder keystore(final String keystore)
-    {
+    public PESignerBuilder(PELog log) {
+        this.log = log;
+    }
+
+    public PESignerBuilder keystore(String keystore) {
         keystore(createFile(keystore));
         return this;
     }
 
-    public PESignerBuilder keystore(final File keystore)
-    {
+    public PESignerBuilder keystore(File keystore) {
         this.keystore = keystore;
         return this;
     }
 
-    public PESignerBuilder storepass(final String storepass)
-    {
+    public PESignerBuilder storepass(String storepass) {
         this.storepass = storepass;
         return this;
     }
 
-    public PESignerBuilder storetype(final String storetype)
-    {
+    public PESignerBuilder storetype(String storetype) {
         this.storetype = storetype;
         return this;
     }
 
-    public PESignerBuilder alias(final String alias)
-    {
+    public PESignerBuilder alias(String alias) {
         this.alias = alias;
         return this;
     }
 
-    public PESignerBuilder keypass(final String keypass)
-    {
+    public PESignerBuilder keypass(String keypass) {
         this.keypass = keypass;
         return this;
     }
 
-    public PESignerBuilder keyfile(final String keyfile)
-    {
+    public PESignerBuilder keyfile(String keyfile) {
         keyfile(createFile(keyfile));
         return this;
     }
 
-    public PESignerBuilder keyfile(final File keyfile)
-    {
+    public PESignerBuilder keyfile(File keyfile) {
         this.keyfile = keyfile;
         return this;
     }
 
-    public PESignerBuilder certfile(final String certfile)
-    {
+    public PESignerBuilder certfile(String certfile) {
         certfile(createFile(certfile));
         return this;
     }
 
-    public PESignerBuilder certfile(final File certfile)
-    {
+    public PESignerBuilder certfile(File certfile) {
         this.certfile = certfile;
         return this;
     }
 
-    public PESignerBuilder alg(final String alg)
-    {
+    public PESignerBuilder alg(String alg) {
         this.alg = alg;
         return this;
     }
 
-    public PESignerBuilder tsaurl(final String tsaurl)
-    {
+    public PESignerBuilder tsaurl(String tsaurl) {
         this.tsaurl = tsaurl;
         return this;
     }
 
-    public PESignerBuilder tsmode(final String tsmode)
-    {
+    public PESignerBuilder tsmode(String tsmode) {
         this.tsmode = tsmode;
         return this;
     }
 
-    public PESignerBuilder name(final String name)
-    {
+    public PESignerBuilder name(String name) {
         this.name = name;
         return this;
     }
 
-    public PESignerBuilder url(final String url)
-    {
+    public PESignerBuilder url(String url) {
         this.url = url;
         return this;
     }
 
-    public PESignerBuilder proxyUrl(final String proxyUrl)
-    {
+    public PESignerBuilder proxyUrl(String proxyUrl) {
         this.proxyUrl = proxyUrl;
         return this;
     }
 
-    public PESignerBuilder proxyUser(final String proxyUser)
-    {
+    public PESignerBuilder proxyUser(String proxyUser) {
         this.proxyUser = proxyUser;
         return this;
     }
 
-    public PESignerBuilder proxyPass(final String proxyPass)
-    {
+    public PESignerBuilder proxyPass(String proxyPass) {
         this.proxyPass = proxyPass;
         return this;
     }
 
-    public PESignerBuilder map(final Map<?, ?> map)
-    {
-        for (final Object key : map.entrySet())
-        {
-            final String keyStr = String.valueOf(key);
-            final Object value = map.get(key);
+    public PESignerBuilder map(Map<?, ?> map) {
+        for (Object key : map.entrySet()) {
+            String keyStr = String.valueOf(key);
+            Object value = map.get(key);
 
-            if (value != null)
-            {
+            if (value != null) {
                 param(keyStr, String.valueOf(value));
             }
         }
@@ -189,79 +189,49 @@ public class PESignerBuilder
         return this;
     }
 
-    public PESignerBuilder param(final String key, final String value)
-    {
-        if (PARAM_KEYSTORE.equals(key))
-        {
+    public PESignerBuilder param(String key, String value) {
+        if (PARAM_KEYSTORE.equals(key)) {
             keystore(value);
-        }
-        else if (PARAM_STOREPASS.equals(key))
-        {
+        } else if (PARAM_STOREPASS.equals(key)) {
             storepass(value);
-        }
-        else if (PARAM_STORETYPE.equals(key))
-        {
+        } else if (PARAM_STORETYPE.equals(key)) {
             storetype(value);
-        }
-        else if (PARAM_ALIAS.equals(key))
-        {
+        } else if (PARAM_ALIAS.equals(key)) {
             alias(value);
-        }
-        else if (PARAM_KEYPASS.equals(key))
-        {
+        } else if (PARAM_KEYPASS.equals(key)) {
             keypass(value);
-        }
-        else if (PARAM_KEYFILE.equals(key))
-        {
+        } else if (PARAM_KEYFILE.equals(key)) {
             keyfile(value);
-        }
-        else if (PARAM_CERTFILE.equals(key))
-        {
+        } else if (PARAM_CERTFILE.equals(key)) {
             certfile(value);
-        }
-        else if (PARAM_ALG.equals(key))
-        {
+        } else if (PARAM_ALG.equals(key)) {
             alg(value);
-        }
-        else if (PARAM_TSAURL.equals(key))
-        {
+        } else if (PARAM_TSAURL.equals(key)) {
             tsaurl(value);
-        }
-        else if (PARAM_TSMODE.equals(key))
-        {
+        } else if (PARAM_TSMODE.equals(key)) {
             tsmode(value);
-        }
-        else if (PARAM_NAME.equals(key))
-        {
+        } else if (PARAM_NAME.equals(key)) {
             name(value);
-        }
-        else if (PARAM_URL.equals(key))
-        {
+        } else if (PARAM_URL.equals(key)) {
             url(value);
-        }
-        else if (PARAM_PROXY_URL.equals(key))
-        {
+        } else if (PARAM_PROXY_URL.equals(key)) {
             proxyUrl(value);
-        }
-        else if (PARAM_PROXY_USER.equals(key))
-        {
+        } else if (PARAM_PROXY_USER.equals(key)) {
             proxyUser(value);
-        }
-        else if (PARAM_PROXY_PASS.equals(key))
-        {
+        } else if (PARAM_PROXY_PASS.equals(key)) {
             proxyPass(value);
+        } else {
+            throw new IllegalArgumentException("unknown param: " + key);
         }
 
         return this;
     }
 
-    private File createFile(final String file)
-    {
-        return file == null ? null : new File(file); 
+    private File createFile(String file) {
+        return file == null ? null : new File(file);
     }
 
-    public PESigner build() throws SignerException
-    {
+    public PESigner build() throws SignerException {
         if (keystore != null && storetype == null) {
             // guess the type of the keystore from the extension of the file
             String filename = keystore.getName().toLowerCase();
@@ -374,6 +344,7 @@ public class PESignerBuilder
 
         // and now the actual work!
         PESigner signer = new PESigner(chain, privateKey)
+                .withLog(log)
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))

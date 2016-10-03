@@ -58,6 +58,7 @@ import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcPeImageData;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
+import net.jsign.log.PELog;
 import net.jsign.pe.CertificateTableEntry;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
@@ -75,6 +76,8 @@ import net.jsign.timestamp.TimestampingMode;
  * @since 1.0
  */
 public class PESigner {
+
+    private PELog log;
 
     private Certificate[] chain;
     private PrivateKey privateKey;
@@ -94,6 +97,14 @@ public class PESigner {
 
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
+    }
+
+    /**
+     * Set the logger.
+     */
+    public PESigner withLog(PELog log) {
+        this.log = log;
+        return this;
     }
 
     /**
@@ -199,7 +210,7 @@ public class PESigner {
         }
 
         try {
-            System.out.println("Adding Authenticode signature to " + file);
+            log.info("Adding Authenticode signature to " + file);
             sign(peFile);
         } catch (Exception e) {
             throw new SignerException("Couldn't sign " + file, e);
@@ -207,8 +218,7 @@ public class PESigner {
             try {
                 peFile.close();
             } catch (IOException e) {
-                System.err.println("Couldn't close " + file);
-                e.printStackTrace(System.err);
+                log.error("Couldn't close " + file, e);
             }
         }
     }
