@@ -29,7 +29,12 @@ import net.jsign.timestamp.AuthenticodeTimestamper;
 import net.jsign.timestamp.TimestampingException;
 import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.tsp.TSPAlgorithms;
 
 public class PESignerTest extends TestCase {
 
@@ -245,6 +250,93 @@ public class PESignerTest extends TestCase {
             fail("IllegalArgumentException not thrown");
         } catch (IllegalArgumentException e) {
             // expected
+        }
+    }
+
+    /**
+     * Tests that it is possible to specify a signature algorithm.
+     *
+     * @throws Exception
+     */
+    public void testWithSignatureAlgorithmSHA1withRSA() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PEFile peFile = null;
+        try {
+            peFile = new PEFile(targetFile);
+
+            PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false)
+                    .withDigestAlgorithm(DigestAlgorithm.SHA256)
+                    .withSignatureAlgorithm("SHA1withRSA");
+
+            signer.sign(peFile);
+
+            peFile = new PEFile(targetFile);
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signedData = signatures.get(0);
+            assertNotNull(signedData);
+
+            // Check the signature algorithm
+            final SignerInformation si = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();
+            assertEquals("Digest algorithm", TSPAlgorithms.SHA1, si.getDigestAlgorithmID().getAlgorithm());
+            assertEquals("Encryption algorithm", PKCSObjectIdentifiers.rsaEncryption.getId(), si.getEncryptionAlgOID());
+        } finally {
+            if (peFile != null) {
+                peFile.close();
+            }
+        }
+    }
+
+    /**
+     * Tests that it is possible to specify a signature algorithm whos name is
+     * not simply a concatenation of a digest algorithm and the key algorithm.
+     *
+     * This test also sets the signature provider as a provider supporting
+     * the RSASSA-PSS algorithms might not be installed.
+     *
+     * @throws Exception
+     */
+    public void testWithSignatureAlgorithmSHA256withRSAandMGF1() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PEFile peFile = null;
+        try {
+            peFile = new PEFile(targetFile);
+
+            PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false)
+                    .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                    .withSignatureAlgorithm("SHA256withRSAandMGF1")
+                    .withSignatureProvider(new BouncyCastleProvider());
+
+            signer.sign(peFile);
+
+            peFile = new PEFile(targetFile);
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signedData = signatures.get(0);
+            assertNotNull(signedData);
+
+            // Check the signature algorithm
+            final SignerInformation si = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();
+            assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
+            assertEquals("Encryption algorithm", PKCSObjectIdentifiers.id_RSASSA_PSS.getId(), si.getEncryptionAlgOID());
+        } finally {
+            if (peFile != null) {
+                peFile.close();
+            }
         }
     }
 }
