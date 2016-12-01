@@ -61,7 +61,7 @@ public class RFC3161Timestamper extends Timestamper {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-type", "application/timestamp-query");
         conn.setRequestProperty("Content-length", String.valueOf(request.length));
-        conn.setRequestProperty("Accept", "application/timestamp-query");
+        conn.setRequestProperty("Accept", "application/timestamp-reply");
         conn.setRequestProperty("User-Agent", "Transport");
         
         conn.getOutputStream().write(request);
