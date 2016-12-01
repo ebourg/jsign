@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -28,18 +29,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
-import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
-import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
-import net.jsign.asn1.authenticode.SpcIndirectDataContent;
-import net.jsign.asn1.authenticode.SpcPeImageData;
-import net.jsign.asn1.authenticode.SpcSpOpusInfo;
-import net.jsign.asn1.authenticode.SpcStatementType;
-import net.jsign.pe.CertificateTableEntry;
-import net.jsign.pe.DataDirectoryType;
-import net.jsign.pe.PEFile;
-import net.jsign.timestamp.Timestamper;
-import net.jsign.timestamp.TimestampingMode;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
@@ -62,17 +51,33 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
+import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcPeImageData;
+import net.jsign.asn1.authenticode.SpcSpOpusInfo;
+import net.jsign.asn1.authenticode.SpcStatementType;
+import net.jsign.log.PELog;
+import net.jsign.pe.CertificateTableEntry;
+import net.jsign.pe.DataDirectoryType;
+import net.jsign.pe.PEFile;
+import net.jsign.timestamp.Timestamper;
+import net.jsign.timestamp.TimestampingMode;
+
 /**
  * Sign a portable executable file. Timestamping is enabled by default
  * and relies on the Comodo server (http://timestamp.comodoca.com/authenticode).
- * 
+ *
  * @see <a href="http://download.microsoft.com/download/9/c/5/9c5b2167-8017-4bae-9fde-d599bac8184a/Authenticode_PE.docx">Windows Authenticode Portable Executable Signature Format</a>
  * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb931395%28v=vs.85%29.aspx?ppud=4">Time Stamping Authenticode Signatures</a>
- * 
+ *
  * @author Emmanuel Bourg
  * @since 1.0
  */
 public class PESigner {
+
+    private PELog log;
 
     private Certificate[] chain;
     private PrivateKey privateKey;
@@ -92,6 +97,14 @@ public class PESigner {
 
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
+    }
+
+    /**
+     * Set the logger.
+     */
+    public PESigner withLog(PELog log) {
+        this.log = log;
+        return this;
     }
 
     /**
@@ -120,7 +133,7 @@ public class PESigner {
 
     /**
      * RFC3161 or Authenticode (Authenticode by default).
-     * 
+     *
      * @since 1.3
      */
     public PESigner withTimestampingMode(TimestampingMode tsmode) {
@@ -136,7 +149,7 @@ public class PESigner {
         this.tsaurlOverride = url;
         return this;
     }
-    
+
     /**
      * Set the Timestamper implementation.
      */
@@ -163,17 +176,56 @@ public class PESigner {
         // pad the file on a 8 byte boundary
         // todo only if there was no previous certificate table
         file.pad(8);
-        
+
         // compute the signature
         CertificateTableEntry entry = createCertificateTableEntry(file);
-        
+
         file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
         file.close();
     }
 
+    public void sign(String file) throws SignerException {
+
+        if (file == null) {
+            throw new SignerException("file must be set");
+        }
+
+        sign(new File(file));
+    }
+
+    public void sign(File file) throws SignerException {
+
+        if (file == null) {
+            throw new SignerException("file must be set");
+        }
+        if (!file.exists()) {
+            throw new SignerException("The file " + file + " couldn't be found");
+        }
+
+        PEFile peFile;
+        try {
+            peFile = new PEFile(file);
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the executable file " + file, e);
+        }
+
+        try {
+            log.info("Adding Authenticode signature to " + file);
+            sign(peFile);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't sign " + file, e);
+        } finally {
+            try {
+                peFile.close();
+            } catch (IOException e) {
+                log.error("Couldn't close " + file, e);
+            }
+        }
+    }
+
     private CertificateTableEntry createCertificateTableEntry(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         CMSSignedData sigData = createSignature(file);
-        
+
         if (timestamping) {
             Timestamper ts = timestamper;
             if (ts == null) {
@@ -184,13 +236,13 @@ public class PESigner {
             }
             sigData = ts.timestamp(algo, sigData);
         }
-        
+
         return new CertificateTableEntry(sigData);
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         byte[] sha = file.computeDigest(algo);
-        
+
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
@@ -198,22 +250,22 @@ public class PESigner {
 
         ContentSigner shaSigner = new JcaContentSignerBuilder(algo + "with" + privateKey.getAlgorithm()).build(privateKey);
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
-        
+
         // prepare the authenticated attributes
         CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
-        
+
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
-        
+
         // prepare the signerInfo with the extra authenticated attributes
         SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider);
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
-        
+
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(removeRoot(chain)));
         generator.addSignerInfoGenerator(signerInfoGenerator);
-        
+
         return generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, spcIndirectDataContent);
     }
 
@@ -222,7 +274,7 @@ public class PESigner {
      */
     private List<Certificate> removeRoot(Certificate[] certificates) {
         List<Certificate> list = new ArrayList<Certificate>();
-        
+
         if (certificates.length == 1) {
             list.add(certificates[0]);
         } else {
@@ -232,7 +284,7 @@ public class PESigner {
                 }
             }
         }
-        
+
         return list;
     }
 
@@ -245,15 +297,15 @@ public class PESigner {
      */
     private AttributeTable createAuthenticatedAttributes() {
         List<Attribute> attributes = new ArrayList<Attribute>();
-        
+
         SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));
-        
+
         if (programName != null || programURL != null) {
             SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
             attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
         }
-        
+
         return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[attributes.size()])));
     }
 }
