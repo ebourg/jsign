@@ -21,6 +21,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
@@ -76,7 +77,10 @@ public class PESigner {
 
     private Certificate[] chain;
     private PrivateKey privateKey;
-    private DigestAlgorithm algo = DigestAlgorithm.getDefault();
+    private DigestAlgorithm digestAlgorithm = DigestAlgorithm.getDefault();
+    private String signatureAlgorithm;
+    private Provider signatureProvider;
+    private String signatureProviderString;
     private String programName;
     private String programURL;
 
@@ -150,8 +154,34 @@ public class PESigner {
      */
     public PESigner withDigestAlgorithm(DigestAlgorithm algorithm) {
         if (algorithm != null) {
-            this.algo = algorithm;
+            this.digestAlgorithm = algorithm;
         }
+        return this;
+    }
+
+    /**
+     * Explicitly sets the signature algorithm to use.
+     */
+    public PESigner withSignatureAlgorithm(String signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        return this;
+    }
+
+    /**
+     * Explicitly sets the signature algorithm and provider to use.
+     */
+    public PESigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        this.signatureProviderString = signatureProvider;
+        return this;
+    }
+
+    /**
+     * Explicitly sets the signature algorithm and provider to use.
+     */
+    public PESigner withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        this.signatureProvider = signatureProvider;
         return this;
     }
 
@@ -182,21 +212,35 @@ public class PESigner {
             if (tsaurlOverride != null) {
                 ts.setURL(tsaurlOverride);
             }
-            sigData = ts.timestamp(algo, sigData);
+            sigData = ts.timestamp(digestAlgorithm, sigData);
         }
         
         return new CertificateTableEntry(sigData);
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
-        byte[] sha = file.computeDigest(algo);
+        byte[] sha = file.computeDigest(digestAlgorithm);
         
-        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(algo.oid, DERNull.INSTANCE);
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
         SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(data, digestInfo);
 
-        ContentSigner shaSigner = new JcaContentSignerBuilder(algo + "with" + privateKey.getAlgorithm()).build(privateKey);
+        // create content signer
+        final String sigAlg;
+        if (signatureAlgorithm == null) {
+            sigAlg = digestAlgorithm + "with" + privateKey.getAlgorithm();
+        } else {
+            sigAlg = signatureAlgorithm;
+        }
+        JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(sigAlg);
+        if (signatureProvider != null) {
+            contentSignerBuilder.setProvider(signatureProvider);
+        } else if (signatureProviderString != null) {
+            contentSignerBuilder.setProvider(signatureProviderString);
+        }
+        ContentSigner shaSigner = contentSignerBuilder.build(privateKey);
+
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
