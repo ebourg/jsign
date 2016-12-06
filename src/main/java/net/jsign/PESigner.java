@@ -168,19 +168,20 @@ public class PESigner {
     }
 
     /**
-     * Sets the security provider to use for the signature.
+     * Explicitly sets the signature algorithm and provider to use.
      */
-    public PESigner withSignatureProvider(Provider provider) {
-        this.signatureProvider = provider;
+    public PESigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        this.signatureProviderString = signatureProvider;
         return this;
     }
 
     /**
-     * Sets the provider to use for the signature from the security provider
-     * name.
+     * Explicitly sets the signature algorithm and provider to use.
      */
-    public PESigner withSignatureProvider(String provider) {
-        this.signatureProviderString = provider;
+    public PESigner withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        this.signatureProvider = signatureProvider;
         return this;
     }
 

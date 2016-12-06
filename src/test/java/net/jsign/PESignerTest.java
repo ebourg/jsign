@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.Security;
 import java.util.HashSet;
 import java.util.List;
 
@@ -295,7 +296,7 @@ public class PESignerTest extends TestCase {
     }
 
     /**
-     * Tests that it is possible to specify a signature algorithm whos name is
+     * Tests that it is possible to specify a signature algorithm who's name is
      * not simply a concatenation of a digest algorithm and the key algorithm.
      *
      * This test also sets the signature provider as a provider supporting
@@ -316,8 +317,7 @@ public class PESignerTest extends TestCase {
             PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false)
                     .withDigestAlgorithm(DigestAlgorithm.SHA1)
-                    .withSignatureAlgorithm("SHA256withRSAandMGF1")
-                    .withSignatureProvider(new BouncyCastleProvider());
+                    .withSignatureAlgorithm("SHA256withRSAandMGF1", new BouncyCastleProvider());
 
             signer.sign(peFile);
 
