@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign;
+package net.jsign.app.ant;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -34,8 +34,8 @@ public class PESignerTaskTest extends TestCase {
 
     private Project project;
     
-    private File sourceFile = new File("target/test-classes/wineyes.exe");
-    private File targetFile = new File("target/test-classes/wineyes-signed-with-ant.exe");
+    private File sourceFile = new File("../jsign-core/src/test/resources/wineyes.exe");
+    private File targetFile = new File("../jsign-core/src/test/resources/wineyes-signed-with-ant.exe");
     
     private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
 
@@ -44,7 +44,7 @@ public class PESignerTaskTest extends TestCase {
         project.setCoreLoader(getClass().getClassLoader());
         project.init();
 
-        File buildFile = new File("target/test-classes/testbuild.xml");
+        File buildFile = new File("../jsign-core/src/test/resources/testbuild.xml");
         project.setBaseDir(buildFile.getParentFile());
 
         final ProjectHelper helper = ProjectHelper.getProjectHelper();
@@ -295,7 +295,7 @@ public class PESignerTaskTest extends TestCase {
     public void testTimestampingAuthenticode() throws Exception {
         project.executeTarget("timestamping-authenticode");
         
-        File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant-authenticode.exe");
+        File targetFile2 = new File("../jsign-core/src/test/resources/wineyes-timestamped-with-ant-authenticode.exe");
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
@@ -316,7 +316,7 @@ public class PESignerTaskTest extends TestCase {
     public void testTimestampingRFC3161() throws Exception {
         project.executeTarget("timestamping-rfc3161");
         
-        File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant-rfc3161.exe");
+        File targetFile2 = new File("../jsign-core/src/test/resources/wineyes-timestamped-with-ant-rfc3161.exe");
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 

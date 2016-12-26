@@ -1,6 +1,6 @@
 <project name="JSign Ant tests">
 
-  <taskdef name="signexe" classname="net.jsign.PESignerTask"/>
+  <taskdef name="signexe" classname="net.jsign.app.ant.PESignerTask"/>
   
   <property name="keystore" value="keystore.jks"/>
   <property name="alias"    value="test"/>
