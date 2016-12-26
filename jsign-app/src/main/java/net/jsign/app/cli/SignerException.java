@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign;
+package net.jsign.app.cli;
 
 /**
  * @author Emmanuel Bourg

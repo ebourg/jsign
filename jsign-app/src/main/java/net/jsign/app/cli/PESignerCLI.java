@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign;
+package net.jsign.app.cli;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +37,9 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import net.jsign.DigestAlgorithm;
+import net.jsign.PESigner;
+import net.jsign.PVK;
 
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
