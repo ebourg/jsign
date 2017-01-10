@@ -25,6 +25,9 @@ See http://ebourg.github.com/jsign for more information.
 Changes
 =======
 
+Version 1.4 (in development)
+* Upgraded BouncyCastle to 1.54 (contributed by Markus Kilås)
+
 Version 1.3, 2016-08-04
 * The command line tool now supports HTTP proxies (contributed by Michael Szediwy)
 * RFC 3161 timestamping services are now supported (contributed by Florent Daigniere)

@@ -80,7 +80,7 @@ public class CertificateTableEntry {
     public void setSignature(CMSSignedData signature) throws IOException {
         this.signature = signature;
         byte[] content = signature.toASN1Structure().getEncoded("DER");
-        this.content = pad(content, 8); // todo not required if the entries are 8 bytes aligned, may cause an ASN1 parsing error (with BC 1.54)
+        this.content = pad(content, 8);
         this.size = this.content.length + 8;
         this.type = CertificateType.PKCS_SIGNED_DATA.getValue();
     }
