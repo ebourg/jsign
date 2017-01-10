@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
@@ -65,7 +67,11 @@ public class CertificateTableEntry {
         }
         
         if (signature == null) {
-            signature = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(content));
+            try {
+                signature = new CMSSignedData((CMSProcessable) null, new ContentInfo(ASN1Sequence.getInstance(new ASN1InputStream(content).readObject())));
+            } catch (IOException e) {
+                throw new IllegalArgumentException("failed to construct sequence from byte[]: " + e.getMessage());
+            }
         }
         
         return signature;
