@@ -1,0 +1,218 @@
+<HTML>
+<BODY BGCOLOR="white">
+<PRE>
+<FONT color="green">001</FONT>    /**<a name="line.1"></a>
+<FONT color="green">002</FONT>     * Copyright 2012 Emmanuel Bourg<a name="line.2"></a>
+<FONT color="green">003</FONT>     *<a name="line.3"></a>
+<FONT color="green">004</FONT>     * Licensed under the Apache License, Version 2.0 (the "License");<a name="line.4"></a>
+<FONT color="green">005</FONT>     * you may not use this file except in compliance with the License.<a name="line.5"></a>
+<FONT color="green">006</FONT>     * You may obtain a copy of the License at<a name="line.6"></a>
+<FONT color="green">007</FONT>     *<a name="line.7"></a>
+<FONT color="green">008</FONT>     *     http:/**www.apache.org/licenses/LICENSE-2.0<a name="line.8"></a>
+<FONT color="green">009</FONT>     *<a name="line.9"></a>
+<FONT color="green">010</FONT>     * Unless required by applicable law or agreed to in writing, software<a name="line.10"></a>
+<FONT color="green">011</FONT>     * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.11"></a>
+<FONT color="green">012</FONT>     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.12"></a>
+<FONT color="green">013</FONT>     * See the License for the specific language governing permissions and<a name="line.13"></a>
+<FONT color="green">014</FONT>     * limitations under the License.<a name="line.14"></a>
+<FONT color="green">015</FONT>     */<a name="line.15"></a>
+<FONT color="green">016</FONT>    <a name="line.16"></a>
+<FONT color="green">017</FONT>    package net.jsign.pe;<a name="line.17"></a>
+<FONT color="green">018</FONT>    <a name="line.18"></a>
+<FONT color="green">019</FONT>    import java.util.ArrayList;<a name="line.19"></a>
+<FONT color="green">020</FONT>    import java.util.List;<a name="line.20"></a>
+<FONT color="green">021</FONT>    <a name="line.21"></a>
+<FONT color="green">022</FONT>    /**<a name="line.22"></a>
+<FONT color="green">023</FONT>     * Characteristics of the section of an executable file.<a name="line.23"></a>
+<FONT color="green">024</FONT>     * <a name="line.24"></a>
+<FONT color="green">025</FONT>     * @author Emmanuel Bourg<a name="line.25"></a>
+<FONT color="green">026</FONT>     * @since 1.0<a name="line.26"></a>
+<FONT color="green">027</FONT>     */<a name="line.27"></a>
+<FONT color="green">028</FONT>    public enum SectionFlag {<a name="line.28"></a>
+<FONT color="green">029</FONT>    <a name="line.29"></a>
+<FONT color="green">030</FONT>        /** The section should not be padded to the next boundary. This flag is obsolete and is replaced by ALIGN_1BYTES. This is valid only for object files.. */<a name="line.30"></a>
+<FONT color="green">031</FONT>        TYPE_NO_PAD        (0x00000008),<a name="line.31"></a>
+<FONT color="green">032</FONT>    <a name="line.32"></a>
+<FONT color="green">033</FONT>        /** The section contains executable code. */<a name="line.33"></a>
+<FONT color="green">034</FONT>        CODE               (0x00000020),<a name="line.34"></a>
+<FONT color="green">035</FONT>    <a name="line.35"></a>
+<FONT color="green">036</FONT>        /** The section contains initialized data. */<a name="line.36"></a>
+<FONT color="green">037</FONT>        INITIALIZED_DATA   (0x00000040),<a name="line.37"></a>
+<FONT color="green">038</FONT>    <a name="line.38"></a>
+<FONT color="green">039</FONT>        /** The section contains uninitialized data. */<a name="line.39"></a>
+<FONT color="green">040</FONT>        UNINITIALIZED_DATA (0x00000080),<a name="line.40"></a>
+<FONT color="green">041</FONT>    <a name="line.41"></a>
+<FONT color="green">042</FONT>        /** Reserved for future use. */<a name="line.42"></a>
+<FONT color="green">043</FONT>        LNK_OTHER          (0x00000100),<a name="line.43"></a>
+<FONT color="green">044</FONT>    <a name="line.44"></a>
+<FONT color="green">045</FONT>        /** The section contains comments or other information. The .drectve section has this type. This is valid for object files only. */<a name="line.45"></a>
+<FONT color="green">046</FONT>        LNK_INFO           (0x00000200),<a name="line.46"></a>
+<FONT color="green">047</FONT>    <a name="line.47"></a>
+<FONT color="green">048</FONT>        /** The section will not become part of the image. This is valid only for object files. */<a name="line.48"></a>
+<FONT color="green">049</FONT>        LNK_REMOVE         (0x00000800),<a name="line.49"></a>
+<FONT color="green">050</FONT>    <a name="line.50"></a>
+<FONT color="green">051</FONT>        /** The section contains COMDAT data. This is valid only for object files. */<a name="line.51"></a>
+<FONT color="green">052</FONT>        LNK_COMDAT         (0x00001000),<a name="line.52"></a>
+<FONT color="green">053</FONT>    <a name="line.53"></a>
+<FONT color="green">054</FONT>        /** The section contains data referenced through the global pointer (GP). */<a name="line.54"></a>
+<FONT color="green">055</FONT>        GPREL              (0x00008000),<a name="line.55"></a>
+<FONT color="green">056</FONT>    <a name="line.56"></a>
+<FONT color="green">057</FONT>        /** Reserved for future use. */<a name="line.57"></a>
+<FONT color="green">058</FONT>        MEM_PURGEABLE      (0x00020000),<a name="line.58"></a>
+<FONT color="green">059</FONT>    <a name="line.59"></a>
+<FONT color="green">060</FONT>        /** For ARM machine types, the section contains Thumb code.  Reserved for future use with other machine types. */<a name="line.60"></a>
+<FONT color="green">061</FONT>        MEM_16BIT          (0x00020000),<a name="line.61"></a>
+<FONT color="green">062</FONT>    <a name="line.62"></a>
+<FONT color="green">063</FONT>        /** Reserved for future use. */<a name="line.63"></a>
+<FONT color="green">064</FONT>        MEM_LOCKED         (0x00040000),<a name="line.64"></a>
+<FONT color="green">065</FONT>    <a name="line.65"></a>
+<FONT color="green">066</FONT>        /** Reserved for future use. */<a name="line.66"></a>
+<FONT color="green">067</FONT>        MEM_PRELOAD        (0x00080000),<a name="line.67"></a>
+<FONT color="green">068</FONT>    <a name="line.68"></a>
+<FONT color="green">069</FONT>        /** Align data on a 1-byte boundary. Valid only for object files. */<a name="line.69"></a>
+<FONT color="green">070</FONT>        ALIGN_1BYTES       (0x00100000),<a name="line.70"></a>
+<FONT color="green">071</FONT>    <a name="line.71"></a>
+<FONT color="green">072</FONT>        /** Align data on a 2-byte boundary. Valid only for object files. */<a name="line.72"></a>
+<FONT color="green">073</FONT>        ALIGN_2BYTES       (0x00200000),<a name="line.73"></a>
+<FONT color="green">074</FONT>    <a name="line.74"></a>
+<FONT color="green">075</FONT>        /** Align data on a 4-byte boundary. Valid only for object files. */<a name="line.75"></a>
+<FONT color="green">076</FONT>        ALIGN_4BYTES       (0x00300000),<a name="line.76"></a>
+<FONT color="green">077</FONT>    <a name="line.77"></a>
+<FONT color="green">078</FONT>        /** Align data on an 8-byte boundary. Valid only for object files. */<a name="line.78"></a>
+<FONT color="green">079</FONT>        ALIGN_8BYTES       (0x00400000),<a name="line.79"></a>
+<FONT color="green">080</FONT>    <a name="line.80"></a>
+<FONT color="green">081</FONT>        /** Align data on a 16-byte boundary. Valid only for object files. */<a name="line.81"></a>
+<FONT color="green">082</FONT>        ALIGN_16BYTES      (0x00500000),<a name="line.82"></a>
+<FONT color="green">083</FONT>    <a name="line.83"></a>
+<FONT color="green">084</FONT>        /** Align data on a 32-byte boundary. Valid only for object files. */<a name="line.84"></a>
+<FONT color="green">085</FONT>        ALIGN_32BYTES      (0x00600000),<a name="line.85"></a>
+<FONT color="green">086</FONT>    <a name="line.86"></a>
+<FONT color="green">087</FONT>        /** Align data on a 64-byte boundary. Valid only for object files. */<a name="line.87"></a>
+<FONT color="green">088</FONT>        ALIGN_64BYTES      (0x00700000),<a name="line.88"></a>
+<FONT color="green">089</FONT>    <a name="line.89"></a>
+<FONT color="green">090</FONT>        /** Align data on a 128-byte boundary. Valid only for object files. */<a name="line.90"></a>
+<FONT color="green">091</FONT>        ALIGN_128BYTES     (0x00800000),<a name="line.91"></a>
+<FONT color="green">092</FONT>    <a name="line.92"></a>
+<FONT color="green">093</FONT>        /** Align data on a 256-byte boundary. Valid only for object files. */<a name="line.93"></a>
+<FONT color="green">094</FONT>        ALIGN_256BYTES     (0x00900000),<a name="line.94"></a>
+<FONT color="green">095</FONT>    <a name="line.95"></a>
+<FONT color="green">096</FONT>        /** Align data on a 512-byte boundary. Valid only for object files. */<a name="line.96"></a>
+<FONT color="green">097</FONT>        ALIGN_512BYTES     (0x00A00000),<a name="line.97"></a>
+<FONT color="green">098</FONT>    <a name="line.98"></a>
+<FONT color="green">099</FONT>        /** Align data on a 1024-byte boundary. Valid only for object files. */<a name="line.99"></a>
+<FONT color="green">100</FONT>        ALIGN_1024BYTES    (0x00B00000),<a name="line.100"></a>
+<FONT color="green">101</FONT>    <a name="line.101"></a>
+<FONT color="green">102</FONT>        /** Align data on a 2048-byte boundary. Valid only for object files. */<a name="line.102"></a>
+<FONT color="green">103</FONT>        ALIGN_2048BYTES    (0x00C00000),<a name="line.103"></a>
+<FONT color="green">104</FONT>    <a name="line.104"></a>
+<FONT color="green">105</FONT>        /** Align data on a 4096-byte boundary. Valid only for object files. */<a name="line.105"></a>
+<FONT color="green">106</FONT>        ALIGN_4096BYTES    (0x00D00000),<a name="line.106"></a>
+<FONT color="green">107</FONT>    <a name="line.107"></a>
+<FONT color="green">108</FONT>        /** Align data on an 8192-byte boundary. Valid only for object files. */<a name="line.108"></a>
+<FONT color="green">109</FONT>        ALIGN_8192BYTES    (0x00E00000),<a name="line.109"></a>
+<FONT color="green">110</FONT>    <a name="line.110"></a>
+<FONT color="green">111</FONT>        /** The section contains extended relocations. */<a name="line.111"></a>
+<FONT color="green">112</FONT>        LNK_NRELOC_OVFL    (0x01000000),<a name="line.112"></a>
+<FONT color="green">113</FONT>    <a name="line.113"></a>
+<FONT color="green">114</FONT>        /** The section can be discarded as needed. */<a name="line.114"></a>
+<FONT color="green">115</FONT>        MEM_DISCARDABLE    (0x02000000),<a name="line.115"></a>
+<FONT color="green">116</FONT>    <a name="line.116"></a>
+<FONT color="green">117</FONT>        /** The section cannot be cached. */<a name="line.117"></a>
+<FONT color="green">118</FONT>        MEM_NOT_CACHED     (0x04000000),<a name="line.118"></a>
+<FONT color="green">119</FONT>    <a name="line.119"></a>
+<FONT color="green">120</FONT>        /** The section is not pageable. */<a name="line.120"></a>
+<FONT color="green">121</FONT>        MEM_NOT_PAGED      (0x08000000),<a name="line.121"></a>
+<FONT color="green">122</FONT>    <a name="line.122"></a>
+<FONT color="green">123</FONT>        /** The section can be shared in memory. */<a name="line.123"></a>
+<FONT color="green">124</FONT>        MEM_SHARED         (0x10000000),<a name="line.124"></a>
+<FONT color="green">125</FONT>    <a name="line.125"></a>
+<FONT color="green">126</FONT>        /** The section can be executed as code. */<a name="line.126"></a>
+<FONT color="green">127</FONT>        EXECUTE            (0x20000000),<a name="line.127"></a>
+<FONT color="green">128</FONT>    <a name="line.128"></a>
+<FONT color="green">129</FONT>        /** The section can be read. */<a name="line.129"></a>
+<FONT color="green">130</FONT>        READ               (0x40000000),<a name="line.130"></a>
+<FONT color="green">131</FONT>    <a name="line.131"></a>
+<FONT color="green">132</FONT>        /** The section can be written to. */<a name="line.132"></a>
+<FONT color="green">133</FONT>        WRITE              (0x80000000);<a name="line.133"></a>
+<FONT color="green">134</FONT>    <a name="line.134"></a>
+<FONT color="green">135</FONT>        private final int mask;<a name="line.135"></a>
+<FONT color="green">136</FONT>    <a name="line.136"></a>
+<FONT color="green">137</FONT>        SectionFlag(int mask) {<a name="line.137"></a>
+<FONT color="green">138</FONT>            this.mask = mask;<a name="line.138"></a>
+<FONT color="green">139</FONT>        }<a name="line.139"></a>
+<FONT color="green">140</FONT>    <a name="line.140"></a>
+<FONT color="green">141</FONT>        static List&lt;SectionFlag&gt; getFlags(int flags) {<a name="line.141"></a>
+<FONT color="green">142</FONT>            List&lt;SectionFlag&gt; result = new ArrayList&lt;SectionFlag&gt;();<a name="line.142"></a>
+<FONT color="green">143</FONT>            <a name="line.143"></a>
+<FONT color="green">144</FONT>            for (SectionFlag flag : values()) {<a name="line.144"></a>
+<FONT color="green">145</FONT>                if ((flag.mask &amp; flags) != 0) {<a name="line.145"></a>
+<FONT color="green">146</FONT>                    result.add(flag);<a name="line.146"></a>
+<FONT color="green">147</FONT>                }<a name="line.147"></a>
+<FONT color="green">148</FONT>            }<a name="line.148"></a>
+<FONT color="green">149</FONT>            <a name="line.149"></a>
+<FONT color="green">150</FONT>            return result;<a name="line.150"></a>
+<FONT color="green">151</FONT>        }<a name="line.151"></a>
+<FONT color="green">152</FONT>    }<a name="line.152"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</PRE>
+</BODY>
+</HTML>
