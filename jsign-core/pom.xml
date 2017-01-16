@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.jsign</groupId>
+  <artifactId>jsign-core</artifactId>
+  <parent>
+    <groupId>net.jsign</groupId>
+    <artifactId>jsign-parent</artifactId>
+    <version>1.4-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <name>Jsign - Code signing for Windows executables (Core)</name>
+  <version>1.4-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <inceptionYear>2012</inceptionYear>
+
+  <description>
+    Pure Java implementation of Microsoft Authenticode for signing Windows executable files
+  </description>
+  <url>http://ebourg.github.com/jsign</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.54</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk15on</artifactId>
+      <version>1.54</version>
+    </dependency>
+  </dependencies>
+
+</project>
