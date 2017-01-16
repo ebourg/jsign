@@ -43,11 +43,13 @@ import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
- * Builder to help create PESigner instance.
+ * Helper class to create PESigner instances with untyped parameters.
+ * This is used internally to share the parameter validation logic
+ * between the Ant task and the CLI tool.
  *
  * @since 1.4
  */
-class PESignerBuilder {
+class PESignerHelper {
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
@@ -82,101 +84,101 @@ class PESignerBuilder {
     private String proxyUser;
     private String proxyPass;
 
-    public PESignerBuilder(Console console) {
+    public PESignerHelper(Console console) {
         this.console = console;
     }
 
-    public PESignerBuilder keystore(String keystore) {
+    public PESignerHelper keystore(String keystore) {
         keystore(createFile(keystore));
         return this;
     }
 
-    public PESignerBuilder keystore(File keystore) {
+    public PESignerHelper keystore(File keystore) {
         this.keystore = keystore;
         return this;
     }
 
-    public PESignerBuilder storepass(String storepass) {
+    public PESignerHelper storepass(String storepass) {
         this.storepass = storepass;
         return this;
     }
 
-    public PESignerBuilder storetype(String storetype) {
+    public PESignerHelper storetype(String storetype) {
         this.storetype = storetype;
         return this;
     }
 
-    public PESignerBuilder alias(String alias) {
+    public PESignerHelper alias(String alias) {
         this.alias = alias;
         return this;
     }
 
-    public PESignerBuilder keypass(String keypass) {
+    public PESignerHelper keypass(String keypass) {
         this.keypass = keypass;
         return this;
     }
 
-    public PESignerBuilder keyfile(String keyfile) {
+    public PESignerHelper keyfile(String keyfile) {
         keyfile(createFile(keyfile));
         return this;
     }
 
-    public PESignerBuilder keyfile(File keyfile) {
+    public PESignerHelper keyfile(File keyfile) {
         this.keyfile = keyfile;
         return this;
     }
 
-    public PESignerBuilder certfile(String certfile) {
+    public PESignerHelper certfile(String certfile) {
         certfile(createFile(certfile));
         return this;
     }
 
-    public PESignerBuilder certfile(File certfile) {
+    public PESignerHelper certfile(File certfile) {
         this.certfile = certfile;
         return this;
     }
 
-    public PESignerBuilder alg(String alg) {
+    public PESignerHelper alg(String alg) {
         this.alg = alg;
         return this;
     }
 
-    public PESignerBuilder tsaurl(String tsaurl) {
+    public PESignerHelper tsaurl(String tsaurl) {
         this.tsaurl = tsaurl;
         return this;
     }
 
-    public PESignerBuilder tsmode(String tsmode) {
+    public PESignerHelper tsmode(String tsmode) {
         this.tsmode = tsmode;
         return this;
     }
 
-    public PESignerBuilder name(String name) {
+    public PESignerHelper name(String name) {
         this.name = name;
         return this;
     }
 
-    public PESignerBuilder url(String url) {
+    public PESignerHelper url(String url) {
         this.url = url;
         return this;
     }
 
-    public PESignerBuilder proxyUrl(String proxyUrl) {
+    public PESignerHelper proxyUrl(String proxyUrl) {
         this.proxyUrl = proxyUrl;
         return this;
     }
 
-    public PESignerBuilder proxyUser(String proxyUser) {
+    public PESignerHelper proxyUser(String proxyUser) {
         this.proxyUser = proxyUser;
         return this;
     }
 
-    public PESignerBuilder proxyPass(String proxyPass) {
+    public PESignerHelper proxyPass(String proxyPass) {
         this.proxyPass = proxyPass;
         return this;
     }
 
-    public PESignerBuilder map(Map<?, ?> map) {
+    public PESignerHelper map(Map<?, ?> map) {
         for (Object key : map.entrySet()) {
             String keyStr = String.valueOf(key);
             Object value = map.get(key);
@@ -189,7 +191,7 @@ class PESignerBuilder {
         return this;
     }
 
-    public PESignerBuilder param(String key, String value) {
+    public PESignerHelper param(String key, String value) {
         if (PARAM_KEYSTORE.equals(key)) {
             keystore(value);
         } else if (PARAM_STOREPASS.equals(key)) {

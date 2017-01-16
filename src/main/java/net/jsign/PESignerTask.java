@@ -123,22 +123,22 @@ public class PESignerTask extends Task {
     @Override
     public void execute() throws BuildException {
         try {
-            PESignerBuilder builder = new PESignerBuilder(new AntConsole(this));
+            PESignerHelper helper = new PESignerHelper(new AntConsole(this));
             
-            builder.name(name);
-            builder.url(url);
-            builder.alg(algorithm);
-            builder.keystore(keystore);
-            builder.storepass(storepass);
-            builder.storetype(storetype);
-            builder.alias(alias);
-            builder.certfile(certfile);
-            builder.keyfile(keyfile);
-            builder.keypass(keypass);
-            builder.tsaurl(tsaurl);
-            builder.tsmode(tsmode);
+            helper.name(name);
+            helper.url(url);
+            helper.alg(algorithm);
+            helper.keystore(keystore);
+            helper.storepass(storepass);
+            helper.storetype(storetype);
+            helper.alias(alias);
+            helper.certfile(certfile);
+            helper.keyfile(keyfile);
+            helper.keypass(keypass);
+            helper.tsaurl(tsaurl);
+            helper.tsmode(tsmode);
             
-            builder.sign(file);
+            helper.sign(file);
         } catch (Exception e) {
             throw new BuildException(e.getMessage(), e);
         }

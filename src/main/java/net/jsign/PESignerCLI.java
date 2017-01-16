@@ -25,7 +25,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import static net.jsign.PESignerBuilder.*;
+import static net.jsign.PESignerHelper.*;
 
 /**
  * Command line interface for signing PE files.
@@ -80,35 +80,35 @@ public class PESignerCLI {
                 return;
             }
             
-            PESignerBuilder builder = new PESignerBuilder(new StdOutConsole());
+            PESignerHelper helper = new PESignerHelper(new StdOutConsole());
             
-            setOption(PARAM_KEYSTORE, builder, cmd);
-            setOption(PARAM_STOREPASS, builder, cmd);
-            setOption(PARAM_STORETYPE, builder, cmd);
-            setOption(PARAM_ALIAS, builder, cmd);
-            setOption(PARAM_KEYPASS, builder, cmd);
-            setOption(PARAM_KEYFILE, builder, cmd);
-            setOption(PARAM_CERTFILE, builder, cmd);
-            setOption(PARAM_ALG, builder, cmd);
-            setOption(PARAM_TSAURL, builder, cmd);
-            setOption(PARAM_TSMODE, builder, cmd);
-            setOption(PARAM_NAME, builder, cmd);
-            setOption(PARAM_URL, builder, cmd);
-            setOption(PARAM_PROXY_URL, builder, cmd);
-            setOption(PARAM_PROXY_USER, builder, cmd);
-            setOption(PARAM_PROXY_PASS, builder, cmd);
+            setOption(PARAM_KEYSTORE, helper, cmd);
+            setOption(PARAM_STOREPASS, helper, cmd);
+            setOption(PARAM_STORETYPE, helper, cmd);
+            setOption(PARAM_ALIAS, helper, cmd);
+            setOption(PARAM_KEYPASS, helper, cmd);
+            setOption(PARAM_KEYFILE, helper, cmd);
+            setOption(PARAM_CERTFILE, helper, cmd);
+            setOption(PARAM_ALG, helper, cmd);
+            setOption(PARAM_TSAURL, helper, cmd);
+            setOption(PARAM_TSMODE, helper, cmd);
+            setOption(PARAM_NAME, helper, cmd);
+            setOption(PARAM_URL, helper, cmd);
+            setOption(PARAM_PROXY_URL, helper, cmd);
+            setOption(PARAM_PROXY_USER, helper, cmd);
+            setOption(PARAM_PROXY_PASS, helper, cmd);
 
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
 
-            builder.sign(file);
+            helper.sign(file);
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
 
-    private void setOption(String key, PESignerBuilder builder, CommandLine cmd) throws SignerException {
+    private void setOption(String key, PESignerHelper helper, CommandLine cmd) throws SignerException {
         String value = cmd.getOptionValue(key);
-        builder.param(key, value);
+        helper.param(key, value);
     }
 
     private void printHelp() {
