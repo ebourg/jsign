@@ -138,8 +138,7 @@ public class PESignerTask extends Task {
             builder.tsaurl(tsaurl);
             builder.tsmode(tsmode);
             
-            PESigner signer = builder.build();
-            signer.sign(file);
+            builder.sign(file);
         } catch (Exception e) {
             throw new BuildException(e.getMessage(), e);
         }

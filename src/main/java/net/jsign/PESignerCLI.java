@@ -100,8 +100,7 @@ public class PESignerCLI {
 
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
 
-            PESigner signer = builder.build();
-            signer.sign(file);
+            builder.sign(file);
         } catch (ParseException e) {
             e.printStackTrace();
         }

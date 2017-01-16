@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -343,7 +344,6 @@ class PESignerBuilder {
 
         // and now the actual work!
         PESigner signer = new PESigner(chain, privateKey)
-                .withConsole(console)
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
@@ -352,6 +352,41 @@ class PESignerBuilder {
                 .withTimestampingAutority(tsaurl);
 
         return signer;
+    }
+
+    public void sign(File file) throws SignerException {
+        PESigner signer = build();
+        
+        if (file == null) {
+            throw new SignerException("file must be set");
+        }
+        if (!file.exists()) {
+            throw new SignerException("The file " + file + " couldn't be found");
+        }
+
+        PEFile peFile;
+        try {
+            peFile = new PEFile(file);
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the executable file " + file, e);
+        }
+
+        try {
+            if (console != null) {
+                console.info("Adding Authenticode signature to " + file);
+            }
+            signer.sign(peFile);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't sign " + file, e);
+        } finally {
+            try {
+                peFile.close();
+            } catch (IOException e) {
+                if (console != null) {
+                    console.warn("Couldn't close " + file, e);
+                }
+            }
+        }
     }
 
     /**
