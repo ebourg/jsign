@@ -123,7 +123,7 @@ public class PESignerTask extends Task {
     @Override
     public void execute() throws BuildException {
         try {
-            PESignerHelper helper = new PESignerHelper(new AntConsole(this));
+            PESignerHelper helper = new PESignerHelper(new AntConsole(this), "attribute");
             
             helper.name(name);
             helper.url(url);

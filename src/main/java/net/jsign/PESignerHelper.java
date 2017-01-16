@@ -67,6 +67,9 @@ class PESignerHelper {
 
     private Console console;
 
+    /** The name used to refer to a configuration parameter */
+    private String parameterName = "parameter";
+
     private File keystore;
     private String storepass;
     private String storetype;
@@ -83,8 +86,9 @@ class PESignerHelper {
     private String proxyUser;
     private String proxyPass;
 
-    public PESignerHelper(Console console) {
+    public PESignerHelper(Console console, String parameterName) {
         this.console = console;
+        this.parameterName = parameterName;
     }
 
     public PESignerHelper keystore(String keystore) {
@@ -235,10 +239,10 @@ class PESignerHelper {
 
         // some exciting parameter validation...
         if (keystore == null && keyfile == null && certfile == null) {
-            throw new SignerException("keystore option, or keyfile and certfile options must be set");
+            throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && (keyfile != null || certfile != null)) {
-            throw new SignerException("keystore option can't be mixed with keyfile or certfile");
+            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile or certfile");
         }
 
         if (keystore != null) {
@@ -270,7 +274,7 @@ class PESignerHelper {
             }
 
             if (alias == null) {
-                throw new SignerException("alias option must be set");
+                throw new SignerException("alias " + parameterName + " must be set");
             }
 
             try {
@@ -293,13 +297,13 @@ class PESignerHelper {
         } else {
             // separate private key and certificate files (PVK/SPC)
             if (keyfile == null) {
-                throw new SignerException("keyfile option must be set");
+                throw new SignerException("keyfile " + parameterName + " must be set");
             }
             if (!keyfile.exists()) {
                 throw new SignerException("The keyfile " + keyfile + " couldn't be found");
             }
             if (certfile == null) {
-                throw new SignerException("certfile option must be set");
+                throw new SignerException("certfile " + parameterName + " must be set");
             }
             if (!certfile.exists()) {
                 throw new SignerException("The certfile " + certfile + " couldn't be found");

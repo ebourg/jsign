@@ -80,7 +80,7 @@ public class PESignerCLI {
                 return;
             }
             
-            PESignerHelper helper = new PESignerHelper(new StdOutConsole());
+            PESignerHelper helper = new PESignerHelper(new StdOutConsole(), "option");
             
             setOption(PARAM_KEYSTORE, helper, cmd);
             setOption(PARAM_STOREPASS, helper, cmd);
