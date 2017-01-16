@@ -29,6 +29,7 @@ Version 1.4 (in development)
 * The signature algorithm can now be specified independently of the digest algorithm (contributed by Markus Kilås)
 * Upgraded BouncyCastle to 1.54 (contributed by Markus Kilås)
 * Fixed the Accept header for RFC 3161 requests (contributed by Markus Kilås)
+* Internal refactoring to share the code between the Ant task and the CLI tool (contributed by Michael Peterson)
 
 Version 1.3, 2016-08-04
 * The command line tool now supports HTTP proxies (contributed by Michael Szediwy)
