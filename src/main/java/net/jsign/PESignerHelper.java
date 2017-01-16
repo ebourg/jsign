@@ -224,16 +224,6 @@ class PESignerHelper {
     }
 
     public PESigner build() throws SignerException {
-        if (keystore != null && storetype == null) {
-            // guess the type of the keystore from the extension of the file
-            String filename = keystore.getName().toLowerCase();
-            if (filename.endsWith(".p12") || filename.endsWith(".pfx")) {
-                storetype = "PKCS12";
-            } else {
-                storetype = "JKS";
-            }
-        }
-
         PrivateKey privateKey;
         Certificate[] chain;
 
@@ -246,32 +236,7 @@ class PESignerHelper {
         }
 
         if (keystore != null) {
-            // JKS or PKCS12 keystore
-            KeyStore ks;
-            try {
-                ks = KeyStore.getInstance(storetype);
-            } catch (KeyStoreException e) {
-                throw new SignerException("keystore type '" + storetype + "' is not supported", e);
-            }
-
-            if (!keystore.exists()) {
-                throw new SignerException("The keystore " + keystore + " couldn't be found");
-            }
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(keystore);
-                ks.load(in, storepass != null ? storepass.toCharArray() : null);
-            } catch (Exception e) {
-                throw new SignerException("Unable to load the keystore " + keystore, e);
-            } finally {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            KeyStore ks = KeyStoreUtils.load(keystore, storetype, storepass);
 
             if (alias == null) {
                 throw new SignerException("alias " + parameterName + " must be set");
