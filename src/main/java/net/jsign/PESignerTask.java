@@ -30,7 +30,6 @@ import java.util.Collection;
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.util.FileUtils;
 
@@ -80,6 +79,8 @@ public class PESignerTask extends Task {
 
     /** The protocol used for  the timestamping */
     private String tsmode;
+
+    private Console console = new AntConsole(this);
 
     public void setFile(File file) {
         this.file = file;
@@ -260,7 +261,7 @@ public class PESignerTask extends Task {
 
 
         try {
-            log("Adding Authenticode signature to " + FileUtils.getRelativePath(getProject().getBaseDir(), file));
+            console.info("Adding Authenticode signature to " + FileUtils.getRelativePath(getProject().getBaseDir(), file));
             signer.sign(peFile);
         } catch (Exception e) {
             throw new BuildException("Couldn't sign " + file, e);
@@ -268,7 +269,7 @@ public class PESignerTask extends Task {
             try {
                 peFile.close();
             } catch (IOException e) {
-                log("Couldn't close " + file, e, Project.MSG_WARN);
+                console.warn("Couldn't close " + file, e);
             }
         }
     }

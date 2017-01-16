@@ -68,6 +68,8 @@ public class PESignerCLI {
             System.exit(1);
         }
     }
+    
+    private Console console = new StdOutConsole();
 
     private Options options;
 
@@ -252,7 +254,7 @@ public class PESignerCLI {
 
             try {
                 initializeProxy(proxyUrl, proxyUser, proxyPassword);
-                System.out.println("Adding Authenticode signature to " + file);
+                console.info("Adding Authenticode signature to " + file);
                 signer.sign(peFile);
             } catch (Exception e) {
                 throw new SignerException("Couldn't sign " + file, e);
@@ -260,8 +262,7 @@ public class PESignerCLI {
                 try {
                     peFile.close();
                 } catch (IOException e) {
-                    System.err.println("Couldn't close " + file);
-                    e.printStackTrace(System.err);
+                    console.warn("Couldn't close " + file, e);
                 }
             }
 
