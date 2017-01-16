@@ -236,7 +236,9 @@ public class PESigner {
         }
 
         try {
-            console.info("Adding Authenticode signature to " + file);
+            if (console != null) {
+                console.info("Adding Authenticode signature to " + file);
+            }
             sign(peFile);
         } catch (Exception e) {
             throw new SignerException("Couldn't sign " + file, e);
@@ -244,7 +246,9 @@ public class PESigner {
             try {
                 peFile.close();
             } catch (IOException e) {
-                console.warn("Couldn't close " + file, e);
+                if (console != null) {
+                    console.warn("Couldn't close " + file, e);
+                }
             }
         }
     }
