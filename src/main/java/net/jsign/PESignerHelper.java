@@ -37,7 +37,6 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
@@ -175,19 +174,6 @@ class PESignerHelper {
 
     public PESignerHelper proxyPass(String proxyPass) {
         this.proxyPass = proxyPass;
-        return this;
-    }
-
-    public PESignerHelper map(Map<?, ?> map) {
-        for (Object key : map.entrySet()) {
-            String keyStr = String.valueOf(key);
-            Object value = map.get(key);
-
-            if (value != null) {
-                param(keyStr, String.valueOf(value));
-            }
-        }
-
         return this;
     }
 
@@ -345,15 +331,13 @@ class PESignerHelper {
         }
 
         // and now the actual work!
-        PESigner signer = new PESigner(chain, privateKey)
+        return new PESigner(chain, privateKey)
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
                 .withTimestamping(tsaurl != null || tsmode != null)
                 .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
                 .withTimestampingAutority(tsaurl);
-
-        return signer;
     }
 
     public void sign(File file) throws SignerException {
