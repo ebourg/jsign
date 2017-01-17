@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.security.Permission;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -312,6 +313,38 @@ public class PESignerCLITest extends TestCase {
             assertNotNull(signature);
         } finally {
             peFile.close();
+        }
+    }
+    
+    public void testExitOnError() {
+        NoExitSecurityManager manager = new NoExitSecurityManager();
+        System.setSecurityManager(manager);
+
+        try {
+            PESignerCLI.main("foo.exe");
+            fail("VM not terminated");
+        } catch (SecurityException e) {
+            // expected
+            assertEquals("Exit code", Integer.valueOf(1), manager.getStatus());
+        } finally {
+            System.setSecurityManager(null);
+        }
+    }
+
+    private static class NoExitSecurityManager extends SecurityManager {
+        private Integer status;
+
+        public Integer getStatus() {
+            return status;
+        }
+
+        public void checkPermission(Permission perm) { }
+        
+        public void checkPermission(Permission perm, Object context) { }
+
+        public void checkExit(int status) {
+            this.status = status;
+            throw new SecurityException("Exit disabled");
         }
     }
 }
