@@ -54,12 +54,14 @@ public class PEFile implements Closeable {
     /** The position of the PE header in the file */
     private final long peHeaderOffset;
 
-    private File file = null;
-    private ExtendedRandomAccessFile raf = null;
+    private final File file;
+    private final ExtendedRandomAccessFile raf;
 
     public PEFile(File file) throws IOException {
+        this.file = file;
+        
+        ExtendedRandomAccessFile raf = null;
         try {
-            this.file = file;
             raf = new ExtendedRandomAccessFile(file, "rw");
 
             // DOS Header
@@ -83,6 +85,9 @@ public class PEFile implements Closeable {
             if (!Arrays.equals(buffer, new byte[] { 'P', 'E', 0, 0})) {
                 throw new IOException("PE signature not found as expected at offset 0x" + Long.toHexString(peHeaderOffset));
             }
+            
+            this.raf = raf;
+
         } catch (IOException e) {
             if (raf != null) {
                 raf.close();
