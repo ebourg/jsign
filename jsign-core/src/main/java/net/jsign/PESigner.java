@@ -265,7 +265,7 @@ public class PESigner {
      * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.
      */
     private List<Certificate> removeRoot(Certificate[] certificates) {
-        List<Certificate> list = new ArrayList<Certificate>();
+        List<Certificate> list = new ArrayList<>();
         
         if (certificates.length == 1) {
             list.add(certificates[0]);
@@ -288,7 +288,7 @@ public class PESigner {
      * Creates the authenticated attributes for the SignerInfo section of the signature.
      */
     private AttributeTable createAuthenticatedAttributes() {
-        List<Attribute> attributes = new ArrayList<Attribute>();
+        List<Attribute> attributes = new ArrayList<>();
         
         SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));

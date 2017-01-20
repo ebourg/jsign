@@ -28,7 +28,6 @@ import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
 import org.bouncycastle.tsp.TimeStampResponse;

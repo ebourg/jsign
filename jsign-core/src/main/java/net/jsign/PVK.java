@@ -50,12 +50,9 @@ public class PVK {
     public static PrivateKey parse(File file, String password) throws GeneralSecurityException, IOException {
         ByteBuffer buffer = ByteBuffer.allocate((int) file.length());
         
-        FileInputStream in = new FileInputStream(file);
-        try {
+        try (FileInputStream in = new FileInputStream(file)) {
             in.getChannel().read(buffer);
             return parse(buffer, password);
-        } finally {
-            in.close();
         }
     }
 

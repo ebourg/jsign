@@ -16,8 +16,6 @@
 
 package net.jsign.asn1.authenticode;
 
-import java.math.BigInteger;
-
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;

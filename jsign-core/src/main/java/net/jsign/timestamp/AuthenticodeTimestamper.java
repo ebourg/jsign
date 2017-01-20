@@ -30,7 +30,6 @@ import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.util.encoders.Base64;

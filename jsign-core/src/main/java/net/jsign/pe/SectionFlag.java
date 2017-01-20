@@ -139,7 +139,7 @@ public enum SectionFlag {
     }
 
     static List<SectionFlag> getFlags(int flags) {
-        List<SectionFlag> result = new ArrayList<SectionFlag>();
+        List<SectionFlag> result = new ArrayList<>();
         
         for (SectionFlag flag : values()) {
             if ((flag.mask & flags) != 0) {

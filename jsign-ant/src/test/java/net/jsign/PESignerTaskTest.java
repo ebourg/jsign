@@ -240,8 +240,7 @@ public class PESignerTaskTest extends TestCase {
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(targetFile);
-        try {
+        try (PEFile peFile = new PEFile(targetFile)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
@@ -249,8 +248,6 @@ public class PESignerTaskTest extends TestCase {
             CMSSignedData signature = signatures.get(0);
 
             assertNotNull(signature);
-        } finally {
-            peFile.close();
         }
     }
 
@@ -259,8 +256,7 @@ public class PESignerTaskTest extends TestCase {
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(targetFile);
-        try {
+        try (PEFile peFile = new PEFile(targetFile)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
@@ -268,8 +264,6 @@ public class PESignerTaskTest extends TestCase {
             CMSSignedData signature = signatures.get(0);
 
             assertNotNull(signature);
-        } finally {
-            peFile.close();
         }
     }
 
@@ -278,8 +272,7 @@ public class PESignerTaskTest extends TestCase {
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
-        PEFile peFile = new PEFile(targetFile);
-        try {
+        try (PEFile peFile = new PEFile(targetFile)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
@@ -287,8 +280,6 @@ public class PESignerTaskTest extends TestCase {
             CMSSignedData signature = signatures.get(0);
 
             assertNotNull(signature);
-        } finally {
-            peFile.close();
         }
     }
     
@@ -299,8 +290,7 @@ public class PESignerTaskTest extends TestCase {
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
-        PEFile peFile = new PEFile(targetFile2);
-        try {
+        try (PEFile peFile = new PEFile(targetFile2)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
@@ -308,8 +298,6 @@ public class PESignerTaskTest extends TestCase {
             CMSSignedData signature = signatures.get(0);
 
             assertNotNull(signature);
-        } finally {
-            peFile.close();
         }
     }
 
@@ -320,8 +308,7 @@ public class PESignerTaskTest extends TestCase {
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
-        PEFile peFile = new PEFile(targetFile2);
-        try {
+        try (PEFile peFile = new PEFile(targetFile2)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
@@ -329,8 +316,6 @@ public class PESignerTaskTest extends TestCase {
             CMSSignedData signature = signatures.get(0);
 
             assertNotNull(signature);
-        } finally {
-            peFile.close();
         }
     }
 }

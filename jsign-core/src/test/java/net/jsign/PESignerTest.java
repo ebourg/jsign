@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
-import java.security.Security;
 import java.util.HashSet;
 import java.util.List;
 
@@ -113,7 +112,7 @@ public class PESignerTest extends TestCase {
         
         PEFile peFile = new PEFile(targetFile);
 
-        final HashSet<Boolean> called = new HashSet<Boolean>();
+        final HashSet<Boolean> called = new HashSet<>();
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
@@ -285,7 +284,7 @@ public class PESignerTest extends TestCase {
             assertNotNull(signedData);
 
             // Check the signature algorithm
-            final SignerInformation si = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();
+            SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
             assertEquals("Digest algorithm", TSPAlgorithms.SHA1, si.getDigestAlgorithmID().getAlgorithm());
             assertEquals("Encryption algorithm", PKCSObjectIdentifiers.rsaEncryption.getId(), si.getEncryptionAlgOID());
         } finally {
@@ -330,7 +329,7 @@ public class PESignerTest extends TestCase {
             assertNotNull(signedData);
 
             // Check the signature algorithm
-            final SignerInformation si = (SignerInformation) signedData.getSignerInfos().getSigners().iterator().next();
+            SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
             assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
             assertEquals("Encryption algorithm", PKCSObjectIdentifiers.id_RSASSA_PSS.getId(), si.getEncryptionAlgOID());
         } finally {

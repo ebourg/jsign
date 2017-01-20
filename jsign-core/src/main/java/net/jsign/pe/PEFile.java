@@ -540,7 +540,7 @@ public class PEFile implements Closeable {
      * Returns the authenticode signatures on the file.
      */
     public synchronized List<CMSSignedData> getSignatures() {
-        List<CMSSignedData> signatures = new ArrayList<CMSSignedData>();
+        List<CMSSignedData> signatures = new ArrayList<>();
         
         for (CertificateTableEntry entry : getCertificateTable()) {
             try {
@@ -556,7 +556,7 @@ public class PEFile implements Closeable {
     }
 
     private synchronized List<CertificateTableEntry> getCertificateTable() {
-        List<CertificateTableEntry> entries = new ArrayList<CertificateTableEntry>();
+        List<CertificateTableEntry> entries = new ArrayList<>();
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
         if (certificateTable != null && certificateTable.exists()) {
@@ -575,7 +575,7 @@ public class PEFile implements Closeable {
     }
 
     public synchronized List<Section> getSections() {
-        List<Section> sections = new ArrayList<Section>();
+        List<Section> sections = new ArrayList<>();
         int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes();
         
         for (int i = 0; i < getNumberOfSections(); i++) {

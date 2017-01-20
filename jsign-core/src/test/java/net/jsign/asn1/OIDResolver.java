@@ -44,8 +44,7 @@ public class OIDResolver {
 
     public OIDResolver() {
         if (file.exists()) {
-            try {
-                InputStream in = new FileInputStream(file);
+            try (InputStream in = new FileInputStream(file)) {
                 cache.load(in);
                 in.close();
             } catch (IOException e) {

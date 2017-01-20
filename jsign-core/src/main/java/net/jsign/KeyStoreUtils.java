@@ -18,7 +18,6 @@ package net.jsign;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 
@@ -52,20 +51,10 @@ public class KeyStoreUtils {
         if (keystore == null || !keystore.exists()) {
             throw new SignerException("The keystore " + keystore + " couldn't be found");
         }
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(keystore);
+        try (FileInputStream in = new FileInputStream(keystore)) {
             ks.load(in, storepass != null ? storepass.toCharArray() : null);
         } catch (Exception e) {
             throw new SignerException("Unable to load the keystore " + keystore, e);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                // ignore
-            }
         }
         
         return ks;

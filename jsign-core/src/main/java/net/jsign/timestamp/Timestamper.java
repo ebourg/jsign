@@ -93,12 +93,12 @@ public abstract class Timestamper {
         SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         
-        Collection<X509CertificateHolder> certificates = new ArrayList<X509CertificateHolder>();
+        Collection<X509CertificateHolder> certificates = new ArrayList<>();
         certificates.addAll(sigData.getCertificates().getMatches(null));
         if (extraCertificates != null) {
             certificates.addAll(extraCertificates);
         }
-        Store<X509CertificateHolder> certificateStore = new CollectionStore<X509CertificateHolder>(certificates);
+        Store<X509CertificateHolder> certificateStore = new CollectionStore<>(certificates);
         
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(certificateStore);
