@@ -54,33 +54,40 @@ public class PEFile implements Closeable {
     /** The position of the PE header in the file */
     private final long peHeaderOffset;
 
-    private final File file;
-    private final ExtendedRandomAccessFile raf;
+    private final File file = null;
+    private final ExtendedRandomAccessFile raf = null;
 
     public PEFile(File file) throws IOException {
-        this.file = file;
-        raf = new ExtendedRandomAccessFile(file, "rw");
-        
-        // DOS Header
-        
-        byte[] buffer = new byte[2];
-        raf.read(buffer);
-        
-        if (!Arrays.equals(buffer, "MZ".getBytes())) {
-            throw new IOException("DOS header signature not found");
-        }
-        
-        raf.seek(0x3C);
-        peHeaderOffset = raf.readDWord();
-        
-        // PE Header
-        
-        raf.seek(peHeaderOffset);
-        
-        buffer = new byte[4];
-        raf.read(buffer);
-        if (!Arrays.equals(buffer, new byte[] { 'P', 'E', 0, 0})) {
-            throw new IOException("PE signature not found as expected at offset 0x" + Long.toHexString(peHeaderOffset));
+        try {
+			this.file = file;
+			raf = new ExtendedRandomAccessFile(file, "rw");
+		
+			// DOS Header
+		
+			byte[] buffer = new byte[2];
+			raf.read(buffer);
+		
+			if (!Arrays.equals(buffer, "MZ".getBytes())) {
+				throw new IOException("DOS header signature not found");
+			}
+		
+			raf.seek(0x3C);
+			peHeaderOffset = raf.readDWord();
+		
+			// PE Header
+		
+			raf.seek(peHeaderOffset);
+		
+			buffer = new byte[4];
+			raf.read(buffer);
+			if (!Arrays.equals(buffer, new byte[] { 'P', 'E', 0, 0})) {
+				throw new IOException("PE signature not found as expected at offset 0x" + Long.toHexString(peHeaderOffset));
+			}
+        } catch (IOException e) {
+        	if (raf != null) {
+        		raf.close();
+        	}
+        	throw e;
         }
     }
 
