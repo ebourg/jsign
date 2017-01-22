@@ -33,6 +33,7 @@ Version 1.4 (in development)
 * Internal refactoring to share the code between the Ant task and the CLI tool (contributed by Michael Peterson)
 * The code has been split into distinct modules (core, ant, cli).
 * Jsign is now available as a Maven plugin (net.jsign:jsign-maven-plugin)
+* The API can be used to sign in-memory files using a SeekableByteChannel
 
 Version 1.3, 2016-08-04
 * The command line tool now supports HTTP proxies (contributed by Michael Szediwy)

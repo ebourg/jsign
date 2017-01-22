@@ -23,9 +23,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -54,101 +56,96 @@ public class PEFile implements Closeable {
     /** The position of the PE header in the file */
     private final long peHeaderOffset;
 
-    private final File file;
-    private final ExtendedRandomAccessFile raf;
+    private File file;
+    private final SeekableByteChannel channel;
+
+    /** Reusable buffer for reading bytes, words, dwords and qwords from the file */
+    private final ByteBuffer valueBuffer = ByteBuffer.allocate(8);
+    {
+        valueBuffer.order(ByteOrder.LITTLE_ENDIAN);
+    }
 
     public PEFile(File file) throws IOException {
+        this(Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE));
         this.file = file;
+    }
+
+    /**
+     * @since 1.4
+     */
+    public PEFile(SeekableByteChannel channel) throws IOException {
+        this.channel = channel;
         
-        ExtendedRandomAccessFile raf = null;
         try {
-            raf = new ExtendedRandomAccessFile(file, "rw");
-
             // DOS Header
-
-            byte[] buffer = new byte[2];
-            raf.read(buffer);
-
-            if (!Arrays.equals(buffer, "MZ".getBytes())) {
+            read(0, 0, 2);
+            if (valueBuffer.get() != 'M' || valueBuffer.get() != 'Z') {
                 throw new IOException("DOS header signature not found");
             }
 
-            raf.seek(0x3C);
-            peHeaderOffset = raf.readDWord();
-
             // PE Header
-
-            raf.seek(peHeaderOffset);
-
-            buffer = new byte[4];
-            raf.read(buffer);
-            if (!Arrays.equals(buffer, new byte[] { 'P', 'E', 0, 0})) {
+            read(0x3C, 0, 4);
+            peHeaderOffset = valueBuffer.getInt() & 0xFFFFFFFFL;
+            read(peHeaderOffset, 0, 4);
+            if (valueBuffer.get() != 'P' || valueBuffer.get() != 'E' || valueBuffer.get() != 0 || valueBuffer.get() != 0) {
                 throw new IOException("PE signature not found as expected at offset 0x" + Long.toHexString(peHeaderOffset));
             }
-            
-            this.raf = raf;
 
         } catch (IOException e) {
-            if (raf != null) {
-                raf.close();
-            }
+            channel.close();
             throw e;
         }
     }
 
     public synchronized void close() throws IOException {
-        raf.close();
+        channel.close();
     }
 
     synchronized int read(byte[] buffer, long base, int offset) {
         try {
-            raf.seek(base + offset);
-            return raf.read(buffer);
+            channel.position(base + offset);
+            return channel.read(ByteBuffer.wrap(buffer));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void read(long base, int offset, int length) {
+        try {
+            valueBuffer.limit(length);
+            valueBuffer.clear();
+            channel.position(base + offset);
+            channel.read(valueBuffer);
+            valueBuffer.rewind();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     synchronized int read(long base, int offset) {
-        try {
-            raf.seek(base + offset);
-            return raf.read();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        read(base, offset, 1);
+        return valueBuffer.get();
     }
 
     synchronized int readWord(long base, int offset) {
-        try {
-            raf.seek(base + offset);
-            return raf.readWord();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        read(base, offset, 2);
+        return valueBuffer.getShort() & 0xFFFF;
     }
 
     synchronized long readDWord(long base, int offset) {
-        try {
-            raf.seek(base + offset);
-            return raf.readDWord();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        read(base, offset, 4);
+        return valueBuffer.getInt() & 0xFFFFFFFFL;
     }
 
     synchronized long readQWord(long base, int offset) {
-        try {
-            raf.seek(base + offset);
-            return raf.readQWord();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        read(base, offset, 8);
+        return valueBuffer.getLong();
     }
 
     synchronized void write(long base, byte[] data) {
         try {
-            raf.seek(base);
-            raf.write(data);
+            channel.position(base);
+            channel.write(ByteBuffer.wrap(data));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -394,14 +391,14 @@ public class PEFile implements Closeable {
     public synchronized long computeChecksum() {
         PEImageChecksum checksum = new PEImageChecksum(peHeaderOffset + 88);
         
-        byte[] b = new byte[64 * 1024];
+        ByteBuffer b = ByteBuffer.allocate(64 * 1024);
         
         try {
-            raf.seek(0);
+            channel.position(0);
             
             int len;
-            while ((len = raf.read(b)) > 0) {
-                checksum.update(b, 0, len);
+            while ((len = channel.read(b)) > 0) {
+                checksum.update(b.array(), 0, len);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -415,9 +412,9 @@ public class PEFile implements Closeable {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) computeChecksum());
         
-        try {            
-            raf.seek(peHeaderOffset + 88);
-            raf.write(buffer.array());
+        try {
+            channel.position(peHeaderOffset + 88);
+            channel.write(buffer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -524,10 +521,10 @@ public class PEFile implements Closeable {
         // todo overwrite an existing entry at the end of the file
         
         // append the data directory at the end of the file
-        long offset = raf.length();        
+        long offset = channel.size();
         
-        raf.seek(offset);
-        raf.write(data);
+        channel.position(offset);
+        channel.write(ByteBuffer.wrap(data));
         
         // add the entry in the data directory table
         DataDirectory entry = getDataDirectory(type);
@@ -596,11 +593,13 @@ public class PEFile implements Closeable {
      * Print detailed informations about the PE file.
      */
     public void printInfo(PrintWriter out) {
-        out.println("PE File");
-        out.println("  Name:          " + file.getName());
-        out.println("  Size:          " + file.length());
-        out.println("  Last Modified: " + new Date(file.lastModified()));
-        out.println();
+        if (file != null) {
+            out.println("PE File");
+            out.println("  Name:          " + file.getName());
+            out.println("  Size:          " + file.length());
+            out.println("  Last Modified: " + new Date(file.lastModified()));
+            out.println();
+        }
         
         out.println("PE Header");
         out.println("  Machine:                    " + getMachineType());
@@ -712,7 +711,7 @@ public class PEFile implements Closeable {
         }
         
         // digest from the end of the certificate table to the end of the file
-        updateDigest(digest, position, raf.length());
+        updateDigest(digest, position, channel.size());
         
         return digest.digest();
     }
@@ -726,18 +725,20 @@ public class PEFile implements Closeable {
      * @param endOffset
      */
     private void updateDigest(MessageDigest digest, long startOffset, long endOffset) throws IOException {
-        raf.seek(startOffset);
+        channel.position(startOffset);
         
-        byte[] buffer = new byte[8192];
+        ByteBuffer buffer = ByteBuffer.allocate(8192);
         
         long position = startOffset;
         while (position < endOffset) {
-            int length = (int) Math.min(buffer.length, endOffset - position);
-            raf.read(buffer, 0, length);
+            buffer.clear();
+            buffer.limit((int) Math.min(buffer.capacity(), endOffset - position));
+            channel.read(buffer);
+            buffer.rewind();
             
-            digest.update(buffer, 0, length);
+            digest.update(buffer);
             
-            position += length;
+            position += buffer.limit();
         }
     }
 
@@ -756,10 +757,8 @@ public class PEFile implements Closeable {
      * @param multiple
      */
     public synchronized void pad(int multiple) throws IOException {
-        long padding = (multiple - raf.length() % multiple) % multiple;
-        raf.seek(raf.length());
-        for (int i = 0; i < padding; i++) {
-            raf.writeByte(0);
-        }
+        long padding = (multiple - channel.size() % multiple) % multiple;
+        channel.position(channel.size());
+        channel.write(ByteBuffer.allocate((int) padding));
     }
 }
