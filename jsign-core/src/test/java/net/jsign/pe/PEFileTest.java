@@ -18,6 +18,7 @@ package net.jsign.pe;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -52,6 +53,15 @@ public class PEFileTest extends TestCase {
         assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
         assertEquals(0, file.getLoaderFlags());
         assertEquals(16, file.getNumberOfRvaAndSizes());
+    }
+
+    public void testLoadNonExecutable() throws Exception {
+        try {
+            new PEFile(new File("pom.xml"));
+            fail("No exception thrown");
+        } catch (IOException e) {
+            assertEquals("Exception message", "DOS header signature not found", e.getMessage());
+        }
     }
 
     public void testGetSections() throws Exception {

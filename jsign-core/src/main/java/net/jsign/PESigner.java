@@ -22,6 +22,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
@@ -80,7 +81,6 @@ public class PESigner {
     private DigestAlgorithm digestAlgorithm = DigestAlgorithm.getDefault();
     private String signatureAlgorithm;
     private Provider signatureProvider;
-    private String signatureProviderString;
     private String programName;
     private String programURL;
 
@@ -171,9 +171,7 @@ public class PESigner {
      * Explicitly sets the signature algorithm and provider to use.
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
-        this.signatureAlgorithm = signatureAlgorithm;
-        this.signatureProviderString = signatureProvider;
-        return this;
+        return withSignatureAlgorithm(signatureAlgorithm, Security.getProvider(signatureProvider));
     }
 
     /**
@@ -236,8 +234,6 @@ public class PESigner {
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(sigAlg);
         if (signatureProvider != null) {
             contentSignerBuilder.setProvider(signatureProvider);
-        } else if (signatureProviderString != null) {
-            contentSignerBuilder.setProvider(signatureProviderString);
         }
         ContentSigner shaSigner = contentSignerBuilder.build(privateKey);
 

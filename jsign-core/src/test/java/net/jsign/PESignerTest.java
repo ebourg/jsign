@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.Security;
 import java.util.HashSet;
 import java.util.List;
 
@@ -304,6 +305,8 @@ public class PESignerTest extends TestCase {
      * @throws Exception
      */
     public void testWithSignatureAlgorithmSHA256withRSAandMGF1() throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
+        
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed.exe");
 
@@ -316,7 +319,7 @@ public class PESignerTest extends TestCase {
             PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false)
                     .withDigestAlgorithm(DigestAlgorithm.SHA1)
-                    .withSignatureAlgorithm("SHA256withRSAandMGF1", new BouncyCastleProvider());
+                    .withSignatureAlgorithm("SHA256withRSAandMGF1", "BC");
 
             signer.sign(peFile);
 
