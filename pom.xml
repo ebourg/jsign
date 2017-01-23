@@ -89,6 +89,11 @@
               <format>xml</format>
             </formats>
             <aggregate>true</aggregate>
+            <instrumentation>
+              <excludes>
+                <exclude>**/HelpMojo.class</exclude>
+              </excludes>
+            </instrumentation>
           </configuration>
         </plugin>
       </plugins>
