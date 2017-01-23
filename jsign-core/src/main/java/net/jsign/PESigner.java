@@ -161,6 +161,8 @@ public class PESigner {
 
     /**
      * Explicitly sets the signature algorithm to use.
+     * 
+     * @since 1.4
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm) {
         this.signatureAlgorithm = signatureAlgorithm;
@@ -169,6 +171,8 @@ public class PESigner {
 
     /**
      * Explicitly sets the signature algorithm and provider to use.
+     * 
+     * @since 1.4
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
         return withSignatureAlgorithm(signatureAlgorithm, Security.getProvider(signatureProvider));
@@ -176,6 +180,8 @@ public class PESigner {
 
     /**
      * Explicitly sets the signature algorithm and provider to use.
+     * 
+     * @since 1.4
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
         this.signatureAlgorithm = signatureAlgorithm;
