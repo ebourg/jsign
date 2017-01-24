@@ -64,6 +64,20 @@ public class PEFileTest extends TestCase {
         }
     }
 
+    /**
+     * Attempts to open a DOS executable that isn't a Portable Executable
+     */
+    public void testDosExecutable() throws Exception {
+        try {
+            new PEFile(new File("target/test-classes/MORE.EXE")); // MORE.EXE comes from FreeDOS and is GPL licensed
+            fail("No exception thrown");
+        } catch (IOException e) {
+            if (!e.getMessage().contains("PE signature not found as expected")) {
+                throw e;
+            }
+        }
+    }
+
     public void testGetSections() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
