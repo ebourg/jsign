@@ -34,10 +34,14 @@ import java.util.List;
 import net.jsign.DigestAlgorithm;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 
@@ -541,7 +545,20 @@ public class PEFile implements Closeable {
         
         for (CertificateTableEntry entry : getCertificateTable()) {
             try {
-                signatures.add(entry.getSignature());
+                CMSSignedData signedData = entry.getSignature();
+                signatures.add(signedData);
+                
+                // look for nested signatures
+                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
+                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+                if (unsignedAttributes != null) {
+                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
+                    if (nestedSignatures != null) {
+                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
+                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
+                        }
+                    }
+                }
             } catch (UnsupportedOperationException e) {
                 // unsupported type, just skip
             } catch (Exception e) {
@@ -562,7 +579,7 @@ public class PEFile implements Closeable {
             try {
                 entries.add(new CertificateTableEntry(this, position));
                 
-                // todo read the remaining signatures
+                // todo read the remaining entries (but Authenticode use only one, extra signatures are appended as a SPC_NESTED_SIGNATURE unauthenticated attribute)
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -46,6 +46,7 @@ public interface AuthenticodeObjectIdentifiers {
     ASN1ObjectIdentifier SPC_LINK_OBJID                      = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.28");
     ASN1ObjectIdentifier SPC_HASH_INFO_OBJID                 = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.29");
     ASN1ObjectIdentifier SPC_SIPINFO_OBJID                   = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.30");
+    ASN1ObjectIdentifier SPC_NESTED_SIGNATURE_OBJID          = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.4.1");
 
     ASN1ObjectIdentifier SPC_TIME_STAMP_REQUEST_OBJID        = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.3.2.1");
     ASN1ObjectIdentifier SPC_RFC3161_OBJID                   = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.3.3.1");
