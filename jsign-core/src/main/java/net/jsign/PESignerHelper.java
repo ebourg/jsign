@@ -182,41 +182,25 @@ class PESignerHelper {
     }
 
     public PESignerHelper param(String key, String value) {
-        if (PARAM_KEYSTORE.equals(key)) {
-            keystore(value);
-        } else if (PARAM_STOREPASS.equals(key)) {
-            storepass(value);
-        } else if (PARAM_STORETYPE.equals(key)) {
-            storetype(value);
-        } else if (PARAM_ALIAS.equals(key)) {
-            alias(value);
-        } else if (PARAM_KEYPASS.equals(key)) {
-            keypass(value);
-        } else if (PARAM_KEYFILE.equals(key)) {
-            keyfile(value);
-        } else if (PARAM_CERTFILE.equals(key)) {
-            certfile(value);
-        } else if (PARAM_ALG.equals(key)) {
-            alg(value);
-        } else if (PARAM_TSAURL.equals(key)) {
-            tsaurl(value);
-        } else if (PARAM_TSMODE.equals(key)) {
-            tsmode(value);
-        } else if (PARAM_NAME.equals(key)) {
-            name(value);
-        } else if (PARAM_URL.equals(key)) {
-            url(value);
-        } else if (PARAM_PROXY_URL.equals(key)) {
-            proxyUrl(value);
-        } else if (PARAM_PROXY_USER.equals(key)) {
-            proxyUser(value);
-        } else if (PARAM_PROXY_PASS.equals(key)) {
-            proxyPass(value);
-        } else {
-            throw new IllegalArgumentException("unknown param: " + key);
+        switch (key) {
+            case PARAM_KEYSTORE:   return keystore(value);
+            case PARAM_STOREPASS:  return storepass(value);
+            case PARAM_STORETYPE:  return storetype(value);
+            case PARAM_ALIAS:      return alias(value);
+            case PARAM_KEYPASS:    return keypass(value);
+            case PARAM_KEYFILE:    return keyfile(value);
+            case PARAM_CERTFILE:   return certfile(value);
+            case PARAM_ALG:        return alg(value);
+            case PARAM_TSAURL:     return tsaurl(value);
+            case PARAM_TSMODE:     return tsmode(value);
+            case PARAM_NAME:       return name(value);
+            case PARAM_URL:        return url(value);
+            case PARAM_PROXY_URL:  return proxyUrl(value);
+            case PARAM_PROXY_USER: return proxyUser(value);
+            case PARAM_PROXY_PASS: return proxyPass(value);
+            default:
+                throw new IllegalArgumentException("unknown param: " + key);
         }
-
-        return this;
     }
 
     private File createFile(String file) {
