@@ -149,6 +149,97 @@ public class PESignerTest extends TestCase {
         SignatureAssert.assertTimestamped("Invalid timestamp", signature);
     }
 
+    public void testSignTwice() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-twice.exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withTimestamping(true)
+                .withProgramName("WinEyes")
+                .withProgramURL("http://www.steelblue.com/WinEyes");
+        
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 1, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        
+        // second signature
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withTimestamping(false);
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 2, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+    }
+
+    public void testSignThreeTimes() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-three-times.exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withTimestamping(true)
+                .withProgramName("WinEyes")
+                .withProgramURL("http://www.steelblue.com/WinEyes");
+        
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 1, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        
+        // second signature
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withTimestamping(false);
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 2, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+        
+        // third signature
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA512);
+        signer.withTimestamping(false);
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 3, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
+    }
+
     public void testInvalidAuthenticodeTimestampingAutority() throws Exception {
         testInvalidTimestampingAutority(TimestampingMode.AUTHENTICODE);
     }

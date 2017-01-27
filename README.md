@@ -27,6 +27,7 @@ Changes
 
 Version 1.4 (in development)
 * Jsign now requires Java 7 or higher
+* Multiple signatures are now supported
 * The signature algorithm can now be specified independently of the digest algorithm (contributed by Markus Kilås)
 * Upgraded BouncyCastle to 1.54 (contributed by Markus Kilås)
 * Fixed the Accept header for RFC 3161 requests (contributed by Markus Kilås)

@@ -16,6 +16,7 @@
 
 package net.jsign.pe;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -45,6 +46,24 @@ public class DataDirectory {
 
     public boolean exists() {
         return getVirtualAddress() != 0 && getSize() != 0;
+    }
+
+    /**
+     * Fill the data directory with zeros.
+     * 
+     * @since 1.4
+     */
+    public void erase() {
+        peFile.write(getVirtualAddress(), new byte[getSize()]);
+    }
+
+    /**
+     * Tells if the data directory is at the end of the file.
+     * 
+     * @since 1.4
+     */
+    public boolean isTrailing() throws IOException {
+        return getVirtualAddress() + getSize() == peFile.channel.size();
     }
 
     public void write(long virtualAddress, int size) {

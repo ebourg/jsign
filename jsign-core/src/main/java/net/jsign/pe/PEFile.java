@@ -61,7 +61,7 @@ public class PEFile implements Closeable {
     private final long peHeaderOffset;
 
     private File file;
-    private final SeekableByteChannel channel;
+    final SeekableByteChannel channel;
 
     /** Reusable buffer for reading bytes, words, dwords and qwords from the file */
     private final ByteBuffer valueBuffer = ByteBuffer.allocate(8);
@@ -513,26 +513,68 @@ public class PEFile implements Closeable {
     }
 
     /**
-     * Writes the data directory of the specified type. The data is appended
-     * at the end of the file. If a previous entry was already present it's
-     * left as is in the file and is simply dereferenced from the table. 
+     * Writes the data directory of the specified type. The data is either appended
+     * at the end of the file or written over the previous data of the same type if
+     * there is enough space.
      * 
-     * @param type
-     * @param data
-     * @throws IOException
+     * @param type the type of the data directory
+     * @param data the content of the data directory
      */
     public synchronized void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {
-        // todo overwrite an existing entry at the end of the file
+        DataDirectory directory = getDataDirectory(type);
         
-        // append the data directory at the end of the file
-        long offset = channel.size();
-        
-        channel.position(offset);
-        channel.write(ByteBuffer.wrap(data));
-        
-        // add the entry in the data directory table
-        DataDirectory entry = getDataDirectory(type);
-        entry.write(offset, data.length);
+        if (!directory.exists()) {
+            // append the data directory at the end of the file
+            long offset = channel.size();
+            
+            channel.position(offset);
+            channel.write(ByteBuffer.wrap(data));
+            
+            // update the entry in the data directory table
+            directory.write(offset, data.length);
+            
+        } else {
+            if (data.length == directory.getSize()) {
+                // same size as before, just overwrite
+                channel.position(directory.getVirtualAddress());
+                channel.write(ByteBuffer.wrap(data));
+
+            } else if (data.length < directory.getSize() && type != DataDirectoryType.CERTIFICATE_TABLE) {
+                // the new data is smaller, erase and rewrite in-place
+                // this doesn't work with the certificate table since it changes the file digest
+                directory.erase();
+                channel.position(directory.getVirtualAddress());
+                channel.write(ByteBuffer.wrap(data));
+                
+                // update the size in the data directory table
+                directory.write(directory.getVirtualAddress(), data.length);
+
+            } else if (directory.isTrailing()) {
+                // the data is at the end of the file, overwrite it
+                channel.position(directory.getVirtualAddress());
+                channel.write(ByteBuffer.wrap(data));
+                channel.truncate(directory.getVirtualAddress() + data.length); // trim the file if the data shrunk
+                
+                // update the size in the data directory table
+                directory.write(directory.getVirtualAddress(), data.length);
+
+            } else {
+                if (type == DataDirectoryType.CERTIFICATE_TABLE) {
+                    throw new IOException("The certificate table isn't at the end of the file and can't be moved without invalidating the signature");
+                }
+                
+                // the new data is larger, erase and relocate it at the end
+                directory.erase();
+                
+                long offset = channel.size();
+                
+                channel.position(offset);
+                channel.write(ByteBuffer.wrap(data));
+                
+                // update the entry in the data directory table
+                directory.write(offset, data.length);
+            }
+        }
         
         updateChecksum();
     }

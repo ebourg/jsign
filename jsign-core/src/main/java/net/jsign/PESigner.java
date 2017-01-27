@@ -43,6 +43,7 @@ import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -58,6 +59,8 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -191,6 +194,7 @@ public class PESigner {
 
     /**
      * Sign the specified executable file.
+     *
      * @throws Exception
      */
     public void sign(PEFile file) throws Exception {
@@ -199,15 +203,9 @@ public class PESigner {
         file.pad(8);
         
         // compute the signature
-        CertificateTableEntry entry = createCertificateTableEntry(file);
-        
-        file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
-        file.close();
-    }
-
-    private CertificateTableEntry createCertificateTableEntry(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         CMSSignedData sigData = createSignature(file);
         
+        // timestamping
         if (timestamping) {
             Timestamper ts = timestamper;
             if (ts == null) {
@@ -219,7 +217,45 @@ public class PESigner {
             sigData = ts.timestamp(digestAlgorithm, sigData);
         }
         
-        return new CertificateTableEntry(sigData);
+        List<CMSSignedData> signatures = file.getSignatures();
+        if (!signatures.isEmpty()) {
+            // append the nested signature
+            sigData = addNestedSignature(signatures.get(0), sigData);
+        }
+
+        CertificateTableEntry entry = new CertificateTableEntry(sigData);
+        
+        file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
+        file.close();
+    }
+
+    private CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) throws CMSException {
+        SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();
+        
+        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        if (unsignedAttributes == null) {
+            unsignedAttributes = new AttributeTable(new DERSet());
+        }
+        Attribute nestedSignaturesAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
+        if (nestedSignaturesAttribute == null) {
+            // first nested signature
+            unsignedAttributes = unsignedAttributes.add(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, secondary.toASN1Structure());
+        } else {
+            // append the signature to the previous nested signatures
+            ASN1EncodableVector nestedSignatures = new ASN1EncodableVector();
+            for (ASN1Encodable nestedSignature : nestedSignaturesAttribute.getAttrValues()) {
+                nestedSignatures.add(nestedSignature);
+            }
+            nestedSignatures.add(secondary.toASN1Structure());
+            
+            ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();
+            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));
+            
+            unsignedAttributes = new AttributeTable(attributes);
+        }
+        
+        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
+        return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
     }
 
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
