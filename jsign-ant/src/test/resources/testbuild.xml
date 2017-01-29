@@ -125,4 +125,18 @@
              tsmode="rfc3161"/>
   </target>
 
+  <target name="replace-signature">
+    <copy file="wineyes.exe" tofile="wineyes-re-signed.exe" overwrite="true"/>
+    <signexe file="wineyes-re-signed.exe"
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"/>
+    <signexe file="wineyes-re-signed.exe"
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"
+             alg="SHA-512"
+             replace="true"/>
+  </target>
+
 </project>

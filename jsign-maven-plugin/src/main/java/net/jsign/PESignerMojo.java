@@ -85,6 +85,10 @@ public class PESignerMojo extends AbstractMojo {
     @Parameter(defaultValue = "authenticode")
     private String tsmode;
 
+    /** Tells if previous signatures should be replaced */
+    @Parameter(defaultValue = "false")
+    private boolean replace;
+
     public void execute() throws MojoExecutionException, MojoFailureException {
         PESignerHelper helper = new PESignerHelper(new MavenConsole(getLog()), "element");
         
@@ -100,6 +104,7 @@ public class PESignerMojo extends AbstractMojo {
         helper.keypass(keypass);
         helper.tsaurl(tsaurl);
         helper.tsmode(tsmode);
+        helper.replace(replace);
         
         try {
             helper.sign(file);

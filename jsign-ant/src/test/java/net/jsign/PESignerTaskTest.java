@@ -318,4 +318,22 @@ public class PESignerTaskTest extends TestCase {
             assertNotNull(signature);
         }
     }
+
+    public void testReplaceSignature() throws Exception {
+        project.executeTarget("replace-signature");
+        
+        File targetFile2 = new File("target/test-classes/wineyes-re-signed.exe");
+        
+        assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+        
+        try (PEFile peFile = new PEFile(targetFile2)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            assertNotNull(signatures.get(0));
+            
+            assertEquals("Digest algorithm", DigestAlgorithm.SHA512.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+        }
+    }
 }

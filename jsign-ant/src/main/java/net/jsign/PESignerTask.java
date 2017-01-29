@@ -68,6 +68,9 @@ public class PESignerTask extends Task {
     /** The protocol used for  the timestamping */
     private String tsmode;
 
+    /** Tells if previous signatures should be replaced */
+    private boolean replace;
+
     public void setFile(File file) {
         this.file = file;
     }
@@ -120,6 +123,10 @@ public class PESignerTask extends Task {
         this.tsaurl = tsaurl;
     }
 
+    public void setReplace(boolean replace) {
+        this.replace = replace;
+    }
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -137,6 +144,7 @@ public class PESignerTask extends Task {
             helper.keypass(keypass);
             helper.tsaurl(tsaurl);
             helper.tsmode(tsmode);
+            helper.replace(replace);
             
             helper.sign(file);
         } catch (Exception e) {

@@ -67,6 +67,7 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_PROXY_URL).withArgName("URL").withDescription("The URL of the HTTP proxy").create());
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_PROXY_USER).withArgName("NAME").withDescription("The user for the HTTP proxy. If an user is needed.").create());
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_PROXY_PASS).withArgName("PASSWORD").withDescription("The password for the HTTP proxy user. If an user is needed.").create());
+        options.addOption(OptionBuilder.withLongOpt(PARAM_REPLACE).withDescription("Tells if previous signatures should be replaced.").create());
         options.addOption(OptionBuilder.withLongOpt("help").withDescription("Print the help").create('h'));
     }
 
@@ -97,6 +98,7 @@ public class PESignerCLI {
             setOption(PARAM_PROXY_URL, helper, cmd);
             setOption(PARAM_PROXY_USER, helper, cmd);
             setOption(PARAM_PROXY_PASS, helper, cmd);
+            helper.replace(cmd.hasOption("replace"));
 
             File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
 

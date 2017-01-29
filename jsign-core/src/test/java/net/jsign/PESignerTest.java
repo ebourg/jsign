@@ -240,6 +240,45 @@ public class PESignerTest extends TestCase {
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
     }
 
+    public void testReplaceSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-re-signed.exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withProgramName("WinEyes")
+                .withProgramURL("http://www.steelblue.com/WinEyes");
+        
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 1, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        
+        // second signature
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withTimestamping(false);
+        signer.withSignaturesReplaced(true);
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 1, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        
+        assertEquals("Digest algorithm", DigestAlgorithm.SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+    }
+
     public void testInvalidAuthenticodeTimestampingAutority() throws Exception {
         testInvalidTimestampingAutority(TimestampingMode.AUTHENTICODE);
     }

@@ -38,6 +38,7 @@ import net.jsign.asn1.authenticode.SpcPeImageData;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.pe.CertificateTableEntry;
+import net.jsign.pe.DataDirectory;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
@@ -86,6 +87,7 @@ public class PESigner {
     private Provider signatureProvider;
     private String programName;
     private String programURL;
+    private boolean replace;
 
     private boolean timestamping = true;
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
@@ -114,6 +116,16 @@ public class PESigner {
      */
     public PESigner withProgramURL(String programURL) {
         this.programURL = programURL;
+        return this;
+    }
+
+    /**
+     * Enable or disable the replacement of the previous signatures (disabled by default).
+     * 
+     * @since 1.4
+     */
+    public PESigner withSignaturesReplaced(boolean replace) {
+        this.replace = replace;
         return this;
     }
 
@@ -202,6 +214,15 @@ public class PESigner {
         // todo only if there was no previous certificate table
         file.pad(8);
         
+        if (replace) {
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            if (certificateTable != null && !certificateTable.isTrailing()) {
+                // erase the previous signature
+                certificateTable.erase();
+                certificateTable.write(0, 0);
+            }
+        }
+        
         // compute the signature
         CMSSignedData sigData = createSignature(file);
         
@@ -218,7 +239,7 @@ public class PESigner {
         }
         
         List<CMSSignedData> signatures = file.getSignatures();
-        if (!signatures.isEmpty()) {
+        if (!signatures.isEmpty() && !replace) {
             // append the nested signature
             sigData = addNestedSignature(signatures.get(0), sigData);
         }

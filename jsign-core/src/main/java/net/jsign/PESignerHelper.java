@@ -64,6 +64,7 @@ class PESignerHelper {
     public static final String PARAM_PROXY_URL = "proxyUrl";
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
+    public static final String PARAM_REPLACE = "replace";
 
     private Console console;
 
@@ -85,6 +86,7 @@ class PESignerHelper {
     private String proxyUrl;
     private String proxyUser;
     private String proxyPass;
+    private boolean replace;
 
     public PESignerHelper(Console console, String parameterName) {
         this.console = console;
@@ -181,6 +183,11 @@ class PESignerHelper {
         return this;
     }
 
+    public PESignerHelper replace(boolean replace) {
+        this.replace = replace;
+        return this;
+    }
+
     public PESignerHelper param(String key, String value) {
         switch (key) {
             case PARAM_KEYSTORE:   return keystore(value);
@@ -198,6 +205,7 @@ class PESignerHelper {
             case PARAM_PROXY_URL:  return proxyUrl(value);
             case PARAM_PROXY_USER: return proxyUser(value);
             case PARAM_PROXY_PASS: return proxyPass(value);
+            case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
             default:
                 throw new IllegalArgumentException("unknown param: " + key);
         }
@@ -288,6 +296,7 @@ class PESignerHelper {
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
+                .withSignaturesReplaced(replace)
                 .withTimestamping(tsaurl != null || tsmode != null)
                 .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
                 .withTimestampingAutority(tsaurl);

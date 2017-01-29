@@ -300,7 +300,27 @@ public class PESignerCLITest extends TestCase {
             assertNotNull(signature);
         }
     }
-    
+
+    public void testReplaceSignature() throws Exception {
+        File targetFile2 = new File("target/test-classes/wineyes-re-signed.exe");
+        FileUtils.copyFile(sourceFile, targetFile2);
+        cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile2);
+        
+        assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+        
+        cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--alg=SHA-512", "--replace", "" + targetFile2);
+        
+        try (PEFile peFile = new PEFile(targetFile2)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            assertNotNull(signatures.get(0));
+            
+            assertEquals("Digest algorithm", DigestAlgorithm.SHA512.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+        }
+    }
+
     public void testExitOnError() {
         NoExitSecurityManager manager = new NoExitSecurityManager();
         System.setSecurityManager(manager);
