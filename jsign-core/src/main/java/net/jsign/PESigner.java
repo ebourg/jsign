@@ -91,7 +91,7 @@ public class PESigner {
 
     private boolean timestamping = true;
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
-    private String tsaurlOverride;
+    private String[] tsaurlOverride;
     private Timestamper timestamper;
     private int timestampingRetries = -1;
     private int timestampingRetryWait = -1;
@@ -154,6 +154,16 @@ public class PESigner {
      * for jar signing are not compatible with Authenticode signatures.
      */
     public PESigner withTimestampingAutority(String url) {
+        return withTimestampingAutority(new String[] { url });
+    }
+
+    /**
+     * Set the URL of the timestamping authority. RFC 3161 servers as used
+     * for jar signing are not compatible with Authenticode signatures.
+     * 
+     * @since 1.4
+     */
+    public PESigner withTimestampingAutority(String... url) {
         this.tsaurlOverride = url;
         return this;
     }
@@ -251,7 +261,7 @@ public class PESigner {
                 ts = Timestamper.create(tsmode);
             }
             if (tsaurlOverride != null) {
-                ts.setURL(tsaurlOverride);
+                ts.setURLs(tsaurlOverride);
             }
             if (timestampingRetries != -1) {
             	ts.setRetries(timestampingRetries);

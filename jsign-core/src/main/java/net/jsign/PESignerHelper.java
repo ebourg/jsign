@@ -321,7 +321,7 @@ class PESignerHelper {
                 .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
                 .withTimestampingRetries(tsretries)
                 .withTimestampingRetryWait(tsretrywait)
-                .withTimestampingAutority(tsaurl);
+                .withTimestampingAutority(tsaurl != null ? tsaurl.split(",") : null);
     }
 
     public void sign(File file) throws SignerException {

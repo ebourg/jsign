@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -45,8 +46,11 @@ import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
  */
 public abstract class Timestamper {
 
-    /** The URL of the timestamping service */
+    /** The URL of the current timestamping service */
     protected URL tsaurl;
+
+    /** The URLs of the timestamping services */
+    protected List<URL> tsaurls;
 
     /** The number of retries */
     protected int retries = 3;
@@ -55,11 +59,22 @@ public abstract class Timestamper {
     protected int retryWait = 10;
 
     public void setURL(String tsaurl) {
-        try {
-            this.tsaurl = new URL(tsaurl);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Invalid timestamping URL: " + tsaurl, e);
+        setURLs(tsaurl);
+    }
+
+    /**
+     * @since 1.4
+     */
+    public void setURLs(String... tsaurls) {
+        List<URL> urls = new ArrayList<>();
+        for (String tsaurl : tsaurls) {
+            try {
+                urls.add(new URL(tsaurl));
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException("Invalid timestamping URL: " + tsaurl, e);
+            }
         }
+        this.tsaurls = urls;
     }
 
     /**
@@ -85,25 +100,31 @@ public abstract class Timestamper {
      */
     public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws IOException, CMSException {
         CMSSignedData token = null;
-
-        // It happens quite frequently that a TSA is unavailable for a short period of time
-        IOException exception = null;
-        for (int i = 0; i < retries; i++) {
+        
+        // Retry the timestamping and failover other services if a TSA is unavailable for a short period of time
+        int attempts = Math.max(retries, tsaurls.size());
+        TimestampingException exception = new TimestampingException("Unable to complete the timestamping after " + attempts + " attempt" + (attempts > 1 ? "s" : ""));
+        int count = 0;
+        while (token == null && count++ < Math.max(retries, tsaurls.size())) {
             try {
+                tsaurl = tsaurls.get(count % tsaurls.size());
                 token = timestamp(algo, getEncryptedDigest(sigData));
-                exception = null;
                 break;
-            } catch (IOException e) {
-                exception = e;
-                try {
-                    Thread.sleep(retryWait * 1000);
-                } catch (InterruptedException ie) {
-                }
+            } catch (TimestampingException | IOException e) {
+                exception.addSuppressed(e);
+            }
+
+            // pause before the next attempt
+            try {
+                Thread.sleep(retryWait * 1000);
+            } catch (InterruptedException ie) {
             }
         }
-        if (exception != null) {
+        
+        if (token == null) {
             throw exception;
         }
+        
         return modifySignedData(sigData, getUnsignedAttributes(token), getExtraCertificates(token));
     }
 
@@ -149,7 +170,7 @@ public abstract class Timestamper {
         return generator.generate(contentType, content);
     }
 
-    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, CMSException;
+    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, CMSException, TimestampingException;
 
     /**
      * Returns the timestamper for the specified mode.

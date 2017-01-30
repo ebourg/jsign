@@ -300,11 +300,13 @@ public class PESignerTest extends TestCase {
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingAutority("http://www.google.com/" + mode.name().toLowerCase());
+        signer.withTimestampingRetries(1);
         
         try {
             signer.sign(peFile);
             fail("IOException not thrown");
-        } catch (IOException e) {
+        } catch (TimestampingException e) {
+            assertTrue("Missing suppressed IOException", e.getSuppressed() != null && e.getSuppressed().length > 0 && e.getSuppressed()[0].getClass().equals(IOException.class));
             // expected
         }
 
@@ -335,6 +337,7 @@ public class PESignerTest extends TestCase {
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingAutority("http://github.com");
+        signer.withTimestampingRetries(1);
         
         try {
             signer.sign(peFile);
@@ -357,6 +360,7 @@ public class PESignerTest extends TestCase {
         signer.withTimestamping(true);
         signer.withTimestampingMode(TimestampingMode.RFC3161);
         signer.withTimestampingAutority("example://example.com");
+        signer.withTimestampingRetries(1);
         
         try {
             signer.sign(peFile);
@@ -364,6 +368,40 @@ public class PESignerTest extends TestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
+    }
+
+    public void testAuthenticodeTimestampingFailover() throws Exception {
+        testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.comodoca.com/authenticode");
+    }
+
+    public void testRFS3161TimestampingFailover() throws Exception {
+        testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.comodoca.com/rfc3161");
+    }
+
+    public void testTimestampingFailover(TimestampingMode mode, String validURL) throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamped-failover-" + mode.name().toLowerCase() + ".exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withTimestamping(true);
+        signer.withTimestampingMode(mode);
+        signer.withTimestampingRetryWait(1);
+        signer.withTimestampingAutority("http://www.google.com/" + mode.name().toLowerCase(), "http://github.com", validURL);
+
+        signer.sign(peFile);
+
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals("number of signatures", 1, signatures.size());
+        
+        assertNotNull(signatures.get(0));
+        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
     }
 
     /**
