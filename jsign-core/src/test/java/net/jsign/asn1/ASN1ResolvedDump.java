@@ -173,9 +173,9 @@ public class ASN1ResolvedDump
                 buf.append(indent + "ObjectIdentifier(" + ((ASN1ObjectIdentifier) obj).getId() + ")" + nl);
             }
         }
-        else if (obj instanceof DERBoolean)
+        else if (obj instanceof ASN1Boolean)
         {
-            buf.append(indent + "Boolean(" + ((DERBoolean)obj).isTrue() + ")" + nl);
+            buf.append(indent + "Boolean(" + ((ASN1Boolean)obj).isTrue() + ")" + nl);
         }
         else if (obj instanceof ASN1Integer)
         {
@@ -241,9 +241,9 @@ public class ASN1ResolvedDump
         {
             buf.append(indent + "T61String(" + ((DERT61String)obj).getString() + ") " + nl);
         }
-        else if (obj instanceof DERUTCTime)
+        else if (obj instanceof ASN1UTCTime)
         {
-            buf.append(indent + "UTCTime(" + ((DERUTCTime)obj).getTime() + ") " + nl);
+            buf.append(indent + "UTCTime(" + ((ASN1UTCTime)obj).getTime() + ") " + nl);
         }
         else if (obj instanceof DERGeneralizedTime)
         {
@@ -257,9 +257,9 @@ public class ASN1ResolvedDump
         {
             buf.append(outputApplicationSpecific("DER", indent, verbose, obj, nl));
         }
-        else if (obj instanceof DEREnumerated)
+        else if (obj instanceof ASN1Enumerated)
         {
-            DEREnumerated en = (DEREnumerated) obj;
+            ASN1Enumerated en = (ASN1Enumerated) obj;
             buf.append(indent + "DER Enumerated(" + en.getValue() + ")" + nl);
         }
         else if (obj instanceof DERExternal)
