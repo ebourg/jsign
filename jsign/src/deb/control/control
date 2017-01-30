@@ -3,7 +3,7 @@ Version: [[version]]
 Section: utils
 Priority: optional
 Architecture: all
-Depends: java6-runtime-headless
+Depends: java7-runtime-headless
 Recommends: bash-completion
 Maintainer: Emmanuel Bourg <ebourg@apache.org>
 Homepage: http://ebourg.github.com/jsign
