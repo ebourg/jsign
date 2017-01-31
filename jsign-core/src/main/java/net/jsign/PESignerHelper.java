@@ -31,12 +31,16 @@ import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import sun.security.pkcs11.SunPKCS11;
 
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
@@ -246,9 +250,24 @@ class PESignerHelper {
         if (keystore != null && (keyfile != null || certfile != null)) {
             throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile or certfile");
         }
+        
+        Provider provider = null;
+        if ("PKCS11".equals(storetype)) {
+            // the keystore parameter is either the provider name or the SunPKCS11 configuration file
+            if (keystore != null && keystore.exists()) {
+                provider = new SunPKCS11(keystore.getName());
+            } else if (keystore != null && keystore.getName().startsWith("SunPKCS11-")) {
+                provider = Security.getProvider(keystore.getName());
+                if (provider == null) {
+                    throw new SignerException("Security provider " + keystore.getName() + " not found");
+                }
+            } else {
+                throw new SignerException("keystore " + parameterName + " should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security");
+            }
+        }
 
         if (keystore != null) {
-            KeyStore ks = KeyStoreUtils.load(keystore, storetype, storepass);
+            KeyStore ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
 
             if (alias == null) {
                 throw new SignerException("alias " + parameterName + " must be set");
@@ -316,6 +335,7 @@ class PESignerHelper {
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
+                .withSignatureProvider(provider)
                 .withSignaturesReplaced(replace)
                 .withTimestamping(tsaurl != null || tsmode != null)
                 .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)

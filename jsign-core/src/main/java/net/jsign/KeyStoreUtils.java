@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.Provider;
 
 /**
  * Helper class for loading KeyStores.
@@ -29,7 +30,7 @@ import java.security.KeyStoreException;
  */
 public class KeyStoreUtils {
 
-    public static KeyStore load(File keystore, String storetype, String storepass) throws SignerException {
+    public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws SignerException {
         if (keystore != null && storetype == null) {
             // guess the type of the keystore from the extension of the file
             String filename = keystore.getName().toLowerCase();
@@ -40,10 +41,13 @@ public class KeyStoreUtils {
             }
         }
         
-        // JKS or PKCS12 keystore
         KeyStore ks;
         try {
-            ks = KeyStore.getInstance(storetype);
+            if ("PKCS11".equals(storetype)) {
+                ks = KeyStore.getInstance(storetype, provider);
+            } else {
+                ks = KeyStore.getInstance(storetype);
+            }
         } catch (KeyStoreException e) {
             throw new SignerException("keystore type '" + storetype + "' is not supported", e);
         }
@@ -51,8 +55,16 @@ public class KeyStoreUtils {
         if (keystore == null || !keystore.exists()) {
             throw new SignerException("The keystore " + keystore + " couldn't be found");
         }
-        try (FileInputStream in = new FileInputStream(keystore)) {
-            ks.load(in, storepass != null ? storepass.toCharArray() : null);
+        
+        try {
+            FileInputStream in = "PKCS11".equals(storetype) ? null : new FileInputStream(keystore);
+            try {
+                ks.load(in, storepass != null ? storepass.toCharArray() : null);
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
         } catch (Exception e) {
             throw new SignerException("Unable to load the keystore " + keystore, e);
         }

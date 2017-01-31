@@ -233,6 +233,16 @@ public class PESigner {
     }
 
     /**
+     * Set the signature provider to use.
+     * 
+     * @since 1.4
+     */
+    public PESigner withSignatureProvider(Provider signatureProvider) {
+        this.signatureProvider = signatureProvider;
+        return this;
+    }
+
+    /**
      * Sign the specified executable file.
      *
      * @throws Exception
