@@ -257,7 +257,7 @@ class PESignerHelper {
             if (keystore != null && keystore.exists()) {
                 provider = new SunPKCS11(keystore.getName());
             } else if (keystore != null && keystore.getName().startsWith("SunPKCS11-")) {
-                provider = Security.getProvider(keystore.getName());
+                provider = Security.getProvider(keystore.getPath());
                 if (provider == null) {
                     throw new SignerException("Security provider " + keystore.getName() + " not found");
                 }
