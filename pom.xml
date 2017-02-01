@@ -135,6 +135,12 @@
             <format>xml</format>
             <format>html</format>
           </formats>
+          <instrumentation>
+            <excludes>
+              <exclude>net/jsign/HelpMojo*</exclude>
+              <exclude>net/jsign/MavenShadePluginHelper*</exclude>
+            </excludes>
+          </instrumentation>
         </configuration>
       </plugin>
       <plugin>
