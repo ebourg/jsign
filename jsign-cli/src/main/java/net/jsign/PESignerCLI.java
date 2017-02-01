@@ -38,7 +38,7 @@ public class PESignerCLI {
     public static void main(String... args) {
         try {
             new PESignerCLI().execute(args);
-        } catch (SignerException e) {
+        } catch (SignerException | ParseException e) {
             System.err.println("pesign: " + e.getMessage());
             if (e.getCause() != null) {
                 e.getCause().printStackTrace(System.err);
@@ -47,7 +47,7 @@ public class PESignerCLI {
             System.exit(1);
         }
     }
-    
+
     private Options options;
 
     PESignerCLI() {
@@ -73,43 +73,40 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.withLongOpt("help").withDescription("Print the help").create('h'));
     }
 
-    void execute(String... args) throws SignerException {
+    void execute(String... args) throws SignerException, ParseException {
         DefaultParser parser = new DefaultParser();
-        try {
-            CommandLine cmd = parser.parse(options, args);
+        
+        CommandLine cmd = parser.parse(options, args);
 
-            if (cmd.hasOption("help") || args.length == 0) {
-                printHelp();
-                return;
-            }
-            
-            PESignerHelper helper = new PESignerHelper(new StdOutConsole(), "option");
-            
-            setOption(PARAM_KEYSTORE, helper, cmd);
-            setOption(PARAM_STOREPASS, helper, cmd);
-            setOption(PARAM_STORETYPE, helper, cmd);
-            setOption(PARAM_ALIAS, helper, cmd);
-            setOption(PARAM_KEYPASS, helper, cmd);
-            setOption(PARAM_KEYFILE, helper, cmd);
-            setOption(PARAM_CERTFILE, helper, cmd);
-            setOption(PARAM_ALG, helper, cmd);
-            setOption(PARAM_TSAURL, helper, cmd);
-            setOption(PARAM_TSMODE, helper, cmd);
-            setOption(PARAM_TSRETRIES, helper, cmd);
-            setOption(PARAM_TSRETRY_WAIT, helper, cmd);
-            setOption(PARAM_NAME, helper, cmd);
-            setOption(PARAM_URL, helper, cmd);
-            setOption(PARAM_PROXY_URL, helper, cmd);
-            setOption(PARAM_PROXY_USER, helper, cmd);
-            setOption(PARAM_PROXY_PASS, helper, cmd);
-            helper.replace(cmd.hasOption("replace"));
-
-            File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
-
-            helper.sign(file);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (cmd.hasOption("help") || args.length == 0) {
+            printHelp();
+            return;
         }
+        
+        PESignerHelper helper = new PESignerHelper(new StdOutConsole(), "option");
+        
+        setOption(PARAM_KEYSTORE, helper, cmd);
+        setOption(PARAM_STOREPASS, helper, cmd);
+        setOption(PARAM_STORETYPE, helper, cmd);
+        setOption(PARAM_ALIAS, helper, cmd);
+        setOption(PARAM_KEYPASS, helper, cmd);
+        setOption(PARAM_KEYFILE, helper, cmd);
+        setOption(PARAM_CERTFILE, helper, cmd);
+        setOption(PARAM_ALG, helper, cmd);
+        setOption(PARAM_TSAURL, helper, cmd);
+        setOption(PARAM_TSMODE, helper, cmd);
+        setOption(PARAM_TSRETRIES, helper, cmd);
+        setOption(PARAM_TSRETRY_WAIT, helper, cmd);
+        setOption(PARAM_NAME, helper, cmd);
+        setOption(PARAM_URL, helper, cmd);
+        setOption(PARAM_PROXY_URL, helper, cmd);
+        setOption(PARAM_PROXY_USER, helper, cmd);
+        setOption(PARAM_PROXY_PASS, helper, cmd);
+        helper.replace(cmd.hasOption("replace"));
+
+        File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
+
+        helper.sign(file);
     }
 
     private void setOption(String key, PESignerHelper helper, CommandLine cmd) throws SignerException {
