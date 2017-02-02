@@ -314,7 +314,7 @@ class PESignerHelper {
 
             // load the private key
             try {
-                privateKey = PVK.parse(keyfile, keypass);
+                privateKey = PrivateKeyUtils.load(keyfile, keypass);
             } catch (Exception e) {
                 throw new SignerException("Failed to load the private key from " + keyfile, e);
             }

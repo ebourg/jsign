@@ -56,7 +56,7 @@ public class PESignerTask extends Task {
     /** The file containing the certificate chain (PKCS#7 format). */
     private File certfile;
 
-    /** The file containing the private key (PVK format) */
+    /** The file containing the private key (PEM or PVK format) */
     private File keyfile;
 
     /** The password for the key in the store (if different from the keystore password) or in the keyfile. */

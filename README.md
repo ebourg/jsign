@@ -32,6 +32,7 @@ Version 1.4 (in development)
 * The signature algorithm can now be specified independently of the digest algorithm (contributed by Markus Kilås)
 * Timestamping is attempted 3 times by default with a 10 seconds pause if an IOException occurs (contributed by Erwin Tratar)
 * Timestamping can now fail over to other services
+* Private keys in PEM format are now supported (PKCS#1 and PKCS#8, encrypted or not)
 * Upgraded BouncyCastle to 1.54 (contributed by Markus Kilås)
 * Fixed the Accept header for RFC 3161 requests (contributed by Markus Kilås)
 * Internal refactoring to share the code between the Ant task and the CLI tool (contributed by Michael Peterson)

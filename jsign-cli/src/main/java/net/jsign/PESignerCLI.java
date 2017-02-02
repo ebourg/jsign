@@ -57,7 +57,7 @@ public class PESignerCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_STORETYPE).withArgName("TYPE").withDescription("The type of the keystore:\n- JKS: Java keystore (.jks files)\n- PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)\n- PKCS11: PKCS#11 hardware token\n").create());
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_ALIAS).withArgName("NAME").withDescription("The alias of the certificate used for signing in the keystore.").create('a'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_KEYPASS).withArgName("PASSWORD").withDescription("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password.").create());
-        options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_KEYFILE).withArgName("FILE").withDescription("The file containing the private key. Only PVK files are supported. ").withType(File.class).create());
+        options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_KEYFILE).withArgName("FILE").withDescription("The file containing the private key. PEM and PVK files are supported. ").withType(File.class).create());
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_CERTFILE).withArgName("FILE").withDescription("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").withType(File.class).create('c'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_ALG).withArgName("ALGORITHM").withDescription("The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)").create('d'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_TSAURL).withArgName("URL").withDescription("The URL of the timestamping authority.").create('t'));

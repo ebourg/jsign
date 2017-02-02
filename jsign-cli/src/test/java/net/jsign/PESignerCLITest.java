@@ -274,6 +274,38 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    public void testSigningPEM() throws Exception {
+        cli.execute("--certfile=target/test-classes/certificate.pem", "--keyfile=target/test-classes/privatekey.pkcs8.pem", "--keypass=password", "" + targetFile);
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+    }
+
+    public void testSigningEncryptedPEM() throws Exception {
+        cli.execute("--certfile=target/test-classes/certificate.pem", "--keyfile=target/test-classes/privatekey-encrypted.pkcs1.pem", "--keypass=password", "" + targetFile);
+        
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+    }
+
     public void testTimestampingAuthenticode() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);

@@ -69,7 +69,7 @@ public class PESignerMojo extends AbstractMojo {
     @Parameter
     private File certfile;
 
-    /** The file containing the private key (PVK format) */
+    /** The file containing the private key (PEM or PVK format) */
     @Parameter
     private File keyfile;
 
