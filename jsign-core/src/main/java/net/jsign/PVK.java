@@ -67,7 +67,7 @@ public class PVK {
         
         int res = buffer.getInt();
         int keyType = buffer.getInt();
-        int encrypted = buffer.getInt();
+        boolean encrypted = buffer.getInt() != 0;
         int saltLength = buffer.getInt();
         int keyLength = buffer.getInt();
         byte[] salt = new byte[saltLength];
@@ -81,7 +81,7 @@ public class PVK {
         byte[] key = new byte[keyLength - 8];
         buffer.get(key);
         
-        if (encrypted == 0) {
+        if (!encrypted) {
             return parseKey(key);
         } else {
             try {
