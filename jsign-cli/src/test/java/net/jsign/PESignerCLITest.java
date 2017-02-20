@@ -259,7 +259,7 @@ public class PESignerCLITest extends TestCase {
     }
 
     public void testSigningPVKSPC() throws Exception {
-        cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/certificate.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--keypass=password", "" + targetFile);
+        cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/certificate.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
