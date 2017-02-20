@@ -149,16 +149,29 @@ public class PVK {
         return factory.generatePrivate(spec);
     }
 
+    /**
+     * Read a BigInteger from the specified buffer (in little-endian byte-order).
+     * 
+     * @param buffer the input buffer
+     * @param length the number of bytes read
+     */
     private static BigInteger getBigInteger(ByteBuffer buffer, int length) {
         byte[] array = new byte[length];
-        buffer.get(array);        
+        buffer.get(array);
         
-        // reverse the array and prepend a zero
-        byte[] bigintBytes = new byte[length + 1];
-        for (int i = 0; i < array.length; i++) {
-            bigintBytes[i + 1] = array[array.length - 1 - i];
+        return new BigInteger(reverse(array));
+    }
+
+    /**
+     * Reverses the specified array.
+     */
+    private static byte[] reverse(byte[] array) {
+        for (int i = 0; i < array.length / 2; i++) {
+            byte b = array[i];
+            array[i] = array[array.length - 1 - i];
+            array[array.length - 1 - i] = b;
         }
         
-        return new BigInteger(bigintBytes);
+        return array;
     }
 }
