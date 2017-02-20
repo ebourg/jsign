@@ -32,7 +32,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * PVK file parser. Based on the documentation and the code from Stephen N Henson.
+ * PVK file parser. Based on the documentation and the code from Stephen Norman Henson.
  * 
  * @see <a href="http://www.drh-consultancy.demon.co.uk/pvk.html">PVK file information</a>
  * 
@@ -73,6 +73,7 @@ public class PVK {
         byte[] salt = new byte[saltLength];
         buffer.get(salt);
         
+        // BLOBHEADER structure: https://msdn.microsoft.com/en-us/library/cc235198.aspx
         byte btype = buffer.get();
         byte version = buffer.get();
         short reserved = buffer.getShort();
@@ -111,6 +112,11 @@ public class PVK {
         return rc4.doFinal(encoded);
     }
 
+    /**
+     * Parses a private key blob.
+     *
+     * @see <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa375601.aspx#priv_BLOB">MSDN - Private Key BLOBs</a>
+     */
     private static PrivateKey parseKey(byte[] key) throws GeneralSecurityException {
         ByteBuffer buffer = ByteBuffer.wrap(key);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
