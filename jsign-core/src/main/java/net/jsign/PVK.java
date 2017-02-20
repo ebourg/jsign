@@ -99,7 +99,9 @@ public class PVK {
         // key derivation SHA1(salt + password)
         MessageDigest digest = MessageDigest.getInstance("SHA1");
         digest.update(salt);
-        digest.update(password.getBytes());
+        if (password != null) {
+            digest.update(password.getBytes());
+        }
         byte[] hash = digest.digest();
         if (weak) {
             // trim the key to 40 bits
