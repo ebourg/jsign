@@ -65,7 +65,7 @@ public class PVK {
             throw new IllegalArgumentException("PVK header signature not found");
         }
         
-        int res = buffer.getInt();
+        buffer.position(buffer.position() + 4); // reserved
         int keyType = buffer.getInt();
         boolean encrypted = buffer.getInt() != 0;
         int saltLength = buffer.getInt();
@@ -76,7 +76,7 @@ public class PVK {
         // BLOBHEADER structure: https://msdn.microsoft.com/en-us/library/cc235198.aspx
         byte btype = buffer.get();
         byte version = buffer.get();
-        short reserved = buffer.getShort();
+        buffer.position(buffer.position() + 2); // reserved
         int keyalg = buffer.getInt();
         
         byte[] key = new byte[keyLength - 8];
