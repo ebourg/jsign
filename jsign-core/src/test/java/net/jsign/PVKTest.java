@@ -32,23 +32,19 @@ public class PVKTest extends TestCase {
                            "48749365951054152409123155429217112278873");
 
     public void testParseUnencrypted() throws Exception {
-        PrivateKey key = PVK.parse(new File("src/test/resources/privatekey.pvk"), "password");
-        assertNotNull(key);
-        
-        RSAPrivateKey rsakey = (RSAPrivateKey) key;
-        assertEquals("private exponent", PRIVATE_EXPONENT, rsakey.getPrivateExponent());
+        testParse("src/test/resources/privatekey.pvk");
     }
 
-    public void testParseEncrypted() throws Exception {
-        PrivateKey key = PVK.parse(new File("src/test/resources/privatekey-encrypted.pvk"), "password");
-        assertNotNull(key);
-        
-        RSAPrivateKey rsakey = (RSAPrivateKey) key;
-        assertEquals("private exponent", PRIVATE_EXPONENT, rsakey.getPrivateExponent());
+    public void testParseEncryptedWeak() throws Exception {
+        testParse("src/test/resources/privatekey-encrypted.pvk");
     }
 
     public void testParseEncryptedStrong() throws Exception {
-        PrivateKey key = PVK.parse(new File("src/test/resources/privatekey-encrypted-strong.pvk"), "password");
+        testParse("src/test/resources/privatekey-encrypted-strong.pvk");
+    }
+
+    private void testParse(String filename) throws Exception {
+        PrivateKey key = PVK.parse(new File(filename), "password");
         assertNotNull(key);
         
         RSAPrivateKey rsakey = (RSAPrivateKey) key;
