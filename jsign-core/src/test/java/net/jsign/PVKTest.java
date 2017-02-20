@@ -23,10 +23,6 @@ import java.security.interfaces.RSAPrivateKey;
 
 import junit.framework.TestCase;
 
-/**
- * @author Emmanuel Bourg
- * @since 1.0
- */
 public class PVKTest extends TestCase {
 
     private static final BigInteger PRIVATE_EXPONENT =
@@ -72,6 +68,24 @@ public class PVKTest extends TestCase {
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // expected
+        }
+    }
+
+    public void testInvalidPassword() throws Exception {
+        try {
+            PVK.parse(new File("src/test/resources/privatekey-encrypted.pvk"), "secret");
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            assertEquals("exception message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
+        }
+    }
+
+    public void testMissingPassword() throws Exception {
+        try {
+            PVK.parse(new File("src/test/resources/privatekey-encrypted.pvk"), null);
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            assertEquals("exception message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
         }
     }
 }

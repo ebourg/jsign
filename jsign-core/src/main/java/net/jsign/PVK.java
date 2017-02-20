@@ -25,16 +25,19 @@ import java.nio.ByteOrder;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.util.Arrays;
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
  * PVK file parser. Based on the documentation and the code from Stephen Norman Henson.
  * 
  * @see <a href="http://www.drh-consultancy.demon.co.uk/pvk.html">PVK file information</a>
+ * @see <a href="https://github.com/openssl/openssl/blob/OpenSSL_1_1_0-stable/crypto/pem/pvkfmt.c">OpenSSL PVK format implementation</a>
  * 
  * @author Emmanuel Bourg
  * @since 1.0
@@ -43,6 +46,9 @@ public class PVK {
 
     /** Header signature of PVK files */
     private static final long PVK_MAGIC = 0xB0B5F11EL;
+
+    /** Header of the unencrypted key */
+    private static final byte[] RSA2_KEY_MAGIC = "RSA2".getBytes();
 
     private PVK() {
     }
@@ -82,36 +88,50 @@ public class PVK {
         byte[] key = new byte[keyLength - 8];
         buffer.get(key);
         
-        if (!encrypted) {
-            return parseKey(key);
-        } else {
-            try {
-                // strong key (128 bits)
-                return parseKey(decrypt(key, salt, password, false));
-            } catch (IllegalArgumentException e) {
-                // weak key (40 bits)
-                return parseKey(decrypt(key, salt, password, true));
-            }
+        if (encrypted) {
+            key = decrypt(key, salt, password);
         }
+        
+        return parseKey(key);
     }
 
-    private static byte[] decrypt(byte[] encoded, byte[] salt, String password, boolean weak) throws GeneralSecurityException {
-        // key derivation SHA1(salt + password)
+    private static byte[] decrypt(byte[] encoded, byte[] salt, String password) throws GeneralSecurityException {
+        byte[] hash = deriveKey(salt, password);
+        String algorithm = "RC4";
+        
+        SecretKey strongKey = new SecretKeySpec(hash, 0, 16, algorithm);
+        byte[] decoded = decrypt(strongKey, encoded);
+        if (startsWith(decoded, RSA2_KEY_MAGIC)) {
+            return decoded;
+        }
+        
+        // trim the key to 40 bits
+        Arrays.fill(hash, 5, hash.length, (byte) 0);
+        SecretKey weakKey = new SecretKeySpec(hash, 0, 16, algorithm);
+        decoded = decrypt(weakKey, encoded);
+        if (startsWith(decoded, RSA2_KEY_MAGIC)) {
+            return decoded;
+        }
+        
+        throw new IllegalArgumentException("Unable to decrypt the PVK key, please verify the password");
+    }
+
+    private static byte[] decrypt(SecretKey key, byte[] encoded) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance(key.getAlgorithm());
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        return cipher.doFinal(encoded);
+    }
+
+    /**
+     * Key derivation SHA1(salt + password)
+     */
+    private static byte[] deriveKey(byte[] salt, String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA1");
         digest.update(salt);
         if (password != null) {
             digest.update(password.getBytes());
         }
-        byte[] hash = digest.digest();
-        if (weak) {
-            // trim the key to 40 bits
-            Arrays.fill(hash, 5, hash.length, (byte) 0);
-        }
-        
-        // decryption
-        Cipher rc4 = Cipher.getInstance("RC4");
-        rc4.init(Cipher.DECRYPT_MODE, new SecretKeySpec(hash, 0, 16, "RC4"));
-        return rc4.doFinal(encoded);
+        return digest.digest();
     }
 
     /**
@@ -123,12 +143,11 @@ public class PVK {
         ByteBuffer buffer = ByteBuffer.wrap(key);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         
-        byte[] keymagic = new byte[4];
-        buffer.get(keymagic);
-        
-        if (!"RSA2".equals(new String(keymagic))) {
-            throw new IllegalArgumentException("Unsupported key format: " + new String(keymagic));
+        if (!startsWith(key, RSA2_KEY_MAGIC)) {
+            throw new IllegalArgumentException("Unable to parse the PVK key, unsupported key format: " + new String(key, 0, RSA2_KEY_MAGIC.length));
         }
+        
+        buffer.position(buffer.position() + RSA2_KEY_MAGIC.length); // skip the header
         
         int bitlength = buffer.getInt();
         BigInteger publicExponent = new BigInteger(String.valueOf(buffer.getInt()));
@@ -173,5 +192,18 @@ public class PVK {
         }
         
         return array;
+    }
+
+    /**
+     * Tells if an array starts with the specified prefix.
+     */
+    private static boolean startsWith(byte[] array, byte[] prefix) {
+        for (int i = 0; i < prefix.length; i++) {
+            if (prefix[i] != array[i]) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }
