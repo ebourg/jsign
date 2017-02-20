@@ -51,6 +51,14 @@ public class PVKTest extends TestCase {
         assertEquals("private exponent", PRIVATE_EXPONENT, rsakey.getPrivateExponent());
     }
 
+    public void testParseEncryptedStrong() throws Exception {
+        PrivateKey key = PVK.parse(new File("src/test/resources/privatekey-encrypted-strong.pvk"), "password");
+        assertNotNull(key);
+        
+        RSAPrivateKey rsakey = (RSAPrivateKey) key;
+        assertEquals("private exponent", PRIVATE_EXPONENT, rsakey.getPrivateExponent());
+    }
+
     public void testCompare() throws Exception {
         PrivateKey key1 = PVK.parse(new File("src/test/resources/privatekey.pvk"), "password");
         PrivateKey key2 = PVK.parse(new File("src/test/resources/privatekey-encrypted.pvk"), "password");
