@@ -31,6 +31,12 @@ public class PVKTest extends TestCase {
                            "38747175970780043259305835482179875435536692028556840275049932216177725039464021845390956" +
                            "48749365951054152409123155429217112278873");
 
+    private static final BigInteger MODULUS =
+            new BigInteger("10827562372927185168634933681922029928807680158373213016018185402418682816925449513077404" +
+                           "86528413817409261870616567143593547418892051759497008851701669594509162542812252927073053" +
+                           "63776062597224618555740476093967060229674515611975718626261740683864624806740655247266908" +
+                           "985568698016685062096774422670704602453741");
+
     public void testParseUnencrypted() throws Exception {
         testParse("src/test/resources/privatekey.pvk");
     }
@@ -49,6 +55,7 @@ public class PVKTest extends TestCase {
         
         RSAPrivateKey rsakey = (RSAPrivateKey) key;
         assertEquals("private exponent", PRIVATE_EXPONENT, rsakey.getPrivateExponent());
+        assertEquals("modulus", MODULUS, rsakey.getModulus());
     }
 
     public void testCompare() throws Exception {

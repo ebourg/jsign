@@ -175,8 +175,8 @@ public class PVK {
      * @param length the number of bytes read
      */
     private static BigInteger getBigInteger(ByteBuffer buffer, int length) {
-        byte[] array = new byte[length];
-        buffer.get(array);
+        byte[] array = new byte[length + 1];
+        buffer.get(array, 0, length);
         
         return new BigInteger(reverse(array));
     }
