@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.jsign</groupId>
+  <artifactId>jsign-gradle-plugin</artifactId>
+  <parent>
+    <groupId>net.jsign</groupId>
+    <artifactId>jsign-parent</artifactId>
+    <version>1.4-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <name>Jsign - Code signing for Windows executables (Gradle Plugin)</name>
+  <version>1.4-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <inceptionYear>2017</inceptionYear>
+
+  <description>
+    Pure Java implementation of Microsoft Authenticode for signing Windows executable files
+  </description>
+  <url>http://ebourg.github.com/jsign</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <repositories>
+    <repository>
+      <id>gradle-repository</id>
+      <url>http://repo.gradle.org/gradle/libs-releases-local</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <properties>
+    <gradle.version>3.4</gradle.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.jsign</groupId>
+      <artifactId>jsign-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>2.4.7</version>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-core</artifactId>
+      <version>${gradle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

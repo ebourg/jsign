@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.7"
+    }
+}
+
+apply plugin: "java"
+apply plugin: "com.gradle.plugin-publish"
+
+repositories {
+    mavenLocal()
+}
+
+dependencies {
+    compile gradleApi()
+    compile 'net.jsign:jsign-core:1.4-SNAPSHOT'
+}
+
+pluginBundle {
+    website = 'https://ebourg.github.io/jsign/'
+    vcsUrl = 'https://github.com/ebourg/jsign'
+
+    description = 'Code signing for Windows executables'
+
+    plugins {
+        jsignPlugin {
+            id = 'net.jsign'
+            displayName = 'Gradle Jsign plugin'
+            tags = ['signing']
+            version = '1.4-SNAPSHOT'
+        }
+    }
+}

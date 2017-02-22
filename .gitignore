@@ -2,6 +2,8 @@
 *.ipr
 *.iws
 target/
+/jsign-gradle-plugin/.gradle
+/jsign-gradle-plugin/build
 
 # eclipse files
 /.settings

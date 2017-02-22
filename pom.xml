@@ -57,6 +57,7 @@
     <module>jsign-cli</module>
     <module>jsign</module>
     <module>jsign-maven-plugin</module>
+    <module>jsign-gradle-plugin</module>
   </modules>
 
   <dependencies>

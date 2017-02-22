@@ -1,0 +1,21 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+
+    dependencies {
+        classpath 'net.jsign:jsign-gradle-plugin:1.4-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.jsign'
+
+task sign << {
+    signexe(file      : 'application.exe',
+            name      : 'My Application',
+            url       : 'http://www.example.com',
+            keystore  : 'keystore.p12',
+            alias     : 'test',
+            storepass : 'secret',
+            tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+}
