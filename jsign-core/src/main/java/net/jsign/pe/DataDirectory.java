@@ -51,7 +51,7 @@ public class DataDirectory {
     /**
      * Fill the data directory with zeros.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public void erase() {
         peFile.write(getVirtualAddress(), new byte[getSize()]);
@@ -60,7 +60,7 @@ public class DataDirectory {
     /**
      * Tells if the data directory is at the end of the file.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public boolean isTrailing() throws IOException {
         return getVirtualAddress() + getSize() == peFile.channel.size();

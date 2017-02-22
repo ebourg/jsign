@@ -26,7 +26,7 @@ import java.security.Provider;
  * Helper class for loading KeyStores.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 public class KeyStoreUtils {
 

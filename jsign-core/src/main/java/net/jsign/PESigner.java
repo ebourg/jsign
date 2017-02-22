@@ -124,7 +124,7 @@ public class PESigner {
     /**
      * Enable or disable the replacement of the previous signatures (disabled by default).
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public PESigner withSignaturesReplaced(boolean replace) {
         this.replace = replace;
@@ -161,7 +161,7 @@ public class PESigner {
      * Set the URL of the timestamping authority. RFC 3161 servers as used
      * for jar signing are not compatible with Authenticode signatures.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public PESigner withTimestampingAutority(String... url) {
         this.tsaurlOverride = url;
@@ -205,7 +205,7 @@ public class PESigner {
     /**
      * Explicitly sets the signature algorithm to use.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm) {
         this.signatureAlgorithm = signatureAlgorithm;
@@ -215,7 +215,7 @@ public class PESigner {
     /**
      * Explicitly sets the signature algorithm and provider to use.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
         return withSignatureAlgorithm(signatureAlgorithm, Security.getProvider(signatureProvider));
@@ -224,7 +224,7 @@ public class PESigner {
     /**
      * Explicitly sets the signature algorithm and provider to use.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public PESigner withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
         this.signatureAlgorithm = signatureAlgorithm;
@@ -235,7 +235,7 @@ public class PESigner {
     /**
      * Set the signature provider to use.
      * 
-     * @since 1.4
+     * @since 2.0
      */
     public PESigner withSignatureProvider(Provider signatureProvider) {
         this.signatureProvider = signatureProvider;

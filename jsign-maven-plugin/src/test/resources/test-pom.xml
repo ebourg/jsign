@@ -11,7 +11,7 @@
       <plugin>
         <groupId>net.sign</groupId>
         <artifactId>jsign-maven-plugin</artifactId>
-        <version>1.4-SNAPSHOT</version>
+        <version>2.0-SNAPSHOT</version>
         <configuration>
         </configuration>
         <executions>

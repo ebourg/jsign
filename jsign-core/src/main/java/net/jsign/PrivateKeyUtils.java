@@ -40,7 +40,7 @@ import org.bouncycastle.pkcs.PKCSException;
  * Helper class for loading private keys.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 public class PrivateKeyUtils {
 

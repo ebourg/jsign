@@ -20,7 +20,7 @@ package net.jsign;
  * Abstraction layer for console messages.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 interface Console {
 

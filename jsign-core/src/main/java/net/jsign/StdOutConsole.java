@@ -20,7 +20,7 @@ package net.jsign;
  * Console implementation for the command line tool.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 class StdOutConsole implements Console {
 

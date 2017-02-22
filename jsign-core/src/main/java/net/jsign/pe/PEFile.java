@@ -75,7 +75,7 @@ public class PEFile implements Closeable {
     }
 
     /**
-     * @since 1.4
+     * @since 2.0
      */
     public PEFile(SeekableByteChannel channel) throws IOException {
         this.channel = channel;

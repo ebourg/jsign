@@ -27,7 +27,7 @@ import org.gradle.api.Project;
  * Gradle plugin registering the signexe extension method with the project.
  *
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 public class PESignerGradlePlugin implements Plugin<Project> {
 

@@ -28,7 +28,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * Maven plugin for signing PE files.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 @Mojo(name = "sign")
 public class PESignerMojo extends AbstractMojo {

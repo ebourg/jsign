@@ -22,7 +22,7 @@ import org.apache.maven.plugin.logging.Log;
  * Console implementation for Maven plugins.
  *
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 class MavenConsole implements Console {
 

@@ -23,7 +23,7 @@ import org.gradle.api.logging.Logger;
  * Console implementation for Gradle.
  *
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 public class GradleConsole implements Console {
 

@@ -23,7 +23,7 @@ import org.apache.tools.ant.Task;
  * Console implementation for Ant tasks.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 class AntConsole implements Console {
 

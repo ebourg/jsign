@@ -25,7 +25,7 @@ See http://ebourg.github.com/jsign for more information.
 Changes
 =======
 
-Version 1.4 (in development)
+Version 2.0 (in development)
 * Jsign now requires Java 7 or higher
 * Multiple signatures are now supported. New signatures can replace or be added to the previous ones.
 * PKCS#11 hardware tokens are now supported.

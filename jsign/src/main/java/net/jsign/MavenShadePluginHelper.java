@@ -21,7 +21,7 @@ package net.jsign;
  * process of the shade plugin. This class is removed from the final jar.
  * 
  * @author Emmanuel Bourg
- * @since 1.4
+ * @since 2.0
  */
 class MavenShadePluginHelper {
 

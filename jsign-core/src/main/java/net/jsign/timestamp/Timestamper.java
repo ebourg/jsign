@@ -63,7 +63,7 @@ public abstract class Timestamper {
     }
 
     /**
-     * @since 1.4
+     * @since 2.0
      */
     public void setURLs(String... tsaurls) {
         List<URL> urls = new ArrayList<>();

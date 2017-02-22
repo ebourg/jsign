@@ -50,7 +50,7 @@ import net.jsign.timestamp.TimestampingMode;
  * This is used internally to share the parameter validation logic
  * between the Ant task and the CLI tool.
  *
- * @since 1.4
+ * @since 2.0
  */
 class PESignerHelper {
     public static final String PARAM_KEYSTORE = "keystore";
