@@ -4,6 +4,7 @@
 target/
 /jsign-gradle-plugin/.gradle
 /jsign-gradle-plugin/build
+dependency-reduced-pom.xml
 
 # eclipse files
 /.settings
