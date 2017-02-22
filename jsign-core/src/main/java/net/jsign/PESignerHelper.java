@@ -231,7 +231,7 @@ class PESignerHelper {
             case PARAM_PROXY_PASS: return proxyPass(value);
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
             default:
-                throw new IllegalArgumentException("unknown param: " + key);
+                throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
     }
 
