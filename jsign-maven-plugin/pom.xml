@@ -27,6 +27,10 @@
     </license>
   </licenses>
 
+  <properties>
+    <maven.version>3.3.9</maven.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>net.jsign</groupId>
@@ -37,13 +41,13 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
-      <version>3.3.9</version>
+      <version>${maven.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>3.3.9</version>
+      <version>${maven.version}</version>
     </dependency>
 
     <dependency>
@@ -63,7 +67,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-compat</artifactId>
-      <version>3.3.9</version>
+      <version>${maven.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
