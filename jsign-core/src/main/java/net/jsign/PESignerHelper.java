@@ -284,7 +284,7 @@ class PESignerHelper {
                 throw new SignerException(e.getMessage(), e);
             }
             if (chain == null) {
-                throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + keystore);
+                throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore));
             }
 
             char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();
