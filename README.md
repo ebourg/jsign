@@ -4,7 +4,7 @@ Jsign - Java implementation of Microsoft Authenticode
 [![Build Status](https://secure.travis-ci.org/ebourg/jsign.svg)](http://travis-ci.org/ebourg/jsign)
 [![Coverage Status](https://coveralls.io/repos/github/ebourg/jsign/badge.svg?branch=master)](https://coveralls.io/github/ebourg/jsign?branch=master)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](http://search.maven.org/#search|gav|1|g%3A"net.jsign" AND a%3A"jsign")
+[![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
 
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows. Jsign is platform independent and
@@ -29,12 +29,12 @@ Version 2.0 (2017-06-12)
 * Jsign now requires Java 7 or higher
 * Multiple signatures are now supported. New signatures can replace or be added to the previous ones.
 * PKCS#11 hardware tokens are now supported.
-* The signature algorithm can now be specified independently of the digest algorithm (contributed by Markus Kilås)
+* The signature algorithm can now be specified independently of the digest algorithm (contributed by Markus KilÃ¥s)
 * Timestamping is attempted 3 times by default with a 10 seconds pause if an exception occurs (contributed by Erwin Tratar)
 * Timestamping can now fail over to other services
 * Private keys in PEM format are now supported (PKCS#1 and PKCS#8, encrypted or not)
-* Upgraded BouncyCastle to 1.54 (contributed by Markus Kilås)
-* Fixed the Accept header for RFC 3161 requests (contributed by Markus Kilås)
+* Upgraded BouncyCastle to 1.54 (contributed by Markus KilÃ¥s)
+* Fixed the Accept header for RFC 3161 requests (contributed by Markus KilÃ¥s)
 * Internal refactoring to share the code between the Ant task and the CLI tool (contributed by Michael Peterson)
 * The code has been split into distinct modules (core, ant, cli).
 * Jsign is now available as a plugin for Maven (net.jsign:jsign-maven-plugin) and Gradle
