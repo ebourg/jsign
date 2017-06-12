@@ -374,7 +374,7 @@ public class PESignerTest extends TestCase {
         testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.comodoca.com/authenticode");
     }
 
-    public void testRFS3161TimestampingFailover() throws Exception {
+    public void testRFC3161TimestampingFailover() throws Exception {
         testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.comodoca.com/rfc3161");
     }
 
