@@ -307,7 +307,33 @@ are provided to install it easily on most Linux distributions. On these systems 
 <h3>API</h3>
 
 <p>Jsign also provides a simple API for signing executable files and can
-be embedded in another application.<br>See the <a href="apidocs/index.html">Javadoc</a></p>
+be embedded in another application.</p>
+
+<p>Simply add this dependency to the project:<p>
+
+<pre class="prettyprint lang-xml">
+    &lt;dependency>
+      &lt;groupId>net.jsign&lt;/groupId>
+      &lt;artifactId>jsign-core&lt;/artifactId>
+      &lt;version>2.0&lt;/version>
+    &lt;/dependency>
+</pre>
+
+<p>and then use the <code>PESigner</code> class like this:</p>
+
+<pre class="prettyprint lang-java">
+ KeyStore keystore = KeyStoreUtils.load(new File("keystore.p12"), "PKCS12", "password", null);
+
+ PESigner signer = new PESigner(keystore, "test", "secret");
+ signer.withProgramName("My Application")
+       .withProgramURL("http://www.example.com")
+       .withTimestamping(true)
+       .withTimestampingAutority("http://timestamp.comodoca.com/authenticode");
+
+ signer.sign(new PEFile(new File("application.exe")));
+</pre>
+          
+<p>See the <a href="apidocs/index.html">Javadoc</a> for more details about the API.</p>
 
 
 <h3 id="files">Downloads</h3>
