@@ -44,6 +44,9 @@ import org.bouncycastle.pkcs.PKCSException;
  */
 public class PrivateKeyUtils {
 
+    private PrivateKeyUtils() {
+    }
+
     /**
      * Load the private key from the specified file. Supported formats are PVK and PEM, encrypted or not.
      * 

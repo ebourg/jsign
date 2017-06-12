@@ -30,6 +30,9 @@ import java.security.Provider;
  */
 public class KeyStoreUtils {
 
+    private KeyStoreUtils() {
+    }
+
     public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws SignerException {
         if (keystore != null && storetype == null) {
             // guess the type of the keystore from the extension of the file
