@@ -41,9 +41,9 @@ public class KeyStoreUtils {
      *                   If null the type is inferred from the extension of the file (.p12 or .pfx for PKCS#12 keystores)
      * @param storepass  The password of the keystore
      * @param provider   The security provider used to load the keystore (must be specified for PKCS#11 keystores)
-     * @throws SignerException
+     * @throws KeyStoreException thrown if the keystore cannot be loaded
      */
-    public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws SignerException {
+    public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws KeyStoreException {
         if (keystore != null && storetype == null) {
             // guess the type of the keystore from the extension of the file
             String filename = keystore.getName().toLowerCase();
@@ -62,11 +62,11 @@ public class KeyStoreUtils {
                 ks = KeyStore.getInstance(storetype);
             }
         } catch (KeyStoreException e) {
-            throw new SignerException("keystore type '" + storetype + "' is not supported", e);
+            throw new KeyStoreException("keystore type '" + storetype + "' is not supported", e);
         }
 
         if (keystore == null || !keystore.exists()) {
-            throw new SignerException("The keystore " + keystore + " couldn't be found");
+            throw new KeyStoreException("The keystore " + keystore + " couldn't be found");
         }
         
         try {
@@ -79,7 +79,7 @@ public class KeyStoreUtils {
                 }
             }
         } catch (Exception e) {
-            throw new SignerException("Unable to load the keystore " + keystore, e);
+            throw new KeyStoreException("Unable to load the keystore " + keystore, e);
         }
         
         return ks;

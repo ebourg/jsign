@@ -267,7 +267,12 @@ class PESignerHelper {
         }
 
         if (keystore != null) {
-            KeyStore ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
+            KeyStore ks;
+            try {
+                ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
+            } catch (KeyStoreException e) {
+                throw new SignerException(e.getMessage(), e);
+            }
 
             if (alias == null) {
                 throw new SignerException("alias " + parameterName + " must be set");
