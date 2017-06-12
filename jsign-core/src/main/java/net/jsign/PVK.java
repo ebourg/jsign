@@ -42,7 +42,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public class PVK {
+class PVK {
 
     /** Header signature of PVK files */
     private static final long PVK_MAGIC = 0xB0B5F11EL;
