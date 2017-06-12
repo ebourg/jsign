@@ -178,6 +178,72 @@ programmatically or standalone as a command line tool.</p>
     </tr>
   </table>
 
+<br>
+
+
+<h3>Maven plugin</h3>
+
+<p>Here is an example showing how the signing works with Maven. The parameters
+are the same as those described above for the Ant task.</p>
+
+<pre class="prettyprint lang-xml">
+    &lt;build>
+      &lt;plugins>
+        &lt;plugin>
+          &lt;groupId>net.jsign&lt;/groupId>
+          &lt;artifactId>jsign-maven-plugin&lt;/artifactId>
+          &lt;version>2.0-SNAPSHOT&lt;/version>
+          &lt;executions>
+            &lt;execution>
+              &lt;goals>
+                &lt;goal>sign&lt;/goal>
+              &lt;/goals>
+              &lt;phase>package&lt;/phase>
+              &lt;configuration>
+                &lt;file>application.exe&lt;/file>
+                &lt;name>My Application&lt;/name>
+                &lt;url>http://www.example.com&lt;/url>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;alias>test&lt;/alias>
+                &lt;storepass>password&lt;/storepass>
+              &lt;/configuration>
+            &lt;/execution>
+          &lt;/executions>
+        &lt;/plugin>
+      &lt;/plugins>
+    &lt;/build>
+</pre>
+
+<br>
+
+
+<h3>Gradle plugin</h3>
+
+<p>Here is an example showing how to use Jsign with Gradle. The parameters
+are the same as those described above for the Ant task.</p>
+
+<pre class="prettyprint lang-groovy">
+    buildscript {
+        dependencies {
+            classpath 'net.jsign:jsign-gradle-plugin:2.0'
+        }
+    }
+    
+    apply plugin: 'net.jsign'
+    
+    task sign << {
+        signexe(file      : 'application.exe',
+                name      : 'My Application',
+                url       : 'http://www.example.com',
+                keystore  : 'keystore.p12',
+                alias     : 'test',
+                storepass : 'secret',
+                tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+    }
+</pre>
+
+<br>
+
 
 <h3>Command Line Tool</h3>
 
