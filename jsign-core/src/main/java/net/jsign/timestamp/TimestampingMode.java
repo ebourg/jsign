@@ -23,20 +23,24 @@ package net.jsign.timestamp;
  * @since 1.3
  */
 public enum TimestampingMode {
+
+    /** Legacy Microsoft Authenticode timestamping */
     AUTHENTICODE,
+
+    /** RFC 3161 timestamping */
     RFC3161;
 
-    public static TimestampingMode of(String s) {
-        for (TimestampingMode mode : values()) {
-            if (mode.name().equalsIgnoreCase(s)) {
-                return mode;
+    public static TimestampingMode of(String mode) {
+        for (TimestampingMode m : values()) {
+            if (m.name().equalsIgnoreCase(mode)) {
+                return m;
             }
         }
         
-        if ("tsp".equalsIgnoreCase(s)) {
+        if ("tsp".equalsIgnoreCase(mode)) {
             return RFC3161;
         }
         
-        throw new IllegalArgumentException("Unknown timestamping mode: " + s);
+        throw new IllegalArgumentException("Unknown timestamping mode: " + mode);
     }
 }

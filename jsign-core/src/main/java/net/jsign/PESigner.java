@@ -96,11 +96,24 @@ public class PESigner {
     private int timestampingRetries = -1;
     private int timestampingRetryWait = -1;
 
+    /**
+     * Create a PESigner with the specified certificate chain and private key.
+     *
+     * @param chain       the certificate chain
+     * @param privateKey  the private key
+     */
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
         this.privateKey = privateKey;
     }
 
+    /**
+     * Create a PESigner with a certificate chain and private key from the specified keystore.
+     *
+     * @param keystore the keystore holding the certificate and the private key
+     * @param alias    the alias of the certificate in the keystore
+     * @param password the password to get the private key
+     */
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
     }

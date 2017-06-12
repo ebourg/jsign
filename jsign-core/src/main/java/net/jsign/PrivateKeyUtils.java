@@ -37,7 +37,7 @@ import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.bouncycastle.pkcs.PKCSException;
 
 /**
- * Helper class for loading private keys.
+ * Helper class for loading private keys (PVK or PEM, encrypted or not).
  * 
  * @author Emmanuel Bourg
  * @since 2.0
@@ -48,7 +48,9 @@ public class PrivateKeyUtils {
     }
 
     /**
-     * Load the private key from the specified file. Supported formats are PVK and PEM, encrypted or not.
+     * Load the private key from the specified file. Supported formats are PVK and PEM,
+     * encrypted or not. The type of the file is inferred from its extension (<tt>.pvk</tt>
+     * for PVK files, <tt>.pem</tt> for PEM files).
      * 
      * @param file
      * @param password

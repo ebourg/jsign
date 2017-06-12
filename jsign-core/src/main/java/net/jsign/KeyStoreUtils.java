@@ -23,7 +23,7 @@ import java.security.KeyStoreException;
 import java.security.Provider;
 
 /**
- * Helper class for loading KeyStores.
+ * Helper class for loading KeyStores (JKS, PKCS#12 or PKCS#11).
  * 
  * @author Emmanuel Bourg
  * @since 2.0
@@ -33,6 +33,16 @@ public class KeyStoreUtils {
     private KeyStoreUtils() {
     }
 
+    /**
+     * Load the keystore from the specified file.
+     * 
+     * @param keystore   the file containing the keystore
+     * @param storetype  the type of the keystore (either JKS, PKCS12 or PKCS11).
+     *                   If null the type is inferred from the extension of the file (.p12 or .pfx for PKCS#12 keystores)
+     * @param storepass  The password of the keystore
+     * @param provider   The security provider used to load the keystore (must be specified for PKCS#11 keystores)
+     * @throws SignerException
+     */
     public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws SignerException {
         if (keystore != null && storetype == null) {
             // guess the type of the keystore from the extension of the file

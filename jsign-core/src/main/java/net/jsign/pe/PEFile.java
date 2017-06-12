@@ -69,12 +69,20 @@ public class PEFile implements Closeable {
         valueBuffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    /**
+     * Create a PEFile from the specified file.
+     *
+     * @param file
+     * @throws IOException
+     */
     public PEFile(File file) throws IOException {
         this(Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE));
         this.file = file;
     }
 
     /**
+     * Create a PEFile from the specified channel.
+     *
      * @since 2.0
      */
     public PEFile(SeekableByteChannel channel) throws IOException {
