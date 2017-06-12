@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.KeyException;
 import java.security.PrivateKey;
 
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -55,14 +56,18 @@ public class PrivateKeyUtils {
      * @param file
      * @param password
      */
-    public static PrivateKey load(File file, String password) throws IOException, GeneralSecurityException, OperatorCreationException, PKCSException {
-        if (file.getName().endsWith(".pvk")) {
-            return PVK.parse(file, password);
-        } else if (file.getName().endsWith(".pem")) {
-            return readPrivateKeyPEM(file, password);
-        } else {
-            throw new IllegalArgumentException("Unsupported private key format (PEM or PVK file expected");
+    public static PrivateKey load(File file, String password) throws KeyException {
+        try {
+            if (file.getName().endsWith(".pvk")) {
+                return PVK.parse(file, password);
+            } else if (file.getName().endsWith(".pem")) {
+                return readPrivateKeyPEM(file, password);
+            }
+        } catch (Exception e) {
+            throw new KeyException("Failed to load the private key from " + file, e);
         }
+        
+        throw new IllegalArgumentException("Unsupported private key format (PEM or PVK file expected");
     }
 
     private static PrivateKey readPrivateKeyPEM(File file, String password) throws IOException, GeneralSecurityException, OperatorCreationException, PKCSException {

@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.io.FileWriter;
 import java.math.BigInteger;
+import java.security.KeyException;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 
@@ -61,8 +62,9 @@ public class PrivateKeyUtilsTest extends TestCase {
         try {
             PrivateKeyUtils.load(new File("target/test-classes/certificate.pem"), null);
             fail("No exception thrown");
-        } catch (UnsupportedOperationException e) {
-            assertEquals("exception message", "Unsupported PEM object: X509CertificateHolder",e.getMessage());
+        } catch (KeyException e) {
+            Throwable cause = e.getCause();
+            assertEquals("exception message", "Unsupported PEM object: X509CertificateHolder", cause.getMessage());
         }
     }
 
@@ -75,8 +77,9 @@ public class PrivateKeyUtilsTest extends TestCase {
         try {
             PrivateKeyUtils.load(file, null);
             fail("No exception thrown");
-        } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().startsWith("No key found in"));
+        } catch (KeyException e) {
+            Throwable cause = e.getCause();
+            assertTrue(cause.getMessage().startsWith("No key found in"));
         }
     }
 }
