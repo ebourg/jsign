@@ -102,7 +102,7 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td valign="top">keystore</td>
-      <td valign="top">The keystore file</td>
+      <td valign="top">The keystore file, or the SunPKCS11 configuration file</td>
       <td valign="top" align="center">Yes, unless <code>certfile</code> and <code>keyfile</code> are specified.</td>
     </tr>
     <tr>
@@ -117,6 +117,7 @@ programmatically or standalone as a command line tool.</p>
         <ul>
           <li><code>JKS</code>: Java keystore</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
+          <li><code>PKCS11</code>: PKCS#11 hardware token</li>
         </ul>
       </td>
       <td valign="top" align="center">No; defaults to "JKS".</td>
@@ -134,7 +135,7 @@ programmatically or standalone as a command line tool.</p>
     <tr>
       <td valign="top">keyfile</td>
       <td valign="top">
-        The file containing the private key. Only <code>PVK</code> files are supported.
+        The file containing the private key. <code>PEM</code> and <code>PVK</code> files are supported.
       </td>
     </tr>
     <tr>
@@ -159,6 +160,21 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">tsmode</td>
       <td valign="top">The timestamping mode (RFC3161 or Authenticode)</td>
       <td valign="top" align="center">No; defaults to Authenticode</td>
+    </tr>
+    <tr>
+      <td valign="top">tsretries</td>
+      <td valign="top">The number of retries for timestamping</td>
+      <td valign="top" align="center">No; defaults to 3</td>
+    </tr>
+    <tr>
+      <td valign="top">tsretrywait</td>
+      <td valign="top">The number of seconds to wait between timestamping retries</td>
+      <td valign="top" align="center">No; defaults to 10 seconds</td>
+    </tr>
+    <tr>
+      <td valign="top">replace</td>
+      <td valign="top">Tells if previous signatures should be replaced.</td>
+      <td valign="top" align="center">No; defaults to "false"</td>
     </tr>
   </table>
 
