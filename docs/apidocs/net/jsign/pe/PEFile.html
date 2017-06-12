@@ -1,1455 +1,1103 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<!--NewPage-->
-<HTML>
-<HEAD>
-<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE>
-PEFile (Jsign - Code signing for Windows executables 1.3 API)
-</TITLE>
-
-
-<LINK REL ="stylesheet" TYPE="text/css" HREF="../../../stylesheet.css" TITLE="Style">
-
-<SCRIPT type="text/javascript">
-function windowTitle()
-{
+<!-- NewPage -->
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>PEFile (Jsign - Code signing for Windows executables 2.0 API)</title>
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
+</head>
+<body>
+<script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PEFile (Jsign - Code signing for Windows executables 1.3 API)";
+        parent.document.title="PEFile (Jsign - Code signing for Windows executables 2.0 API)";
     }
-}
-</SCRIPT>
-<NOSCRIPT>
-</NOSCRIPT>
-
-</HEAD>
-
-<BODY BGCOLOR="white" onload="windowTitle();">
-<HR>
-
-
+//-->
+</script>
+<noscript>
+<div>JavaScript is disabled on your browser.</div>
+</noscript>
 <!-- ========= START OF TOP NAVBAR ======= -->
-<A NAME="navbar_top"><!-- --></A>
-<A HREF="#skip-navbar_top" title="Skip navigation links"></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_top_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-  <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/PEFile.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-</EM>
-</TD>
-</TR>
-
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe"><B>NEXT CLASS</B></A></FONT></TD>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?net/jsign/pe/PEFile.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="PEFile.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
-&nbsp;<SCRIPT type="text/javascript">
-  <!--
+<div class="topNav"><a name="navbar_top">
+<!--   -->
+</a><a href="#skip-navbar_top" title="Skip navigation links"></a><a name="navbar_top_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="class-use/PEFile.html">Use</a></li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?net/jsign/pe/PEFile.html" target="_top">Frames</a></li>
+<li><a href="PEFile.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_top">
+<li><a href="../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_top");
   if(window==top) {
-    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
   }
   //-->
-</SCRIPT>
-<NOSCRIPT>
-  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
-</NOSCRIPT>
-
-
-</FONT></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
-</TR>
-</TABLE>
-<A NAME="skip-navbar_top"></A>
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_top">
+<!--   -->
+</a></div>
 <!-- ========= END OF TOP NAVBAR ========= -->
-
-<HR>
 <!-- ======== START OF CLASS DATA ======== -->
-<H2>
-<FONT SIZE="-1">
-net.jsign.pe</FONT>
-<BR>
-Class PEFile</H2>
-<PRE>
-<A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</A>
-  <IMG SRC="../../../resources/inherit.gif" ALT="extended by "><B>net.jsign.pe.PEFile</B>
-</PRE>
-<DL>
-<DT><B>All Implemented Interfaces:</B> <DD><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</A></DD>
-</DL>
-<HR>
-<DL>
-<DT><PRE>public class <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.52"><B>PEFile</B></A><DT>extends <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A><DT>implements <A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</A></DL>
-</PRE>
-
-<P>
-Portable Executable File.
+<div class="header">
+<div class="subTitle">net.jsign.pe</div>
+<h2 title="Class PEFile" class="title">Class PEFile</h2>
+</div>
+<div class="contentContainer">
+<ul class="inheritance">
+<li><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li>
+<ul class="inheritance">
+<li>net.jsign.pe.PEFile</li>
+</ul>
+</li>
+</ul>
+<div class="description">
+<ul class="blockList">
+<li class="blockList">
+<dl>
+<dt>All Implemented Interfaces:</dt>
+<dd><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang">AutoCloseable</a></dd>
+</dl>
+<hr>
+<br>
+<pre>public class <a href="../../../src-html/net/jsign/pe/PEFile.html#line.58">PEFile</a>
+extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
+implements <a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</a></pre>
+<div class="block">Portable Executable File.
  
- This class is thread safe.
-<P>
-
-<P>
-<DL>
-<DT><B>Since:</B></DT>
-  <DD>1.0</DD>
-<DT><B>Author:</B></DT>
-  <DD>Emmanuel Bourg</DD>
-<DT><B>See Also:</B><DD><a href="http://msdn.microsoft.com/en-us/library/windows/hardware/gg463119.aspx">Microsoft PE and COFF Specification </a></DL>
-<HR>
-
-<P>
-
+ This class is thread safe.</div>
+<dl><dt><span class="strong">Since:</span></dt>
+  <dd>1.0</dd>
+<dt><span class="strong">Author:</span></dt>
+  <dd>Emmanuel Bourg</dd>
+<dt><span class="strong">See Also:</span></dt><dd><a href="http://msdn.microsoft.com/en-us/library/windows/hardware/gg463119.aspx">Microsoft PE and COFF Specification </a></dd></dl>
+</li>
+</ul>
+</div>
+<div class="summary">
+<ul class="blockList">
+<li class="blockList">
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
-
-<A NAME="constructor_summary"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Constructor Summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#PEFile(java.io.File)">PEFile</A></B>(<A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A>&nbsp;file)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-</TABLE>
-&nbsp;
+<ul class="blockList">
+<li class="blockList"><a name="constructor_summary">
+<!--   -->
+</a>
+<h3>Constructor Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Constructor Summary table, listing constructors, and an explanation">
+<caption><span>Constructors</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colOne" scope="col">Constructor and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colOne"><code><strong><a href="../../../net/jsign/pe/PEFile.html#PEFile(java.io.File)">PEFile</a></strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</a>&nbsp;file)</code>
+<div class="block">Creates a PEFile from the specified file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colOne"><code><strong><a href="../../../net/jsign/pe/PEFile.html#PEFile(java.nio.channels.SeekableByteChannel)">PEFile</a></strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/channels/SeekableByteChannel.html?is-external=true" title="class or interface in java.nio.channels">SeekableByteChannel</a>&nbsp;channel)</code>
+<div class="block">Creates a PEFile from the specified channel.</div>
+</td>
+</tr>
+</table>
+</li>
+</ul>
 <!-- ========== METHOD SUMMARY =========== -->
-
-<A NAME="method_summary"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="2"><FONT SIZE="+2">
-<B>Method Summary</B></FONT></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#close()">close</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#computeChecksum()">computeChecksum</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compute the checksum of the image file.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;byte[]</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#computeDigest(net.jsign.DigestAlgorithm)">computeDigest</A></B>(<A HREF="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</A>&nbsp;algorithm)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Compute the checksum of the file using the specified digest algorithm.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getAddressOfEntryPoint()">getAddressOfEntryPoint</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The address of the entry point relative to the image base when the
- executable file is loaded into memory.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getBaseOfCode()">getBaseOfCode</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The address that is relative to the image base of the beginning-of-code 
- section when it is loaded into memory.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getBaseOfData()">getBaseOfData</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The address that is relative to the image base of the beginning-of-data 
- section when it is loaded into memory (PE32 only).</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getCharacteristics()">getCharacteristics</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The flags that indicate the attributes of the file.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getCheckSum()">getCheckSum</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The image file checksum.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../net/jsign/pe/DataDirectory.html" title="class in net.jsign.pe">DataDirectory</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getDataDirectory(net.jsign.pe.DataDirectoryType)">getDataDirectory</A></B>(<A HREF="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</A>&nbsp;type)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the data directory of the specified type.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getDllCharacteristics()">getDllCharacteristics</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getFileAlignment()">getFileAlignment</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The alignment factor (in bytes) that is used to align the raw data of
- sections in the image file.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe">PEFormat</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getFormat()">getFormat</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getImageBase()">getImageBase</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The preferred address of the first byte of image when loaded into memory;
- must be a multiple of 64 K.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getLoaderFlags()">getLoaderFlags</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reserved, must be zero.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe">MachineType</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMachineType()">getMachineType</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMajorImageVersion()">getMajorImageVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The major version number of the image.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMajorLinkerVersion()">getMajorLinkerVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The linker major version number.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMajorOperatingSystemVersion()">getMajorOperatingSystemVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The major version number of the required operating system.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMajorSubsystemVersion()">getMajorSubsystemVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The major version number of the subsystem.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMinorImageVersion()">getMinorImageVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The minor version number of the image.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMinorLinkerVersion()">getMinorLinkerVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The linker minor version number.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMinorOperatingSystemVersion()">getMinorOperatingSystemVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The minor version number of the required operating system.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getMinorSubsystemVersion()">getMinorSubsystemVersion</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The minor version number of the subsystem.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getNumberOfRvaAndSizes()">getNumberOfRvaAndSizes</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The number of data-directory entries in the remainder of the optional
- header.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getNumberOfSections()">getNumberOfSections</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The number of sections.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getNumberOfSymbols()">getNumberOfSymbols</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The number of entries in the symbol table.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getPointerToSymbolTable()">getPointerToSymbolTable</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The file offset of the COFF symbol table, or zero if no COFF symbol table
- is present.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSectionAlignment()">getSectionAlignment</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The alignment (in bytes) of sections when they are loaded into memory.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="../../../net/jsign/pe/Section.html" title="class in net.jsign.pe">Section</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSections()">getSections</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</A>&gt;</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSignatures()">getSignatures</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Returns the authenticode signatures on the file.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfCode()">getSizeOfCode</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the code (text) section, or the sum of all code sections
- if there are multiple sections.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfHeaders()">getSizeOfHeaders</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The combined size of an MS DOS stub, PE header, and section headers
- rounded up to a multiple of FileAlignment.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfHeapCommit()">getSizeOfHeapCommit</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the local heap space to commit.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfHeapReserve()">getSizeOfHeapReserve</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the local heap space to reserve.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfImage()">getSizeOfImage</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size (in bytes) of the image, including all headers, as the image
- is loaded in memory.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfInitializedData()">getSizeOfInitializedData</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the initialized data section, or the sum of all such
- sections if there are multiple data sections.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;int</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfOptionalHeader()">getSizeOfOptionalHeader</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the optional header, which is required for executable files
- but not for object files.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfStackCommit()">getSizeOfStackCommit</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the stack to commit.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfStackReserve()">getSizeOfStackReserve</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the stack to reserve.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSizeOfUninitializedData()">getSizeOfUninitializedData</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The size of the uninitialized data section (BSS), or the sum of all such
- sections if there are multiple BSS sections.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="../../../net/jsign/pe/Subsystem.html" title="enum in net.jsign.pe">Subsystem</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getSubsystem()">getSubsystem</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The subsystem that is required to run this image.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;<A HREF="http://docs.oracle.com/javase/6/docs/api/java/util/Date.html?is-external=true" title="class or interface in java.util">Date</A></CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getTimeDateStamp()">getTimeDateStamp</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The low 32 bits of the number of seconds since 00:00 January 1, 1970
- (a C runtime time_t value), that indicates when the file was created.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;long</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#getWin32VersionValue()">getWin32VersionValue</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reserved, must be zero.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#pad(int)">pad</A></B>(int&nbsp;multiple)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Increase the size of the file up to a size that is a multiple of the specified value.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#printInfo(java.io.OutputStream)">printInfo</A></B>(<A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</A>&nbsp;out)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print detailed informations about the PE file.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#printInfo(java.io.PrintWriter)">printInfo</A></B>(<A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/PrintWriter.html?is-external=true" title="class or interface in java.io">PrintWriter</A>&nbsp;out)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print detailed informations about the PE file.</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#updateChecksum()">updateChecksum</A></B>()</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
-<CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../net/jsign/pe/PEFile.html#writeDataDirectory(net.jsign.pe.DataDirectoryType, byte[])">writeDataDirectory</A></B>(<A HREF="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</A>&nbsp;type,
-                                     byte[]&nbsp;data)</CODE>
-
-<BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writes the data directory of the specified type.</TD>
-</TR>
-</TABLE>
-&nbsp;<A NAME="methods_inherited_from_class_java.lang.Object"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#EEEEFF" CLASS="TableSubHeadingColor">
-<TH ALIGN="left"><B>Methods inherited from class java.lang.<A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</A></B></TH>
-</TR>
-<TR BGCOLOR="white" CLASS="TableRowColor">
-<TD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang">clone</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang">finalize</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</A>, <A HREF="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long, int)" title="class or interface in java.lang">wait</A></CODE></TD>
-</TR>
-</TABLE>
-&nbsp;
-<P>
-
+<ul class="blockList">
+<li class="blockList"><a name="method_summary">
+<!--   -->
+</a>
+<h3>Method Summary</h3>
+<table class="overviewSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
+<caption><span>Methods</span><span class="tabEnd">&nbsp;</span></caption>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colLast" scope="col">Method and Description</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#close()">close</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#computeChecksum()">computeChecksum</a></strong>()</code>
+<div class="block">Compute the checksum of the image file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>byte[]</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#computeDigest(net.jsign.DigestAlgorithm)">computeDigest</a></strong>(<a href="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</a>&nbsp;algorithm)</code>
+<div class="block">Compute the checksum of the file using the specified digest algorithm.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getAddressOfEntryPoint()">getAddressOfEntryPoint</a></strong>()</code>
+<div class="block">The address of the entry point relative to the image base when the
+ executable file is loaded into memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getBaseOfCode()">getBaseOfCode</a></strong>()</code>
+<div class="block">The address that is relative to the image base of the beginning-of-code 
+ section when it is loaded into memory.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getBaseOfData()">getBaseOfData</a></strong>()</code>
+<div class="block">The address that is relative to the image base of the beginning-of-data 
+ section when it is loaded into memory (PE32 only).</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getCharacteristics()">getCharacteristics</a></strong>()</code>
+<div class="block">The flags that indicate the attributes of the file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getCheckSum()">getCheckSum</a></strong>()</code>
+<div class="block">The image file checksum.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../net/jsign/pe/DataDirectory.html" title="class in net.jsign.pe">DataDirectory</a></code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getDataDirectory(net.jsign.pe.DataDirectoryType)">getDataDirectory</a></strong>(<a href="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</a>&nbsp;type)</code>
+<div class="block">Returns the data directory of the specified type.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getDllCharacteristics()">getDllCharacteristics</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getFileAlignment()">getFileAlignment</a></strong>()</code>
+<div class="block">The alignment factor (in bytes) that is used to align the raw data of
+ sections in the image file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe">PEFormat</a></code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getFormat()">getFormat</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getImageBase()">getImageBase</a></strong>()</code>
+<div class="block">The preferred address of the first byte of image when loaded into memory;
+ must be a multiple of 64 K.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getLoaderFlags()">getLoaderFlags</a></strong>()</code>
+<div class="block">Reserved, must be zero.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe">MachineType</a></code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMachineType()">getMachineType</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMajorImageVersion()">getMajorImageVersion</a></strong>()</code>
+<div class="block">The major version number of the image.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMajorLinkerVersion()">getMajorLinkerVersion</a></strong>()</code>
+<div class="block">The linker major version number.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMajorOperatingSystemVersion()">getMajorOperatingSystemVersion</a></strong>()</code>
+<div class="block">The major version number of the required operating system.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMajorSubsystemVersion()">getMajorSubsystemVersion</a></strong>()</code>
+<div class="block">The major version number of the subsystem.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMinorImageVersion()">getMinorImageVersion</a></strong>()</code>
+<div class="block">The minor version number of the image.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMinorLinkerVersion()">getMinorLinkerVersion</a></strong>()</code>
+<div class="block">The linker minor version number.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMinorOperatingSystemVersion()">getMinorOperatingSystemVersion</a></strong>()</code>
+<div class="block">The minor version number of the required operating system.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getMinorSubsystemVersion()">getMinorSubsystemVersion</a></strong>()</code>
+<div class="block">The minor version number of the subsystem.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getNumberOfRvaAndSizes()">getNumberOfRvaAndSizes</a></strong>()</code>
+<div class="block">The number of data-directory entries in the remainder of the optional
+ header.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getNumberOfSections()">getNumberOfSections</a></strong>()</code>
+<div class="block">The number of sections.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getNumberOfSymbols()">getNumberOfSymbols</a></strong>()</code>
+<div class="block">The number of entries in the symbol table.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getPointerToSymbolTable()">getPointerToSymbolTable</a></strong>()</code>
+<div class="block">The file offset of the COFF symbol table, or zero if no COFF symbol table
+ is present.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSectionAlignment()">getSectionAlignment</a></strong>()</code>
+<div class="block">The alignment (in bytes) of sections when they are loaded into memory.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../net/jsign/pe/Section.html" title="class in net.jsign.pe">Section</a>&gt;</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSections()">getSections</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&gt;</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSignatures()">getSignatures</a></strong>()</code>
+<div class="block">Returns the authenticode signatures on the file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfCode()">getSizeOfCode</a></strong>()</code>
+<div class="block">The size of the code (text) section, or the sum of all code sections
+ if there are multiple sections.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfHeaders()">getSizeOfHeaders</a></strong>()</code>
+<div class="block">The combined size of an MS DOS stub, PE header, and section headers
+ rounded up to a multiple of FileAlignment.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfHeapCommit()">getSizeOfHeapCommit</a></strong>()</code>
+<div class="block">The size of the local heap space to commit.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfHeapReserve()">getSizeOfHeapReserve</a></strong>()</code>
+<div class="block">The size of the local heap space to reserve.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfImage()">getSizeOfImage</a></strong>()</code>
+<div class="block">The size (in bytes) of the image, including all headers, as the image
+ is loaded in memory.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfInitializedData()">getSizeOfInitializedData</a></strong>()</code>
+<div class="block">The size of the initialized data section, or the sum of all such
+ sections if there are multiple data sections.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfOptionalHeader()">getSizeOfOptionalHeader</a></strong>()</code>
+<div class="block">The size of the optional header, which is required for executable files
+ but not for object files.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfStackCommit()">getSizeOfStackCommit</a></strong>()</code>
+<div class="block">The size of the stack to commit.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfStackReserve()">getSizeOfStackReserve</a></strong>()</code>
+<div class="block">The size of the stack to reserve.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSizeOfUninitializedData()">getSizeOfUninitializedData</a></strong>()</code>
+<div class="block">The size of the uninitialized data section (BSS), or the sum of all such
+ sections if there are multiple BSS sections.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../net/jsign/pe/Subsystem.html" title="enum in net.jsign.pe">Subsystem</a></code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getSubsystem()">getSubsystem</a></strong>()</code>
+<div class="block">The subsystem that is required to run this image.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="http://docs.oracle.com/javase/6/docs/api/java/util/Date.html?is-external=true" title="class or interface in java.util">Date</a></code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getTimeDateStamp()">getTimeDateStamp</a></strong>()</code>
+<div class="block">The low 32 bits of the number of seconds since 00:00 January 1, 1970
+ (a C runtime time_t value), that indicates when the file was created.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#getWin32VersionValue()">getWin32VersionValue</a></strong>()</code>
+<div class="block">Reserved, must be zero.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#pad(int)">pad</a></strong>(int&nbsp;multiple)</code>
+<div class="block">Increase the size of the file up to a size that is a multiple of the specified value.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#printInfo(java.io.OutputStream)">printInfo</a></strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;out)</code>
+<div class="block">Print detailed informations about the PE file.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#printInfo(java.io.PrintWriter)">printInfo</a></strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/io/PrintWriter.html?is-external=true" title="class or interface in java.io">PrintWriter</a>&nbsp;out)</code>
+<div class="block">Print detailed informations about the PE file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#updateChecksum()">updateChecksum</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/pe/PEFile.html#writeDataDirectory(net.jsign.pe.DataDirectoryType,%20byte[])">writeDataDirectory</a></strong>(<a href="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</a>&nbsp;type,
+                                    byte[]&nbsp;data)</code>
+<div class="block">Writes the data directory of the specified type.</div>
+</td>
+</tr>
+</table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang">clone</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang">finalize</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long,%20int)" title="class or interface in java.lang">wait</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="details">
+<ul class="blockList">
+<li class="blockList">
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
-
-<A NAME="constructor_detail"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Constructor Detail</B></FONT></TH>
-</TR>
-</TABLE>
-
-<A NAME="PEFile(java.io.File)"><!-- --></A><H3>
-PEFile</H3>
-<PRE>
-public <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.60"><B>PEFile</B></A>(<A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</A>&nbsp;file)
-       throws <A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></PRE>
-<DL>
-<DL>
-
-<DT><B>Throws:</B>
-<DD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></CODE></DL>
-</DL>
-
+<ul class="blockList">
+<li class="blockList"><a name="constructor_detail">
+<!--   -->
+</a>
+<h3>Constructor Detail</h3>
+<a name="PEFile(java.io.File)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>PEFile</h4>
+<pre>public&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.78">PEFile</a>(<a href="http://docs.oracle.com/javase/6/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</a>&nbsp;file)
+       throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
+<div class="block">Creates a PEFile from the specified file.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>file</code> - </dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd></dl>
+</li>
+</ul>
+<a name="PEFile(java.nio.channels.SeekableByteChannel)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>PEFile</h4>
+<pre>public&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.88">PEFile</a>(<a href="http://docs.oracle.com/javase/6/docs/api/java/nio/channels/SeekableByteChannel.html?is-external=true" title="class or interface in java.nio.channels">SeekableByteChannel</a>&nbsp;channel)
+       throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
+<div class="block">Creates a PEFile from the specified channel.</div>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd><dt><span class="strong">Since:</span></dt>
+  <dd>2.0</dd></dl>
+</li>
+</ul>
+</li>
+</ul>
 <!-- ============ METHOD DETAIL ========== -->
-
-<A NAME="method_detail"><!-- --></A>
-<TABLE BORDER="1" WIDTH="100%" CELLPADDING="3" CELLSPACING="0" SUMMARY="">
-<TR BGCOLOR="#CCCCFF" CLASS="TableHeadingColor">
-<TH ALIGN="left" COLSPAN="1"><FONT SIZE="+2">
-<B>Method Detail</B></FONT></TH>
-</TR>
-</TABLE>
-
-<A NAME="close()"><!-- --></A><H3>
-close</H3>
-<PRE>
-public void <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.87"><B>close</B></A>()
-           throws <A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></PRE>
-<DL>
-<DD><DL>
-<DT><B>Specified by:</B><DD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true#close()" title="class or interface in java.io">close</A></CODE> in interface <CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</A></CODE></DL>
-</DD>
-<DD><DL>
-
-<DT><B>Throws:</B>
-<DD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></CODE></DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMachineType()"><!-- --></A><H3>
-getMachineType</H3>
-<PRE>
-public <A HREF="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe">MachineType</A> <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.145"><B>getMachineType</B></A>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getNumberOfSections()"><!-- --></A><H3>
-getNumberOfSections</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.153"><B>getNumberOfSections</B></A>()</PRE>
-<DL>
-<DD>The number of sections. This indicates the size of the section table,
- which immediately follows the headers.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getTimeDateStamp()"><!-- --></A><H3>
-getTimeDateStamp</H3>
-<PRE>
-public <A HREF="http://docs.oracle.com/javase/6/docs/api/java/util/Date.html?is-external=true" title="class or interface in java.util">Date</A> <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.161"><B>getTimeDateStamp</B></A>()</PRE>
-<DL>
-<DD>The low 32 bits of the number of seconds since 00:00 January 1, 1970
- (a C runtime time_t value), that indicates when the file was created.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getPointerToSymbolTable()"><!-- --></A><H3>
-getPointerToSymbolTable</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.170"><B>getPointerToSymbolTable</B></A>()</PRE>
-<DL>
-<DD>The file offset of the COFF symbol table, or zero if no COFF symbol table
+<ul class="blockList">
+<li class="blockList"><a name="method_detail">
+<!--   -->
+</a>
+<h3>Method Detail</h3>
+<a name="close()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>close</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.112">close</a>()
+           throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true#close()" title="class or interface in java.io">close</a></code>&nbsp;in interface&nbsp;<code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</a></code></dd>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang">close</a></code>&nbsp;in interface&nbsp;<code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang">AutoCloseable</a></code></dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd></dl>
+</li>
+</ul>
+<a name="getMachineType()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMachineType</h4>
+<pre>public&nbsp;<a href="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe">MachineType</a>&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.166">getMachineType</a>()</pre>
+</li>
+</ul>
+<a name="getNumberOfSections()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getNumberOfSections</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.174">getNumberOfSections</a>()</pre>
+<div class="block">The number of sections. This indicates the size of the section table,
+ which immediately follows the headers.</div>
+</li>
+</ul>
+<a name="getTimeDateStamp()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getTimeDateStamp</h4>
+<pre>public&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/Date.html?is-external=true" title="class or interface in java.util">Date</a>&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.182">getTimeDateStamp</a>()</pre>
+<div class="block">The low 32 bits of the number of seconds since 00:00 January 1, 1970
+ (a C runtime time_t value), that indicates when the file was created.</div>
+</li>
+</ul>
+<a name="getPointerToSymbolTable()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPointerToSymbolTable</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.191">getPointerToSymbolTable</a>()</pre>
+<div class="block">The file offset of the COFF symbol table, or zero if no COFF symbol table
  is present. This value should be zero for an image because COFF debugging
- information is deprecated.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getNumberOfSymbols()"><!-- --></A><H3>
-getNumberOfSymbols</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.180"><B>getNumberOfSymbols</B></A>()</PRE>
-<DL>
-<DD>The number of entries in the symbol table. This data can be used to
+ information is deprecated.</div>
+</li>
+</ul>
+<a name="getNumberOfSymbols()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getNumberOfSymbols</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.201">getNumberOfSymbols</a>()</pre>
+<div class="block">The number of entries in the symbol table. This data can be used to
  locate the string table, which immediately follows the symbol table.
  This value should be zero for an image because COFF debugging
- information is deprecated.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfOptionalHeader()"><!-- --></A><H3>
-getSizeOfOptionalHeader</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.188"><B>getSizeOfOptionalHeader</B></A>()</PRE>
-<DL>
-<DD>The size of the optional header, which is required for executable files
- but not for object files. This value should be zero for an object file.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getCharacteristics()"><!-- --></A><H3>
-getCharacteristics</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.195"><B>getCharacteristics</B></A>()</PRE>
-<DL>
-<DD>The flags that indicate the attributes of the file.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getFormat()"><!-- --></A><H3>
-getFormat</H3>
-<PRE>
-public <A HREF="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe">PEFormat</A> <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.199"><B>getFormat</B></A>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMajorLinkerVersion()"><!-- --></A><H3>
-getMajorLinkerVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.206"><B>getMajorLinkerVersion</B></A>()</PRE>
-<DL>
-<DD>The linker major version number.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMinorLinkerVersion()"><!-- --></A><H3>
-getMinorLinkerVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.213"><B>getMinorLinkerVersion</B></A>()</PRE>
-<DL>
-<DD>The linker minor version number.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfCode()"><!-- --></A><H3>
-getSizeOfCode</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.221"><B>getSizeOfCode</B></A>()</PRE>
-<DL>
-<DD>The size of the code (text) section, or the sum of all code sections
- if there are multiple sections.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfInitializedData()"><!-- --></A><H3>
-getSizeOfInitializedData</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.229"><B>getSizeOfInitializedData</B></A>()</PRE>
-<DL>
-<DD>The size of the initialized data section, or the sum of all such
- sections if there are multiple data sections.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfUninitializedData()"><!-- --></A><H3>
-getSizeOfUninitializedData</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.237"><B>getSizeOfUninitializedData</B></A>()</PRE>
-<DL>
-<DD>The size of the uninitialized data section (BSS), or the sum of all such
- sections if there are multiple BSS sections.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getAddressOfEntryPoint()"><!-- --></A><H3>
-getAddressOfEntryPoint</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.248"><B>getAddressOfEntryPoint</B></A>()</PRE>
-<DL>
-<DD>The address of the entry point relative to the image base when the
+ information is deprecated.</div>
+</li>
+</ul>
+<a name="getSizeOfOptionalHeader()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfOptionalHeader</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.209">getSizeOfOptionalHeader</a>()</pre>
+<div class="block">The size of the optional header, which is required for executable files
+ but not for object files. This value should be zero for an object file.</div>
+</li>
+</ul>
+<a name="getCharacteristics()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCharacteristics</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.216">getCharacteristics</a>()</pre>
+<div class="block">The flags that indicate the attributes of the file.</div>
+</li>
+</ul>
+<a name="getFormat()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getFormat</h4>
+<pre>public&nbsp;<a href="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe">PEFormat</a>&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.220">getFormat</a>()</pre>
+</li>
+</ul>
+<a name="getMajorLinkerVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMajorLinkerVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.227">getMajorLinkerVersion</a>()</pre>
+<div class="block">The linker major version number.</div>
+</li>
+</ul>
+<a name="getMinorLinkerVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMinorLinkerVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.234">getMinorLinkerVersion</a>()</pre>
+<div class="block">The linker minor version number.</div>
+</li>
+</ul>
+<a name="getSizeOfCode()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfCode</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.242">getSizeOfCode</a>()</pre>
+<div class="block">The size of the code (text) section, or the sum of all code sections
+ if there are multiple sections.</div>
+</li>
+</ul>
+<a name="getSizeOfInitializedData()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfInitializedData</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.250">getSizeOfInitializedData</a>()</pre>
+<div class="block">The size of the initialized data section, or the sum of all such
+ sections if there are multiple data sections.</div>
+</li>
+</ul>
+<a name="getSizeOfUninitializedData()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfUninitializedData</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.258">getSizeOfUninitializedData</a>()</pre>
+<div class="block">The size of the uninitialized data section (BSS), or the sum of all such
+ sections if there are multiple BSS sections.</div>
+</li>
+</ul>
+<a name="getAddressOfEntryPoint()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAddressOfEntryPoint</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.269">getAddressOfEntryPoint</a>()</pre>
+<div class="block">The address of the entry point relative to the image base when the
  executable file is loaded into memory. For program images, this is the
  starting address. For device drivers, this is the address of the
  initialization function. An entry point is optional for DLLs. When no
- entry point is present, this field must be zero.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getBaseOfCode()"><!-- --></A><H3>
-getBaseOfCode</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.256"><B>getBaseOfCode</B></A>()</PRE>
-<DL>
-<DD>The address that is relative to the image base of the beginning-of-code 
- section when it is loaded into memory.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getBaseOfData()"><!-- --></A><H3>
-getBaseOfData</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.264"><B>getBaseOfData</B></A>()</PRE>
-<DL>
-<DD>The address that is relative to the image base of the beginning-of-data 
- section when it is loaded into memory (PE32 only).
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getImageBase()"><!-- --></A><H3>
-getImageBase</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.278"><B>getImageBase</B></A>()</PRE>
-<DL>
-<DD>The preferred address of the first byte of image when loaded into memory;
+ entry point is present, this field must be zero.</div>
+</li>
+</ul>
+<a name="getBaseOfCode()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getBaseOfCode</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.277">getBaseOfCode</a>()</pre>
+<div class="block">The address that is relative to the image base of the beginning-of-code 
+ section when it is loaded into memory.</div>
+</li>
+</ul>
+<a name="getBaseOfData()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getBaseOfData</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.285">getBaseOfData</a>()</pre>
+<div class="block">The address that is relative to the image base of the beginning-of-data 
+ section when it is loaded into memory (PE32 only).</div>
+</li>
+</ul>
+<a name="getImageBase()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getImageBase</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.299">getImageBase</a>()</pre>
+<div class="block">The preferred address of the first byte of image when loaded into memory;
  must be a multiple of 64 K. The default for DLLs is 0x10000000. The default
  for Windows CE EXEs is 0x00010000. The default for Windows NT, Windows 2000,
- Windows XP, Windows 95, Windows 98, and Windows Me is 0x00400000.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSectionAlignment()"><!-- --></A><H3>
-getSectionAlignment</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.291"><B>getSectionAlignment</B></A>()</PRE>
-<DL>
-<DD>The alignment (in bytes) of sections when they are loaded into memory.
+ Windows XP, Windows 95, Windows 98, and Windows Me is 0x00400000.</div>
+</li>
+</ul>
+<a name="getSectionAlignment()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSectionAlignment</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.312">getSectionAlignment</a>()</pre>
+<div class="block">The alignment (in bytes) of sections when they are loaded into memory.
  It must be greater than or equal to FileAlignment. The default is the
- page size for the architecture.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getFileAlignment()"><!-- --></A><H3>
-getFileAlignment</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.302"><B>getFileAlignment</B></A>()</PRE>
-<DL>
-<DD>The alignment factor (in bytes) that is used to align the raw data of
+ page size for the architecture.</div>
+</li>
+</ul>
+<a name="getFileAlignment()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getFileAlignment</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.323">getFileAlignment</a>()</pre>
+<div class="block">The alignment factor (in bytes) that is used to align the raw data of
  sections in the image file. The value should be a power of 2 between
  512 and 64 K, inclusive. The default is 512. If the SectionAlignment
  is less than the architecture?s page size, then FileAlignment must
- match SectionAlignment.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMajorOperatingSystemVersion()"><!-- --></A><H3>
-getMajorOperatingSystemVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.309"><B>getMajorOperatingSystemVersion</B></A>()</PRE>
-<DL>
-<DD>The major version number of the required operating system.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMinorOperatingSystemVersion()"><!-- --></A><H3>
-getMinorOperatingSystemVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.316"><B>getMinorOperatingSystemVersion</B></A>()</PRE>
-<DL>
-<DD>The minor version number of the required operating system.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMajorImageVersion()"><!-- --></A><H3>
-getMajorImageVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.323"><B>getMajorImageVersion</B></A>()</PRE>
-<DL>
-<DD>The major version number of the image.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMinorImageVersion()"><!-- --></A><H3>
-getMinorImageVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.330"><B>getMinorImageVersion</B></A>()</PRE>
-<DL>
-<DD>The minor version number of the image.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMajorSubsystemVersion()"><!-- --></A><H3>
-getMajorSubsystemVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.337"><B>getMajorSubsystemVersion</B></A>()</PRE>
-<DL>
-<DD>The major version number of the subsystem.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getMinorSubsystemVersion()"><!-- --></A><H3>
-getMinorSubsystemVersion</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.344"><B>getMinorSubsystemVersion</B></A>()</PRE>
-<DL>
-<DD>The minor version number of the subsystem.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getWin32VersionValue()"><!-- --></A><H3>
-getWin32VersionValue</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.351"><B>getWin32VersionValue</B></A>()</PRE>
-<DL>
-<DD>Reserved, must be zero.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfImage()"><!-- --></A><H3>
-getSizeOfImage</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.359"><B>getSizeOfImage</B></A>()</PRE>
-<DL>
-<DD>The size (in bytes) of the image, including all headers, as the image
- is loaded in memory. It must be a multiple of SectionAlignment.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfHeaders()"><!-- --></A><H3>
-getSizeOfHeaders</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.367"><B>getSizeOfHeaders</B></A>()</PRE>
-<DL>
-<DD>The combined size of an MS DOS stub, PE header, and section headers
- rounded up to a multiple of FileAlignment.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getCheckSum()"><!-- --></A><H3>
-getCheckSum</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.374"><B>getCheckSum</B></A>()</PRE>
-<DL>
-<DD>The image file checksum.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="computeChecksum()"><!-- --></A><H3>
-computeChecksum</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.382"><B>computeChecksum</B></A>()</PRE>
-<DL>
-<DD>Compute the checksum of the image file. The algorithm for computing
- the checksum is incorporated into IMAGHELP.DLL.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="updateChecksum()"><!-- --></A><H3>
-updateChecksum</H3>
-<PRE>
-public void <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.401"><B>updateChecksum</B></A>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSubsystem()"><!-- --></A><H3>
-getSubsystem</H3>
-<PRE>
-public <A HREF="../../../net/jsign/pe/Subsystem.html" title="enum in net.jsign.pe">Subsystem</A> <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.417"><B>getSubsystem</B></A>()</PRE>
-<DL>
-<DD>The subsystem that is required to run this image.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getDllCharacteristics()"><!-- --></A><H3>
-getDllCharacteristics</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.421"><B>getDllCharacteristics</B></A>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfStackReserve()"><!-- --></A><H3>
-getSizeOfStackReserve</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.429"><B>getSizeOfStackReserve</B></A>()</PRE>
-<DL>
-<DD>The size of the stack to reserve. Only SizeOfStackCommit is committed;
- the rest is made available one page at a time until the reserve size is reached.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfStackCommit()"><!-- --></A><H3>
-getSizeOfStackCommit</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.440"><B>getSizeOfStackCommit</B></A>()</PRE>
-<DL>
-<DD>The size of the stack to commit.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfHeapReserve()"><!-- --></A><H3>
-getSizeOfHeapReserve</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.453"><B>getSizeOfHeapReserve</B></A>()</PRE>
-<DL>
-<DD>The size of the local heap space to reserve. Only SizeOfHeapCommit is
+ match SectionAlignment.</div>
+</li>
+</ul>
+<a name="getMajorOperatingSystemVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMajorOperatingSystemVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.330">getMajorOperatingSystemVersion</a>()</pre>
+<div class="block">The major version number of the required operating system.</div>
+</li>
+</ul>
+<a name="getMinorOperatingSystemVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMinorOperatingSystemVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.337">getMinorOperatingSystemVersion</a>()</pre>
+<div class="block">The minor version number of the required operating system.</div>
+</li>
+</ul>
+<a name="getMajorImageVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMajorImageVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.344">getMajorImageVersion</a>()</pre>
+<div class="block">The major version number of the image.</div>
+</li>
+</ul>
+<a name="getMinorImageVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMinorImageVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.351">getMinorImageVersion</a>()</pre>
+<div class="block">The minor version number of the image.</div>
+</li>
+</ul>
+<a name="getMajorSubsystemVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMajorSubsystemVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.358">getMajorSubsystemVersion</a>()</pre>
+<div class="block">The major version number of the subsystem.</div>
+</li>
+</ul>
+<a name="getMinorSubsystemVersion()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getMinorSubsystemVersion</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.365">getMinorSubsystemVersion</a>()</pre>
+<div class="block">The minor version number of the subsystem.</div>
+</li>
+</ul>
+<a name="getWin32VersionValue()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getWin32VersionValue</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.372">getWin32VersionValue</a>()</pre>
+<div class="block">Reserved, must be zero.</div>
+</li>
+</ul>
+<a name="getSizeOfImage()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfImage</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.380">getSizeOfImage</a>()</pre>
+<div class="block">The size (in bytes) of the image, including all headers, as the image
+ is loaded in memory. It must be a multiple of SectionAlignment.</div>
+</li>
+</ul>
+<a name="getSizeOfHeaders()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfHeaders</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.388">getSizeOfHeaders</a>()</pre>
+<div class="block">The combined size of an MS DOS stub, PE header, and section headers
+ rounded up to a multiple of FileAlignment.</div>
+</li>
+</ul>
+<a name="getCheckSum()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCheckSum</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.395">getCheckSum</a>()</pre>
+<div class="block">The image file checksum.</div>
+</li>
+</ul>
+<a name="computeChecksum()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>computeChecksum</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.403">computeChecksum</a>()</pre>
+<div class="block">Compute the checksum of the image file. The algorithm for computing
+ the checksum is incorporated into IMAGHELP.DLL.</div>
+</li>
+</ul>
+<a name="updateChecksum()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>updateChecksum</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.422">updateChecksum</a>()</pre>
+</li>
+</ul>
+<a name="getSubsystem()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSubsystem</h4>
+<pre>public&nbsp;<a href="../../../net/jsign/pe/Subsystem.html" title="enum in net.jsign.pe">Subsystem</a>&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.438">getSubsystem</a>()</pre>
+<div class="block">The subsystem that is required to run this image.</div>
+</li>
+</ul>
+<a name="getDllCharacteristics()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getDllCharacteristics</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.442">getDllCharacteristics</a>()</pre>
+</li>
+</ul>
+<a name="getSizeOfStackReserve()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfStackReserve</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.450">getSizeOfStackReserve</a>()</pre>
+<div class="block">The size of the stack to reserve. Only SizeOfStackCommit is committed;
+ the rest is made available one page at a time until the reserve size is reached.</div>
+</li>
+</ul>
+<a name="getSizeOfStackCommit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfStackCommit</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.461">getSizeOfStackCommit</a>()</pre>
+<div class="block">The size of the stack to commit.</div>
+</li>
+</ul>
+<a name="getSizeOfHeapReserve()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfHeapReserve</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.474">getSizeOfHeapReserve</a>()</pre>
+<div class="block">The size of the local heap space to reserve. Only SizeOfHeapCommit is
  committed; the rest is made available one page at a time until the
- reserve size is reached.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSizeOfHeapCommit()"><!-- --></A><H3>
-getSizeOfHeapCommit</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.464"><B>getSizeOfHeapCommit</B></A>()</PRE>
-<DL>
-<DD>The size of the local heap space to commit.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getLoaderFlags()"><!-- --></A><H3>
-getLoaderFlags</H3>
-<PRE>
-public long <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.475"><B>getLoaderFlags</B></A>()</PRE>
-<DL>
-<DD>Reserved, must be zero.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getNumberOfRvaAndSizes()"><!-- --></A><H3>
-getNumberOfRvaAndSizes</H3>
-<PRE>
-public int <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.483"><B>getNumberOfRvaAndSizes</B></A>()</PRE>
-<DL>
-<DD>The number of data-directory entries in the remainder of the optional
- header. Each describes a location and size.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getDataDirectory(net.jsign.pe.DataDirectoryType)"><!-- --></A><H3>
-getDataDirectory</H3>
-<PRE>
-public <A HREF="../../../net/jsign/pe/DataDirectory.html" title="class in net.jsign.pe">DataDirectory</A> <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.494"><B>getDataDirectory</B></A>(<A HREF="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</A>&nbsp;type)</PRE>
-<DL>
-<DD>Returns the data directory of the specified type.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="writeDataDirectory(net.jsign.pe.DataDirectoryType, byte[])"><!-- --></A><H3>
-writeDataDirectory</H3>
-<PRE>
-public void <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.511"><B>writeDataDirectory</B></A>(<A HREF="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</A>&nbsp;type,
-                               byte[]&nbsp;data)
-                        throws <A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></PRE>
-<DL>
-<DD>Writes the data directory of the specified type. The data is appended
- at the end of the file. If a previous entry was already present it's
- left as is in the file and is simply dereferenced from the table.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>type</CODE> - <DD><CODE>data</CODE> - 
-<DT><B>Throws:</B>
-<DD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></CODE></DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSignatures()"><!-- --></A><H3>
-getSignatures</H3>
-<PRE>
-public <A HREF="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</A>&gt; <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.530"><B>getSignatures</B></A>()</PRE>
-<DL>
-<DD>Returns the authenticode signatures on the file.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="getSections()"><!-- --></A><H3>
-getSections</H3>
-<PRE>
-public <A HREF="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</A>&lt;<A HREF="../../../net/jsign/pe/Section.html" title="class in net.jsign.pe">Section</A>&gt; <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.565"><B>getSections</B></A>()</PRE>
-<DL>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="printInfo(java.io.OutputStream)"><!-- --></A><H3>
-printInfo</H3>
-<PRE>
-public void <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.579"><B>printInfo</B></A>(<A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</A>&nbsp;out)</PRE>
-<DL>
-<DD>Print detailed informations about the PE file.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="printInfo(java.io.PrintWriter)"><!-- --></A><H3>
-printInfo</H3>
-<PRE>
-public void <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.586"><B>printInfo</B></A>(<A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/PrintWriter.html?is-external=true" title="class or interface in java.io">PrintWriter</A>&nbsp;out)</PRE>
-<DL>
-<DD>Print detailed informations about the PE file.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-</DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="computeDigest(net.jsign.DigestAlgorithm)"><!-- --></A><H3>
-computeDigest</H3>
-<PRE>
-public byte[] <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.737"><B>computeDigest</B></A>(<A HREF="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</A>&nbsp;algorithm)
-                     throws <A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></PRE>
-<DL>
-<DD>Compute the checksum of the file using the specified digest algorithm.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>algorithm</CODE> - the digest algorithm, typically SHA1
-<DT><B>Throws:</B>
-<DD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></CODE></DL>
-</DD>
-</DL>
-<HR>
-
-<A NAME="pad(int)"><!-- --></A><H3>
-pad</H3>
-<PRE>
-public void <A HREF="../../../src-html/net/jsign/pe/PEFile.html#line.746"><B>pad</B></A>(int&nbsp;multiple)
-         throws <A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></PRE>
-<DL>
-<DD>Increase the size of the file up to a size that is a multiple of the specified value.
-<P>
-<DD><DL>
-</DL>
-</DD>
-<DD><DL>
-<DT><B>Parameters:</B><DD><CODE>multiple</CODE> - 
-<DT><B>Throws:</B>
-<DD><CODE><A HREF="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</A></CODE></DL>
-</DD>
-</DL>
+ reserve size is reached.</div>
+</li>
+</ul>
+<a name="getSizeOfHeapCommit()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSizeOfHeapCommit</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.485">getSizeOfHeapCommit</a>()</pre>
+<div class="block">The size of the local heap space to commit.</div>
+</li>
+</ul>
+<a name="getLoaderFlags()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getLoaderFlags</h4>
+<pre>public&nbsp;long&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.496">getLoaderFlags</a>()</pre>
+<div class="block">Reserved, must be zero.</div>
+</li>
+</ul>
+<a name="getNumberOfRvaAndSizes()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getNumberOfRvaAndSizes</h4>
+<pre>public&nbsp;int&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.504">getNumberOfRvaAndSizes</a>()</pre>
+<div class="block">The number of data-directory entries in the remainder of the optional
+ header. Each describes a location and size.</div>
+</li>
+</ul>
+<a name="getDataDirectory(net.jsign.pe.DataDirectoryType)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getDataDirectory</h4>
+<pre>public&nbsp;<a href="../../../net/jsign/pe/DataDirectory.html" title="class in net.jsign.pe">DataDirectory</a>&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.515">getDataDirectory</a>(<a href="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</a>&nbsp;type)</pre>
+<div class="block">Returns the data directory of the specified type.</div>
+</li>
+</ul>
+<a name="writeDataDirectory(net.jsign.pe.DataDirectoryType, byte[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeDataDirectory</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.531">writeDataDirectory</a>(<a href="../../../net/jsign/pe/DataDirectoryType.html" title="enum in net.jsign.pe">DataDirectoryType</a>&nbsp;type,
+                      byte[]&nbsp;data)
+                        throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
+<div class="block">Writes the data directory of the specified type. The data is either appended
+ at the end of the file or written over the previous data of the same type if
+ there is enough space.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>type</code> - the type of the data directory</dd><dd><code>data</code> - the content of the data directory</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd></dl>
+</li>
+</ul>
+<a name="getSignatures()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSignatures</h4>
+<pre>public&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&gt;&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.593">getSignatures</a>()</pre>
+<div class="block">Returns the authenticode signatures on the file.</div>
+</li>
+</ul>
+<a name="getSections()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getSections</h4>
+<pre>public&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../net/jsign/pe/Section.html" title="class in net.jsign.pe">Section</a>&gt;&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.641">getSections</a>()</pre>
+</li>
+</ul>
+<a name="printInfo(java.io.OutputStream)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>printInfo</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.655">printInfo</a>(<a href="http://docs.oracle.com/javase/6/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;out)</pre>
+<div class="block">Print detailed informations about the PE file.</div>
+</li>
+</ul>
+<a name="printInfo(java.io.PrintWriter)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>printInfo</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.662">printInfo</a>(<a href="http://docs.oracle.com/javase/6/docs/api/java/io/PrintWriter.html?is-external=true" title="class or interface in java.io">PrintWriter</a>&nbsp;out)</pre>
+<div class="block">Print detailed informations about the PE file.</div>
+</li>
+</ul>
+<a name="computeDigest(net.jsign.DigestAlgorithm)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>computeDigest</h4>
+<pre>public&nbsp;byte[]&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.817">computeDigest</a>(<a href="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</a>&nbsp;algorithm)
+                     throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
+<div class="block">Compute the checksum of the file using the specified digest algorithm.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>algorithm</code> - the digest algorithm, typically SHA1</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd></dl>
+</li>
+</ul>
+<a name="pad(int)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>pad</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/pe/PEFile.html#line.826">pad</a>(int&nbsp;multiple)
+         throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
+<div class="block">Increase the size of the file up to a size that is a multiple of the specified value.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>multiple</code> - </dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd></dl>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <!-- ========= END OF CLASS DATA ========= -->
-<HR>
-
-
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
-<A NAME="navbar_bottom"><!-- --></A>
-<A HREF="#skip-navbar_bottom" title="Skip navigation links"></A>
-<TABLE BORDER="0" WIDTH="100%" CELLPADDING="1" CELLSPACING="0" SUMMARY="">
-<TR>
-<TD COLSPAN=2 BGCOLOR="#EEEEFF" CLASS="NavBarCell1">
-<A NAME="navbar_bottom_firstrow"><!-- --></A>
-<TABLE BORDER="0" CELLPADDING="0" CELLSPACING="3" SUMMARY="">
-  <TR ALIGN="center" VALIGN="top">
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/PEFile.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../help-doc.html"><FONT CLASS="NavBarFont1"><B>Help</B></FONT></A>&nbsp;</TD>
-  </TR>
-</TABLE>
-</TD>
-<TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-</EM>
-</TD>
-</TR>
-
-<TR>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe"><B>NEXT CLASS</B></A></FONT></TD>
-<TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../index.html?net/jsign/pe/PEFile.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="PEFile.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
-&nbsp;<SCRIPT type="text/javascript">
-  <!--
+<div class="bottomNav"><a name="navbar_bottom">
+<!--   -->
+</a><a href="#skip-navbar_bottom" title="Skip navigation links"></a><a name="navbar_bottom_firstrow">
+<!--   -->
+</a>
+<ul class="navList" title="Navigation">
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li><a href="package-summary.html">Package</a></li>
+<li class="navBarCell1Rev">Class</li>
+<li><a href="class-use/PEFile.html">Use</a></li>
+<li><a href="package-tree.html">Tree</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+<li><a href="../../../help-doc.html">Help</a></li>
+</ul>
+</div>
+<div class="subNav">
+<ul class="navList">
+<li><a href="../../../net/jsign/pe/MachineType.html" title="enum in net.jsign.pe"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../net/jsign/pe/PEFormat.html" title="enum in net.jsign.pe"><span class="strong">Next Class</span></a></li>
+</ul>
+<ul class="navList">
+<li><a href="../../../index.html?net/jsign/pe/PEFile.html" target="_top">Frames</a></li>
+<li><a href="PEFile.html" target="_top">No Frames</a></li>
+</ul>
+<ul class="navList" id="allclasses_navbar_bottom">
+<li><a href="../../../allclasses-noframe.html">All Classes</a></li>
+</ul>
+<div>
+<script type="text/javascript"><!--
+  allClassesLink = document.getElementById("allclasses_navbar_bottom");
   if(window==top) {
-    document.writeln('<A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>');
+    allClassesLink.style.display = "block";
+  }
+  else {
+    allClassesLink.style.display = "none";
   }
   //-->
-</SCRIPT>
-<NOSCRIPT>
-  <A HREF="../../../allclasses-noframe.html"><B>All Classes</B></A>
-</NOSCRIPT>
-
-
-</FONT></TD>
-</TR>
-<TR>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-  SUMMARY:&nbsp;NESTED&nbsp;|&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_summary">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_summary">METHOD</A></FONT></TD>
-<TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
-DETAIL:&nbsp;FIELD&nbsp;|&nbsp;<A HREF="#constructor_detail">CONSTR</A>&nbsp;|&nbsp;<A HREF="#method_detail">METHOD</A></FONT></TD>
-</TR>
-</TABLE>
-<A NAME="skip-navbar_bottom"></A>
+</script>
+</div>
+<div>
+<ul class="subNavList">
+<li>Summary:&nbsp;</li>
+<li>Nested&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_summary">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_summary">Method</a></li>
+</ul>
+<ul class="subNavList">
+<li>Detail:&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
+<li><a href="#constructor_detail">Constr</a>&nbsp;|&nbsp;</li>
+<li><a href="#method_detail">Method</a></li>
+</ul>
+</div>
+<a name="skip-navbar_bottom">
+<!--   -->
+</a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-
-<HR>
-Copyright &#169; 2012&#x2013;2016. All rights reserved.
-</BODY>
-</HTML>
+<p class="legalCopy"><small>Copyright &#169; 2012&#x2013;2017. All rights reserved.</small></p>
+</body>
+</html>
