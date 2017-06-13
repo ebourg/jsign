@@ -54,8 +54,7 @@
         <version>2.10.4</version>
         <executions>
           <execution>
-            <id>javadoc-jar</id>
-            <phase>package</phase>
+            <id>attach-javadocs</id>
             <goals>
               <goal>jar</goal>
             </goals>
