@@ -19,7 +19,7 @@ can also be used programmatically or standalone as a command line tool.
 Jsign is free to use and licensed under the Apache License version 2.0.
 
 
-See http://ebourg.github.com/jsign for more information.
+See https://ebourg.github.com/jsign for more information.
 
 
 Changes
