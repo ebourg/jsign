@@ -50,6 +50,26 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
+        <executions>
+          <execution>
+            <id>javadoc-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <includeDependencySources>true</includeDependencySources>
+              <dependencySourceExcludes>
+                <dependencySourceExclude>net.jsign:jsign-cli</dependencySourceExclude>
+                <dependencySourceExclude>net.jsign:jsign-ant</dependencySourceExclude>
+              </dependencySourceExcludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.0.0</version>
@@ -174,9 +194,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <properties>
-    <maven.javadoc.skip>true</maven.javadoc.skip>
-  </properties>
 
 </project>
