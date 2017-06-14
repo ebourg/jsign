@@ -25,6 +25,9 @@ See https://ebourg.github.com/jsign for more information.
 Changes
 =======
 
+Version 2.1 (in development)
+* Upgraded BouncyCastle to 1.57
+
 Version 2.0 (2017-06-12)
 * Jsign now requires Java 7 or higher
 * Multiple signatures are now supported. New signatures can replace or be added to the previous ones.
