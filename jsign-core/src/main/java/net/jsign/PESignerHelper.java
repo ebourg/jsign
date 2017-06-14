@@ -40,10 +40,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import sun.security.pkcs11.SunPKCS11;
-
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
+import sun.security.pkcs11.SunPKCS11;
 
 /**
  * Helper class to create PESigner instances with untyped parameters.
@@ -210,7 +209,7 @@ class PESignerHelper {
         if (value == null) {
             return this;
         }
-        
+
         switch (key) {
             case PARAM_KEYSTORE:   return keystore(value);
             case PARAM_STOREPASS:  return storepass(value);
@@ -247,10 +246,10 @@ class PESignerHelper {
         if (keystore == null && keyfile == null && certfile == null) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
-        if (keystore != null && (keyfile != null || certfile != null)) {
-            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile or certfile");
+        if (keystore != null && keyfile != null) {
+            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
         }
-        
+
         Provider provider = null;
         if ("PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
@@ -278,13 +277,27 @@ class PESignerHelper {
                 throw new SignerException("alias " + parameterName + " must be set");
             }
 
-            try {
-                chain = ks.getCertificateChain(alias);
-            } catch (KeyStoreException e) {
-                throw new SignerException(e.getMessage(), e);
+            if (certfile != null) {
+              if (!certfile.exists()) {
+                throw new SignerException("The certfile " + certfile + " couldn't be found");
+              }
+
+              // load the certificate chain
+              try {
+                chain = loadCertificateChain(certfile);
+              } catch (Exception e) {
+                throw new SignerException("Failed to load the certificate from " + certfile, e);
+              }
             }
-            if (chain == null) {
+            else {
+              try {
+                chain = ks.getCertificateChain(alias);
+              } catch (KeyStoreException e) {
+                throw new SignerException(e.getMessage(), e);
+              }
+              if (chain == null) {
                 throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore));
+              }
             }
 
             char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();
@@ -351,7 +364,7 @@ class PESignerHelper {
 
     public void sign(File file) throws SignerException {
         PESigner signer = build();
-        
+
         if (file == null) {
             throw new SignerException("file must be set");
         }
@@ -415,16 +428,19 @@ class PESignerHelper {
             ProxySelector.setDefault(new ProxySelector() {
                 private List<Proxy> proxies = Collections.singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port)));
 
+                @Override
                 public List<Proxy> select(URI uri) {
                     return proxies;
                 }
 
+                @Override
                 public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
                 }
             });
 
             if (proxyUser != null && proxyUser.length() > 0 && proxyPassword != null) {
                 Authenticator.setDefault(new Authenticator() {
+                    @Override
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
                     }
