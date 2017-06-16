@@ -17,7 +17,6 @@
 package net.jsign.asn1.authenticode;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -30,7 +29,6 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
-import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInformation;
 
 /**
@@ -49,20 +47,9 @@ public class AuthenticodeSignedDataGenerator extends CMSSignedDataGenerator {
         if (!_signers.isEmpty()) {
             signerInfo = ((SignerInformation) _signers.get(0)).toASN1Structure();
         } else {
-            SignerInfoGenerator signerInfoGenerator = (SignerInfoGenerator) signerGens.get(0);
-            
-            byte[] signedContent = content.toASN1Primitive().getEncoded("DER");
-            
-            OutputStream out = signerInfoGenerator.getCalculatingOutputStream();
-            out.write(signedContent, 2, signedContent.length - 2); // skip the first 2 bytes as specified
-            out.flush();
-            out.close();
-            
-            signerInfo = signerInfoGenerator.generate(contentTypeOID);
-            
-            byte[] calculatedDigest = signerInfoGenerator.getCalculatedDigest();
-            digests.put(signerInfoGenerator.getDigestAlgorithm().getAlgorithm().getId(), calculatedDigest);
-        }       
+            CMSSignedData sigData = super.generate(new CMSProcessableByteArray(contentTypeOID, content.toASN1Primitive().getEncoded("DER")));
+            signerInfo = sigData.getSignerInfos().iterator().next().toASN1Structure();
+        }
 
         ContentInfo encInfo = new ContentInfo(contentTypeOID, content);
         ASN1Set certificates = new DERSet((ASN1Encodable[]) certs.toArray(new ASN1Encodable[0]));

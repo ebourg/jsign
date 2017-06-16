@@ -142,6 +142,36 @@ public class PESignerTest extends TestCase {
         }
     }
 
+    public void testSigningWithMismatchingKeyAndCertificate() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-mismatching-key-certificate.exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        Certificate[] chain;
+        try (FileInputStream in = new FileInputStream(new File("target/test-classes/jsign-root-ca.pem"))) {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
+            chain = certificates.toArray(new Certificate[certificates.size()]);
+        }
+        
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        
+        PESigner signer = new PESigner(chain, key)
+                .withTimestamping(false)
+                .withProgramName("WinEyes")
+                .withProgramURL("http://www.steelblue.com/WinEyes");
+        
+        try {
+            signer.sign(peFile);
+            fail("No exception thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
+        } catch (Exception e) {
+            // expected
+        }
+    }
+
     public void testTimestampAuthenticode() throws Exception {
         testTimestamp(TimestampingMode.AUTHENTICODE, DigestAlgorithm.SHA1);
     }

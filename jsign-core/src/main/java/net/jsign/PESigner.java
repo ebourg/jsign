@@ -30,6 +30,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.jsign.asn1.authenticode.AuthenticodeDigestCalculatorProvider;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
@@ -62,11 +63,12 @@ import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.cms.jcajce.JcaSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
@@ -282,6 +284,11 @@ public class PESigner {
         // compute the signature
         CMSSignedData sigData = createSignature(file);
         
+        // verify the signature
+        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
+        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(chain[0].getPublicKey());
+        sigData.getSignerInfos().iterator().next().verify(verifier);
+        
         // timestamping
         if (timestamping) {
             Timestamper ts = timestamper;
@@ -362,7 +369,7 @@ public class PESigner {
         }
         ContentSigner shaSigner = contentSignerBuilder.build(privateKey);
 
-        DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
+        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
         
         // prepare the authenticated attributes
         CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
