@@ -20,7 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.Security;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -32,7 +36,10 @@ import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TSPAlgorithms;
@@ -73,6 +80,46 @@ public class PESignerTest extends TestCase {
         assertNotNull(signature);
         
         peFile.printInfo(System.out);
+    }
+
+    public void testSigningWithKeyAndChain() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-key-chain.exe");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        PEFile peFile = new PEFile(targetFile);
+        
+        Certificate[] chain;
+        try (FileInputStream in = new FileInputStream(new File("target/test-classes/jsign-test-certificate-full-chain.spc"))) {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
+            chain = certificates.toArray(new Certificate[certificates.size()]);
+        }
+        
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        
+        PESigner signer = new PESigner(chain, key)
+                .withTimestamping(false)
+                .withProgramName("WinEyes")
+                .withProgramURL("http://www.steelblue.com/WinEyes");
+        
+        signer.sign(peFile);
+        
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+
+        // check the signer id
+        SignerId signerId = signature.getSignerInfos().iterator().next().getSID();
+        X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
+        String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
+        assertEquals("signer", "Jsign Code Signing Test Certificate", commonName);
     }
 
     public void testTimestampAuthenticode() throws Exception {
