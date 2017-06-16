@@ -44,10 +44,10 @@ openssl x509 -req -in jsign-test-certificate.csr -CA jsign-code-signing-ca.pem -
              -out jsign-test-certificate.pem $CERT_OPTS -extfile extensions.cnf -extensions final
 
 # Generate the certificate chains
-cat jsign-root-ca.pem jsign-code-signing-ca.pem jsign-test-certificate.pem > jsign-test-certificate-full-chain.pem
-cat jsign-test-certificate.pem jsign-code-signing-ca.pem jsign-root-ca.pem > jsign-test-certificate-full-chain-reversed.pem
-cat jsign-root-ca.pem jsign-code-signing-ca.pem > jsign-test-certificate-partial-chain.pem
-cat jsign-code-signing-ca.pem jsign-root-ca.pem > jsign-test-certificate-partial-chain-reversed.pem
+cat jsign-root-ca.pem jsign-code-signing-ca.pem jsign-test-certificate.pem > jsign-test-certificate-full-chain-reversed.pem
+cat jsign-test-certificate.pem jsign-code-signing-ca.pem jsign-root-ca.pem > jsign-test-certificate-full-chain.pem
+cat jsign-root-ca.pem jsign-code-signing-ca.pem > jsign-test-certificate-partial-chain-reversed.pem
+cat jsign-code-signing-ca.pem jsign-root-ca.pem > jsign-test-certificate-partial-chain.pem
 
 # Generate the SPC files (DER encoded certificate chains)
 openssl crl2pkcs7 -nocrl -certfile jsign-test-certificate-full-chain.pem          -outform DER -out jsign-test-certificate-full-chain.spc
