@@ -350,8 +350,15 @@ class PESignerHelper {
     }
 
     public void sign(File file) throws SignerException {
-        PESigner signer = build();
-        
+        PESigner signer;
+        try {
+            signer = build();
+        } catch (SignerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SignerException("Couldn't sign " + file, e);
+        }
+
         if (file == null) {
             throw new SignerException("file must be set");
         }
