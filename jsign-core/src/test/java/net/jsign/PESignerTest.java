@@ -82,6 +82,15 @@ public class PESignerTest extends TestCase {
         peFile.printInfo(System.out);
     }
 
+    public void testSignWithUnknownKeyStoreEntry() throws Exception {
+        try {
+            new PESigner(getKeyStore(), "unknown", PRIVATE_KEY_PASSWORD);
+            fail("No exception thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "No certificate found in the keystore with the alias 'unknown'", e.getMessage());
+        }
+    }
+
     public void testSigningWithKeyAndChain() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-key-chain.exe");

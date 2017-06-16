@@ -122,7 +122,12 @@ public class PESigner {
      * @param password the password to get the private key
      */
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
-        this(keystore.getCertificateChain(alias), (PrivateKey) keystore.getKey(alias, password.toCharArray()));
+        Certificate[] chain = keystore.getCertificateChain(alias);
+        if (chain == null) {
+            throw new IllegalArgumentException("No certificate found in the keystore with the alias '" + alias + "'");
+        }
+        this.chain = chain;
+        this.privateKey = (PrivateKey) keystore.getKey(alias, password.toCharArray());
     }
 
     /**
