@@ -122,6 +122,26 @@ public class PESignerTest extends TestCase {
         assertEquals("signer", "Jsign Code Signing Test Certificate", commonName);
     }
 
+    public void testEmptyChain() throws Exception {
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        try {
+            new PESigner(new Certificate[0], key);
+            fail("No exception thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    public void testNullChain() throws Exception {
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        try {
+            new PESigner(null, key);
+            fail("No exception thrown");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
     public void testTimestampAuthenticode() throws Exception {
         testTimestamp(TimestampingMode.AUTHENTICODE, DigestAlgorithm.SHA1);
     }

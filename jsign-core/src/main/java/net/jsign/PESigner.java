@@ -99,12 +99,17 @@ public class PESigner {
     /**
      * Create a PESigner with the specified certificate chain and private key.
      *
-     * @param chain       the certificate chain
+     * @param chain       the certificate chain. The first certificate is the signing certificate
      * @param privateKey  the private key
+     * @throws IllegalArgumentException if the chain is empty
      */
     public PESigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
         this.privateKey = privateKey;
+        
+        if (chain == null || chain.length == 0) {
+            throw new IllegalArgumentException("The certificate chain is empty");
+        }
     }
 
     /**
