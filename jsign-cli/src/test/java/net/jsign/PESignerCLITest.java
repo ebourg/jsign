@@ -156,7 +156,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testConflictingAttributes() throws Exception  {
         try {
-            cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--keyfile=privatekey.pvk", "--certfile=certificate.spc", "" + targetFile);
+            cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--keyfile=privatekey.pvk", "--certfile=jsign-test-certificate-full-chain.spc", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
@@ -174,7 +174,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testMissingKeyFile() throws Exception  {
         try {
-            cli.execute("--certfile=target/test-classes/certificate.spc", "" + targetFile);
+            cli.execute("--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
@@ -192,7 +192,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testKeyFileNotFound() throws Exception  {
         try {
-            cli.execute("--certfile=target/test-classes/certificate.spc", "--keyfile=target/test-classes/privatekey2.pvk", "" + targetFile);
+            cli.execute("--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey2.pvk", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
@@ -210,7 +210,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testCorruptedKeyFile() throws Exception  {
         try {
-            cli.execute("--certfile=target/test-classes/certificate.spc", "--keyfile=target/test-classes/certificate.spc", "" + targetFile);
+            cli.execute("--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
@@ -259,7 +259,7 @@ public class PESignerCLITest extends TestCase {
     }
 
     public void testSigningPVKSPC() throws Exception {
-        cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/certificate.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
+        cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
@@ -275,7 +275,7 @@ public class PESignerCLITest extends TestCase {
     }
 
     public void testSigningPEM() throws Exception {
-        cli.execute("--certfile=target/test-classes/certificate.pem", "--keyfile=target/test-classes/privatekey.pkcs8.pem", "--keypass=password", "" + targetFile);
+        cli.execute("--certfile=target/test-classes/jsign-test-certificate.pem", "--keyfile=target/test-classes/privatekey.pkcs8.pem", "--keypass=password", "" + targetFile);
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
@@ -291,7 +291,7 @@ public class PESignerCLITest extends TestCase {
     }
 
     public void testSigningEncryptedPEM() throws Exception {
-        cli.execute("--certfile=target/test-classes/certificate.pem", "--keyfile=target/test-classes/privatekey-encrypted.pkcs1.pem", "--keypass=password", "" + targetFile);
+        cli.execute("--certfile=target/test-classes/jsign-test-certificate.pem", "--keyfile=target/test-classes/privatekey-encrypted.pkcs1.pem", "--keypass=password", "" + targetFile);
         
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 

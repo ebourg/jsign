@@ -60,7 +60,7 @@ public class PrivateKeyUtilsTest extends TestCase {
 
     public void testLoadWrongPEMObject() throws Exception {
         try {
-            PrivateKeyUtils.load(new File("target/test-classes/certificate.pem"), null);
+            PrivateKeyUtils.load(new File("target/test-classes/jsign-test-certificate.pem"), null);
             fail("No exception thrown");
         } catch (KeyException e) {
             Throwable cause = e.getCause();

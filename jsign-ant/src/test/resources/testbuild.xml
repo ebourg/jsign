@@ -63,7 +63,7 @@
   </target>
 
   <target name="keyfile-not-found">
-    <signexe file="wineyes-signed-with-ant.exe" certfile="certificate.spc" keyfile="privatekey2.pvk"/>
+    <signexe file="wineyes-signed-with-ant.exe" certfile="jsign-test-certificate-full-chain.spc" keyfile="privatekey2.pvk"/>
   </target>
 
   <target name="corrupted-certfile">
@@ -71,7 +71,7 @@
   </target>
 
   <target name="corrupted-keyfile">
-    <signexe file="wineyes-signed-with-ant.exe" certfile="certificate.spc" keyfile="certificate.spc"/>
+    <signexe file="wineyes-signed-with-ant.exe" certfile="jsign-test-certificate-full-chain.spc" keyfile="jsign-test-certificate-full-chain.spc"/>
   </target>
 
   <target name="unsupported-digest-algorithm">
@@ -100,7 +100,7 @@
 
   <target name="signing-pvk-spc">
     <signexe file="wineyes-signed-with-ant.exe"
-             certfile="certificate.spc"
+             certfile="jsign-test-certificate-full-chain.spc"
              keyfile="privatekey-encrypted.pvk"
              keypass="password"/>
   </target>
