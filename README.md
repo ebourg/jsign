@@ -27,6 +27,7 @@ Changes
 
 Version 2.1 (in development)
 * The first timestamping authority specified is no longer skipped (contributed by Thomas Atzmueller)
+* Fixed the typo on the withTimestampingAuthority() methods in PESigner (contributed by Bjørn Madsen)
 * Upgraded BouncyCastle to 1.57
 
 Version 2.0 (2017-06-12)

@@ -177,22 +177,45 @@ public class PESigner {
     /**
      * Set the URL of the timestamping authority. RFC 3161 servers as used
      * for jar signing are not compatible with Authenticode signatures.
+     * 
+     * @since 2.1
      */
-    public PESigner withTimestampingAutority(String url) {
-        return withTimestampingAutority(new String[] { url });
+    public PESigner withTimestampingAuthority(String url) {
+        return withTimestampingAuthority(new String[] { url });
     }
 
     /**
      * Set the URL of the timestamping authority. RFC 3161 servers as used
      * for jar signing are not compatible with Authenticode signatures.
      * 
-     * @since 2.0
+     * @deprecated
      */
-    public PESigner withTimestampingAutority(String... url) {
+    public PESigner withTimestampingAutority(String url) {
+        return withTimestampingAuthority(url);
+    }
+
+    /**
+     * Set the URL of the timestamping authority. RFC 3161 servers as used
+     * for jar signing are not compatible with Authenticode signatures.
+     * 
+     * @since 2.1
+     */
+    public PESigner withTimestampingAuthority(String... url) {
         this.tsaurlOverride = url;
         return this;
     }
-    
+
+    /**
+     * Set the URL of the timestamping authority. RFC 3161 servers as used
+     * for jar signing are not compatible with Authenticode signatures.
+     *
+     * @since 2.0
+     * @deprecated
+     */
+    public PESigner withTimestampingAutority(String... url) {
+        return withTimestampingAuthority(url);
+    }
+
     /**
      * Set the Timestamper implementation.
      */

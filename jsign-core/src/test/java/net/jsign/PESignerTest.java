@@ -385,15 +385,15 @@ public class PESignerTest extends TestCase {
         assertEquals("Digest algorithm", DigestAlgorithm.SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
     }
 
-    public void testInvalidAuthenticodeTimestampingAutority() throws Exception {
-        testInvalidTimestampingAutority(TimestampingMode.AUTHENTICODE);
+    public void testInvalidAuthenticodeTimestampingAuthority() throws Exception {
+        testInvalidTimestampingAuthority(TimestampingMode.AUTHENTICODE);
     }
 
-    public void testInvalidRFC3161TimestampingAutority() throws Exception {
-        testInvalidTimestampingAutority(TimestampingMode.RFC3161);
+    public void testInvalidRFC3161TimestampingAuthority() throws Exception {
+        testInvalidTimestampingAuthority(TimestampingMode.RFC3161);
     }
 
-    public void testInvalidTimestampingAutority(TimestampingMode mode) throws Exception {
+    public void testInvalidTimestampingAuthority(TimestampingMode mode) throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-unavailable-" + mode.name().toLowerCase() + ".exe");
         
@@ -405,7 +405,7 @@ public class PESignerTest extends TestCase {
         signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
-        signer.withTimestampingAutority("http://www.google.com/" + mode.name().toLowerCase());
+        signer.withTimestampingAuthority("http://www.google.com/" + mode.name().toLowerCase());
         signer.withTimestampingRetries(1);
         
         try {
@@ -422,15 +422,15 @@ public class PESignerTest extends TestCase {
         assertTrue(signatures.isEmpty());
     }
 
-    public void testBrokenAuthenticodeTimestampingAutority() throws Exception {
-        testBrokenTimestampingAutority(TimestampingMode.AUTHENTICODE);
+    public void testBrokenAuthenticodeTimestampingAuthority() throws Exception {
+        testBrokenTimestampingAuthority(TimestampingMode.AUTHENTICODE);
     }
 
-    public void testBrokenRFC3161TimestampingAutority() throws Exception {
-        testBrokenTimestampingAutority(TimestampingMode.RFC3161);
+    public void testBrokenRFC3161TimestampingAuthority() throws Exception {
+        testBrokenTimestampingAuthority(TimestampingMode.RFC3161);
     }
 
-    public void testBrokenTimestampingAutority(TimestampingMode mode) throws Exception {
+    public void testBrokenTimestampingAuthority(TimestampingMode mode) throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-broken-" + mode.name().toLowerCase() + ".exe");
         
@@ -442,7 +442,7 @@ public class PESignerTest extends TestCase {
         signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
-        signer.withTimestampingAutority("http://github.com");
+        signer.withTimestampingAuthority("http://github.com");
         signer.withTimestampingRetries(1);
         
         try {
@@ -465,7 +465,7 @@ public class PESignerTest extends TestCase {
         signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(TimestampingMode.RFC3161);
-        signer.withTimestampingAutority("example://example.com");
+        signer.withTimestampingAuthority("example://example.com");
         signer.withTimestampingRetries(1);
         
         try {
@@ -497,7 +497,7 @@ public class PESignerTest extends TestCase {
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingRetryWait(1);
-        signer.withTimestampingAutority("http://www.google.com/" + mode.name().toLowerCase(), "http://github.com", validURL);
+        signer.withTimestampingAuthority("http://www.google.com/" + mode.name().toLowerCase(), "http://github.com", validURL);
 
         signer.sign(peFile);
 
