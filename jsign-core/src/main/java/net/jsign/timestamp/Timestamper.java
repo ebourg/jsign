@@ -105,7 +105,7 @@ public abstract class Timestamper {
         int attempts = Math.max(retries, tsaurls.size());
         TimestampingException exception = new TimestampingException("Unable to complete the timestamping after " + attempts + " attempt" + (attempts > 1 ? "s" : ""));
         int count = 0;
-        while (token == null && count++ < Math.max(retries, tsaurls.size())) {
+        while (token == null && count < Math.max(retries, tsaurls.size())) {
             try {
                 tsaurl = tsaurls.get(count % tsaurls.size());
                 token = timestamp(algo, getEncryptedDigest(sigData));
@@ -117,6 +117,7 @@ public abstract class Timestamper {
             // pause before the next attempt
             try {
                 Thread.sleep(retryWait * 1000);
+		count++;
             } catch (InterruptedException ie) {
             }
         }
