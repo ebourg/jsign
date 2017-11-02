@@ -81,15 +81,15 @@ public abstract class Timestamper {
      * Set the number of retries.
      */
     public void setRetries(int retries) {
-    	this.retries = retries;
+        this.retries = retries;
     }
 
     /**
      * Set the number of seconds to wait between retries.
      */
-	public void setRetryWait(int retryWait) {
-		this.retryWait = retryWait;
-	}
+    public void setRetryWait(int retryWait) {
+        this.retryWait = retryWait;
+    }
 
     /**
      * Timestamp the specified signature.
@@ -117,7 +117,7 @@ public abstract class Timestamper {
             // pause before the next attempt
             try {
                 Thread.sleep(retryWait * 1000);
-		count++;
+                count++;
             } catch (InterruptedException ie) {
             }
         }

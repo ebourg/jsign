@@ -304,10 +304,10 @@ public class PESigner {
                 ts.setURLs(tsaurlOverride);
             }
             if (timestampingRetries != -1) {
-            	ts.setRetries(timestampingRetries);
+                ts.setRetries(timestampingRetries);
             }
             if (timestampingRetryWait != -1) {
-            	ts.setRetryWait(timestampingRetryWait);
+                ts.setRetryWait(timestampingRetryWait);
             }
             sigData = ts.timestamp(digestAlgorithm, sigData);
         }
