@@ -26,6 +26,7 @@ Changes
 =======
 
 Version 2.1 (in development)
+* Fixed the loading of SunPKCS11 configuration files with Java 9
 * SunPKCS11 configuration files can be loaded from any directory
 * The first timestamping authority specified is no longer skipped (contributed by Thomas Atzmueller)
 * Fixed the typo on the withTimestampingAuthority() methods in PESigner (contributed by Bjørn Madsen)

@@ -19,6 +19,8 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -255,7 +257,7 @@ class PESignerHelper {
         if ("PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
             if (keystore != null && keystore.exists()) {
-                provider = new SunPKCS11(keystore.getPath());
+                provider = createSunPKCS11Provider(keystore);
             } else if (keystore != null && keystore.getName().startsWith("SunPKCS11-")) {
                 provider = Security.getProvider(keystore.getName());
                 if (provider == null) {
@@ -347,6 +349,28 @@ class PESignerHelper {
                 .withTimestampingRetries(tsretries)
                 .withTimestampingRetryWait(tsretrywait)
                 .withTimestampingAuthority(tsaurl != null ? tsaurl.split(",") : null);
+    }
+
+    /**
+     * Create a SunPKCS11 provider with the specified configuration file.
+     * 
+     * @param configuration the SunPKCS11 configuration file
+     */
+    private Provider createSunPKCS11Provider(File configuration) throws SignerException {
+        try {
+            try {
+                // Java 9 and later, using the Provider.configure() method
+                Method providerConfigureMethod = Provider.class.getMethod("configure", String.class);
+                Provider provider = Security.getProvider("SunPKCS11");
+                return (Provider) providerConfigureMethod.invoke(provider, keystore.getName());
+            } catch (NoSuchMethodException e) {
+                // prior to Java 9, direct instantiation of the SunPKCS11 class
+                Constructor<SunPKCS11> sunpkcs11Constructor = SunPKCS11.class.getConstructor(String.class);
+                return sunpkcs11Constructor.newInstance(keystore.getName());
+            }
+        } catch (Exception e) {
+            throw new SignerException("Failed to create a SunPKCS11 provider from the configuration file " + configuration, e);
+        }
     }
 
     public void sign(File file) throws SignerException {
