@@ -511,8 +511,10 @@ public class PESignerCLITest extends TestCase {
     public void testBrokenPKCS11Configuration() throws Exception {
         try {
             cli.execute("--storetype=PKCS11", "--keystore=pom.xml", "--keypass=password", "" + targetFile);
-        } catch (ProviderException e) {
+            fail("No exception thrown");
+        } catch (SignerException e) {
             // expected
+            assertTrue(e.getCause() instanceof ProviderException);
         }
     }
 }
