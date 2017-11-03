@@ -514,7 +514,7 @@ public class PESignerCLITest extends TestCase {
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
-            assertTrue(e.getCause() instanceof ProviderException);
+            assertTrue(e.getCause().getCause() instanceof ProviderException);
         }
     }
 }
