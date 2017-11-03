@@ -187,6 +187,7 @@
           <excludePackageNames>*.asn1.*</excludePackageNames>
           <quiet>true</quiet>
           <notimestamp>true</notimestamp>
+          <nodeprecated>true</nodeprecated>
           <locale>en</locale>
         </configuration>
         <executions>
