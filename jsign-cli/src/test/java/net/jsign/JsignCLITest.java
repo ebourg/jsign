@@ -529,4 +529,24 @@ public class JsignCLITest {
                     || e.getCause().getCause() instanceof InvalidParameterException); // JDK 9+
         }
     }
+
+    @Test
+    public void testExplicitCertificateChainOnlyOnSingleEntry() throws Exception {
+        try {
+            cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("exception message", "certfile option can only be specified if the certificate from the keystore contains only one entry", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testExplicitCertificateChainOnlyOnSingleEntryWhenFirst() throws Exception {
+        try {
+            cli.execute("--keystore=target/test-classes/keystores/keystore-no-chain.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.spc", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("exception message", "The certificate chain in target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.spc does not match the chain from the keystore", e.getMessage());
+        }
+    }
 }

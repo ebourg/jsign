@@ -255,8 +255,8 @@ class SignerHelper {
         if (keystore == null && keyfile == null && certfile == null) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
-        if (keystore != null && (keyfile != null || certfile != null)) {
-            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile or certfile");
+        if (keystore != null && keyfile != null) {
+            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
         }
         
         Provider provider = null;
@@ -293,6 +293,25 @@ class SignerHelper {
             }
             if (chain == null) {
                 throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore));
+            }
+            if (certfile != null) {
+                if (chain.length != 1) {
+                    throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
+                }
+                // replace the certificate chain from the keystore with the complete chain from file
+                try {
+                    Certificate[] chainFromFile = loadCertificateChain(certfile);
+                    if (chainFromFile[0].equals(chain[0])) {
+                        // replace certificate with complete chain
+                        chain = chainFromFile;
+                    } else {
+                        throw new SignerException("The certificate chain in " + certfile + " does not match the chain from the keystore");
+                    }
+                } catch (SignerException e) {
+                    throw e;
+                } catch (Exception e) {
+                    throw new SignerException("Failed to load the certificate from " + certfile, e);
+                }
             }
 
             char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();
