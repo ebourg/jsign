@@ -212,7 +212,7 @@ class PESignerHelper {
         if (value == null) {
             return this;
         }
-        
+
         switch (key) {
             case PARAM_KEYSTORE:   return keystore(value);
             case PARAM_STOREPASS:  return storepass(value);
@@ -249,10 +249,10 @@ class PESignerHelper {
         if (keystore == null && keyfile == null && certfile == null) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
-        if (keystore != null && (keyfile != null || certfile != null)) {
-            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile or certfile");
+        if (keystore != null && keyfile != null) {
+            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
         }
-        
+
         Provider provider = null;
         if ("PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
@@ -288,6 +288,25 @@ class PESignerHelper {
             if (chain == null) {
                 throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore));
             }
+			if (certfile != null) {
+				if (chain.length != 1) {
+					throw new SignerException("Certificate chain from file can only be specified if certificate from keystore contains only 1 entry");
+				}
+				// replace certificate chain with complete chain from file
+				try {
+					Certificate[] chainFromFile = loadCertificateChain(certfile);
+					if (chainFromFile[0].equals(chain[0])) {
+						// replace certificate with complete chain
+						chain = chainFromFile;
+					} else {
+						throw new SignerException("Certificate chain in file does not match chain from keystore");
+					}
+				} catch (SignerException e) {
+					throw e;
+				} catch (Exception e) {
+					throw new SignerException("Failed to load the certificate from " + certfile, e);
+				}
+			}
 
             char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();
 
@@ -353,7 +372,7 @@ class PESignerHelper {
 
     /**
      * Create a SunPKCS11 provider with the specified configuration file.
-     * 
+     *
      * @param configuration the SunPKCS11 configuration file
      */
     private Provider createSunPKCS11Provider(File configuration) throws SignerException {
@@ -362,11 +381,11 @@ class PESignerHelper {
                 // Java 9 and later, using the Provider.configure() method
                 Method providerConfigureMethod = Provider.class.getMethod("configure", String.class);
                 Provider provider = Security.getProvider("SunPKCS11");
-                return (Provider) providerConfigureMethod.invoke(provider, keystore.getName());
+                return (Provider) providerConfigureMethod.invoke(provider, keystore.getPath());
             } catch (NoSuchMethodException e) {
                 // prior to Java 9, direct instantiation of the SunPKCS11 class
                 Constructor<SunPKCS11> sunpkcs11Constructor = SunPKCS11.class.getConstructor(String.class);
-                return sunpkcs11Constructor.newInstance(keystore.getName());
+                return sunpkcs11Constructor.newInstance(keystore.getPath());
             }
         } catch (Exception e) {
             throw new SignerException("Failed to create a SunPKCS11 provider from the configuration file " + configuration, e);

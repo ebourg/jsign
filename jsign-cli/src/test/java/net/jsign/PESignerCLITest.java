@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Permission;
 import java.security.ProviderException;
 import java.util.List;
@@ -40,7 +41,7 @@ public class PESignerCLITest extends TestCase {
     private PESignerCLI cli;
     private File sourceFile = new File("target/test-classes/wineyes.exe");
     private File targetFile = new File("target/test-classes/wineyes-signed-with-cli.exe");
-    
+
     private String keystore = "keystore.jks";
     private String alias    = "test";
     private String keypass  = "password";
@@ -49,12 +50,12 @@ public class PESignerCLITest extends TestCase {
 
     protected void setUp() throws Exception {
         cli = new PESignerCLI();
-        
+
         // remove the files signed previously
         if (targetFile.exists()) {
             assertTrue("Unable to remove the previously signed file", targetFile.delete());
         }
-        
+
         assertEquals("Source file CRC32", SOURCE_FILE_CRC32, FileUtils.checksumCRC32(sourceFile));
         Thread.sleep(100);
         FileUtils.copyFile(sourceFile, targetFile);
@@ -244,7 +245,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testSigningPKCS12() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystore.p12", "--alias=test", "--storepass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -260,7 +261,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testSigningPVKSPC() throws Exception {
         cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -276,7 +277,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testSigningPEM() throws Exception {
         cli.execute("--certfile=target/test-classes/jsign-test-certificate.pem", "--keyfile=target/test-classes/privatekey.pkcs8.pem", "--keypass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -292,7 +293,7 @@ public class PESignerCLITest extends TestCase {
 
     public void testSigningEncryptedPEM() throws Exception {
         cli.execute("--certfile=target/test-classes/jsign-test-certificate.pem", "--keyfile=target/test-classes/privatekey-encrypted.pkcs1.pem", "--keypass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -310,16 +311,16 @@ public class PESignerCLITest extends TestCase {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
         cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.comodoca.com/authenticode", "--tsmode=authenticode", "" + targetFile2);
-        
+
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile2)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
-            
+
             CMSSignedData signature = signatures.get(0);
-            
+
             assertNotNull(signature);
         }
     }
@@ -353,7 +354,7 @@ public class PESignerCLITest extends TestCase {
                     }
                 })
                 .start();
-        
+
         try {
             File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161-proxy-unauthenticated.exe");
             FileUtils.copyFile(sourceFile, targetFile2);
@@ -361,17 +362,17 @@ public class PESignerCLITest extends TestCase {
                         "--tsaurl=http://timestamp.comodoca.com/rfc3161", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
                         "--proxyUrl=localhost:" + proxy.getListenAddress().getPort(),
                         "" + targetFile2);
-            
+
             assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
             assertTrue("The proxy wasn't used", proxyUsed.get());
-    
+
             try (PEFile peFile = new PEFile(targetFile2)) {
                 List<CMSSignedData> signatures = peFile.getSignatures();
                 assertNotNull(signatures);
                 assertEquals(1, signatures.size());
-    
+
                 CMSSignedData signature = signatures.get(0);
-    
+
                 assertNotNull(signature);
             }
         } finally {
@@ -411,17 +412,17 @@ public class PESignerCLITest extends TestCase {
                         "--proxyUser=jsign",
                         "--proxyPass=jsign",
                         "" + targetFile2);
-            
+
             assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
             assertTrue("The proxy wasn't used", proxyUsed.get());
-    
+
             try (PEFile peFile = new PEFile(targetFile2)) {
                 List<CMSSignedData> signatures = peFile.getSignatures();
                 assertNotNull(signatures);
                 assertEquals(1, signatures.size());
-    
+
                 CMSSignedData signature = signatures.get(0);
-    
+
                 assertNotNull(signature);
             }
         } finally {
@@ -433,18 +434,18 @@ public class PESignerCLITest extends TestCase {
         File targetFile2 = new File("target/test-classes/wineyes-re-signed.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
         cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile2);
-        
+
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
-        
+
         cli.execute("--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--alg=SHA-512", "--replace", "" + targetFile2);
-        
+
         try (PEFile peFile = new PEFile(targetFile2)) {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
 
             assertNotNull(signatures.get(0));
-            
+
             assertEquals("Digest algorithm", DigestAlgorithm.SHA512.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
         }
     }
@@ -472,7 +473,7 @@ public class PESignerCLITest extends TestCase {
         }
 
         public void checkPermission(Permission perm) { }
-        
+
         public void checkPermission(Permission perm, Object context) { }
 
         public void checkExit(int status) {
@@ -515,6 +516,38 @@ public class PESignerCLITest extends TestCase {
         } catch (SignerException e) {
             // expected
             assertTrue(e.getCause().getCause() instanceof ProviderException);
+        }
+    }
+
+    public void testPKCS11ConfigurationFullPath() throws Exception {
+        try {
+            cli.execute("--storetype=PKCS11", "--keystore=../LICENSE.txt", "--keypass=password", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            // expected Exception from Provider (illegal configuration file, but at least found and passed...)
+            assertTrue(e.getCause() instanceof InvocationTargetException);
+        }
+    }
+
+    public void testExplicitCertificateChain() throws Exception {
+        cli.execute("--keystore=target/test-classes/keystore-no-chain.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile);
+    }
+
+    public void testExplicitCertificateChainOnlyOnSingleEntry() throws Exception {
+        try {
+            cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("exception message", "Certificate chain from file can only be specified if certificate from keystore contains only 1 entry", e.getMessage());
+        }
+    }
+
+    public void testExplicitCertificateChainOnlyOnSingleEntryWhenFirst() throws Exception {
+        try {
+            cli.execute("--keystore=target/test-classes/keystore-no-chain.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/jsign-test-certificate-full-chain-reversed.spc", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("exception message", "Certificate chain in file does not match chain from keystore", e.getMessage());
         }
     }
 }
