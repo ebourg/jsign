@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.security.InvalidParameterException;
 import java.security.Permission;
 import java.security.ProviderException;
 import java.util.List;
@@ -514,7 +515,8 @@ public class PESignerCLITest extends TestCase {
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
-            assertTrue(e.getCause().getCause() instanceof ProviderException);
+            assertTrue(e.getCause().getCause() instanceof ProviderException // JDK < 9
+                    || e.getCause().getCause() instanceof InvalidParameterException); // JDK 9+
         }
     }
 }
