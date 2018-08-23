@@ -18,13 +18,12 @@ package net.jsign;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.security.InvalidParameterException;
 import java.security.Permission;
 import java.security.ProviderException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.netty.handler.codec.http.HttpRequest;
-import junit.framework.TestCase;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
@@ -34,6 +33,8 @@ import org.littleshoot.proxy.HttpProxyServer;
 import org.littleshoot.proxy.ProxyAuthenticator;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 
+import io.netty.handler.codec.http.HttpRequest;
+import junit.framework.TestCase;
 import net.jsign.pe.PEFile;
 
 public class PESignerCLITest extends TestCase {
@@ -515,7 +516,8 @@ public class PESignerCLITest extends TestCase {
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
-            assertTrue(e.getCause().getCause() instanceof ProviderException);
+            assertTrue(e.getCause().getCause() instanceof ProviderException // JDK < 9
+            		|| e.getCause().getCause() instanceof InvalidParameterException); // JDK 9+
         }
     }
 
