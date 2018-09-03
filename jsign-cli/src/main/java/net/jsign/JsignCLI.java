@@ -54,6 +54,7 @@ public class JsignCLI {
         options = new Options();
         options.addOption(Option.builder("s").hasArg().longOpt(PARAM_KEYSTORE).argName("FILE").desc("The keystore file, the SunPKCS11 configuration file or the cloud keystore name").type(File.class).build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STOREPASS).argName("PASSWORD").desc("The password to open the keystore").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_STOREPASS_FILE).argName("PASSWORD_FILE").desc("The file with the password to open the keystore").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STORETYPE).argName("TYPE")
                 .desc("The type of the keystore:\n"
                         + "- JKS: Java keystore (.jks files)\n"
@@ -72,6 +73,7 @@ public class JsignCLI {
                         + "- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault\n").build());
         options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore.").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS).argName("PASSWORD").desc("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password.").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS_FILE).argName("PASSWORD_FILE").desc("The file with the password of the private key.").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYFILE).argName("FILE").desc("The file containing the private key. PEM and PVK files are supported. ").type(File.class).build());
         options.addOption(Option.builder("c").hasArg().longOpt(PARAM_CERTFILE).argName("FILE").desc("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").type(File.class).build());
         options.addOption(Option.builder("d").hasArg().longOpt(PARAM_ALG).argName("ALGORITHM").desc("The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)").build());
@@ -105,9 +107,11 @@ public class JsignCLI {
         
         setOption(PARAM_KEYSTORE, helper, cmd);
         setOption(PARAM_STOREPASS, helper, cmd);
+        setOption(PARAM_STOREPASS_FILE, helper, cmd);
         setOption(PARAM_STORETYPE, helper, cmd);
         setOption(PARAM_ALIAS, helper, cmd);
         setOption(PARAM_KEYPASS, helper, cmd);
+        setOption(PARAM_KEYPASS_FILE, helper, cmd);
         setOption(PARAM_KEYFILE, helper, cmd);
         setOption(PARAM_CERTFILE, helper, cmd);
         setOption(PARAM_ALG, helper, cmd);

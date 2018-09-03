@@ -28,6 +28,9 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -57,9 +60,11 @@ import net.jsign.timestamp.TimestampingMode;
 class SignerHelper {
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
+    public static final String PARAM_STOREPASS_FILE = "storepass:file";
     public static final String PARAM_STORETYPE = "storetype";
     public static final String PARAM_ALIAS = "alias";
     public static final String PARAM_KEYPASS = "keypass";
+    public static final String PARAM_KEYPASS_FILE = "keypass:file";
     public static final String PARAM_KEYFILE = "keyfile";
     public static final String PARAM_CERTFILE = "certfile";
     public static final String PARAM_ALG = "alg";
@@ -115,6 +120,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper storepassFile(String storepass) {
+        this.storepass = getFileContent(storepass);
+        return this;
+    }
+
     public SignerHelper storetype(String storetype) {
         ksparams.storetype(storetype);
         return this;
@@ -127,6 +137,11 @@ class SignerHelper {
 
     public SignerHelper keypass(String keypass) {
         ksparams.keypass(keypass);
+        return this;
+    }
+
+    public SignerHelper keypassFile(String keypass) {
+        this.keypass = getFileContent(keypass);
         return this;
     }
 
@@ -223,9 +238,11 @@ class SignerHelper {
         switch (key) {
             case PARAM_KEYSTORE:   return keystore(value);
             case PARAM_STOREPASS:  return storepass(value);
+            case PARAM_STOREPASS_FILE:  return storepassFile(value);
             case PARAM_STORETYPE:  return storetype(value);
             case PARAM_ALIAS:      return alias(value);
             case PARAM_KEYPASS:    return keypass(value);
+            case PARAM_KEYPASS_FILE: return keypassFile(value);
             case PARAM_KEYFILE:    return keyfile(value);
             case PARAM_CERTFILE:   return certfile(value);
             case PARAM_ALG:        return alg(value);
@@ -248,6 +265,19 @@ class SignerHelper {
 
     void setBaseDir(File basedir) {
         ksparams.setBaseDir(basedir);
+    }
+
+    private String getFileContent(String file) {
+        if (file == null) {
+            return null;
+        }
+        Path path = new File(file).toPath();
+        try {
+            byte[] fileContents = Files.readAllBytes(path);
+            return new String(fileContents, StandardCharsets.UTF_8).trim();
+        } catch (IOException e) {
+            throw new IllegalStateException("File '" + path + "' can't be read", e);
+        }
     }
 
     private AuthenticodeSigner build() throws SignerException {
