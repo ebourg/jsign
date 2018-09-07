@@ -362,11 +362,11 @@ class PESignerHelper {
                 // Java 9 and later, using the Provider.configure() method
                 Method providerConfigureMethod = Provider.class.getMethod("configure", String.class);
                 Provider provider = Security.getProvider("SunPKCS11");
-                return (Provider) providerConfigureMethod.invoke(provider, keystore.getName());
+                return (Provider) providerConfigureMethod.invoke(provider, configuration.getPath());
             } catch (NoSuchMethodException e) {
                 // prior to Java 9, direct instantiation of the SunPKCS11 class
                 Constructor<SunPKCS11> sunpkcs11Constructor = SunPKCS11.class.getConstructor(String.class);
-                return sunpkcs11Constructor.newInstance(keystore.getName());
+                return sunpkcs11Constructor.newInstance(configuration.getPath());
             }
         } catch (Exception e) {
             throw new SignerException("Failed to create a SunPKCS11 provider from the configuration file " + configuration, e);
