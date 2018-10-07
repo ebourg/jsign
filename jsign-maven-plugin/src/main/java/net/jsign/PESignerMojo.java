@@ -38,65 +38,66 @@ public class PESignerMojo extends AbstractMojo {
     private File file;
 
     /** The program name embedded in the signature. */
-    @Parameter
+    @Parameter( property = "jsign.name" )
     private String name;
 
     /** The program URL embedded in the signature. */
-    @Parameter
+    @Parameter( property = "jsign.url" )
     private String url;
 
     /** The digest algorithm to use for the signature (SHA-1, SHA-256, SHA-384 or SHA-512). */
-    @Parameter(defaultValue = "SHA-256")
+    @Parameter( property = "jsign.algorithm", defaultValue = "SHA-256" )
     private String algorithm;
 
     /** The keystore file. Required, unless certfile and keyfile are specified. */
-    @Parameter
+    @Parameter( property = "jsign.keystore" )
     private File keystore;
 
     /** The password for the keystore. */
-    @Parameter
+    @Parameter( property = "jsign.storepass" )
     private String storepass;
 
     /** The type of the keystore (JKS or PKCS12). */
-    @Parameter(defaultValue = "JKS")
+    @Parameter( property = "jsign.storetype", defaultValue = "JKS" )
     private String storetype;
 
     /** The alias of the certificate in the keystore. Required if a keystore is specified. */
-    @Parameter
+    @Parameter( property = "jsign.alias" )
     private String alias;
 
     /** The file containing the PKCS#7 certificate chain (.p7b or .spc files). */
-    @Parameter
+    @Parameter( property = "jsign.certfile" )
     private File certfile;
 
     /** The file containing the private key (PEM or PVK format) */
-    @Parameter
+    @Parameter( property = "jsign.keyfile" )
     private File keyfile;
 
     /** The password for the key in the store (if different from the keystore password) or in the keyfile. */
-    @Parameter
+    @Parameter( property = "jsign.keypass" )
     private String keypass;
 
     /** The URL of the timestamping authority. */
-    @Parameter
+    @Parameter( property = "jsign.tsaurl" )
     private String tsaurl;
 
     /** The protocol used for the timestamping (RFC3161 or Authenticode) */
-    @Parameter(defaultValue = "authenticode")
+    @Parameter( property = "jsign.tsmode", defaultValue = "authenticode" )
     private String tsmode;
 
     /** The number of retries for timestamping */
-    @Parameter
+    @Parameter( property = "jsign.tsretries" )
     private int tsretries = -1;
 
     /** The number of seconds to wait between timestamping retries */
-    @Parameter
+    @Parameter( property = "jsign.tsretrywait" )
     private int tsretrywait = -1;
 
     /** Tells if previous signatures should be replaced */
-    @Parameter(defaultValue = "false")
+    @Parameter( property = "jsign.replace", defaultValue = "false")
     private boolean replace;
 
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         PESignerHelper helper = new PESignerHelper(new MavenConsole(getLog()), "element");
         
