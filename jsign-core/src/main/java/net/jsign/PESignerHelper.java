@@ -42,8 +42,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import sun.security.pkcs11.SunPKCS11;
-
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -365,8 +363,8 @@ class PESignerHelper {
                 return (Provider) providerConfigureMethod.invoke(provider, configuration.getPath());
             } catch (NoSuchMethodException e) {
                 // prior to Java 9, direct instantiation of the SunPKCS11 class
-                Constructor<SunPKCS11> sunpkcs11Constructor = SunPKCS11.class.getConstructor(String.class);
-                return sunpkcs11Constructor.newInstance(configuration.getPath());
+                Constructor sunpkcs11Constructor = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(String.class);
+                return (Provider) sunpkcs11Constructor.newInstance(configuration.getPath());
             }
         } catch (Exception e) {
             throw new SignerException("Failed to create a SunPKCS11 provider from the configuration file " + configuration, e);
