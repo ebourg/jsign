@@ -25,7 +25,7 @@ See https://ebourg.github.com/jsign for more information.
 Changes
 =======
 
-Version 2.1 (in development)
+Version 2.1 (2018-10-08)
 * Fixed the loading of SunPKCS11 configuration files with Java 9
 * SunPKCS11 configuration files can be loaded from any directory
 * Maven plugin settings can now be passed on the command line (contributed by Nicolas Roduit)

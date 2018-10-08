@@ -6,11 +6,11 @@
   <parent>
     <groupId>net.jsign</groupId>
     <artifactId>jsign-parent</artifactId>
-    <version>2.0</version>
+    <version>2.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Jsign - Code signing for Windows executables (Distribution)</name>
-  <version>2.0</version>
+  <version>2.1</version>
   <packaging>jar</packaging>
 
   <inceptionYear>2012</inceptionYear>

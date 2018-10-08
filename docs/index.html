@@ -54,7 +54,7 @@ programmatically or standalone as a command line tool.</p>
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
 
 <pre class="prettyprint lang-xml">
- &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-2.0.jar"/>
+ &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-2.1.jar"/>
 
  &lt;signexe file="application.exe"
           name="My Application"
@@ -192,7 +192,7 @@ are the same as those described above for the Ant task.</p>
         &lt;plugin>
           &lt;groupId>net.jsign&lt;/groupId>
           &lt;artifactId>jsign-maven-plugin&lt;/artifactId>
-          &lt;version>2.0&lt;/version>
+          &lt;version>2.1&lt;/version>
           &lt;executions>
             &lt;execution>
               &lt;goals>
@@ -225,7 +225,7 @@ are the same as those described above for the Ant task.</p>
 <pre class="prettyprint lang-groovy">
     buildscript {
         dependencies {
-            classpath 'net.jsign:jsign-gradle-plugin:2.0'
+            classpath 'net.jsign:jsign-gradle-plugin:2.1'
         }
     }
     
@@ -247,15 +247,15 @@ are the same as those described above for the Ant task.</p>
 
 <h3>Command Line Tool</h3>
 
-<p>Jsign can also be used as a command line tool. A <a href="https://github.com/ebourg/jsign/releases/download/2.0/jsign_2.0_all.deb">Debian package</a>
-and a <a href="https://github.com/ebourg/jsign/releases/download/2.0/jsign-2.0-1.noarch.rpm">RPM package</a>
+<p>Jsign can also be used as a command line tool. A <a href="https://github.com/ebourg/jsign/releases/download/2.1/jsign_2.1_all.deb">Debian package</a>
+and a <a href="https://github.com/ebourg/jsign/releases/download/2.1/jsign-2.1-1.noarch.rpm">RPM package</a>
 are provided to install it easily on most Linux distributions. On these systems the command line is invoked with:</p>
 
 <pre> pesign [OPTIONS] FILE</pre>
 
 <p>On other systems the command line is invoked by running the jar with:</p>
     
-<pre> java -jar jsign-2.0.jar [OPTIONS] FILE</pre>
+<pre> java -jar jsign-2.1.jar [OPTIONS] FILE</pre>
     
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
@@ -315,7 +315,7 @@ be embedded in another application.</p>
     &lt;dependency>
       &lt;groupId>net.jsign&lt;/groupId>
       &lt;artifactId>jsign-core&lt;/artifactId>
-      &lt;version>2.0&lt;/version>
+      &lt;version>2.1&lt;/version>
     &lt;/dependency>
 </pre>
 
@@ -339,9 +339,9 @@ be embedded in another application.</p>
 <h3 id="files">Downloads</h3>
 
 <ul>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/2.0/jsign_2.0_all.deb">jsign_2.0_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/2.0/jsign-2.0-1.noarch.rpm">jsign-2.0-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora/CentOS</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/2.0/jsign-2.0.jar">jsign-2.0.jar</a> - Jsign Ant Task</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/2.1/jsign_2.1_all.deb">jsign_2.1_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/2.1/jsign-2.1-1.noarch.rpm">jsign-2.1-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora/CentOS</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/2.1/jsign-2.1.jar">jsign-2.1.jar</a> - Jsign Ant Task</li>
 </ul>
 
 
