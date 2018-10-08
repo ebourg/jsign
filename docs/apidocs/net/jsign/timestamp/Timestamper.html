@@ -2,14 +2,14 @@
 <!-- NewPage -->
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Timestamper (Jsign - Code signing for Windows executables 2.0 API)</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Timestamper (Jsign - Code signing for Windows executables 2.1 API)</title>
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Timestamper (Jsign - Code signing for Windows executables 2.0 API)";
+        parent.document.title="Timestamper (Jsign - Code signing for Windows executables 2.1 API)";
     }
 //-->
 </script>
@@ -28,7 +28,6 @@
 <li class="navBarCell1Rev">Class</li>
 <li><a href="class-use/Timestamper.html">Use</a></li>
 <li><a href="package-tree.html">Tree</a></li>
-<li><a href="../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../index-all.html">Index</a></li>
 <li><a href="../../../help-doc.html">Help</a></li>
 </ul>
@@ -83,7 +82,7 @@
 </div>
 <div class="contentContainer">
 <ul class="inheritance">
-<li><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
+<li><a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">java.lang.Object</a></li>
 <li>
 <ul class="inheritance">
 <li>net.jsign.timestamp.Timestamper</li>
@@ -100,7 +99,7 @@
 <hr>
 <br>
 <pre>public abstract class <a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.47">Timestamper</a>
-extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
+extends <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Interface for a timestamping service.</div>
 <dl><dt><span class="strong">Since:</span></dt>
   <dd>1.3</dd>
@@ -137,13 +136,13 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected <a href="http://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a></code></td>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a></code></td>
 <td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#tsaurl">tsaurl</a></strong></code>
 <div class="block">The URL of the current timestamping service</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a>&gt;</code></td>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="https://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#tsaurls">tsaurls</a></strong></code>
 <div class="block">The URLs of the timestamping services</div>
 </td>
@@ -187,7 +186,7 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;</code></td>
+<td class="colFirst"><code>protected <a href="https://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#getExtraCertificates(org.bouncycastle.cms.CMSSignedData)">getExtraCertificates</a></strong>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;token)</code>
 <div class="block">Return the certificate chain of the timestamping authority if it isn't included
  with the counter signature in the unsigned attributes.</div>
@@ -203,7 +202,7 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <td class="colFirst"><code>protected <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a></code></td>
 <td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#modifySignedData(org.bouncycastle.cms.CMSSignedData,%20org.bouncycastle.asn1.cms.AttributeTable,%20java.util.Collection)">modifySignedData</a></strong>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;sigData,
                                 <a href="http://www.bouncycastle.org/docs/docs1.5on/org/bouncycastle/asn1/cms/AttributeTable.html?is-external=true" title="class or interface in org.bouncycastle.asn1.cms">AttributeTable</a>&nbsp;unsignedAttributes,
-                                <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;&nbsp;extraCertificates)</code>&nbsp;</td>
+                                <a href="https://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;&nbsp;extraCertificates)</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
@@ -219,11 +218,11 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#setURL(java.lang.String)">setURL</a></strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;tsaurl)</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#setURL(java.lang.String)">setURL</a></strong>(<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;tsaurl)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#setURLs(java.lang.String...)">setURLs</a></strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;tsaurls)</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../net/jsign/timestamp/Timestamper.html#setURLs(java.lang.String...)">setURLs</a></strong>(<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;tsaurls)</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a></code></td>
@@ -242,8 +241,8 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;java.lang.<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
-<code><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang">clone</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang">finalize</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</a>, <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long,%20int)" title="class or interface in java.lang">wait</a></code></li>
+<h3>Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></h3>
+<code><a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#clone()" title="class or interface in java.lang">clone</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#equals(java.lang.Object)" title="class or interface in java.lang">equals</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#finalize()" title="class or interface in java.lang">finalize</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#getClass()" title="class or interface in java.lang">getClass</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#hashCode()" title="class or interface in java.lang">hashCode</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notify()" title="class or interface in java.lang">notify</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#notifyAll()" title="class or interface in java.lang">notifyAll</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait()" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long)" title="class or interface in java.lang">wait</a>, <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?is-external=true#wait(long,%20int)" title="class or interface in java.lang">wait</a></code></li>
 </ul>
 </li>
 </ul>
@@ -259,26 +258,6 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <!--   -->
 </a>
 <h3>Field Detail</h3>
-<a name="tsaurl">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>tsaurl</h4>
-<pre>protected&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a> <a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.50">tsaurl</a></pre>
-<div class="block">The URL of the current timestamping service</div>
-</li>
-</ul>
-<a name="tsaurls">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>tsaurls</h4>
-<pre>protected&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="http://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a>&gt; <a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.53">tsaurls</a></pre>
-<div class="block">The URLs of the timestamping services</div>
-</li>
-</ul>
 <a name="retries">
 <!--   -->
 </a>
@@ -292,11 +271,31 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <a name="retryWait">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>retryWait</h4>
 <pre>protected&nbsp;int <a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.59">retryWait</a></pre>
 <div class="block">Seconds to wait between retries</div>
+</li>
+</ul>
+<a name="tsaurl">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>tsaurl</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a> <a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.50">tsaurl</a></pre>
+<div class="block">The URL of the current timestamping service</div>
+</li>
+</ul>
+<a name="tsaurls">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>tsaurls</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="https://docs.oracle.com/javase/6/docs/api/java/net/URL.html?is-external=true" title="class or interface in java.net">URL</a>&gt; <a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.53">tsaurls</a></pre>
+<div class="block">The URLs of the timestamping services</div>
 </li>
 </ul>
 </li>
@@ -324,24 +323,51 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="setURL(java.lang.String)">
+<a name="create(net.jsign.timestamp.TimestampingMode)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setURL</h4>
-<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.61">setURL</a>(<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;tsaurl)</pre>
+<h4>create</h4>
+<pre>public static&nbsp;<a href="../../../net/jsign/timestamp/Timestamper.html" title="class in net.jsign.timestamp">Timestamper</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.179">create</a>(<a href="../../../net/jsign/timestamp/TimestampingMode.html" title="enum in net.jsign.timestamp">TimestampingMode</a>&nbsp;mode)</pre>
+<div class="block">Returns the timestamper for the specified mode.</div>
 </li>
 </ul>
-<a name="setURLs(java.lang.String...)">
+<a name="getExtraCertificates(org.bouncycastle.cms.CMSSignedData)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setURLs</h4>
-<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.68">setURLs</a>(<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;tsaurls)</pre>
-<dl><dt><span class="strong">Since:</span></dt>
-  <dd>2.0</dd></dl>
+<h4>getExtraCertificates</h4>
+<pre>protected&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.144">getExtraCertificates</a>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;token)</pre>
+<div class="block">Return the certificate chain of the timestamping authority if it isn't included
+ with the counter signature in the unsigned attributes.</div>
+</li>
+</ul>
+<a name="getUnsignedAttributes(org.bouncycastle.cms.CMSSignedData)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getUnsignedAttributes</h4>
+<pre>protected abstract&nbsp;<a href="http://www.bouncycastle.org/docs/docs1.5on/org/bouncycastle/asn1/cms/AttributeTable.html?is-external=true" title="class or interface in org.bouncycastle.asn1.cms">AttributeTable</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.151">getUnsignedAttributes</a>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;token)</pre>
+<div class="block">Return the counter signature to be added as an unsigned attribute.</div>
+</li>
+</ul>
+<a name="modifySignedData(org.bouncycastle.cms.CMSSignedData, org.bouncycastle.asn1.cms.AttributeTable, java.util.Collection)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>modifySignedData</h4>
+<pre>protected&nbsp;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.153">modifySignedData</a>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;sigData,
+                             <a href="http://www.bouncycastle.org/docs/docs1.5on/org/bouncycastle/asn1/cms/AttributeTable.html?is-external=true" title="class or interface in org.bouncycastle.asn1.cms">AttributeTable</a>&nbsp;unsignedAttributes,
+                             <a href="https://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;&nbsp;extraCertificates)
+                                  throws <a href="https://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a>,
+                                         <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></pre>
+<dl><dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd>
+<dd><code><a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></code></dd></dl>
 </li>
 </ul>
 <a name="setRetries(int)">
@@ -364,59 +390,24 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <div class="block">Set the number of seconds to wait between retries.</div>
 </li>
 </ul>
-<a name="timestamp(net.jsign.DigestAlgorithm, org.bouncycastle.cms.CMSSignedData)">
+<a name="setURL(java.lang.String)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>timestamp</h4>
-<pre>public&nbsp;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.101">timestamp</a>(<a href="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</a>&nbsp;algo,
-                      <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;sigData)
-                        throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a>,
-                               <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></pre>
-<div class="block">Timestamp the specified signature.</div>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>algo</code> - the digest algorithm used for the timestamp</dd><dd><code>sigData</code> - the signed data to be timestamped</dd>
-<dt><span class="strong">Returns:</span></dt><dd>the signed data with the timestamp added</dd>
-<dt><span class="strong">Throws:</span></dt>
-<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd>
-<dd><code><a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></code></dd></dl>
+<h4>setURL</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.61">setURL</a>(<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;tsaurl)</pre>
 </li>
 </ul>
-<a name="getExtraCertificates(org.bouncycastle.cms.CMSSignedData)">
+<a name="setURLs(java.lang.String...)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getExtraCertificates</h4>
-<pre>protected&nbsp;<a href="http://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.143">getExtraCertificates</a>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;token)</pre>
-<div class="block">Return the certificate chain of the timestamping authority if it isn't included
- with the counter signature in the unsigned attributes.</div>
-</li>
-</ul>
-<a name="getUnsignedAttributes(org.bouncycastle.cms.CMSSignedData)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getUnsignedAttributes</h4>
-<pre>protected abstract&nbsp;<a href="http://www.bouncycastle.org/docs/docs1.5on/org/bouncycastle/asn1/cms/AttributeTable.html?is-external=true" title="class or interface in org.bouncycastle.asn1.cms">AttributeTable</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.150">getUnsignedAttributes</a>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;token)</pre>
-<div class="block">Return the counter signature to be added as an unsigned attribute.</div>
-</li>
-</ul>
-<a name="modifySignedData(org.bouncycastle.cms.CMSSignedData, org.bouncycastle.asn1.cms.AttributeTable, java.util.Collection)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>modifySignedData</h4>
-<pre>protected&nbsp;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.152">modifySignedData</a>(<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;sigData,
-                             <a href="http://www.bouncycastle.org/docs/docs1.5on/org/bouncycastle/asn1/cms/AttributeTable.html?is-external=true" title="class or interface in org.bouncycastle.asn1.cms">AttributeTable</a>&nbsp;unsignedAttributes,
-                             <a href="http://docs.oracle.com/javase/6/docs/api/java/util/Collection.html?is-external=true" title="class or interface in java.util">Collection</a>&lt;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cert/X509CertificateHolder.html?is-external=true" title="class or interface in org.bouncycastle.cert">X509CertificateHolder</a>&gt;&nbsp;extraCertificates)
-                                  throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a>,
-                                         <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></pre>
-<dl><dt><span class="strong">Throws:</span></dt>
-<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd>
-<dd><code><a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></code></dd></dl>
+<h4>setURLs</h4>
+<pre>public&nbsp;void&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.68">setURLs</a>(<a href="https://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;tsaurls)</pre>
+<dl><dt><span class="strong">Since:</span></dt>
+  <dd>2.0</dd></dl>
 </li>
 </ul>
 <a name="timestamp(net.jsign.DigestAlgorithm, byte[])">
@@ -425,25 +416,33 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <ul class="blockList">
 <li class="blockList">
 <h4>timestamp</h4>
-<pre>protected abstract&nbsp;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.173">timestamp</a>(<a href="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</a>&nbsp;algo,
+<pre>protected abstract&nbsp;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.174">timestamp</a>(<a href="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</a>&nbsp;algo,
                       byte[]&nbsp;encryptedDigest)
-                                    throws <a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a>,
+                                    throws <a href="https://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a>,
                                            <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a>,
                                            <a href="../../../net/jsign/timestamp/TimestampingException.html" title="class in net.jsign.timestamp">TimestampingException</a></pre>
 <dl><dt><span class="strong">Throws:</span></dt>
-<dd><code><a href="http://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd>
 <dd><code><a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></code></dd>
 <dd><code><a href="../../../net/jsign/timestamp/TimestampingException.html" title="class in net.jsign.timestamp">TimestampingException</a></code></dd></dl>
 </li>
 </ul>
-<a name="create(net.jsign.timestamp.TimestampingMode)">
+<a name="timestamp(net.jsign.DigestAlgorithm, org.bouncycastle.cms.CMSSignedData)">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>create</h4>
-<pre>public static&nbsp;<a href="../../../net/jsign/timestamp/Timestamper.html" title="class in net.jsign.timestamp">Timestamper</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.178">create</a>(<a href="../../../net/jsign/timestamp/TimestampingMode.html" title="enum in net.jsign.timestamp">TimestampingMode</a>&nbsp;mode)</pre>
-<div class="block">Returns the timestamper for the specified mode.</div>
+<h4>timestamp</h4>
+<pre>public&nbsp;<a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;<a href="../../../src-html/net/jsign/timestamp/Timestamper.html#line.101">timestamp</a>(<a href="../../../net/jsign/DigestAlgorithm.html" title="enum in net.jsign">DigestAlgorithm</a>&nbsp;algo,
+                      <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSSignedData.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSSignedData</a>&nbsp;sigData)
+                        throws <a href="https://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a>,
+                               <a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></pre>
+<div class="block">Timestamp the specified signature.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>algo</code> - the digest algorithm used for the timestamp</dd><dd><code>sigData</code> - the signed data to be timestamped</dd>
+<dt><span class="strong">Returns:</span></dt><dd>the signed data with the timestamp added</dd>
+<dt><span class="strong">Throws:</span></dt>
+<dd><code><a href="https://docs.oracle.com/javase/6/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd>
+<dd><code><a href="http://www.bouncycastle.org/docs/pkixdocs1.5on/org/bouncycastle/cms/CMSException.html?is-external=true" title="class or interface in org.bouncycastle.cms">CMSException</a></code></dd></dl>
 </li>
 </ul>
 </li>
@@ -465,7 +464,6 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <li class="navBarCell1Rev">Class</li>
 <li><a href="class-use/Timestamper.html">Use</a></li>
 <li><a href="package-tree.html">Tree</a></li>
-<li><a href="../../../deprecated-list.html">Deprecated</a></li>
 <li><a href="../../../index-all.html">Index</a></li>
 <li><a href="../../../help-doc.html">Help</a></li>
 </ul>
@@ -513,6 +511,6 @@ extends <a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html?
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2012&#x2013;2017. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2012&#x2013;2018. All rights reserved.</small></p>
 </body>
 </html>
