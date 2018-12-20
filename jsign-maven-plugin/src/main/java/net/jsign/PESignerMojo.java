@@ -23,6 +23,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Settings;
 
 /**
  * Maven plugin for signing PE files.
@@ -97,6 +99,12 @@ public class PESignerMojo extends AbstractMojo {
     @Parameter( property = "jsign.replace", defaultValue = "false")
     private boolean replace;
 
+    @Parameter(defaultValue = "${settings}", readonly = true)
+    private Settings settings;
+
+    @Parameter( property = "jsign.proxyId" )
+    private String proxyId;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         PESignerHelper helper = new PESignerHelper(new MavenConsole(getLog()), "element");
@@ -116,11 +124,42 @@ public class PESignerMojo extends AbstractMojo {
         helper.tsretries(tsretries);
         helper.tsretrywait(tsretrywait);
         helper.replace(replace);
-        
+
+        Proxy proxy = getProxyFromSettings();
+        if (proxy != null) {
+            helper.proxyUrl(proxy.getHost() + ":" + proxy.getPort());
+            helper.proxyUser(proxy.getUsername());
+            helper.proxyPass(proxy.getPassword());
+        }
+
         try {
             helper.sign(file);
         } catch (SignerException e) {
             throw new MojoFailureException(e.getMessage(), e);
         }
+    }
+
+    private Proxy getProxyFromSettings() throws MojoExecutionException {
+        if (settings == null) {
+            return null;
+        }
+
+        if (proxyId != null) {
+            for (Proxy proxy : settings.getProxies()) {
+                if (proxyId.equals(proxy.getId())) {
+                    return proxy;
+                }
+            }
+            throw new MojoExecutionException("Configured proxy with id=" + proxyId + " not found");
+        }
+
+        // Get active http/https proxy
+        for (Proxy proxy : settings.getProxies()) {
+            if (proxy.isActive() && ("http".equalsIgnoreCase(proxy.getProtocol()) || "https".equalsIgnoreCase(proxy.getProtocol()))) {
+                return proxy;
+            }
+        }
+
+        return null;
     }
 }
