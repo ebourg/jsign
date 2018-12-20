@@ -25,6 +25,9 @@ See https://ebourg.github.com/jsign for more information.
 Changes
 =======
 
+Version 2.2 (in development)
+* The timestamping is no longer enabled by default with the Maven plugin
+
 Version 2.1 (2018-10-08)
 * Fixed the loading of SunPKCS11 configuration files with Java 9
 * SunPKCS11 configuration files can be loaded from any directory

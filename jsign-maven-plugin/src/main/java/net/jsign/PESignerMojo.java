@@ -82,7 +82,7 @@ public class PESignerMojo extends AbstractMojo {
     private String tsaurl;
 
     /** The protocol used for the timestamping (RFC3161 or Authenticode) */
-    @Parameter( property = "jsign.tsmode", defaultValue = "authenticode" )
+    @Parameter( property = "jsign.tsmode" )
     private String tsmode;
 
     /** The number of retries for timestamping */
