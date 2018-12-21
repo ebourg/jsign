@@ -21,10 +21,13 @@ import java.io.File;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 /**
  * Maven plugin for signing PE files.
@@ -105,6 +108,9 @@ public class PESignerMojo extends AbstractMojo {
     @Parameter( property = "jsign.proxyId" )
     private String proxyId;
 
+    @Component(hint = "mng-4384")
+    private SecDispatcher securityDispatcher;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         PESignerHelper helper = new PESignerHelper(new MavenConsole(getLog()), "element");
@@ -113,12 +119,12 @@ public class PESignerMojo extends AbstractMojo {
         helper.url(url);
         helper.alg(algorithm);
         helper.keystore(keystore);
-        helper.storepass(storepass);
+        helper.storepass(decrypt(storepass));
         helper.storetype(storetype);
         helper.alias(alias);
         helper.certfile(certfile);
         helper.keyfile(keyfile);
-        helper.keypass(keypass);
+        helper.keypass(decrypt(keypass));
         helper.tsaurl(tsaurl);
         helper.tsmode(tsmode);
         helper.tsretries(tsretries);
@@ -161,5 +167,18 @@ public class PESignerMojo extends AbstractMojo {
         }
 
         return null;
+    }
+
+    private String decrypt(String encoded) throws MojoExecutionException {
+        if (encoded == null) {
+            return null;
+        }
+
+        try {
+            return securityDispatcher.decrypt(encoded);
+        } catch (SecDispatcherException e) {
+            getLog().error("error using security dispatcher: " + e.getMessage(), e);
+            throw new MojoExecutionException("error using security dispatcher: " + e.getMessage(), e);
+        }
     }
 }
