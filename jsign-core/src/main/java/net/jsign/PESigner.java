@@ -28,7 +28,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import net.jsign.asn1.authenticode.AuthenticodeDigestCalculatorProvider;
@@ -47,7 +46,6 @@ import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -60,6 +58,7 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
@@ -401,10 +400,7 @@ public class PESigner {
         DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
         
         // prepare the authenticated attributes
-        Collection<ASN1ObjectIdentifier> skipAttributes = new ArrayList<>();
-        skipAttributes.add(new ASN1ObjectIdentifier("1.2.840.113549.1.9.5")); // signingTime
-        skipAttributes.add(new ASN1ObjectIdentifier("1.2.840.113549.1.9.52")); // cmsAlgorithmProtection
-        CMSAttributeTableGenerator attributeTableGenerator = new FilteredSignedAttributeTableGenerator(skipAttributes, createAuthenticatedAttributes());
+        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
         
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
