@@ -38,7 +38,7 @@ public class SpcLink extends ASN1Object implements ASN1Choice {
 
     private DERIA5String url;
     private SpcSerializedObject moniker;
-    private SpcString file = new SpcString("<<<Obsolete>>>");
+    private SpcString file = new SpcString("");
 
     public SpcLink() {
     }
