@@ -54,7 +54,7 @@ public class SpcLink extends ASN1Object implements ASN1Choice {
         } else if (moniker != null) {
             return new DERTaggedObject(false, 1, moniker);
         } else {
-            return new DERTaggedObject(false, 2, file);
+            return new DERTaggedObject(false, 2, new SpcString(""));
         }        
     }
 }
