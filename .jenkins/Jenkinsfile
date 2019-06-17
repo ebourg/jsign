@@ -1,0 +1,4 @@
+basicPipeline {
+    PROFILE = "RunBashScript"
+    SCRIPT_PATH = "./build_and_upload.sh"
+}

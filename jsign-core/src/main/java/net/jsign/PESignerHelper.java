@@ -71,6 +71,7 @@ class PESignerHelper {
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
     public static final String PARAM_REPLACE = "replace";
+    public static final String PARAM_GOOGLE_CLOUD_HSM_KEY_ID = "gcloudhsmkeyid";
 
     private Console console;
 
@@ -95,6 +96,8 @@ class PESignerHelper {
     private String proxyUser;
     private String proxyPass;
     private boolean replace;
+    private String googleCloudHsmKeyId;
+
 
     public PESignerHelper(Console console, String parameterName) {
         this.console = console;
@@ -206,30 +209,36 @@ class PESignerHelper {
         return this;
     }
 
+    public PESignerHelper googleCloudHsmKeyId(String googleCloudHsmKeyId) {
+        this.googleCloudHsmKeyId = googleCloudHsmKeyId;
+        return this;
+    }
+
     public PESignerHelper param(String key, String value) {
         if (value == null) {
             return this;
         }
         
         switch (key) {
-            case PARAM_KEYSTORE:   return keystore(value);
-            case PARAM_STOREPASS:  return storepass(value);
-            case PARAM_STORETYPE:  return storetype(value);
-            case PARAM_ALIAS:      return alias(value);
-            case PARAM_KEYPASS:    return keypass(value);
-            case PARAM_KEYFILE:    return keyfile(value);
-            case PARAM_CERTFILE:   return certfile(value);
-            case PARAM_ALG:        return alg(value);
-            case PARAM_TSAURL:     return tsaurl(value);
-            case PARAM_TSMODE:     return tsmode(value);
-            case PARAM_TSRETRIES:  return tsretries(Integer.parseInt(value));
-            case PARAM_TSRETRY_WAIT: return tsretrywait(Integer.parseInt(value));
-            case PARAM_NAME:       return name(value);
-            case PARAM_URL:        return url(value);
-            case PARAM_PROXY_URL:  return proxyUrl(value);
-            case PARAM_PROXY_USER: return proxyUser(value);
-            case PARAM_PROXY_PASS: return proxyPass(value);
-            case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
+            case PARAM_KEYSTORE:                    return keystore(value);
+            case PARAM_STOREPASS:                   return storepass(value);
+            case PARAM_STORETYPE:                   return storetype(value);
+            case PARAM_ALIAS:                       return alias(value);
+            case PARAM_KEYPASS:                     return keypass(value);
+            case PARAM_KEYFILE:                     return keyfile(value);
+            case PARAM_CERTFILE:                    return certfile(value);
+            case PARAM_ALG:                         return alg(value);
+            case PARAM_TSAURL:                      return tsaurl(value);
+            case PARAM_TSMODE:                      return tsmode(value);
+            case PARAM_TSRETRIES:                   return tsretries(Integer.parseInt(value));
+            case PARAM_TSRETRY_WAIT:                return tsretrywait(Integer.parseInt(value));
+            case PARAM_NAME:                        return name(value);
+            case PARAM_URL:                         return url(value);
+            case PARAM_PROXY_URL:                   return proxyUrl(value);
+            case PARAM_PROXY_USER:                  return proxyUser(value);
+            case PARAM_PROXY_PASS:                  return proxyPass(value);
+            case PARAM_REPLACE:                     return replace("true".equalsIgnoreCase(value));
+            case PARAM_GOOGLE_CLOUD_HSM_KEY_ID:     return googleCloudHsmKeyId(value);
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -294,14 +303,15 @@ class PESignerHelper {
             } catch (Exception e) {
                 throw new SignerException("Failed to retrieve the private key from the keystore", e);
             }
-
         } else {
             // separate private key and certificate files (PVK/SPC)
-            if (keyfile == null) {
-                throw new SignerException("keyfile " + parameterName + " must be set");
-            }
-            if (!keyfile.exists()) {
-                throw new SignerException("The keyfile " + keyfile + " couldn't be found");
+            if (!"GOOGLE_HSM".equals(storetype)) {
+                if (keyfile == null) {
+                    throw new SignerException("keyfile " + parameterName + " must be set");
+                }
+                if (!keyfile.exists()) {
+                    throw new SignerException("The keyfile " + keyfile + " couldn't be found");
+                }
             }
             if (certfile == null) {
                 throw new SignerException("certfile " + parameterName + " must be set");
@@ -317,11 +327,15 @@ class PESignerHelper {
                 throw new SignerException("Failed to load the certificate from " + certfile, e);
             }
 
-            // load the private key
-            try {
-                privateKey = PrivateKeyUtils.load(keyfile, keypass != null ? keypass : storepass);
-            } catch (Exception e) {
-                throw new SignerException("Failed to load the private key from " + keyfile, e);
+            if ("GOOGLE_HSM".equals(storetype)) {
+                privateKey = null;
+            } else {
+                // load the private key
+                try {
+                    privateKey = PrivateKeyUtils.load(keyfile, keypass != null ? keypass : storepass);
+                } catch (Exception e) {
+                    throw new SignerException("Failed to load the private key from " + keyfile, e);
+                }
             }
         }
 
@@ -342,6 +356,7 @@ class PESignerHelper {
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
                 .withSignatureProvider(provider)
                 .withSignaturesReplaced(replace)
+                .withGoogleHsmKeyId(googleCloudHsmKeyId)
                 .withTimestamping(tsaurl != null || tsmode != null)
                 .withTimestampingMode(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE)
                 .withTimestampingRetries(tsretries)
@@ -417,7 +432,7 @@ class PESignerHelper {
      * Load the certificate chain from the specified PKCS#7 files.
      */
     @SuppressWarnings("unchecked")
-    private Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {
+    public static Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {
         try (FileInputStream in = new FileInputStream(file)) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);

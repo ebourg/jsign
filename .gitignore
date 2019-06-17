@@ -10,6 +10,10 @@ dependency-reduced-pom.xml
 /.idea
 
 # eclipse files
-/.settings
-/.classpath
-/.project
+.settings
+.classpath
+.project
+
+.DS_Store
+
+bin/

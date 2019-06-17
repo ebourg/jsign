@@ -21,9 +21,13 @@ Jsign is free to use and licensed under the Apache License version 2.0.
 
 See https://ebourg.github.com/jsign for more information.
 
+# ROOKOUT FORK FOR GOOGLE CLOUD HSM SUPPORT
 
 Changes
 =======
+
+Version FORKED (Mickael @ Rookout)
+* Support signing PE using Google Cloud HSM
 
 Version 2.2 (in development)
 * The Maven plugin now uses the proxy defined in the Maven settings for the timestamping (contributed by Denny Bayer)

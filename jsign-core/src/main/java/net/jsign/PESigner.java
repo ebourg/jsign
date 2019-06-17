@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -55,20 +56,13 @@ import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-import org.bouncycastle.cms.CMSAttributeTableGenerator;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
-import org.bouncycastle.cms.SignerInfoGenerator;
-import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
-import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.cms.*;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.util.Store;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
@@ -90,6 +84,7 @@ public class PESigner {
     private String programName;
     private String programURL;
     private boolean replace;
+    private String googleCloudHsmKeyId;
 
     private boolean timestamping = true;
     private TimestampingMode tsmode = TimestampingMode.AUTHENTICODE;
@@ -128,6 +123,14 @@ public class PESigner {
         }
         this.chain = chain;
         this.privateKey = (PrivateKey) keystore.getKey(alias, password.toCharArray());
+    }
+
+    /**
+     * Set the Google Cloud HSM Key Id to sign with.
+     */
+    public PESigner withGoogleHsmKeyId(String googleCloudHsmKeyId) {
+        this.googleCloudHsmKeyId = googleCloudHsmKeyId;
+        return this;
     }
 
     /**
@@ -310,11 +313,20 @@ public class PESigner {
         }
         
         // compute the signature
-        CMSSignedData sigData = createSignature(file);
-        
+        CMSSignedData sigData;
+        if (googleCloudHsmKeyId != null) {
+            sigData = createSignatureGoogleHsm(file, googleCloudHsmKeyId);
+        } else {
+            sigData = createSignature(file);
+        }
+
         // verify the signature
+        Certificate certToCheck = chain[0];
+        if (googleCloudHsmKeyId != null) {
+            certToCheck = chain[chain.length - 1];
+        }
         DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
-        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(chain[0].getPublicKey());
+        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(certToCheck.getPublicKey());
         sigData.getSignerInfos().iterator().next().verify(verifier);
         
         // timestamping
@@ -376,9 +388,54 @@ public class PESigner {
         return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
     }
 
+    private CMSSignedData createSignatureGoogleHsm(PEFile file, final String googleCloudHsmKeyId) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
+        byte[] sha = file.computeDigest(digestAlgorithm);
+
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
+        SpcIndirectDataContent spcIndirectDataContent = new SpcIndirectDataContent(data, digestInfo);
+
+        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
+
+        // prepare the authenticated attributes
+        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
+
+        // fetch the signing certificate
+        X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[chain.length - 1]);
+
+        // prepare the signerInfo with the extra authenticated attributes
+        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider);
+        signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
+
+        Store certs = new JcaCertStore(removeRoot(chain));
+
+        //SignedHash is a base64-encoded PKCS1 block.
+        ContentSigner contentSigner = ContentSignerFactory.getContentSigner(new HsmContentSigner() {
+            @Override
+            public byte[] apply(ByteArrayOutputStream stream) {
+                try {
+                    return Kms.signAsymmetric(googleCloudHsmKeyId, stream.toByteArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                return new byte[0];
+            }
+        }, "SHA256WITHECDSA");
+        // Google Cloud only accepts SHA256WITHECDSA
+
+        AuthenticodeSignedDataGenerator gen = new AuthenticodeSignedDataGenerator();
+
+        gen.addSignerInfoGenerator(signerInfoGeneratorBuilder.build(contentSigner, certificate));
+        gen.addCertificates(certs);
+        return gen.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, spcIndirectDataContent);
+    }
+
     private CMSSignedData createSignature(PEFile file) throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
         byte[] sha = file.computeDigest(digestAlgorithm);
-        
+
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
@@ -398,22 +455,22 @@ public class PESigner {
         ContentSigner shaSigner = contentSignerBuilder.build(privateKey);
 
         DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
-        
+
         // prepare the authenticated attributes
         CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
-        
+
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
-        
+
         // prepare the signerInfo with the extra authenticated attributes
         SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider);
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
-        
+
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(removeRoot(chain)));
         generator.addSignerInfoGenerator(signerInfoGenerator);
-        
+
         return generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, spcIndirectDataContent);
     }
 
