@@ -1,0 +1,41 @@
+# pssign completion
+
+have pssign &&
+_pssign()
+{
+    COMPREPLY=()
+    local cur prev
+    _get_comp_words_by_ref cur prev
+
+    local opts="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h -e --scriptEncoding --help"
+
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
+        return 0
+    fi
+
+    local pattern="!*.@(ps1|psm1|psd1)"
+
+    case $prev in
+        -s|--keystore|--keyfile|-c|--certfile)
+            _filedir
+            return 0
+            ;;
+        --storetype)
+            COMPREPLY=( $( compgen -W 'JKS PKCS12' -- "$cur" ) )
+            return 0
+            ;;
+        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|-e|--scriptEncoding)
+            # argument required but no completions available
+            return 0
+            ;;
+        -h|--help)
+            # no argument
+            return 0
+            ;;
+    esac
+
+    COMPREPLY=( $( compgen -f -X "$pattern" -- "$cur" ) $( compgen -d -- "$cur" ) )
+
+} &&
+complete -F _pssign -o filenames pssign

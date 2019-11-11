@@ -1,5 +1,6 @@
-/**
+/*
  * Copyright 2017 Emmanuel Bourg
+ * Copyright 2019 Björn Kautler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +17,15 @@
 
 package net.jsign;
 
-import java.io.File;
-import java.util.Map;
-
 import groovy.lang.Closure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
+import java.io.File;
+import java.util.Map;
+
 /**
- * Gradle plugin registering the signexe extension method with the project.
+ * Gradle plugin registering the signexe and signps extension methods with the project.
  *
  * @author Emmanuel Bourg
  * @since 2.0
@@ -37,8 +38,21 @@ public class PESignerGradlePlugin implements Plugin<Project> {
             public void doCall(Map<String, String> params) throws SignerException {
                 String file = params.get("file");
                 params.remove("file");
-                
+
                 PESignerHelper helper = new PESignerHelper(new GradleConsole(project.getLogger()), "property");
+                for (Map.Entry<String, String> param : params.entrySet()) {
+                    helper.param(param.getKey(), param.getValue());
+                }
+                helper.sign(new File(file));
+            }
+        });
+
+        project.getExtensions().add("signps", new Closure(null) {
+            public void doCall(Map<String, String> params) throws SignerException {
+                String file = params.get("file");
+                params.remove("file");
+
+                PSSignerHelper helper = new PSSignerHelper(new GradleConsole(project.getLogger()), "property");
                 for (Map.Entry<String, String> param : params.entrySet()) {
                     helper.param(param.getKey(), param.getValue());
                 }

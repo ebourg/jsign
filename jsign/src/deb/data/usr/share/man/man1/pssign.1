@@ -1,0 +1,92 @@
+.\" Manpage for pssign.
+.TH man 1 "10 Jan 2013" "@VERSION@" "pssign man page"
+
+.SH NAME
+pssign \- sign and timestamp PowerShell script files
+
+.SH SYNOPSIS
+.B pssign
+[OPTIONS] FILE
+
+.SH DESCRIPTION
+pssign is a Java implementation of Microsoft Authenticode that lets you sign and
+timestamp PowerShell scripts. It provides an alternative to native tools
+like signcode/signtool on Windows or the Mono development tools on Unix systems.
+
+pssign can use private keys and certificates in various formats, either Java keystores,
+PKCS#12 keystores, or SPC/PVK files.
+
+.SH OPTIONS
+
+.TP
+.B -s, --keystore <FILE>
+The keystore file containing the certificate and the private key used for signing
+the file. pssign supports Java keystores and PKCS#12 keystores. This option must
+be specified unless the keyfile and certfile options are already specified.
+
+.TP
+.B --storepass <PASSWORD>
+The password to open the keystore
+
+.TP
+.B --storetype <TYPE>
+The type of the keystore:
+.br
+- JKS    : Java keystore (.jks files)
+.br
+- PKCS12 : Standard PKCS#12 keystore (.p12 or .pfx files)
+.br
+This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
+
+.TP
+.B -a, --alias <NAME>
+The alias of the certificate used for signing in the keystore. This option
+is mandatory in the keystore option is specified.
+
+.TP
+.B --keypass <PASSWORD>
+The password of the private key. When using a keystore, this parameter can be
+omitted if the keystore shares the same password.
+
+.TP
+.B --keyfile <FILE>
+The file containing the private key. Only PVK files are supported. This option
+is used in combination with the certfile option.
+
+.TP
+.B -c, --certfile <FILE>
+The file containing the PKCS#7 certificate chain (.p7b or .spc files). This
+option is used in combination with the keyfile option.
+
+.TP
+.B -t, --tsaurl <URL>
+The URL of the timestamping authority. RFC 3161 servers used for jar signing
+are not compatible with Authenticode signatures. You can use the COMODO
+or the Verisign services:
+.br
+- http://timestamp.comodoca.com/authenticode
+.br
+- http://timestamp.verisign.com/scripts/timstamp.dll
+
+.TP
+.B -n, --name <NAME>
+The name of the application. This is an optional information embedded in the signature.
+
+.TP
+.B -u, --url <URL>
+The URL of the application. This is an optional information embedded in the signature.
+
+.TP
+.B -e, --scriptEncoding <SCRIPT_ENCODING>
+The encoding of the script to be signed (UTF-8 by default).
+
+.TP
+.B -h, --help
+Print the help
+
+
+.SH REPORTING BUGS
+Bugs and suggestions can be reported to the project home page: http://ebourg.github.com/jsign
+
+.SH AUTHOR
+Emmanuel Bourg (ebourg@apache.org)

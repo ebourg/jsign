@@ -5,6 +5,9 @@
 
 set -e
 
-# Create the symbolic link to the executable script
+# Create the symbolic links to the executable scripts
 chmod +x /usr/share/jsign/pesign.sh
 ln --force -s /usr/share/jsign/pesign.sh /usr/bin/pesign
+
+chmod +x /usr/share/jsign/pssign.sh
+ln --force -s /usr/share/jsign/pssign.sh /usr/bin/pssign

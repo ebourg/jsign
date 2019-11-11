@@ -1,9 +1,10 @@
 #!/bin/sh
 #
-# Pre removal script for Jsign
+# Pre removal scripts for Jsign
 #
 
 set -e
 
-# Remove the symbolic link to the executable script
+# Remove the symbolic link to the executable scripts
 rm --force /usr/bin/pesign
+rm --force /usr/bin/pssign
