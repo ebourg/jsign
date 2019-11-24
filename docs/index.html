@@ -54,15 +54,15 @@ programmatically or standalone as a command line tool.</p>
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
 
 <pre class="prettyprint lang-xml">
- &lt;taskdef name="signexe" classname="net.jsign.PESignerTask" classpath="jsign-2.1.jar"/>
+ &lt;taskdef name="jsign" classname="net.jsign.PESignerTask" classpath="jsign-2.1.jar"/>
 
- &lt;signexe file="application.exe"
-          name="My Application"
-          url="http://www.example.com"
-          keystore="keystore.jks"
-          alias="test"
-          storepass="password"
-          tsaurl="http://timestamp.comodoca.com/authenticode"/>
+ &lt;jsign file="application.exe"
+        name="My Application"
+        url="http://www.example.com"
+        keystore="keystore.jks"
+        alias="test"
+        storepass="password"
+        tsaurl="http://timestamp.comodoca.com/authenticode"/>
 </pre>
 
 <br>
@@ -70,11 +70,11 @@ programmatically or standalone as a command line tool.</p>
 <p>Another example with <code>SPC</code> and <code>PVK</code> files commonly used with <code>signcode.exe</code>:</p>
 
 <pre class="prettyprint lang-xml">
- &lt;signexe file="application.exe"
-          certfile="certificate.spc"
-          keyfile="key.pvk"
-          keypass="password"
-          tsaurl="http://timestamp.verisign.com/scripts/timstamp.dll"/>
+ &lt;jsign file="application.exe"
+        certfile="certificate.spc"
+        keyfile="key.pvk"
+        keypass="password"
+        tsaurl="http://timestamp.verisign.com/scripts/timstamp.dll"/>
 </pre>
 
 <br><br>
@@ -232,13 +232,13 @@ are the same as those described above for the Ant task.</p>
     apply plugin: 'net.jsign'
     
     task sign << {
-        signexe(file      : 'application.exe',
-                name      : 'My Application',
-                url       : 'http://www.example.com',
-                keystore  : 'keystore.p12',
-                alias     : 'test',
-                storepass : 'secret',
-                tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+        jsign(file      : 'application.exe',
+              name      : 'My Application',
+              url       : 'http://www.example.com',
+              keystore  : 'keystore.p12',
+              alias     : 'test',
+              storepass : 'secret',
+              tsaurl    : 'http://timestamp.comodoca.com/authenticode')
     }
 </pre>
 

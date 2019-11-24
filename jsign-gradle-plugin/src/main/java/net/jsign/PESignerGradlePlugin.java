@@ -24,7 +24,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 /**
- * Gradle plugin registering the signexe extension method with the project.
+ * Gradle plugin registering the jsign extension method with the project.
  *
  * @author Emmanuel Bourg
  * @since 2.0
@@ -33,7 +33,7 @@ public class PESignerGradlePlugin implements Plugin<Project> {
 
     @Override
     public void apply(final Project project) {
-        project.getExtensions().add("signexe", new Closure(null) {
+        project.getExtensions().add("jsign", new Closure(null) {
             public void doCall(Map<String, String> params) throws SignerException {
                 String file = params.get("file");
                 params.remove("file");

@@ -30,6 +30,7 @@ Version 2.2 (in development)
 * The Maven plugin now accepts passwords encrypted using the Maven security settings (contributed by Denny Bayer)
 * The timestamping is no longer enabled by default with the Maven plugin
 * Renamed the command line tool from `pesign` to `jsign`
+* Renamed the Ant task and the Gradle extension method from `signexe` to `jsign`
 * Upgraded BouncyCastle to 1.64
 
 Version 2.1 (2018-10-08)
