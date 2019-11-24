@@ -21,13 +21,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import junit.framework.TestCase;
-import net.jsign.DigestAlgorithm;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.util.encoders.Hex;
+import org.junit.Test;
 
-public class PEFileTest extends TestCase {
+import net.jsign.DigestAlgorithm;
 
+import static org.junit.Assert.*;
+
+public class PEFileTest {
+
+    @Test
     public void testLoad() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
@@ -55,6 +59,7 @@ public class PEFileTest extends TestCase {
         assertEquals(16, file.getNumberOfRvaAndSizes());
     }
 
+    @Test
     public void testLoadNonExecutable() throws Exception {
         try {
             new PEFile(new File("pom.xml"));
@@ -67,6 +72,7 @@ public class PEFileTest extends TestCase {
     /**
      * Attempts to open a DOS executable that isn't a Portable Executable
      */
+    @Test
     public void testDosExecutable() throws Exception {
         try {
             new PEFile(new File("target/test-classes/MORE.EXE")); // MORE.EXE comes from FreeDOS and is GPL licensed
@@ -78,6 +84,7 @@ public class PEFileTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetSections() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
@@ -93,6 +100,7 @@ public class PEFileTest extends TestCase {
         }
     }
 
+    @Test
     public void testPrintInfo() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -104,6 +112,7 @@ public class PEFileTest extends TestCase {
         System.out.println(out);
     }
 
+    @Test
     public void testPadNoOp() throws Exception {
         File testFile = new File("target/test-classes/wineyes.exe");
         File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
@@ -116,6 +125,7 @@ public class PEFileTest extends TestCase {
         assertEquals("Padded file size", testFile.length(), testFilePadded.length());
     }
 
+    @Test
     public void testPad() throws Exception {
         File testFile = new File("target/test-classes/wineyes.exe");
         File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
@@ -128,12 +138,14 @@ public class PEFileTest extends TestCase {
         assertEquals("Padded file size", testFile.length() + 4, testFilePadded.length());
     }
 
+    @Test
     public void testComputeChecksum() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
         assertEquals(file.computeChecksum(), 0x0000E7F5);
     }
 
+    @Test
     public void testComputeDigest() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         

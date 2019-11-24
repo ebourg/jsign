@@ -28,11 +28,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import junit.framework.TestCase;
-import net.jsign.pe.PEFile;
-import net.jsign.timestamp.AuthenticodeTimestamper;
-import net.jsign.timestamp.TimestampingException;
-import net.jsign.timestamp.TimestampingMode;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -43,8 +38,16 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TSPAlgorithms;
+import org.junit.Test;
 
-public class PESignerTest extends TestCase {
+import net.jsign.pe.PEFile;
+import net.jsign.timestamp.AuthenticodeTimestamper;
+import net.jsign.timestamp.TimestampingException;
+import net.jsign.timestamp.TimestampingMode;
+
+import static org.junit.Assert.*;
+
+public class PESignerTest {
 
     private static String PRIVATE_KEY_PASSWORD = "password";
     private static String ALIAS = "test";
@@ -55,6 +58,7 @@ public class PESignerTest extends TestCase {
         return keystore;
     }
 
+    @Test
     public void testSign() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed.exe");
@@ -82,6 +86,7 @@ public class PESignerTest extends TestCase {
         peFile.printInfo(System.out);
     }
 
+    @Test
     public void testSignWithUnknownKeyStoreEntry() throws Exception {
         try {
             new PESigner(getKeyStore(), "unknown", PRIVATE_KEY_PASSWORD);
@@ -91,6 +96,7 @@ public class PESignerTest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningWithKeyAndChain() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-key-chain.exe");
@@ -131,6 +137,7 @@ public class PESignerTest extends TestCase {
         assertEquals("signer", "Jsign Code Signing Test Certificate", commonName);
     }
 
+    @Test
     public void testEmptyChain() throws Exception {
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
         try {
@@ -141,6 +148,7 @@ public class PESignerTest extends TestCase {
         }
     }
 
+    @Test
     public void testNullChain() throws Exception {
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
         try {
@@ -151,6 +159,7 @@ public class PESignerTest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningWithMismatchingKeyAndCertificate() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-mismatching-key-certificate.exe");
@@ -181,10 +190,12 @@ public class PESignerTest extends TestCase {
         }
     }
 
+    @Test
     public void testTimestampAuthenticode() throws Exception {
         testTimestamp(TimestampingMode.AUTHENTICODE, DigestAlgorithm.SHA1);
     }
 
+    @Test
     public void testTimestampRFC3161() throws Exception {
         testTimestamp(TimestampingMode.RFC3161, DigestAlgorithm.SHA256);
     }
@@ -217,6 +228,7 @@ public class PESignerTest extends TestCase {
     /**
      * Tests that a custom Timestamper implementation can be provided.
      */
+    @Test
     public void testWithTimestamper() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-custom.exe");
@@ -255,6 +267,7 @@ public class PESignerTest extends TestCase {
         SignatureAssert.assertTimestamped("Invalid timestamp", signature);
     }
 
+    @Test
     public void testSignTwice() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-twice.exe");
@@ -294,6 +307,7 @@ public class PESignerTest extends TestCase {
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
     }
 
+    @Test
     public void testSignThreeTimes() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-three-times.exe");
@@ -346,6 +360,7 @@ public class PESignerTest extends TestCase {
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
     }
 
+    @Test
     public void testReplaceSignature() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-re-signed.exe");
@@ -385,10 +400,12 @@ public class PESignerTest extends TestCase {
         assertEquals("Digest algorithm", DigestAlgorithm.SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
     }
 
+    @Test
     public void testInvalidAuthenticodeTimestampingAuthority() throws Exception {
         testInvalidTimestampingAuthority(TimestampingMode.AUTHENTICODE);
     }
 
+    @Test
     public void testInvalidRFC3161TimestampingAuthority() throws Exception {
         testInvalidTimestampingAuthority(TimestampingMode.RFC3161);
     }
@@ -422,10 +439,12 @@ public class PESignerTest extends TestCase {
         assertTrue(signatures.isEmpty());
     }
 
+    @Test
     public void testBrokenAuthenticodeTimestampingAuthority() throws Exception {
         testBrokenTimestampingAuthority(TimestampingMode.AUTHENTICODE);
     }
 
+    @Test
     public void testBrokenRFC3161TimestampingAuthority() throws Exception {
         testBrokenTimestampingAuthority(TimestampingMode.RFC3161);
     }
@@ -458,6 +477,7 @@ public class PESignerTest extends TestCase {
         assertTrue(signatures.isEmpty());
     }
 
+    @Test
     public void testInvalidTimestampingURL() throws Exception {
         PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"));
         
@@ -476,10 +496,12 @@ public class PESignerTest extends TestCase {
         }
     }
 
+    @Test
     public void testAuthenticodeTimestampingFailover() throws Exception {
         testTimestampingFailover(TimestampingMode.AUTHENTICODE, "http://timestamp.comodoca.com/authenticode");
     }
 
+    @Test
     public void testRFC3161TimestampingFailover() throws Exception {
         testTimestampingFailover(TimestampingMode.RFC3161, "http://timestamp.comodoca.com/rfc3161");
     }
@@ -512,9 +534,8 @@ public class PESignerTest extends TestCase {
 
     /**
      * Tests that it is possible to specify a signature algorithm.
-     *
-     * @throws Exception
      */
+    @Test
     public void testWithSignatureAlgorithmSHA1withRSA() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed.exe");
@@ -557,9 +578,8 @@ public class PESignerTest extends TestCase {
      *
      * This test also sets the signature provider as a provider supporting
      * the RSASSA-PSS algorithms might not be installed.
-     *
-     * @throws Exception
      */
+    @Test
     public void testWithSignatureAlgorithmSHA256withRSAandMGF1() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         

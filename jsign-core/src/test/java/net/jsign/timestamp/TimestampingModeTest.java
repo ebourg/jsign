@@ -16,10 +16,13 @@
 
 package net.jsign.timestamp;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TimestampingModeTest extends TestCase {
-    
+import static org.junit.Assert.*;
+
+public class TimestampingModeTest {
+
+    @Test
     public void testOf() {
         assertEquals(TimestampingMode.AUTHENTICODE, TimestampingMode.of("AUTHENTICODE"));
         assertEquals(TimestampingMode.AUTHENTICODE, TimestampingMode.of("authenticode"));

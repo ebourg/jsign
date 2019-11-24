@@ -21,16 +21,20 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import junit.framework.TestCase;
-import net.jsign.pe.PEFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.bouncycastle.cms.CMSSignedData;
+import org.junit.Before;
+import org.junit.Test;
 
-public class PESignerTaskTest extends TestCase {
+import net.jsign.pe.PEFile;
+
+import static org.junit.Assert.*;
+
+public class PESignerTaskTest {
 
     private Project project;
     
@@ -39,7 +43,8 @@ public class PESignerTaskTest extends TestCase {
     
     private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         project = new Project();
         project.setCoreLoader(getClass().getClassLoader());
         project.init();
@@ -73,6 +78,7 @@ public class PESignerTaskTest extends TestCase {
         project.addBuildListener(logger);
     }
 
+    @Test
     public void testMissingKeyStore() {
         try {
             project.executeTarget("missing-keystore");
@@ -82,6 +88,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testUnsupportedKeyStoreType() {
         try {
             project.executeTarget("unsupported-keystore");
@@ -91,6 +98,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testKeyStoreNotFound() {
         try {
             project.executeTarget("keystore-not-found");
@@ -100,6 +108,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedKeyStore() {
         try {
             project.executeTarget("corrupted-keystore");
@@ -109,6 +118,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingAlias() {
         try {
             project.executeTarget("missing-alias");
@@ -118,6 +128,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testAliasNotFound() {
         try {
             project.executeTarget("alias-not-found");
@@ -127,6 +138,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testCertificateNotFound() {
         try {
             project.executeTarget("certificate-not-found");
@@ -136,6 +148,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingFile() {
         try {
             project.executeTarget("missing-file");
@@ -145,6 +158,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testFileNotFound() {
         try {
             project.executeTarget("file-not-found");
@@ -154,6 +168,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedFile() {
         try {
             project.executeTarget("corrupted-file");
@@ -163,6 +178,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testConflictingAttributes() {
         try {
             project.executeTarget("conflicting-attributes");
@@ -172,6 +188,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingCertFile() {
         try {
             project.executeTarget("missing-certfile");
@@ -181,6 +198,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingKeyFile() {
         try {
             project.executeTarget("missing-keyfile");
@@ -190,6 +208,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testCertFileNotFound() {
         try {
             project.executeTarget("certfile-not-found");
@@ -199,6 +218,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testKeyFileNotFound() {
         try {
             project.executeTarget("keyfile-not-found");
@@ -208,6 +228,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedCertFile() {
         try {
             project.executeTarget("corrupted-certfile");
@@ -217,6 +238,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedKeyFile() {
         try {
             project.executeTarget("corrupted-keyfile");
@@ -226,6 +248,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testUnsupportedDigestAlgorithm() {
         try {
             project.executeTarget("unsupported-digest-algorithm");
@@ -235,6 +258,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testSigning() throws Exception {
         project.executeTarget("signing");
         
@@ -251,6 +275,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningPKCS12() throws Exception {
         project.executeTarget("signing-pkcs12");
         
@@ -267,6 +292,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningPVKSPC() throws Exception {
         project.executeTarget("signing-pvk-spc");
         
@@ -282,7 +308,8 @@ public class PESignerTaskTest extends TestCase {
             assertNotNull(signature);
         }
     }
-    
+
+    @Test
     public void testTimestampingAuthenticode() throws Exception {
         project.executeTarget("timestamping-authenticode");
         
@@ -301,6 +328,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testTimestampingRFC3161() throws Exception {
         project.executeTarget("timestamping-rfc3161");
         
@@ -319,6 +347,7 @@ public class PESignerTaskTest extends TestCase {
         }
     }
 
+    @Test
     public void testReplaceSignature() throws Exception {
         project.executeTarget("replace-signature");
         

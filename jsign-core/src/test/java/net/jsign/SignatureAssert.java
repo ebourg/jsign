@@ -16,7 +16,6 @@
 
 package net.jsign;
 
-import junit.framework.Assert;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -25,25 +24,27 @@ import org.bouncycastle.cms.SignerInformation;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 
+import static org.junit.Assert.*;
+
 public class SignatureAssert {
 
     public static void assertTimestamped(String message, CMSSignedData signedData) {
         SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
         
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        Assert.assertNotNull(message + " (missing unauthenticated attributse)", unsignedAttributes);
+        assertNotNull(message + " (missing unauthenticated attributse)", unsignedAttributes);
         
         Attribute authenticodeTimestampAttribute = unsignedAttributes.get(CMSAttributes.counterSignature);
         Attribute rfc3161TimestampAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID);
         
-        Assert.assertTrue(message + " (no counter signature attribute found)", authenticodeTimestampAttribute != null || rfc3161TimestampAttribute != null);
+        assertTrue(message + " (no counter signature attribute found)", authenticodeTimestampAttribute != null || rfc3161TimestampAttribute != null);
         
         if (authenticodeTimestampAttribute != null) {
-            Assert.assertNotNull(message + " (counter signature attribute value is null)", authenticodeTimestampAttribute.getAttributeValues());
-            Assert.assertTrue(message + " (counter signature attribute value is empty)", authenticodeTimestampAttribute.getAttributeValues().length > 0);
+            assertNotNull(message + " (counter signature attribute value is null)", authenticodeTimestampAttribute.getAttributeValues());
+            assertTrue(message + " (counter signature attribute value is empty)", authenticodeTimestampAttribute.getAttributeValues().length > 0);
         } else {
-            Assert.assertNotNull(message + " (counter signature attribute value is null)", rfc3161TimestampAttribute.getAttributeValues());
-            Assert.assertTrue(message + " (counter signature attribute value is empty)", rfc3161TimestampAttribute.getAttributeValues().length > 0);
+            assertNotNull(message + " (counter signature attribute value is null)", rfc3161TimestampAttribute.getAttributeValues());
+            assertTrue(message + " (counter signature attribute value is empty)", rfc3161TimestampAttribute.getAttributeValues().length > 0);
         }
         
     }

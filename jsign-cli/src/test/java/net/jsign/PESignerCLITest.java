@@ -24,10 +24,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.netty.handler.codec.http.HttpRequest;
-import junit.framework.TestCase;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
+import org.junit.Before;
+import org.junit.Test;
 import org.littleshoot.proxy.HttpFilters;
 import org.littleshoot.proxy.HttpFiltersSourceAdapter;
 import org.littleshoot.proxy.HttpProxyServer;
@@ -36,7 +37,9 @@ import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 
 import net.jsign.pe.PEFile;
 
-public class PESignerCLITest extends TestCase {
+import static org.junit.Assert.*;
+
+public class PESignerCLITest {
 
     private PESignerCLI cli;
     private File sourceFile = new File("target/test-classes/wineyes.exe");
@@ -48,7 +51,8 @@ public class PESignerCLITest extends TestCase {
 
     private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
 
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         cli = new PESignerCLI();
         
         // remove the files signed previously
@@ -61,10 +65,12 @@ public class PESignerCLITest extends TestCase {
         FileUtils.copyFile(sourceFile, targetFile);
     }
 
+    @Test
     public void testPrintHelp() throws Exception {
         PESignerCLI.main("--help");
     }
 
+    @Test
     public void testMissingKeyStore() throws Exception {
         try {
             cli.execute("" + targetFile);
@@ -74,6 +80,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testUnsupportedKeyStoreType() throws Exception  {
         try {
             cli.execute("--keystore=keystore.jks", "--storetype=ABC", "" + targetFile);
@@ -83,6 +90,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testKeyStoreNotFound() throws Exception  {
         try {
             cli.execute("--keystore=keystore2.jks", "" + targetFile);
@@ -92,6 +100,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedKeyStore() throws Exception  {
         try {
             cli.execute("--keystore=" + targetFile, "" + targetFile);
@@ -101,6 +110,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingAlias() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "" + targetFile);
@@ -110,6 +120,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testAliasNotFound() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=unknown", "" + targetFile);
@@ -119,6 +130,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testCertificateNotFound() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=foo", "" + targetFile);
@@ -128,6 +140,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingFile() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password");
@@ -137,6 +150,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testFileNotFound() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "wineyes-foo.exe");
@@ -146,6 +160,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedFile() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "target/test-classes/keystore.jks");
@@ -155,6 +170,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testConflictingAttributes() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "--keyfile=privatekey.pvk", "--certfile=jsign-test-certificate-full-chain.spc", "" + targetFile);
@@ -164,6 +180,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingCertFile() throws Exception  {
         try {
             cli.execute("--keyfile=target/test-classes/privatekey.pvk", "" + targetFile);
@@ -173,6 +190,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingKeyFile() throws Exception  {
         try {
             cli.execute("--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile);
@@ -182,6 +200,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testCertFileNotFound() throws Exception  {
         try {
             cli.execute("--certfile=target/test-classes/certificate2.spc", "--keyfile=target/test-classes/privatekey.pvk", "" + targetFile);
@@ -191,6 +210,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testKeyFileNotFound() throws Exception  {
         try {
             cli.execute("--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey2.pvk", "" + targetFile);
@@ -200,6 +220,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedCertFile() throws Exception  {
         try {
             cli.execute("--certfile=target/test-classes/privatekey.pvk", "--keyfile=target/test-classes/privatekey.pvk", "" + targetFile);
@@ -209,6 +230,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testCorruptedKeyFile() throws Exception  {
         try {
             cli.execute("--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile);
@@ -218,6 +240,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testUnsupportedDigestAlgorithm() throws Exception  {
         try {
             cli.execute("--alg=SHA-123", "--keystore=target/test-classes/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile);
@@ -227,6 +250,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testSigning() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
 
@@ -243,6 +267,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningPKCS12() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystore.p12", "--alias=test", "--storepass=password", "" + targetFile);
         
@@ -259,6 +284,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningPVKSPC() throws Exception {
         cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
         
@@ -275,6 +301,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningPEM() throws Exception {
         cli.execute("--certfile=target/test-classes/jsign-test-certificate.pem", "--keyfile=target/test-classes/privatekey.pkcs8.pem", "--keypass=password", "" + targetFile);
         
@@ -291,6 +318,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testSigningEncryptedPEM() throws Exception {
         cli.execute("--certfile=target/test-classes/jsign-test-certificate.pem", "--keyfile=target/test-classes/privatekey-encrypted.pkcs1.pem", "--keypass=password", "" + targetFile);
         
@@ -307,6 +335,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testTimestampingAuthenticode() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
@@ -325,6 +354,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testTimestampingRFC3161() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
@@ -343,6 +373,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testTimestampingWithProxyUnauthenticated() throws Exception {
         final AtomicBoolean proxyUsed = new AtomicBoolean(false);
         HttpProxyServer proxy = DefaultHttpProxyServer.bootstrap().withPort(12543)
@@ -380,6 +411,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testTimestampingWithProxyAuthenticated() throws Exception {
         final AtomicBoolean proxyUsed = new AtomicBoolean(false);
         HttpProxyServer proxy = DefaultHttpProxyServer.bootstrap().withPort(12544)
@@ -430,6 +462,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testReplaceSignature() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-re-signed.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
@@ -450,6 +483,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testExitOnError() {
         NoExitSecurityManager manager = new NoExitSecurityManager();
         System.setSecurityManager(manager);
@@ -482,6 +516,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testUnknownOption() throws Exception {
         try {
             cli.execute("--jsign");
@@ -491,6 +526,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testUnknownPKCS11Provider() throws Exception {
         try {
             cli.execute("--storetype=PKCS11", "--keystore=SunPKCS11-jsigntest", "--keypass=password", "" + targetFile);
@@ -500,6 +536,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testMissingPKCS11Configuration() throws Exception {
         try {
             cli.execute("--storetype=PKCS11", "--keystore=jsigntest.cfg", "--keypass=password", "" + targetFile);
@@ -509,6 +546,7 @@ public class PESignerCLITest extends TestCase {
         }
     }
 
+    @Test
     public void testBrokenPKCS11Configuration() throws Exception {
         try {
             cli.execute("--storetype=PKCS11", "--keystore=pom.xml", "--keypass=password", "" + targetFile);

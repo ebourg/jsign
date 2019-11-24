@@ -16,10 +16,13 @@
 
 package net.jsign.pe;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class PEFormatTest extends TestCase {
+import static org.junit.Assert.*;
 
+public class PEFormatTest {
+
+    @Test
     public void testValueOf() {
         assertEquals(PEFormat.PE32, PEFormat.valueOf(0x10b));
         assertNull(PEFormat.valueOf(0xcafe));

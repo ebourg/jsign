@@ -16,10 +16,13 @@
 
 package net.jsign.pe;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class SubsystemTest extends TestCase {
-    
+import static org.junit.Assert.*;
+
+public class SubsystemTest {
+
+    @Test
     public void testValueOf() {
         assertEquals(Subsystem.XBOX, Subsystem.valueOf(14));
         assertNull(Subsystem.valueOf(0xcafe));

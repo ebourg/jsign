@@ -16,10 +16,13 @@
 
 package net.jsign.pe;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class MachineTypeTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class MachineTypeTest {
     
+    @Test
     public void testValueOf() {
         assertEquals(MachineType.ARM64, MachineType.valueOf(0xaa64));
         assertNull(MachineType.valueOf(0xbb8));
