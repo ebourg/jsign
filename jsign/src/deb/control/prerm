@@ -6,4 +6,4 @@
 set -e
 
 # Remove the symbolic link to the executable script
-rm --force /usr/bin/pesign
+rm --force /usr/bin/jsign

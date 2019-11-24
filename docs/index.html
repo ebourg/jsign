@@ -251,7 +251,7 @@ are the same as those described above for the Ant task.</p>
 and a <a href="https://github.com/ebourg/jsign/releases/download/2.1/jsign-2.1-1.noarch.rpm">RPM package</a>
 are provided to install it easily on most Linux distributions. On these systems the command line is invoked with:</p>
 
-<pre> pesign [OPTIONS] FILE</pre>
+<pre> jsign [OPTIONS] FILE</pre>
 
 <p>On other systems the command line is invoked by running the jar with:</p>
     
@@ -260,7 +260,7 @@ are provided to install it easily on most Linux distributions. On these systems 
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
 <pre>
-  usage: pesign [OPTIONS] FILE
+  usage: jsign [OPTIONS] FILE
   Sign and timestamp a Windows executable file.
   
   -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
@@ -293,14 +293,14 @@ are provided to install it easily on most Linux distributions. On these systems 
 <p>Example using a Java keystore:</p>
 
 <pre>
- pesign --keystore keystore.jks --alias test --storepass password \
+ jsign --keystore keystore.jks --alias test --storepass password \
         --tsaurl http://timestamp.comodoca.com/authenticode application.exe
 </pre>
 
 <p>Example using SPC/PVK files:</p>
 
 <pre>
- pesign --certfile certificate.spc --keyfile key.pvk --keypass password application.exe
+ jsign --certfile certificate.spc --keyfile key.pvk --keypass password application.exe
 </pre>
 
 

@@ -28,7 +28,7 @@ import org.apache.commons.cli.ParseException;
 import static net.jsign.PESignerHelper.*;
 
 /**
- * Command line interface for signing PE files.
+ * Command line interface for signing files.
  *
  * @author Emmanuel Bourg
  * @since 1.1
@@ -39,11 +39,11 @@ public class PESignerCLI {
         try {
             new PESignerCLI().execute(args);
         } catch (SignerException | ParseException e) {
-            System.err.println("pesign: " + e.getMessage());
+            System.err.println("jsign: " + e.getMessage());
             if (e.getCause() != null) {
                 e.getCause().printStackTrace(System.err);
             }
-            System.err.println("Try `pesign --help' for more information.");
+            System.err.println("Try `jsign --help' for more information.");
             System.exit(1);
         }
     }

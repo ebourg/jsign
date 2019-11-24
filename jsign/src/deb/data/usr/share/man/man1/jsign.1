@@ -1,19 +1,19 @@
-.\" Manpage for pesign.
-.TH man 1 "10 Jan 2013" "@VERSION@" "pesign man page"
+.\" Manpage for jsign.
+.TH man 1 "10 Jan 2013" "@VERSION@" "jsign man page"
 
 .SH NAME
-pesign \- sign and timestamp portable executable files (Windows executables)
+jsign \- sign and timestamp portable executable files (Windows executables)
 
 .SH SYNOPSIS
-.B pesign
+.B jsign
 [OPTIONS] FILE
 
 .SH DESCRIPTION
-pesign is a Java implementation of Microsoft Authenticode that lets you sign and
+jsign is a Java implementation of Microsoft Authenticode that lets you sign and
 timestamp executable files for Windows. It provides an alternative to native tools
 like signcode/signtool on Windows or the Mono development tools on Unix systems.
 
-pesign can use private keys and certificates in various formats, either Java keystores,
+jsign can use private keys and certificates in various formats, either Java keystores,
 PKCS#12 keystores, or SPC/PVK files.
 
 .SH OPTIONS
@@ -21,7 +21,7 @@ PKCS#12 keystores, or SPC/PVK files.
 .TP
 .B -s, --keystore <FILE>
 The keystore file containing the certificate and the private key used for signing
-the file. pesign supports Java keystores and PKCS#12 keystores. This option must
+the file. jsign supports Java keystores and PKCS#12 keystores. This option must
 be specified unless the keyfile and certfile options are already specified.
 
 .TP

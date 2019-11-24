@@ -1,7 +1,7 @@
-# pesign completion
+# jsign completion
 
-have pesign &&
-_pesign()
+have jsign &&
+_jsign()
 {
     COMPREPLY=()
     local cur prev
@@ -38,4 +38,4 @@ _pesign()
     COMPREPLY=( $( compgen -f -X "$pattern" -- "$cur" ) $( compgen -d -- "$cur" ) )
 
 } &&
-complete -F _pesign -o filenames pesign
+complete -F _jsign -o filenames jsign
