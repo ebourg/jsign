@@ -46,13 +46,13 @@ import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
- * Helper class to create PESigner instances with untyped parameters.
+ * Helper class to create AuthenticodeSigner instances with untyped parameters.
  * This is used internally to share the parameter validation logic
  * between the Ant task and the CLI tool.
  *
  * @since 2.0
  */
-class PESignerHelper {
+class SignerHelper {
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
@@ -96,117 +96,117 @@ class PESignerHelper {
     private String proxyPass;
     private boolean replace;
 
-    public PESignerHelper(Console console, String parameterName) {
+    public SignerHelper(Console console, String parameterName) {
         this.console = console;
         this.parameterName = parameterName;
     }
 
-    public PESignerHelper keystore(String keystore) {
+    public SignerHelper keystore(String keystore) {
         keystore(createFile(keystore));
         return this;
     }
 
-    public PESignerHelper keystore(File keystore) {
+    public SignerHelper keystore(File keystore) {
         this.keystore = keystore;
         return this;
     }
 
-    public PESignerHelper storepass(String storepass) {
+    public SignerHelper storepass(String storepass) {
         this.storepass = storepass;
         return this;
     }
 
-    public PESignerHelper storetype(String storetype) {
+    public SignerHelper storetype(String storetype) {
         this.storetype = storetype;
         return this;
     }
 
-    public PESignerHelper alias(String alias) {
+    public SignerHelper alias(String alias) {
         this.alias = alias;
         return this;
     }
 
-    public PESignerHelper keypass(String keypass) {
+    public SignerHelper keypass(String keypass) {
         this.keypass = keypass;
         return this;
     }
 
-    public PESignerHelper keyfile(String keyfile) {
+    public SignerHelper keyfile(String keyfile) {
         keyfile(createFile(keyfile));
         return this;
     }
 
-    public PESignerHelper keyfile(File keyfile) {
+    public SignerHelper keyfile(File keyfile) {
         this.keyfile = keyfile;
         return this;
     }
 
-    public PESignerHelper certfile(String certfile) {
+    public SignerHelper certfile(String certfile) {
         certfile(createFile(certfile));
         return this;
     }
 
-    public PESignerHelper certfile(File certfile) {
+    public SignerHelper certfile(File certfile) {
         this.certfile = certfile;
         return this;
     }
 
-    public PESignerHelper alg(String alg) {
+    public SignerHelper alg(String alg) {
         this.alg = alg;
         return this;
     }
 
-    public PESignerHelper tsaurl(String tsaurl) {
+    public SignerHelper tsaurl(String tsaurl) {
         this.tsaurl = tsaurl;
         return this;
     }
 
-    public PESignerHelper tsmode(String tsmode) {
+    public SignerHelper tsmode(String tsmode) {
         this.tsmode = tsmode;
         return this;
     }
 
-    public PESignerHelper tsretries(int tsretries) {
+    public SignerHelper tsretries(int tsretries) {
         this.tsretries = tsretries;
         return this;
     }
 
-    public PESignerHelper tsretrywait(int tsretrywait) {
+    public SignerHelper tsretrywait(int tsretrywait) {
         this.tsretrywait = tsretrywait;
         return this;
     }
 
-    public PESignerHelper name(String name) {
+    public SignerHelper name(String name) {
         this.name = name;
         return this;
     }
 
-    public PESignerHelper url(String url) {
+    public SignerHelper url(String url) {
         this.url = url;
         return this;
     }
 
-    public PESignerHelper proxyUrl(String proxyUrl) {
+    public SignerHelper proxyUrl(String proxyUrl) {
         this.proxyUrl = proxyUrl;
         return this;
     }
 
-    public PESignerHelper proxyUser(String proxyUser) {
+    public SignerHelper proxyUser(String proxyUser) {
         this.proxyUser = proxyUser;
         return this;
     }
 
-    public PESignerHelper proxyPass(String proxyPass) {
+    public SignerHelper proxyPass(String proxyPass) {
         this.proxyPass = proxyPass;
         return this;
     }
 
-    public PESignerHelper replace(boolean replace) {
+    public SignerHelper replace(boolean replace) {
         this.replace = replace;
         return this;
     }
 
-    public PESignerHelper param(String key, String value) {
+    public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
         }

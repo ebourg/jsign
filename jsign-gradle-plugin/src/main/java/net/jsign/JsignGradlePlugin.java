@@ -38,7 +38,7 @@ public class JsignGradlePlugin implements Plugin<Project> {
                 String file = params.get("file");
                 params.remove("file");
                 
-                PESignerHelper helper = new PESignerHelper(new GradleConsole(project.getLogger()), "property");
+                SignerHelper helper = new SignerHelper(new GradleConsole(project.getLogger()), "property");
                 for (Map.Entry<String, String> param : params.entrySet()) {
                     helper.param(param.getKey(), param.getValue());
                 }

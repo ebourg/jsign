@@ -144,7 +144,7 @@ public class JsignTask extends Task {
     @Override
     public void execute() throws BuildException {
         try {
-            PESignerHelper helper = new PESignerHelper(new AntConsole(this), "attribute");
+            SignerHelper helper = new SignerHelper(new AntConsole(this), "attribute");
             
             helper.name(name);
             helper.url(url);

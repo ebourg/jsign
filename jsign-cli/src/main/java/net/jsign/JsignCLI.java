@@ -25,7 +25,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import static net.jsign.PESignerHelper.*;
+import static net.jsign.SignerHelper.*;
 
 /**
  * Command line interface for signing files.
@@ -83,7 +83,7 @@ public class JsignCLI {
             return;
         }
         
-        PESignerHelper helper = new PESignerHelper(new StdOutConsole(), "option");
+        SignerHelper helper = new SignerHelper(new StdOutConsole(), "option");
         
         setOption(PARAM_KEYSTORE, helper, cmd);
         setOption(PARAM_STOREPASS, helper, cmd);
@@ -109,7 +109,7 @@ public class JsignCLI {
         helper.sign(file);
     }
 
-    private void setOption(String key, PESignerHelper helper, CommandLine cmd) throws SignerException {
+    private void setOption(String key, SignerHelper helper, CommandLine cmd) throws SignerException {
         String value = cmd.getOptionValue(key);
         helper.param(key, value);
     }
