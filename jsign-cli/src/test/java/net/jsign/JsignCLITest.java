@@ -39,9 +39,9 @@ import net.jsign.pe.PEFile;
 
 import static org.junit.Assert.*;
 
-public class PESignerCLITest {
+public class JsignCLITest {
 
-    private PESignerCLI cli;
+    private JsignCLI cli;
     private File sourceFile = new File("target/test-classes/wineyes.exe");
     private File targetFile = new File("target/test-classes/wineyes-signed-with-cli.exe");
     
@@ -53,7 +53,7 @@ public class PESignerCLITest {
 
     @Before
     public void setUp() throws Exception {
-        cli = new PESignerCLI();
+        cli = new JsignCLI();
         
         // remove the files signed previously
         if (targetFile.exists()) {
@@ -67,7 +67,7 @@ public class PESignerCLITest {
 
     @Test
     public void testPrintHelp() throws Exception {
-        PESignerCLI.main("--help");
+        JsignCLI.main("--help");
     }
 
     @Test
@@ -489,7 +489,7 @@ public class PESignerCLITest {
         System.setSecurityManager(manager);
 
         try {
-            PESignerCLI.main("foo.exe");
+            JsignCLI.main("foo.exe");
             fail("VM not terminated");
         } catch (SecurityException e) {
             // expected

@@ -34,7 +34,7 @@ import net.jsign.pe.PEFile;
 
 import static org.junit.Assert.*;
 
-public class PESignerTaskTest {
+public class JsignTaskTest {
 
     private Project project;
     

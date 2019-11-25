@@ -21,14 +21,14 @@ import java.io.File;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 
-public class PESignerMojoTest extends AbstractMojoTestCase {
+public class JsignMojoTest extends AbstractMojoTestCase {
 
     public void testMojo() throws Exception {
         File pom = getTestFile("target/test-classes/test-pom.xml");
         assertNotNull("null pom", pom);
         assertTrue("pom not found", pom.exists());
 
-        PESignerMojo mojo = (PESignerMojo) lookupMojo("sign", pom);
+        JsignMojo mojo = (JsignMojo) lookupMojo("sign", pom);
         assertNotNull("plugin not found", mojo);
         try {
             mojo.execute();

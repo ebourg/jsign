@@ -33,11 +33,11 @@ import static net.jsign.PESignerHelper.*;
  * @author Emmanuel Bourg
  * @since 1.1
  */
-public class PESignerCLI {
+public class JsignCLI {
 
     public static void main(String... args) {
         try {
-            new PESignerCLI().execute(args);
+            new JsignCLI().execute(args);
         } catch (SignerException | ParseException e) {
             System.err.println("jsign: " + e.getMessage());
             if (e.getCause() != null) {
@@ -50,7 +50,7 @@ public class PESignerCLI {
 
     private Options options;
 
-    PESignerCLI() {
+    JsignCLI() {
         options = new Options();
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_KEYSTORE).withArgName("FILE").withDescription("The keystore file, or the SunPKCS11 configuration file").withType(File.class).create('s'));
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_STOREPASS).withArgName("PASSWORD").withDescription("The password to open the keystore").create());

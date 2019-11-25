@@ -26,7 +26,7 @@ package net.jsign;
 class MavenShadePluginHelper {
 
     static {
-        PESignerCLI.class.getName();
-        PESignerTask.class.getName();
+        JsignCLI.class.getName();
+        JsignTask.class.getName();
     }
 }

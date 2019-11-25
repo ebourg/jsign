@@ -29,7 +29,7 @@ import org.gradle.api.Project;
  * @author Emmanuel Bourg
  * @since 2.0
  */
-public class PESignerGradlePlugin implements Plugin<Project> {
+public class JsignGradlePlugin implements Plugin<Project> {
 
     @Override
     public void apply(final Project project) {

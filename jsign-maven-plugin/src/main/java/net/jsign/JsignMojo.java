@@ -30,13 +30,13 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 /**
- * Maven plugin for signing PE files.
+ * Maven plugin for signing files with Authenticode.
  * 
  * @author Emmanuel Bourg
  * @since 2.0
  */
 @Mojo(name = "sign")
-public class PESignerMojo extends AbstractMojo {
+public class JsignMojo extends AbstractMojo {
 
     /** The file to be signed. */
     @Parameter(required = true)

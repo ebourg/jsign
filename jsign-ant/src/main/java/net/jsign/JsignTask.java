@@ -22,12 +22,12 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 
 /**
- * Ant task for signing executable files.
+ * Ant task for signing files with Authenticode.
  *
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public class PESignerTask extends Task {
+public class JsignTask extends Task {
 
     /** The file to be signed. */
     private File file;

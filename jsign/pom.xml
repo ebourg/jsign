@@ -102,7 +102,7 @@
               </relocations>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>net.jsign.PESignerCLI</mainClass>
+                  <mainClass>net.jsign.JsignCLI</mainClass>
                 </transformer>
               </transformers>
             </configuration>
