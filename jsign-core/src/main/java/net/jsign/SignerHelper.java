@@ -413,11 +413,10 @@ class SignerHelper {
     /**
      * Load the certificate chain from the specified PKCS#7 files.
      */
-    @SuppressWarnings("unchecked")
     private Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {
         try (FileInputStream in = new FileInputStream(file)) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
+            Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             return certificates.toArray(new Certificate[certificates.size()]);
         }
     }
