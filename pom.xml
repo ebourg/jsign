@@ -188,6 +188,7 @@
             <link>http://www.bouncycastle.org/docs/docs1.5on</link>
             <link>http://www.bouncycastle.org/docs/pkixdocs1.5on</link>
           </links>
+          <show>public</show>
           <excludePackageNames>*.asn1.*</excludePackageNames>
           <quiet>true</quiet>
           <notimestamp>true</notimestamp>
