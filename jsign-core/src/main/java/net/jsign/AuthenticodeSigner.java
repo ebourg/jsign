@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -258,6 +259,13 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
         this.signatureProvider = signatureProvider;
         return (S) this;
     }
+
+    /**
+     * Sign the specified file.
+     *
+     * @throws Exception
+     */
+    abstract void sign(File file) throws Exception;
 
     /**
      * Sign the specified file.

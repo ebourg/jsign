@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -101,6 +102,21 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
      */
     public PESigner withTimestampingAutority(String... url) {
         return withTimestampingAuthority(url);
+    }
+
+    @Override
+    void sign(File file) throws Exception {
+        PEFile peFile;
+        try {
+            peFile = new PEFile(file);
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the executable file " + file, e);
+        }
+        try {
+            sign(peFile);
+        } finally {
+            peFile.close();
+        }
     }
 
     /**

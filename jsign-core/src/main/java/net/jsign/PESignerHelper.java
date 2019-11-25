@@ -239,7 +239,7 @@ class PESignerHelper {
         return file == null ? null : new File(file);
     }
 
-    public PESigner build() throws SignerException {
+    private AuthenticodeSigner build(File file) throws SignerException {
         PrivateKey privateKey;
         Certificate[] chain;
 
@@ -334,9 +334,21 @@ class PESignerHelper {
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy ", e);
         }
-
-        // and now the actual work!
-        return new PESigner(chain, privateKey)
+        
+        // Instantiate a suitable signer implementation for the file specified
+        AuthenticodeSigner signer;
+        try {
+            if (PEFile.isPEFile(file)) {
+                signer = new PESigner(chain, privateKey);
+            } else {
+                throw new SignerException("Unsupported file: " + file);
+            }
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the file " + file, e);
+        }
+        
+        // configure the signer
+        return signer
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
@@ -372,9 +384,9 @@ class PESignerHelper {
     }
 
     public void sign(File file) throws SignerException {
-        PESigner signer;
+        AuthenticodeSigner signer;
         try {
-            signer = build();
+            signer = build(file);
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {
@@ -388,28 +400,13 @@ class PESignerHelper {
             throw new SignerException("The file " + file + " couldn't be found");
         }
 
-        PEFile peFile;
-        try {
-            peFile = new PEFile(file);
-        } catch (IOException e) {
-            throw new SignerException("Couldn't open the executable file " + file, e);
-        }
-
         try {
             if (console != null) {
                 console.info("Adding Authenticode signature to " + file);
             }
-            signer.sign(peFile);
+            signer.sign(file);
         } catch (Exception e) {
             throw new SignerException("Couldn't sign " + file, e);
-        } finally {
-            try {
-                peFile.close();
-            } catch (IOException e) {
-                if (console != null) {
-                    console.warn("Couldn't close " + file, e);
-                }
-            }
         }
     }
 

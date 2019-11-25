@@ -70,6 +70,29 @@ public class PEFile implements Closeable {
     }
 
     /**
+     * Tells if the specified file is a Portable Executable file.
+     *
+     * @since 3.0
+     */
+    public static boolean isPEFile(File file) throws IOException {
+        if (!file.exists() && !file.isFile()) {
+            return false;
+        }
+        
+        try {
+            PEFile peFile = new PEFile(file);
+            peFile.close();
+            return true;
+        } catch (IOException e) {
+            if (e.getMessage().contains("DOS header signature not found") || e.getMessage().contains("PE signature not found")) {
+                return false;
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
      * Create a PEFile from the specified file.
      *
      * @param file
