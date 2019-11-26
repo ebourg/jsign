@@ -25,6 +25,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
@@ -96,6 +97,14 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, Power
     @Override
     public void sign(PowerShellScript script) throws Exception {
         CMSSignedData sigData = createSignedData(script);
+        
+        if (!replace) {
+            List<CMSSignedData> signatures = script.getSignatures();
+            if (!signatures.isEmpty()) {
+                // append the nested signature
+                sigData = addNestedSignature(signatures.get(0), sigData);
+            }
+        }
         
         script.setSignature(sigData);
         
