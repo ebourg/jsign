@@ -25,7 +25,7 @@ See https://ebourg.github.com/jsign for more information.
 Changes
 =======
 
-Version 2.2 (in development)
+Version 3.0 (in development)
 * PowerShell scripts signing has been implemented (contributed by Björn Kautler)
 * The Maven plugin now uses the proxy defined in the Maven settings for the timestamping (contributed by Denny Bayer)
 * The Maven plugin now accepts passwords encrypted using the Maven security settings (contributed by Denny Bayer)
