@@ -35,7 +35,7 @@ import org.bouncycastle.asn1.DERSequence;
  */
 public class SpcSerializedObject extends ASN1Object {
 
-    private SpcUuid classId = new SpcUuid();
+    private SpcUuid classId = new SpcUuid("A6B586D5-B4A1-2466-AE05-A217DA8E60D6");
 
     /**
      * The serializedData field contains a binary structure. When present in an
