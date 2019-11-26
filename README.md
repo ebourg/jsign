@@ -19,13 +19,13 @@ can also be used programmatically or standalone as a command line tool.
 Jsign is free to use and licensed under the Apache License version 2.0.
 
 
-See https://ebourg.github.com/jsign for more information.
+See https://ebourg.github.io/jsign for more information.
 
 
-Changes
-=======
+## Changes
 
-Version 3.0 (in development)
+#### Version 3.0 (in development)
+
 * PowerShell scripts signing has been implemented (contributed by Björn Kautler)
 * The Maven plugin now uses the proxy defined in the Maven settings for the timestamping (contributed by Denny Bayer)
 * The Maven plugin now accepts passwords encrypted using the Maven security settings (contributed by Denny Bayer)
@@ -34,7 +34,8 @@ Version 3.0 (in development)
 * Renamed the Ant task and the Gradle extension method from `signexe` to `jsign`
 * Upgraded BouncyCastle to 1.64
 
-Version 2.1 (2018-10-08)
+#### Version 2.1 (2018-10-08)
+
 * Fixed the loading of SunPKCS11 configuration files with Java 9
 * SunPKCS11 configuration files can be loaded from any directory
 * Maven plugin settings can now be passed on the command line (contributed by Nicolas Roduit)
@@ -42,7 +43,8 @@ Version 2.1 (2018-10-08)
 * Fixed the typo on the withTimestampingAuthority() methods in PESigner (contributed by Bjørn Madsen)
 * Upgraded BouncyCastle to 1.60
 
-Version 2.0 (2017-06-12)
+#### Version 2.0 (2017-06-12)
+
 * Jsign now requires Java 7 or higher
 * Multiple signatures are now supported. New signatures can replace or be added to the previous ones.
 * PKCS#11 hardware tokens are now supported.
@@ -57,7 +59,8 @@ Version 2.0 (2017-06-12)
 * Jsign is now available as a plugin for Maven (net.jsign:jsign-maven-plugin) and Gradle
 * The API can be used to sign in-memory files using a SeekableByteChannel
 
-Version 1.3, 2016-08-04
+#### Version 1.3 (2016-08-04)
+
 * The command line tool now supports HTTP proxies (contributed by Michael Szediwy)
 * RFC 3161 timestamping services are now supported (contributed by Florent Daigniere)
 * The digest algorithm now defaults to SHA-256
@@ -65,14 +68,17 @@ Version 1.3, 2016-08-04
 * Added SHA-384 and SHA-512 checksums support
 * SHA-2 is accepted as an alias for SHA-256
 
-Version 1.2, 2013-01-10
+#### Version 1.2 (2013-01-10)
+
 * Reduced the memory usage when signing large files
 * Files over 2GB are now supported
 * Improved the thread safety
 
-Version 1.1, 2012-11-03
+#### Version 1.1 (2012-11-03)
+
 * Command line interface with bash completion for signing files (available as RPM and DEB packages)
 * The keystore is no longer locked if the signing fails
 
-Version 1.0, 2012-10-05
+#### Version 1.0 (2012-10-05)
+
 * Initial release
