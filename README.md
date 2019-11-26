@@ -26,6 +26,7 @@ Changes
 =======
 
 Version 2.2 (in development)
+* PowerShell scripts signing has been implemented (contributed by Björn Kautler)
 * The Maven plugin now uses the proxy defined in the Maven settings for the timestamping (contributed by Denny Bayer)
 * The Maven plugin now accepts passwords encrypted using the Maven security settings (contributed by Denny Bayer)
 * The timestamping is no longer enabled by default with the Maven plugin

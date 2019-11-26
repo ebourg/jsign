@@ -77,6 +77,9 @@ public class JsignTask extends Task {
     /** Tells if previous signatures should be replaced */
     private boolean replace;
 
+    /** The encoding of the PowerShell script to be signed (UTF-8 by default). */
+    private String scriptEncoding = "UTF-8";
+
     public void setFile(File file) {
         this.file = file;
     }
@@ -141,6 +144,10 @@ public class JsignTask extends Task {
         this.replace = replace;
     }
 
+    public void setScriptEncoding(String scriptEncoding) {
+        this.scriptEncoding = scriptEncoding;
+    }
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -161,6 +168,7 @@ public class JsignTask extends Task {
             helper.tsretries(tsretries);
             helper.tsretrywait(tsretrywait);
             helper.replace(replace);
+            helper.scriptEncoding(scriptEncoding);
             
             helper.sign(file);
         } catch (Exception e) {

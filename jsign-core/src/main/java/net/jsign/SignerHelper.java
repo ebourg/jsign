@@ -30,6 +30,7 @@ import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -71,6 +72,7 @@ class SignerHelper {
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
     public static final String PARAM_REPLACE = "replace";
+    public static final String PARAM_SCRIPT_ENCODING = "scriptEncoding";
 
     private Console console;
 
@@ -95,6 +97,7 @@ class SignerHelper {
     private String proxyUser;
     private String proxyPass;
     private boolean replace;
+    private Charset scriptEncoding;
 
     public SignerHelper(Console console, String parameterName) {
         this.console = console;
@@ -206,6 +209,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper scriptEncoding(String scriptEncoding) {
+        this.scriptEncoding = Charset.forName(scriptEncoding);
+        return this;
+    }
+
     public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
@@ -230,6 +238,7 @@ class SignerHelper {
             case PARAM_PROXY_USER: return proxyUser(value);
             case PARAM_PROXY_PASS: return proxyPass(value);
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
+            case PARAM_SCRIPT_ENCODING: return scriptEncoding(value);
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -340,11 +349,19 @@ class SignerHelper {
         try {
             if (PEFile.isPEFile(file)) {
                 signer = new PESigner(chain, privateKey);
+            } else if (file.getName().endsWith(".ps1")
+                    || file.getName().endsWith(".psd1")
+                    || file.getName().endsWith(".psm1")) {
+                signer = new PowerShellSigner(chain, privateKey);
             } else {
                 throw new SignerException("Unsupported file: " + file);
             }
         } catch (IOException e) {
             throw new SignerException("Couldn't open the file " + file, e);
+        }
+        
+        if (signer instanceof PowerShellSigner) {
+            signer = ((PowerShellSigner) signer).withScriptEncoding(scriptEncoding);
         }
         
         // configure the signer

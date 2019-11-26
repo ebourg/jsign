@@ -102,6 +102,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.replace", defaultValue = "false")
     private boolean replace;
 
+    /** The encoding of the PowerShell script to be signed (UTF-8 by default). */
+    @Parameter( property = "jsign.scriptEncoding", defaultValue = "UTF-8")
+    private String scriptEncoding = "UTF-8";
+
     @Parameter(defaultValue = "${settings}", readonly = true)
     private Settings settings;
 
@@ -130,6 +134,7 @@ public class JsignMojo extends AbstractMojo {
         helper.tsretries(tsretries);
         helper.tsretrywait(tsretrywait);
         helper.replace(replace);
+        helper.scriptEncoding(scriptEncoding);
 
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {
