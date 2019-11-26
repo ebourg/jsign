@@ -16,34 +16,29 @@
 
 package net.jsign;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.util.regex.Pattern;
 
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.util.encoders.Base64Encoder;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcSipInfo;
 import net.jsign.asn1.authenticode.SpcUuid;
+import net.jsign.powershell.PowerShellScript;
 
-import static java.lang.Math.*;
 import static java.nio.charset.StandardCharsets.*;
 
 /**
@@ -54,13 +49,7 @@ import static java.nio.charset.StandardCharsets.*;
  * @author Björn Kautler
  * @since 3.0
  */
-public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, File> {
-
-    private static final Pattern SIGNATURE_BLOCK_PATTERN = Pattern.compile("(?s)" +
-            "\\r\\n" +
-            "# SIG # Begin signature block\\r\\n" +
-            ".*" +
-            "# SIG # End signature block\\r\\n");
+public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, PowerShellScript> {
 
     private Charset scriptEncoding = UTF_8;
 
@@ -89,9 +78,14 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, File>
     /**
      * Set the encoding of the script to be signed (UTF-8 by default).
      */
-    public PowerShellSigner withScriptEncoding(Charset scriptEncoding) {
+    PowerShellSigner withScriptEncoding(Charset scriptEncoding) {
         this.scriptEncoding = scriptEncoding;
         return this;
+    }
+
+    @Override
+    void sign(File file) throws Exception {
+        sign(new PowerShellScript(file, scriptEncoding));
     }
 
     /**
@@ -100,47 +94,18 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, File>
      * @throws Exception
      */
     @Override
-    public void sign(File file) throws Exception {
-        // strip signature block
-        String scriptContent = new String(Files.readAllBytes(file.toPath()), scriptEncoding);
-        scriptContent = SIGNATURE_BLOCK_PATTERN.matcher(scriptContent).replaceFirst("");
-
-        // compute the signature
-        CMSSignedData sigData = createSignedData(file);
-
-        // base64 encode the signature blob
-        byte[] signatureBytes = sigData.toASN1Structure().getEncoded("DER");
-        ByteArrayOutputStream base64Stream = new ByteArrayOutputStream();
-        new Base64Encoder().encode(signatureBytes, 0, signatureBytes.length, base64Stream);
-        String signatureBlob = new String(base64Stream.toByteArray(), US_ASCII);
-
-        // build the signed script content
-        StringBuilder signedScriptContent = new StringBuilder(scriptContent.length() + signatureBlob.length() + 100);
-        signedScriptContent.append(scriptContent);
-        signedScriptContent.append("\r\n");
-        signedScriptContent.append("# SIG # Begin signature block\r\n");
-        for (int start = 0, blobLength = signatureBlob.length(); start < blobLength; start += 64) {
-            signedScriptContent.append("# ");
-            signedScriptContent.append(signatureBlob, start, min(blobLength, start + 64));
-            signedScriptContent.append("\r\n");
-        }
-        signedScriptContent.append("# SIG # End signature block\r\n");
-
-        Files.write(file.toPath(), signedScriptContent.toString().getBytes(scriptEncoding));
+    public void sign(PowerShellScript script) throws Exception {
+        CMSSignedData sigData = createSignedData(script);
+        
+        script.setSignature(sigData);
+        
+        script.save();
     }
 
     @Override
-    protected ASN1Object createIndirectData(File file) throws IOException {
-        // strip signature block
-        String scriptContent = new String(Files.readAllBytes(file.toPath()), scriptEncoding);
-        scriptContent = SIGNATURE_BLOCK_PATTERN.matcher(scriptContent).replaceFirst("");
-        
-        MessageDigest messageDigest = digestAlgorithm.getMessageDigest();
-        messageDigest.update(scriptContent.getBytes(UTF_16LE));
-        byte[] sha = messageDigest.digest();
-        
+    protected ASN1Object createIndirectData(PowerShellScript script) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, sha);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, script.computeDigest(digestAlgorithm.getMessageDigest()));
 
         SpcUuid uuid = new SpcUuid("1FCC3B60-594B-084E-B724-D2C6297EF351");
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(65536, uuid));
