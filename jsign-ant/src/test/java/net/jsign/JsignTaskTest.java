@@ -78,184 +78,94 @@ public class JsignTaskTest {
         project.addBuildListener(logger);
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testMissingKeyStore() {
-        try {
-            project.executeTarget("missing-keystore");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("missing-keystore");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testUnsupportedKeyStoreType() {
-        try {
-            project.executeTarget("unsupported-keystore");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("unsupported-keystore");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testKeyStoreNotFound() {
-        try {
-            project.executeTarget("keystore-not-found");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("keystore-not-found");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testCorruptedKeyStore() {
-        try {
-            project.executeTarget("corrupted-keystore");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("corrupted-keystore");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testMissingAlias() {
-        try {
-            project.executeTarget("missing-alias");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("missing-alias");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testAliasNotFound() {
-        try {
-            project.executeTarget("alias-not-found");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("alias-not-found");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testCertificateNotFound() {
-        try {
-            project.executeTarget("certificate-not-found");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("certificate-not-found");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testMissingFile() {
-        try {
-            project.executeTarget("missing-file");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("missing-file");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testFileNotFound() {
-        try {
-            project.executeTarget("file-not-found");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("file-not-found");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testCorruptedFile() {
-        try {
-            project.executeTarget("corrupted-file");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("corrupted-file");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testConflictingAttributes() {
-        try {
-            project.executeTarget("conflicting-attributes");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("conflicting-attributes");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testMissingCertFile() {
-        try {
-            project.executeTarget("missing-certfile");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("missing-certfile");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testMissingKeyFile() {
-        try {
-            project.executeTarget("missing-keyfile");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("missing-keyfile");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testCertFileNotFound() {
-        try {
-            project.executeTarget("certfile-not-found");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("certfile-not-found");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testKeyFileNotFound() {
-        try {
-            project.executeTarget("keyfile-not-found");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("keyfile-not-found");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testCorruptedCertFile() {
-        try {
-            project.executeTarget("corrupted-certfile");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("corrupted-certfile");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testCorruptedKeyFile() {
-        try {
-            project.executeTarget("corrupted-keyfile");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("corrupted-keyfile");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testUnsupportedDigestAlgorithm() {
-        try {
-            project.executeTarget("unsupported-digest-algorithm");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            // expected
-        }
+        project.executeTarget("unsupported-digest-algorithm");
     }
 
     @Test

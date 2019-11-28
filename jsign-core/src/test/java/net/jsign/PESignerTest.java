@@ -137,26 +137,16 @@ public class PESignerTest {
         assertEquals("signer", "Jsign Code Signing Test Certificate", commonName);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testEmptyChain() throws Exception {
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
-        try {
-            new PESigner(new Certificate[0], key);
-            fail("No exception thrown");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+        new PESigner(new Certificate[0], key);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testNullChain() throws Exception {
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
-        try {
-            new PESigner(null, key);
-            fail("No exception thrown");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+        new PESigner(null, key);
     }
 
     @Test
@@ -477,7 +467,7 @@ public class PESignerTest {
         assertTrue(signatures.isEmpty());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testInvalidTimestampingURL() throws Exception {
         PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"));
         
@@ -487,13 +477,8 @@ public class PESignerTest {
         signer.withTimestampingMode(TimestampingMode.RFC3161);
         signer.withTimestampingAuthority("example://example.com");
         signer.withTimestampingRetries(1);
-        
-        try {
-            signer.sign(peFile);
-            fail("IllegalArgumentException not thrown");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+
+        signer.sign(peFile);
     }
 
     @Test

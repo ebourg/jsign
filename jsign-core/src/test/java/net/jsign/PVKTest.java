@@ -71,14 +71,9 @@ public class PVKTest {
         assertEquals(key1, key2);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testInvalidFile() throws Exception {
-        try {
-            PVK.parse(new File("src/test/resources/keystores/keystore.jks"), null);
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+        PVK.parse(new File("src/test/resources/keystores/keystore.jks"), null);
     }
 
     @Test
