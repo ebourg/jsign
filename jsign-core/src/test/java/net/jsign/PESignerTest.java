@@ -108,7 +108,7 @@ public class PESignerTest {
         Certificate[] chain;
         try (FileInputStream in = new FileInputStream(new File("target/test-classes/jsign-test-certificate-full-chain.spc"))) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
+            Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             chain = certificates.toArray(new Certificate[certificates.size()]);
         }
         
@@ -171,7 +171,7 @@ public class PESignerTest {
         Certificate[] chain;
         try (FileInputStream in = new FileInputStream(new File("target/test-classes/jsign-root-ca.pem"))) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            Collection<Certificate> certificates = (Collection<Certificate>) certificateFactory.generateCertificates(in);
+            Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             chain = certificates.toArray(new Certificate[certificates.size()]);
         }
         
