@@ -17,7 +17,6 @@
 
 package net.jsign.powershell;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -25,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,7 +38,6 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.util.encoders.Base64;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 
@@ -158,7 +157,7 @@ public class PowerShellScript {
         signatureBlock = signatureBlock.replaceAll("# ", "");
         signatureBlock = signatureBlock.replaceAll("\r|\n", "");
 
-        byte[] signatureBytes = Base64.decode(signatureBlock);
+        byte[] signatureBytes = Base64.getDecoder().decode(signatureBlock);
 
         try {
             return new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
@@ -170,9 +169,7 @@ public class PowerShellScript {
     public void setSignature(CMSSignedData signature) throws IOException {
         // base64 encode the signature blob
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
-        ByteArrayOutputStream base64Stream = new ByteArrayOutputStream();
-        Base64.encode(signatureBytes, 0, signatureBytes.length, base64Stream);
-        String signatureBlob = new String(base64Stream.toByteArray(), US_ASCII);
+        String signatureBlob = Base64.getEncoder().encodeToString(signatureBytes);
 
         // build the signed script content
         String content = getContentWithoutSignatureBlock();
