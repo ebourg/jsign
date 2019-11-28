@@ -75,11 +75,13 @@ public class OIDResolver {
 
             conn.disconnect();
 
-            cache.put(oid.getId(), description);
-            FileOutputStream out = new FileOutputStream(file);
-            cache.store(out, null);
-            out.flush();
-            out.close();
+            if (description != null) {
+                cache.put(oid.getId(), description);
+                FileOutputStream out = new FileOutputStream(file);
+                cache.store(out, null);
+                out.flush();
+                out.close();
+            }
         }
         
         return cache.getProperty(oid.getId()) + " (" + oid.getId() + ")";
