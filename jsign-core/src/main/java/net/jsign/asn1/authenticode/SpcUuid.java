@@ -32,10 +32,11 @@ import org.bouncycastle.asn1.DEROctetString;
  */
 public class SpcUuid  extends ASN1Object {
 
-    private byte[] uuid;
+    private byte[] uuid = new byte[16];
 
     public SpcUuid(String uuid) {
-        this.uuid = new BigInteger(uuid.replaceAll("-", ""), 16).toByteArray();
+        byte[] tmp = new BigInteger(uuid.replaceAll("-", ""), 16).toByteArray();
+        System.arraycopy(tmp, tmp.length - this.uuid.length, this.uuid, 0, this.uuid.length);
     }
 
     @Override
