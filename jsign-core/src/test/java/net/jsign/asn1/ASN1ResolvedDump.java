@@ -69,7 +69,7 @@ public class ASN1ResolvedDump
                 }
             }
         }
-        else if (obj instanceof DERTaggedObject)
+        else if (obj instanceof ASN1TaggedObject)
         {
             String          tab = indent + TAB;
 
@@ -83,7 +83,7 @@ public class ASN1ResolvedDump
                 buf.append("Tagged [");
             }
 
-            DERTaggedObject o = (DERTaggedObject)obj;
+            ASN1TaggedObject o = (ASN1TaggedObject)obj;
 
             buf.append(Integer.toString(o.getTagNo()));
             buf.append(']');
@@ -135,7 +135,7 @@ public class ASN1ResolvedDump
                 }
             }
         }
-        else if (obj instanceof DERSet)
+        else if (obj instanceof ASN1Set)
         {
             Enumeration     e = ((ASN1Set)obj).getObjects();
             String          tab = indent + TAB;
@@ -284,6 +284,7 @@ public class ASN1ResolvedDump
         }
         else
         {
+            System.out.println("unknown type: " + obj.getClass().getName());
             buf.append(indent + obj.toString() + nl);
         }
     }
