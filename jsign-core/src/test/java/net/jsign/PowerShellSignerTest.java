@@ -160,8 +160,8 @@ public class PowerShellSignerTest {
 
     @Test
     public void testReplaceSignature() throws Exception {
-        File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-re-signed.exe");
+        File sourceFile = new File("target/test-classes/hello-world.ps1");
+        File targetFile = new File("target/test-classes/hello-world-re-signed.ps1");
         
         FileUtils.copyFile(sourceFile, targetFile);
         
