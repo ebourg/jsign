@@ -2,7 +2,7 @@
 
   <taskdef name="jsign" classname="net.jsign.JsignTask"/>
   
-  <property name="keystore" value="keystore.jks"/>
+  <property name="keystore" value="keystores/keystore.jks"/>
   <property name="alias"    value="test"/>
   <property name="keypass"  value="password"/>
 
@@ -11,11 +11,11 @@
   </target>
 
   <target name="unsupported-keystore">
-    <jsign file="wineyes-signed-with-ant.exe" keystore="keystore.jks" storetype="ABC"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="keystores/keystore.jks" storetype="ABC"/>
   </target>
 
   <target name="keystore-not-found">
-    <jsign file="wineyes-signed-with-ant.exe" keystore="keystore2.jks"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="keystores/keystore2.jks"/>
   </target>
 
   <target name="corrupted-keystore">
@@ -23,15 +23,15 @@
   </target>
 
   <target name="missing-alias">
-    <jsign file="wineyes-signed-with-ant.exe" keystore="keystore.jks"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="keystores/keystore.jks"/>
   </target>
 
   <target name="alias-not-found">
-    <jsign file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="unknown"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="keystores/keystore.jks" alias="unknown"/>
   </target>
 
   <target name="certificate-not-found">
-    <jsign file="wineyes-signed-with-ant.exe" keystore="keystore.jks" storepass="" alias="foo"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="keystores/keystore.jks" storepass="" alias="foo"/>
   </target>
 
   <target name="missing-file">
@@ -39,43 +39,43 @@
   </target>
 
   <target name="file-not-found">
-    <jsign file="wineyes-foo.exe" keystore="keystore.jks" alias="test" keypass="password"/>
+    <jsign file="wineyes-foo.exe" keystore="keystores/keystore.jks" alias="test" keypass="password"/>
   </target>
 
   <target name="corrupted-file">
-    <jsign file="keystore.jks" keystore="keystore.jks" alias="test" keypass="password"/>
+    <jsign file="keystore.jks" keystore="keystores/keystore.jks" alias="test" keypass="password"/>
   </target>
 
   <target name="conflicting-attributes">
-    <jsign file="wineyes-signed-with-ant.exe" keystore="keystore.jks" alias="test" keyfile="privatekey.pvk" certfile="certificates.spc"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="keystores/keystore.jks" alias="test" keyfile="keystores/privatekey.pvk" certfile="keystores/certificates.spc"/>
   </target>
 
   <target name="missing-certfile">
-    <jsign file="wineyes-signed-with-ant.exe" keyfile="privatekey.pvk"/>
+    <jsign file="wineyes-signed-with-ant.exe" keyfile="keystores/privatekey.pvk"/>
   </target>
 
   <target name="missing-keyfile">
-    <jsign file="wineyes-signed-with-ant.exe" certfile="certificates.spc"/>
+    <jsign file="wineyes-signed-with-ant.exe" certfile="keystores/certificates.spc"/>
   </target>
 
   <target name="certfile-not-found">
-    <jsign file="wineyes-signed-with-ant.exe" certfile="certificate2.spc" keyfile="privatekey.pvk"/>
+    <jsign file="wineyes-signed-with-ant.exe" certfile="keystores/certificate2.spc" keyfile="keystores/privatekey.pvk"/>
   </target>
 
   <target name="keyfile-not-found">
-    <jsign file="wineyes-signed-with-ant.exe" certfile="jsign-test-certificate-full-chain.spc" keyfile="privatekey2.pvk"/>
+    <jsign file="wineyes-signed-with-ant.exe" certfile="keystores/jsign-test-certificate-full-chain.spc" keyfile="keystores/privatekey2.pvk"/>
   </target>
 
   <target name="corrupted-certfile">
-    <jsign file="wineyes-signed-with-ant.exe" certfile="privatekey.pvk" keyfile="privatekey.pvk"/>
+    <jsign file="wineyes-signed-with-ant.exe" certfile="keystores/privatekey.pvk" keyfile="keystores/privatekey.pvk"/>
   </target>
 
   <target name="corrupted-keyfile">
-    <jsign file="wineyes-signed-with-ant.exe" certfile="jsign-test-certificate-full-chain.spc" keyfile="jsign-test-certificate-full-chain.spc"/>
+    <jsign file="wineyes-signed-with-ant.exe" certfile="keystores/jsign-test-certificate-full-chain.spc" keyfile="keystores/jsign-test-certificate-full-chain.spc"/>
   </target>
 
   <target name="unsupported-digest-algorithm">
-    <jsign file="wineyes-signed-with-ant.exe" alg="SHA-123" keystore="keystore.jks" alias="test" keypass="password"/>
+    <jsign file="wineyes-signed-with-ant.exe" alg="SHA-123" keystore="keystores/keystore.jks" alias="test" keypass="password"/>
   </target>
 
   <target name="signing">
@@ -93,15 +93,15 @@
              name="WinEyes"
              url="http://www.steelblue.com/WinEyes"
              alg="SHA-256"
-             keystore="keystore.p12"
+             keystore="keystores/keystore.p12"
              alias="test"
              storepass="password"/>
   </target>
 
   <target name="signing-pvk-spc">
     <jsign file="wineyes-signed-with-ant.exe"
-             certfile="jsign-test-certificate-full-chain.spc"
-             keyfile="privatekey-encrypted.pvk"
+             certfile="keystores/jsign-test-certificate-full-chain.spc"
+             keyfile="keystores/privatekey-encrypted.pvk"
              keypass="password"/>
   </target>
 

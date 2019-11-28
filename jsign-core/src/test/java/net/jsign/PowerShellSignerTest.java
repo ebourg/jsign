@@ -36,7 +36,7 @@ public class PowerShellSignerTest {
 
     private KeyStore getKeyStore() throws Exception {
         KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream("target/test-classes/keystore.jks"), "password".toCharArray());
+        keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
         return keystore;
     }
 

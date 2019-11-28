@@ -54,7 +54,7 @@ public class PESignerTest {
 
     private KeyStore getKeyStore() throws Exception {
         KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream("target/test-classes/keystore.jks"), "password".toCharArray());
+        keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
         return keystore;
     }
 
@@ -106,13 +106,13 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         Certificate[] chain;
-        try (FileInputStream in = new FileInputStream(new File("target/test-classes/jsign-test-certificate-full-chain.spc"))) {
+        try (FileInputStream in = new FileInputStream(new File("target/test-classes/keystores/jsign-test-certificate-full-chain.spc"))) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             chain = certificates.toArray(new Certificate[certificates.size()]);
         }
         
-        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
         
         PESigner signer = new PESigner(chain, key)
                 .withTimestamping(false)
@@ -139,7 +139,7 @@ public class PESignerTest {
 
     @Test
     public void testEmptyChain() throws Exception {
-        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
         try {
             new PESigner(new Certificate[0], key);
             fail("No exception thrown");
@@ -150,7 +150,7 @@ public class PESignerTest {
 
     @Test
     public void testNullChain() throws Exception {
-        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
         try {
             new PESigner(null, key);
             fail("No exception thrown");
@@ -169,13 +169,13 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         Certificate[] chain;
-        try (FileInputStream in = new FileInputStream(new File("target/test-classes/jsign-root-ca.pem"))) {
+        try (FileInputStream in = new FileInputStream(new File("target/test-classes/keystores/jsign-root-ca.pem"))) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             chain = certificates.toArray(new Certificate[certificates.size()]);
         }
         
-        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/privatekey-encrypted.pvk"), "password");
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
         
         PESigner signer = new PESigner(chain, key)
                 .withTimestamping(false)
