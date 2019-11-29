@@ -70,7 +70,7 @@ public class JsignCLI {
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_PROXY_USER).withArgName("NAME").withDescription("The user for the HTTP proxy. If an user is needed.").create());
         options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_PROXY_PASS).withArgName("PASSWORD").withDescription("The password for the HTTP proxy user. If an user is needed.").create());
         options.addOption(OptionBuilder.withLongOpt(PARAM_REPLACE).withDescription("Tells if previous signatures should be replaced.").create());
-        options.addOption(OptionBuilder.withLongOpt(PARAM_SCRIPT_ENCODING).withDescription("The encoding of the PowerShell script to be signed (UTF-8 by default).").create());
+        options.addOption(OptionBuilder.hasArg().withLongOpt(PARAM_SCRIPT_ENCODING).withArgName("ENCODING").withDescription("The encoding of the PowerShell script to be signed (UTF-8 by default).").create('e'));
         options.addOption(OptionBuilder.withLongOpt("help").withDescription("Print the help").create('h'));
     }
 
