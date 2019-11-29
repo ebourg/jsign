@@ -198,4 +198,20 @@ public class JsignMojoTest extends AbstractMojoTestCase {
             assertEquals("error using security dispatcher: null", e.getMessage());
         }
     }
+
+    public void testSignUnsupportedFile() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        setVariableValueToObject(mojo, "file", new File("pom.xml"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "password");
+
+        try {
+            mojo.execute();
+        } catch (MojoFailureException e) {
+            // expected
+            assertEquals("Unsupported file: pom.xml", e.getMessage());
+        }
+    }
 }
