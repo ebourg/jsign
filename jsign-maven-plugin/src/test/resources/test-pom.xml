@@ -11,20 +11,10 @@
       <plugin>
         <groupId>net.sign</groupId>
         <artifactId>jsign-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>3.0</version>
         <configuration>
+          <file>wineyes.exe</file>
         </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <configuration>
-              <file>wineyes.exe</file>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
