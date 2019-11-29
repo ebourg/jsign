@@ -50,19 +50,40 @@
       <artifactId>jsign-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.codehaus.groovy</groupId>
       <artifactId>groovy-all</artifactId>
       <version>2.4.7</version>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.gradle</groupId>
       <artifactId>gradle-core</artifactId>
       <version>${gradle.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-native</artifactId>
+      <version>5.6</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-process-services</artifactId>
+      <version>${gradle.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
