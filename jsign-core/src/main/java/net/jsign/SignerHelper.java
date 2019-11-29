@@ -455,10 +455,17 @@ class SignerHelper {
             final int port = url.getPort() < 0 ? 80 : url.getPort();
 
             ProxySelector.setDefault(new ProxySelector() {
-                private List<Proxy> proxies = Collections.singletonList(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port)));
-
                 public List<Proxy> select(URI uri) {
-                    return proxies;
+                    Proxy proxy;
+                    if (uri.getScheme().equals("socket")) {
+                        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(url.getHost(), port));
+                    } else {
+                        proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port));
+                    }
+                    if (console != null) {
+                        console.debug("Proxy selected for " + uri + " : " + proxy);
+                    }
+                    return Collections.singletonList(proxy);
                 }
 
                 public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {

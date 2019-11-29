@@ -33,6 +33,7 @@ See https://ebourg.github.io/jsign for more information.
 * The timestamping is no longer enabled by default with the Maven plugin
 * Renamed the command line tool from `pesign` to `jsign`
 * Renamed the Ant task and the Gradle extension method from `signexe` to `jsign`
+* SOCKS proxies are now supported
 * Fixed the SHA-512 signature validation error caused by the "`<<<Obsolete>>>`" file field in SpcLink (contributed by Markus Kilås)
 * Upgraded BouncyCastle to 1.64
 
