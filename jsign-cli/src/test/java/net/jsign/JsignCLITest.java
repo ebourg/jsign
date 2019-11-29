@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.net.ProxySelector;
 import java.security.InvalidParameterException;
 import java.security.Permission;
 import java.security.ProviderException;
@@ -27,6 +28,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.littleshoot.proxy.HttpFilters;
@@ -64,6 +66,12 @@ public class JsignCLITest {
         assertEquals("Source file CRC32", SOURCE_FILE_CRC32, FileUtils.checksumCRC32(sourceFile));
         Thread.sleep(100);
         FileUtils.copyFile(sourceFile, targetFile);
+    }
+
+    @After
+    public void tearDown() {
+        // reset the proxy configuration
+        ProxySelector.setDefault(null);
     }
 
     @Test
