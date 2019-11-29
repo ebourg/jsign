@@ -138,7 +138,7 @@ public class JsignMojo extends AbstractMojo {
 
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {
-            helper.proxyUrl(proxy.getHost() + ":" + proxy.getPort());
+            helper.proxyUrl(proxy.getProtocol() + "://" + proxy.getHost() + ":" + proxy.getPort());
             helper.proxyUser(proxy.getUsername());
             helper.proxyPass(proxy.getPassword());
         }
