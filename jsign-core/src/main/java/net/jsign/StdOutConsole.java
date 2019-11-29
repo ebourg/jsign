@@ -24,12 +24,23 @@ package net.jsign;
  */
 class StdOutConsole implements Console {
 
+    /** Logging level (0: warn, 1: info, 2: debug) */
+    private int level;
+
+    public StdOutConsole(int level) {
+        this.level = level;
+    }
+
     public void debug(String message) {
-        System.out.println(message);
+        if (level >= 2) {
+            System.out.println(message);
+        }
     }
 
     public void info(String message) {
-        System.out.println(message);
+        if (level >= 1) {
+            System.out.println(message);
+        }
     }
 
     public void warn(String message) {

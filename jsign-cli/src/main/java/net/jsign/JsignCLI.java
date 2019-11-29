@@ -84,7 +84,7 @@ public class JsignCLI {
             return;
         }
         
-        SignerHelper helper = new SignerHelper(new StdOutConsole(), "option");
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option");
         
         setOption(PARAM_KEYSTORE, helper, cmd);
         setOption(PARAM_STOREPASS, helper, cmd);
