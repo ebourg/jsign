@@ -197,4 +197,27 @@ public class PowerShellSignerTest {
         
         assertEquals("Digest algorithm", DigestAlgorithm.SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
     }
+
+    @Test
+    public void testSignInMemory() throws Exception {
+        PowerShellScript script = new PowerShellScript("write-host \"Hello World!\"\n");
+        
+        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA512)
+                .withProgramName("Hello World")
+                .withProgramURL("http://example.com");
+        
+        signer.sign(script);
+        script.save();
+        
+        script = new PowerShellScript(script.getContent());
+        
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+    }
 }

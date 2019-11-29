@@ -36,6 +36,7 @@ import org.littleshoot.proxy.ProxyAuthenticator;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 
 import net.jsign.pe.PEFile;
+import net.jsign.powershell.PowerShellScript;
 
 import static org.junit.Assert.*;
 
@@ -175,6 +176,25 @@ public class JsignCLITest {
 
             assertNotNull(signature);
         }
+    }
+
+    @Test
+    public void testSigningPowerShell() throws Exception {
+        File sourceFile = new File("target/test-classes/hello-world.ps1");
+        File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        cli.execute("--alg=SHA-1", "--replace", "--scriptEncoding=ISO-8859-1", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
+
+        PowerShellScript script = new PowerShellScript(targetFile);
+        
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+
+        CMSSignedData signature = signatures.get(0);
+
+        assertNotNull(signature);
     }
 
     @Test

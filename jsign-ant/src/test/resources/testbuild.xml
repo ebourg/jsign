@@ -88,6 +88,15 @@
              keypass="${keypass}"/>
   </target>
 
+  <target name="signing-powershell">
+    <jsign file="hello-world-signed-with-ant.ps1"
+           alg="SHA-1"
+           scriptEncoding="ISO-8859-1"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"/>
+  </target>
+
   <target name="signing-pkcs12">
     <jsign file="wineyes-signed-with-ant.exe"
              name="WinEyes"

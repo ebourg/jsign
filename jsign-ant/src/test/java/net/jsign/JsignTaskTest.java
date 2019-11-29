@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.jsign.pe.PEFile;
+import net.jsign.powershell.PowerShellScript;
 
 import static org.junit.Assert.*;
 
@@ -183,6 +184,26 @@ public class JsignTaskTest {
 
             assertNotNull(signature);
         }
+    }
+
+    @Test
+    public void testSigningPowerShell() throws Exception {
+        File sourceFile = new File("target/test-classes/hello-world.ps1");
+        File targetFile = new File("target/test-classes/hello-world-signed-with-ant.ps1");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        project.executeTarget("signing-powershell");
+        
+        PowerShellScript script = new PowerShellScript(targetFile);
+
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+
+        CMSSignedData signature = signatures.get(0);
+
+        assertNotNull(signature);
     }
 
     @Test
