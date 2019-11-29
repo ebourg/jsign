@@ -110,6 +110,36 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         }
     }
 
+    public void testInvalidProxyProtocol() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        Proxy proxy = new Proxy();
+        proxy.setId("proxima");
+        proxy.setProtocol("mal:formed/");
+        proxy.setHost("example.com");
+        proxy.setPort(1080);
+        proxy.setUsername("johndoe");
+        proxy.setPassword("secret");
+
+        Settings settings = new Settings();
+        settings.setProxies(Collections.singletonList(proxy));
+
+        setVariableValueToObject(mojo, "settings", settings);
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "password");
+        setVariableValueToObject(mojo, "proxyId", "proxima");
+
+        try {
+            mojo.execute();
+        } catch (MojoFailureException e) {
+            // expected
+            assertEquals("Couldn't initialize proxy", e.getMessage());
+        }
+    }
+
     public void testActiveProxy() throws Exception {
         JsignMojo mojo = getMojo();
 

@@ -341,7 +341,7 @@ class SignerHelper {
         try {
             initializeProxy(proxyUrl, proxyUser, proxyPass);
         } catch (Exception e) {
-            throw new SignerException("Couldn't initialize proxy ", e);
+            throw new SignerException("Couldn't initialize proxy", e);
         }
         
         // Instantiate a suitable signer implementation for the file specified
