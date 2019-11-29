@@ -34,7 +34,7 @@ class AntConsole implements Console {
     }
 
     public void debug(String message) {
-            task.log(message, Project.MSG_DEBUG);
+        task.log(message, Project.MSG_DEBUG);
     }
 
     public void info(String message) {
