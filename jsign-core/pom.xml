@@ -39,6 +39,19 @@
       <artifactId>bcpkix-jdk15on</artifactId>
       <version>1.64</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>4.1.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+      <version>1.19</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

@@ -97,6 +97,14 @@
            keypass="${keypass}"/>
   </target>
 
+  <target name="signing-msi">
+    <jsign file="minimal-signed-with-ant.msi"
+             alg="SHA-1"
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"/>
+  </target>
+
   <target name="signing-pkcs12">
     <jsign file="wineyes-signed-with-ant.exe"
              name="WinEyes"

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- Wix file for generating the minimal.msi test package -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Name="Minimal MSI package for Jsign tests"
+           Manufacturer="The Jsign project"
+           Version="1.0.0"
+           Id="*" UpgradeCode="12345678-CAFE-1234-5678-111111111111"
+           Language="1033">
+    <Package InstallerVersion="200" Compressed="yes"/>
+  </Product>
+</Wix>

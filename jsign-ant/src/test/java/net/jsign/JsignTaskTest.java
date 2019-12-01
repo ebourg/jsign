@@ -30,6 +30,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.powershell.PowerShellScript;
 
@@ -204,6 +205,26 @@ public class JsignTaskTest {
         CMSSignedData signature = signatures.get(0);
 
         assertNotNull(signature);
+    }
+
+    @Test
+    public void testSigningMSI() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal.msi");
+        File targetFile = new File("target/test-classes/minimal-signed-with-ant.msi");
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        project.executeTarget("signing-msi");
+        
+        try (MSIFile file = new MSIFile(targetFile)) {
+            List<CMSSignedData> signatures = file.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
     }
 
     @Test

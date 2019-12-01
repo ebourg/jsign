@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -349,6 +350,10 @@ class SignerHelper {
         try {
             if (PEFile.isPEFile(file)) {
                 signer = new PESigner(chain, privateKey);
+
+            } else if (MSIFile.isMSIFile(file)) {
+                signer = new MSISigner(chain, privateKey);
+
             } else if (file.getName().endsWith(".ps1")
                     || file.getName().endsWith(".psd1")
                     || file.getName().endsWith(".psm1")) {
