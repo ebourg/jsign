@@ -36,6 +36,8 @@ The type of the keystore:
 .br
 - PKCS12 : Standard PKCS#12 keystore (.p12 or .pfx files)
 .br
+- PKCS11 : PKCS#11 hardware token
+.br
 This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
 
 .TP
@@ -60,13 +62,24 @@ option is used in combination with the keyfile option.
 
 .TP
 .B -t, --tsaurl <URL>
-The URL of the timestamping authority. RFC 3161 servers used for jar signing
-are not compatible with Authenticode signatures. You can use the COMODO
-or the Verisign services:
+The URL of the timestamping authority, either RFC 3161 or Authenticode services.
+You can use the COMODO or the Verisign services:
 .br
 - http://timestamp.comodoca.com/authenticode
 .br
 - http://timestamp.verisign.com/scripts/timstamp.dll
+
+.TP
+.B -m, --tsmode <MODE>
+The timestamping mode (RFC3161 or Authenticode). The default mode is Authenticode.
+
+.TP
+.B -r, --tsretries <NUMBER>
+The number of retries for timestamping (default to 3 attempts).
+
+.TP
+.B -w, --tsretrywait <SECONDS>
+The number of seconds to wait between timestamping retries (10 seconds by default).
 
 .TP
 .B -n, --name <NAME>
@@ -77,12 +90,28 @@ The name of the application. This is an optional information embedded in the sig
 The URL of the application. This is an optional information embedded in the signature.
 
 .TP
+.B --proxyUrl <URL>
+The URL of the HTTP proxy.
+
+.TP
+.B --proxyUser <NAME>
+The user for the HTTP proxy. If an user is needed.
+
+.TP
+.B --proxyPass <PASSWORD>
+The password for the HTTP proxy user. If an user is needed.
+
+.TP
+.B --replace
+Tells if previous signatures should be replaced. By default the new signature is appended to the existing ones.
+
+.TP
 .B -h, --help
 Print the help
 
 
 .SH REPORTING BUGS
-Bugs and suggestions can be reported to the project home page: http://ebourg.github.com/jsign
+Bugs and suggestions can be reported to the project home page: https://ebourg.github.io/jsign
 
 .SH AUTHOR
 Emmanuel Bourg (ebourg@apache.org)
