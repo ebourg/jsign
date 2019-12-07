@@ -195,7 +195,7 @@ public class PowerShellScript {
         return SIGNATURE_BLOCK_PATTERN.matcher(getContent()).replaceFirst("");
     }
 
-    public byte[] computeDigest(MessageDigest digest) throws IOException {
+    public byte[] computeDigest(MessageDigest digest) {
         digest.update(getContentWithoutSignatureBlock().getBytes(UTF_16LE));
         return digest.digest();
     }

@@ -111,7 +111,7 @@ public class JsignCLI {
         helper.sign(file);
     }
 
-    private void setOption(String key, SignerHelper helper, CommandLine cmd) throws SignerException {
+    private void setOption(String key, SignerHelper helper, CommandLine cmd) {
         String value = cmd.getOptionValue(key);
         helper.param(key, value);
     }

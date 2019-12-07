@@ -313,7 +313,7 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
      */
     protected abstract ASN1Object createIndirectData(F file) throws IOException;
 
-    private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws IOException, CMSException, OperatorCreationException, CertificateEncodingException {
+    private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {
         // create content signer
         final String sigAlg;
         if (signatureAlgorithm == null) {
@@ -388,7 +388,7 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Embed a signature as an unsigned attribute of an existing signature.
      */
-    protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) throws CMSException {
+    protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {
         SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();
         
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
