@@ -7,14 +7,14 @@ _jsign()
     local cur prev
     _get_comp_words_by_ref cur prev
 
-    local opts="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h --replace --help"
+    local opts="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h --replace -e --scriptEncoding --help"
 
     if [[ "$cur" == -* ]]; then
         COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
         return 0
     fi
 
-    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv)"
+    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv|ps1|psm1|psd1)"
 
     case $prev in
         -s|--keystore|--keyfile|-c|--certfile)
@@ -25,7 +25,7 @@ _jsign()
             COMPREPLY=( $( compgen -W 'JKS PKCS12' -- "$cur" ) )
             return 0
             ;;
-        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url)
+        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|-e|--scriptEncoding)
             # argument required but no completions available
             return 0
             ;;
