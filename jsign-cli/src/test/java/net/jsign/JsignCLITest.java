@@ -207,6 +207,25 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testSigningPowerShellWithDefaultEncoding() throws Exception {
+        File sourceFile = new File("target/test-classes/hello-world.ps1");
+        File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        cli.execute("--alg=SHA-1", "--replace", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
+
+        PowerShellScript script = new PowerShellScript(targetFile);
+        
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+
+        CMSSignedData signature = signatures.get(0);
+
+        assertNotNull(signature);
+    }
+
+    @Test
     public void testSigningMSI() throws Exception {
         File sourceFile = new File("target/test-classes/minimal.msi");
         File targetFile = new File("target/test-classes/minimal-signed-with-cli.msi");
