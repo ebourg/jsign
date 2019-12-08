@@ -84,21 +84,21 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
     }
 
     /**
-     * Set the URL of the timestamping authority. RFC 3161 servers as used
-     * for jar signing are not compatible with Authenticode signatures.
+     * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar signing)
+     * and Authenticode timestamping services are supported.
      * 
-     * @deprecated
+     * @deprecated Use {@link #withTimestampingAuthority(String)} instead
      */
     public PESigner withTimestampingAutority(String url) {
         return withTimestampingAuthority(url);
     }
 
     /**
-     * Set the URL of the timestamping authority. RFC 3161 servers as used
-     * for jar signing are not compatible with Authenticode signatures.
+     * Set the URLs of the timestamping authorities. Both RFC 3161 (as used for jar signing)
+     * and Authenticode timestamping services are supported.
      *
      * @since 2.0
-     * @deprecated
+     * @deprecated Use {@link #withTimestampingAuthority(String...)} instead
      */
     public PESigner withTimestampingAutority(String... url) {
         return withTimestampingAuthority(url);
