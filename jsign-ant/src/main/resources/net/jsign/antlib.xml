@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <antlib>
   <taskdef name="jsign" classname="net.jsign.JsignTask" />
+  <taskdef name="signexe" classname="net.jsign.PESignerTask" />
 </antlib>
