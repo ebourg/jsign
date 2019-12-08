@@ -87,6 +87,11 @@
                     <exclude>META-INF/**</exclude>
                     <exclude>**/*_de.properties</exclude>
                     <exclude>**/MavenShadePluginHelper.*</exclude>
+                    <exclude>**/commons/codec/language/**</exclude>
+                    <exclude>**/commons/math3/random/**</exclude>
+                    <exclude>**/poi/ss/formula/**</exclude>
+                    <exclude>**/poi/sl/draw/geom/**</exclude>
+                    <exclude>font_metrics.properties</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -109,6 +114,40 @@
                   <mainClass>net.jsign.JsignCLI</mainClass>
                 </transformer>
               </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.wvengen</groupId>
+        <artifactId>proguard-maven-plugin</artifactId>
+        <version>2.2.0</version>
+        <executions>
+          <execution>
+            <id>proguard-minimizing</id>
+            <phase>package</phase>
+            <goals>
+              <goal>proguard</goal>
+            </goals>
+            <configuration>
+              <obfuscate>false</obfuscate>
+              <options>
+                <option>-dontwarn</option>
+                <option>-dontnote **</option>
+                <option>-dontoptimize</option>
+                <option>-keep public class net.jsign.* { *; }</option>
+                <option>-keep public class net.jsign.asn1.authenticode.* { *; }</option>
+                <option>-keep public class net.jsign.asn1.authenticode.* { *; }</option>
+                <option>-keep public class net.jsign.msi.* { *; }</option>
+                <option>-keep public class net.jsign.pe.* { *; }</option>
+                <option>-keep public class net.jsign.powershell.* { *; }</option>
+                <option>-keep public class net.jsign.timestamp.* { *; }</option>
+              </options>
+              <injar>${project.build.finalName}.jar</injar>
+              <includeDependency>false</includeDependency>
+              <libs>
+                <lib>${proguard.bootclasspath}</lib>
+              </libs>
             </configuration>
           </execution>
         </executions>
@@ -197,5 +236,27 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>proguard-bootclasspath-pre-java9</id>
+      <activation>
+        <jdk>(,1.8]</jdk>
+      </activation>
+      <properties>
+        <proguard.bootclasspath>${java.home}/lib/rt.jar</proguard.bootclasspath>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>proguard-bootclasspath-post-java9</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <proguard.bootclasspath>${java.home}/jmods/java.base.jmod</proguard.bootclasspath>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
