@@ -52,7 +52,7 @@ import static java.nio.charset.StandardCharsets.*;
  */
 public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, PowerShellScript> {
 
-    private Charset scriptEncoding = UTF_8;
+    private Charset encoding = UTF_8;
 
     /**
      * Create a PowerShellSigner with the specified certificate chain and private key.
@@ -79,14 +79,14 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, Power
     /**
      * Set the encoding of the script to be signed (UTF-8 by default).
      */
-    PowerShellSigner withScriptEncoding(Charset scriptEncoding) {
-        this.scriptEncoding = scriptEncoding;
+    PowerShellSigner withEncoding(Charset encoding) {
+        this.encoding = encoding;
         return this;
     }
 
     @Override
     void sign(File file) throws Exception {
-        sign(new PowerShellScript(file, scriptEncoding));
+        sign(new PowerShellScript(file, encoding));
     }
 
     /**

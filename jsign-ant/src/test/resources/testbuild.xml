@@ -91,7 +91,7 @@
   <target name="signing-powershell">
     <jsign file="hello-world-signed-with-ant.ps1"
            alg="SHA-1"
-           scriptEncoding="ISO-8859-1"
+           encoding="ISO-8859-1"
            keystore="${keystore}"
            alias="${alias}"
            keypass="${keypass}"/>

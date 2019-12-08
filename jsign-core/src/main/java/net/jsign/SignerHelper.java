@@ -73,7 +73,7 @@ class SignerHelper {
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
     public static final String PARAM_REPLACE = "replace";
-    public static final String PARAM_SCRIPT_ENCODING = "scriptEncoding";
+    public static final String PARAM_ENCODING = "encoding";
 
     private Console console;
 
@@ -98,7 +98,7 @@ class SignerHelper {
     private String proxyUser;
     private String proxyPass;
     private boolean replace;
-    private Charset scriptEncoding;
+    private Charset encoding;
 
     public SignerHelper(Console console, String parameterName) {
         this.console = console;
@@ -210,8 +210,8 @@ class SignerHelper {
         return this;
     }
 
-    public SignerHelper scriptEncoding(String scriptEncoding) {
-        this.scriptEncoding = Charset.forName(scriptEncoding);
+    public SignerHelper encoding(String encoding) {
+        this.encoding = Charset.forName(encoding);
         return this;
     }
 
@@ -239,7 +239,7 @@ class SignerHelper {
             case PARAM_PROXY_USER: return proxyUser(value);
             case PARAM_PROXY_PASS: return proxyPass(value);
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
-            case PARAM_SCRIPT_ENCODING: return scriptEncoding(value);
+            case PARAM_ENCODING:   return encoding(value);
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -366,7 +366,7 @@ class SignerHelper {
         }
         
         if (signer instanceof PowerShellSigner) {
-            signer = ((PowerShellSigner) signer).withScriptEncoding(scriptEncoding);
+            signer = ((PowerShellSigner) signer).withEncoding(encoding);
         }
         
         // configure the signer

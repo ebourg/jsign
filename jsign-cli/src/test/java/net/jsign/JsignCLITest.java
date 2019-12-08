@@ -193,7 +193,7 @@ public class JsignCLITest {
         File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");
         FileUtils.copyFile(sourceFile, targetFile);
         
-        cli.execute("--alg=SHA-1", "--replace", "--scriptEncoding=ISO-8859-1", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
+        cli.execute("--alg=SHA-1", "--replace", "--encoding=ISO-8859-1", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
 
         PowerShellScript script = new PowerShellScript(targetFile);
         
