@@ -16,6 +16,7 @@
 
 package net.jsign.pe;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class Section {
     public String getName() {
         byte[] buffer = new byte[8];
         peFile.read(buffer, baseOffset, 0);
-        String name = new String(buffer);
+        String name = new String(buffer, StandardCharsets.UTF_8);
         if (name.indexOf(0) != -1) {
             name = name.substring(0, name.indexOf(0));
         }
