@@ -60,6 +60,8 @@ public class DataDirectory {
     /**
      * Tells if the data directory is at the end of the file.
      * 
+     * @return <code>true</code> if the data directory is at the end of the file, <code>false</code> otherwise
+     * @throws IOException if an I/O error occurs
      * @since 2.0
      */
     public boolean isTrailing() throws IOException {

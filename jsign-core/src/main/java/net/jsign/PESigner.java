@@ -78,6 +78,9 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
      * @param keystore the keystore holding the certificate and the private key
      * @param alias    the alias of the certificate in the keystore
      * @param password the password to get the private key
+     * @throws KeyStoreException if the keystore has not been initialized (loaded).
+     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
+     * @throws UnrecoverableKeyException if the key cannot be recovered (e.g., the given password is wrong).
      */
     public PESigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         super(keystore, alias, password);
@@ -87,6 +90,8 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
      * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
      * 
+     * @param url the URL of the timestamping authority
+     * @return the current signer
      * @deprecated Use {@link #withTimestampingAuthority(String)} instead
      */
     public PESigner withTimestampingAutority(String url) {
@@ -97,11 +102,13 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
      * Set the URLs of the timestamping authorities. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
      *
+     * @param urls the URLs of the timestamping authorities
+     * @return the current signer
      * @since 2.0
      * @deprecated Use {@link #withTimestampingAuthority(String...)} instead
      */
-    public PESigner withTimestampingAutority(String... url) {
-        return withTimestampingAuthority(url);
+    public PESigner withTimestampingAutority(String... urls) {
+        return withTimestampingAuthority(urls);
     }
 
     @Override
@@ -122,7 +129,8 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
     /**
      * Sign the specified executable file.
      *
-     * @throws Exception
+     * @param file the file to sign
+     * @throws Exception if signing fails
      */
     @Override
     public void sign(PEFile file) throws Exception {

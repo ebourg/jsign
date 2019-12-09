@@ -110,6 +110,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
      * @param keystore the keystore holding the certificate and the private key
      * @param alias    the alias of the certificate in the keystore
      * @param password the password to get the private key
+     * @throws KeyStoreException if the keystore has not been initialized (loaded).
+     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
+     * @throws UnrecoverableKeyException if the key cannot be recovered (e.g., the given password is wrong).
      */
     public AuthenticodeSigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         Certificate[] chain = keystore.getCertificateChain(alias);
@@ -122,6 +125,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Set the program name embedded in the signature.
+     * 
+     * @param programName the program name
+     * @return the current signer
      */
     public S withProgramName(String programName) {
         this.programName = programName;
@@ -130,6 +136,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Set the program URL embedded in the signature.
+     * 
+     * @param programURL the program URL
+     * @return the current signer
      */
     public S withProgramURL(String programURL) {
         this.programURL = programURL;
@@ -139,6 +148,8 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Enable or disable the replacement of the previous signatures (disabled by default).
      * 
+     * @param replace <code>true</code> if the new signature should replace the existing ones, <code>false</code> to append it
+     * @return the current signer
      * @since 2.0
      */
     public S withSignaturesReplaced(boolean replace) {
@@ -148,6 +159,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Enable or disable the timestamping (enabled by default).
+     * 
+     * @param timestamping <code>true</code> to enable timestamping, <code>false</code> to disable it
+     * @return the current signer
      */
     public S withTimestamping(boolean timestamping) {
         this.timestamping = timestamping;
@@ -157,6 +171,8 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * RFC3161 or Authenticode (Authenticode by default).
      * 
+     * @param tsmode the timestamping mode
+     * @return the current signer
      * @since 1.3
      */
     public S withTimestampingMode(TimestampingMode tsmode) {
@@ -168,6 +184,8 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
      * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
      * 
+     * @param url the URL of the timestamping authority
+     * @return the current signer
      * @since 2.1
      */
     public S withTimestampingAuthority(String url) {
@@ -178,15 +196,20 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
      * Set the URLs of the timestamping authorities. Both RFC 3161 (as used for jar signing)
      * and Authenticode timestamping services are supported.
      * 
+     * @param urls the URLs of the timestamping authorities
+     * @return the current signer
      * @since 2.1
      */
-    public S withTimestampingAuthority(String... url) {
-        this.tsaurlOverride = url;
+    public S withTimestampingAuthority(String... urls) {
+        this.tsaurlOverride = urls;
         return (S) this;
     }
 
     /**
      * Set the Timestamper implementation.
+     * 
+     * @param timestamper the timestamper implementation to use
+     * @return the current signer
      */
     public S withTimestamper(Timestamper timestamper) {
         this.timestamper = timestamper;
@@ -195,6 +218,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Set the number of retries for timestamping.
+     * 
+     * @param timestampingRetries the number of retries
+     * @return the current signer
      */
     public S withTimestampingRetries(int timestampingRetries) {
         this.timestampingRetries = timestampingRetries;
@@ -203,8 +229,10 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Set the number of seconds to wait between timestamping retries.
+     * 
+     * @param timestampingRetryWait the wait time between retries (in seconds)
+     * @return the current signer
      */
-    
     public S withTimestampingRetryWait(int timestampingRetryWait) {
         this.timestampingRetryWait = timestampingRetryWait;
         return (S) this;
@@ -212,6 +240,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Set the digest algorithm to use (SHA-256 by default)
+     * 
+     * @param algorithm the digest algorithm
+     * @return the current signer
      */
     public S withDigestAlgorithm(DigestAlgorithm algorithm) {
         if (algorithm != null) {
@@ -223,6 +254,8 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Explicitly sets the signature algorithm to use.
      * 
+     * @param signatureAlgorithm the signature algorithm
+     * @return the current signer
      * @since 2.0
      */
     public S withSignatureAlgorithm(String signatureAlgorithm) {
@@ -233,6 +266,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Explicitly sets the signature algorithm and provider to use.
      * 
+     * @param signatureAlgorithm the signature algorithm
+     * @param signatureProvider the security provider for the specified algorithm
+     * @return the current signer
      * @since 2.0
      */
     public S withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
@@ -242,6 +278,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Explicitly sets the signature algorithm and provider to use.
      * 
+     * @param signatureAlgorithm the signature algorithm
+     * @param signatureProvider the security provider for the specified algorithm
+     * @return the current signer
      * @since 2.0
      */
     public S withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
@@ -253,6 +292,8 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Set the signature provider to use.
      * 
+     * @param signatureProvider the security provider for the signature algorithm
+     * @return the current signer
      * @since 2.0
      */
     public S withSignatureProvider(Provider signatureProvider) {
@@ -263,19 +304,25 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
     /**
      * Sign the specified file.
      *
-     * @throws Exception
+     * @param file the file to sign
+     * @throws Exception if signing fails
      */
     abstract void sign(File file) throws Exception;
 
     /**
      * Sign the specified file.
      *
-     * @throws Exception
+     * @param file the file to sign
+     * @throws Exception if signing fails
      */
     public abstract void sign(F file) throws Exception;
 
     /**
      * Create the PKCS7 message with the signature and the timestamp.
+     * 
+     * @param file the file to sign
+     * @return the PKCS7 message with the signature and the timestamp
+     * @throws Exception if an error occurs
      */
     protected CMSSignedData createSignedData(F file) throws Exception {
         // compute the signature
@@ -310,6 +357,10 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Creates the SpcIndirectDataContent structure containing the digest of the file.
+     * 
+     * @param file the file to digest
+     * @return the SpcIndirectDataContent structure in ASN.1 format
+     * @throws IOException if an I/O error occurs
      */
     protected abstract ASN1Object createIndirectData(F file) throws IOException;
 
@@ -349,6 +400,9 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.
+     * 
+     * @param certificates the certificate chain to process
+     * @return the certificate chain without the root certificate
      */
     private List<Certificate> removeRoot(Certificate[] certificates) {
         List<Certificate> list = new ArrayList<>();
@@ -372,6 +426,8 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Creates the authenticated attributes for the SignerInfo section of the signature.
+     * 
+     * @return the authenticated attributes
      */
     private AttributeTable createAuthenticatedAttributes() {
         List<Attribute> attributes = new ArrayList<>();
@@ -387,6 +443,10 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
 
     /**
      * Embed a signature as an unsigned attribute of an existing signature.
+     * 
+     * @param primary   the root signature hosting the nested secondary signature
+     * @param secondary the additional signature to nest inside the primary one
+     * @return the signature combining the specified signatures
      */
     protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {
         SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();

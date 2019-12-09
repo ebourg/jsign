@@ -73,6 +73,10 @@ public class MSIFile implements Closeable {
 
     /**
      * Tells if the specified file is a MSI file.
+     * 
+     * @param file the file to check
+     * @return <code>true</code> if the file is a Microsoft installer, <code>false</code> otherwise
+     * @throws IOException if an I/O error occurs
      */
     public static boolean isMSIFile(File file) throws IOException {
         try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
@@ -82,6 +86,9 @@ public class MSIFile implements Closeable {
 
     /**
      * Create a MSIFile from the specified file.
+     * 
+     * @param file the file to open
+     * @throws IOException if an I/O error occurs
      */
     public MSIFile(File file) throws IOException {
         this.fs = new POIFSFileSystem(file, false);
@@ -89,6 +96,9 @@ public class MSIFile implements Closeable {
 
     /**
      * Create a MSIFile from the specified channel.
+     * 
+     * @param channel the channel to read the file from
+     * @throws IOException if an I/O error occurs
      */
     public MSIFile(final SeekableByteChannel channel) throws IOException {
         this.channel = channel;
@@ -108,6 +118,8 @@ public class MSIFile implements Closeable {
     /**
      * Tells if the MSI file has an extended signature (MsiDigitalSignatureEx)
      * containing a hash of the streams metadata (name, size, date).
+     * 
+     * @return <code>true</code> if the file has a MsiDigitalSignatureEx stream, <code>false</code> otherwise
      */
     public boolean hasExtendedSignature() {
         try {
@@ -169,6 +181,9 @@ public class MSIFile implements Closeable {
 
     /**
      * Returns the authenticode signatures on the file.
+     * 
+     * @return the signatures
+     * @throws IOException if an I/O error occurs
      */
     public List<CMSSignedData> getSignatures() throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
@@ -206,6 +221,9 @@ public class MSIFile implements Closeable {
 
     /**
      * Sets the signature of the file, overwriting the previous one.
+     * 
+     * @param signature the signature to put
+     * @throws IOException if an I/O error occurs
      */
     public void setSignature(CMSSignedData signature) throws IOException {
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
@@ -214,6 +232,8 @@ public class MSIFile implements Closeable {
 
     /**
      * Saves the file.
+     * 
+     * @throws IOException if an I/O error occurs
      */
     public void save() throws IOException {
         if (channel == null) {

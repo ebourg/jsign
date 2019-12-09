@@ -41,6 +41,7 @@ public class KeyStoreUtils {
      *                   If null the type is inferred from the extension of the file (.p12 or .pfx for PKCS#12 keystores)
      * @param storepass  The password of the keystore
      * @param provider   The security provider used to load the keystore (must be specified for PKCS#11 keystores)
+     * @return the keystore loaded
      * @throws KeyStoreException thrown if the keystore cannot be loaded
      */
     public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws KeyStoreException {

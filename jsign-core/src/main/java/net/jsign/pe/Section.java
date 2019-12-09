@@ -42,6 +42,8 @@ public class Section {
      * images do not use a string table and do not support section names longer
      * than 8 characters. Long names in object files are truncated if they are
      * emitted to an executable file.
+     * 
+     * @return the name of the section
      */
     public String getName() {
         byte[] buffer = new byte[8];
@@ -58,6 +60,8 @@ public class Section {
      * The total size of the section when loaded into memory. If this value is 
      * greater than SizeOfRawData, the section is zero-padded. This field is 
      * valid only for executable images and should be set to zero for object files.
+     * 
+     * @return the virtual size
      */
     public long getVirtualSize() {
         return peFile.readDWord(baseOffset, 8);
@@ -70,6 +74,8 @@ public class Section {
      * relocation is applied; for simplicity, compilers should set this to zero.
      * Otherwise, it is an arbitrary value that is subtracted from offsets
      * during relocation.
+     * 
+     * @return the section address relative to the image base address
      */
     public long getVirtualAddress() {
         return peFile.readDWord(baseOffset, 12);
@@ -83,6 +89,8 @@ public class Section {
      * SizeOfRawData field is rounded but the VirtualSize field is not, it is
      * possible for SizeOfRawData to be greater than VirtualSize as well. When
      * a section contains only uninitialized data, this field should be zero.
+     * 
+     * @return the size of the section
      */
     public long getSizeOfRawData() {
         return peFile.readDWord(baseOffset, 16);
@@ -94,6 +102,8 @@ public class Section {
      * optional header. For object files, the value should be aligned on a 4 byte
      * boundary for best performance. When a section contains only uninitialized
      * data, this field should be zero.
+     * 
+     * @return the file pointer to the first page
      */
     public long getPointerToRawData() {
         return peFile.readDWord(baseOffset, 20);
@@ -102,6 +112,8 @@ public class Section {
     /**
      * The file pointer to the beginning of relocation entries for the section.
      * This is set to zero for executable images or if there are no relocations.
+     * 
+     * @return the file pointer to the beginning of relocation entries
      */
     public long getPointerToRelocations() {
         return peFile.readDWord(baseOffset, 24);
@@ -111,6 +123,8 @@ public class Section {
      * The file pointer to the beginning of line-number entries for the section.
      * This is set to zero if there are no COFF line numbers. This value should 
      * be zero for an image because COFF debugging information is deprecated.
+     * 
+     * @return the file pointer to the beginning of line-number entries
      */
     public long getPointerToLineNumbers() {
         return peFile.readDWord(baseOffset, 28);
@@ -119,6 +133,8 @@ public class Section {
     /**
      * The number of relocation entries for the section. This is set to zero
      * for executable images.
+     * 
+     * @return the number of relocation entries
      */
     public int getNumberOfRelocations() {
         return peFile.readWord(baseOffset, 32);
@@ -127,6 +143,8 @@ public class Section {
     /**
      * The number of line-number entries for the section. This value should
      * be zero for an image because COFF debugging information is deprecated.
+     * 
+     * @return the number of line-number entries
      */
     public int getNumberOfLineNumbers() {
         return peFile.readWord(baseOffset, 34);
@@ -134,6 +152,8 @@ public class Section {
 
     /**
      * The flags that describe the characteristics of the section.
+     * 
+     * @return the characteristics flags
      */
     public List<SectionFlag> getCharacteristics() {
         return SectionFlag.getFlags((int) peFile.readDWord(baseOffset, 36));

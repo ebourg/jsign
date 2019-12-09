@@ -51,21 +51,22 @@ public enum DigestAlgorithm {
      * This method is more permissive than {@link #valueOf(String)}, it's case
      * insensitive and ignores hyphens.
      * 
-     * @param s the name of the digest algorithm
+     * @param name the name of the digest algorithm
+     * @return the digest algorithm, or <code>null</code> if the name specified doesn't match any supported algorithm
      */
-    public static DigestAlgorithm of(String s) {
-        if (s == null) {
+    public static DigestAlgorithm of(String name) {
+        if (name == null) {
             return null;
         }
         
-        s = s.toUpperCase().replaceAll("-", "");
+        name = name.toUpperCase().replaceAll("-", "");
         for (DigestAlgorithm algorithm : values()) {
-            if (algorithm.name().equals(s)) {
+            if (algorithm.name().equals(name)) {
                 return algorithm;
             }
         }
         
-        if ("SHA2".equals(s)) {
+        if ("SHA2".equals(name)) {
             return SHA256;
         }
         
@@ -76,6 +77,7 @@ public enum DigestAlgorithm {
      * Return the algorithm matching the specified object identifier.
      * 
      * @param oid the ASN.1 object identifier of the algorithm
+     * @return the digest algorithm, or <code>null</code> if none matches the specified oid
      */
     public static DigestAlgorithm of(ASN1ObjectIdentifier oid) {
         for (DigestAlgorithm algorithm : values()) {
@@ -89,6 +91,8 @@ public enum DigestAlgorithm {
 
     /**
      * Return a MessageDigest for this algorithm.
+     * 
+     * @return a MessageDigest for this algorithm
      */
     public MessageDigest getMessageDigest() {
         try {
@@ -101,6 +105,7 @@ public enum DigestAlgorithm {
     /**
      * Return the default algorithm (currently SHA-256, SHA-1 has been deprecated since January 1st 2016).
      * 
+     * @return the default algorithm ({@link #SHA256})
      * @see <a href="http://social.technet.microsoft.com/wiki/contents/articles/1760.windows-root-certificate-program-technical-requirements-version-2-0.aspx">Windows Root Certificate Program - Technical Requirements version 2.0</a>
      * @see <a href="http://blogs.technet.com/b/pki/archive/2011/02/08/common-questions-about-sha2-and-windows.aspx">Common Questions about SHA2 and Windows</a>
      */

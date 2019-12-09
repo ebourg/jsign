@@ -71,6 +71,9 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, Power
      * @param keystore the keystore holding the certificate and the private key
      * @param alias    the alias of the certificate in the keystore
      * @param password the password to get the private key
+     * @throws KeyStoreException if the keystore has not been initialized (loaded).
+     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
+     * @throws UnrecoverableKeyException if the key cannot be recovered (e.g., the given password is wrong).
      */
     public PowerShellSigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         super(keystore, alias, password);
@@ -78,6 +81,9 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, Power
 
     /**
      * Set the encoding of the script to be signed (UTF-8 by default).
+     * 
+     * @param encoding the encoding of the script
+     * @return the current signer
      */
     PowerShellSigner withEncoding(Charset encoding) {
         this.encoding = encoding;
@@ -92,7 +98,8 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, Power
     /**
      * Sign the specified PowerShell script.
      *
-     * @throws Exception
+     * @param script the script to sign
+     * @throws Exception if signing fails
      */
     @Override
     public void sign(PowerShellScript script) throws Exception {

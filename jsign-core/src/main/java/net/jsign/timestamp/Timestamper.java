@@ -63,6 +63,9 @@ public abstract class Timestamper {
     }
 
     /**
+     * Set the URLs of the timestamping services.
+     * 
+     * @param tsaurls the URLs of the timestamping services
      * @since 2.0
      */
     public void setURLs(String... tsaurls) {
@@ -79,6 +82,8 @@ public abstract class Timestamper {
 
     /**
      * Set the number of retries.
+     * 
+     * @param retries the number of retries
      */
     public void setRetries(int retries) {
         this.retries = retries;
@@ -86,6 +91,8 @@ public abstract class Timestamper {
 
     /**
      * Set the number of seconds to wait between retries.
+     * 
+     * @param retryWait the wait time between retries (in seconds)
      */
     public void setRetryWait(int retryWait) {
         this.retryWait = retryWait;
@@ -97,8 +104,11 @@ public abstract class Timestamper {
      * @param algo    the digest algorithm used for the timestamp
      * @param sigData the signed data to be timestamped
      * @return        the signed data with the timestamp added
+     * @throws IOException if an I/O error occurs
+     * @throws TimestampingException if the timestamping keeps failing after the configured number of attempts
+     * @throws CMSException if the signature cannot be generated
      */
-    public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws IOException, CMSException {
+    public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws TimestampingException, IOException, CMSException {
         CMSSignedData token = null;
         
         // Retry the timestamping and failover other services if a TSA is unavailable for a short period of time
@@ -131,6 +141,9 @@ public abstract class Timestamper {
 
     /**
      * Return the encrypted digest of the specified signature.
+     * 
+     * @param sigData the signature
+     * @return the encrypted digest
      */
     private byte[] getEncryptedDigest(CMSSignedData sigData) {
         SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
@@ -140,6 +153,9 @@ public abstract class Timestamper {
     /**
      * Return the certificate chain of the timestamping authority if it isn't included
      * with the counter signature in the unsigned attributes.
+     * 
+     * @param token the timestamp
+     * @return the certificate chain of the timestamping authority
      */
     protected Collection<X509CertificateHolder> getExtraCertificates(CMSSignedData token) {
         return null;
@@ -147,6 +163,9 @@ public abstract class Timestamper {
 
     /**
      * Return the counter signature to be added as an unsigned attribute.
+     * 
+     * @param token the timestamp
+     * @return the unsigned attribute wrapping the timestamp
      */
     protected abstract AttributeTable getUnsignedAttributes(CMSSignedData token);
 
@@ -175,6 +194,9 @@ public abstract class Timestamper {
 
     /**
      * Returns the timestamper for the specified mode.
+     * 
+     * @param mode the timestamping mode
+     * @return a new timestamper for the specified mode
      */
     public static Timestamper create(TimestampingMode mode) {
         switch (mode) {

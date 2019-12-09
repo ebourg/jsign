@@ -74,6 +74,7 @@ public class PowerShellScript {
      * The encoding is assumed to be UTF-8.
      * 
      * @param file the PowerShell script
+     * @throws IOException if an I/O error occurs
      */
     public PowerShellScript(File file) throws IOException {
         this(file, StandardCharsets.UTF_8);
@@ -84,6 +85,7 @@ public class PowerShellScript {
      * 
      * @param file     the PowerShell script
      * @param encoding the encoding of the script (if null the default UTF-8 encoding is used)
+     * @throws IOException if an I/O error occurs
      */
     public PowerShellScript(File file, Charset encoding) throws IOException {
         this.file = file;
@@ -93,6 +95,8 @@ public class PowerShellScript {
 
     /**
      * Returns the content of the script.
+     * 
+     * @return the content of the script
      */
     public String getContent() {
         return content;
@@ -100,6 +104,8 @@ public class PowerShellScript {
 
     /**
      * Sets the content of the script.
+     * 
+     * @param content the content of the script
      */
     public void setContent(String content) {
         this.content = content;
@@ -107,6 +113,8 @@ public class PowerShellScript {
 
     /**
      * Returns the authenticode signatures on the file.
+     * 
+     * @return the signatures
      */
     public List<CMSSignedData> getSignatures() {
         List<CMSSignedData> signatures = new ArrayList<>();
@@ -139,6 +147,8 @@ public class PowerShellScript {
 
     /**
      * Returns the signature block.
+     * 
+     * @return the signature block
      */
     private String getSignatureBlock() {
         Matcher matcher = SIGNATURE_BLOCK_PATTERN.matcher(getContent());
@@ -191,6 +201,8 @@ public class PowerShellScript {
 
     /**
      * Returns the content stripped from the signature block.
+     * 
+     * @return the content without the signature
      */
     private String getContentWithoutSignatureBlock() {
         return SIGNATURE_BLOCK_PATTERN.matcher(getContent()).replaceFirst("");
@@ -203,6 +215,8 @@ public class PowerShellScript {
 
     /**
      * Save the script.
+     * 
+     * @throws IOException if an I/O error occurs
      */
     public void save() throws IOException {
         if (file != null) {
@@ -212,6 +226,9 @@ public class PowerShellScript {
 
     /**
      * Save the script to the specified file.
+     * 
+     * @param file the file to write
+     * @throws IOException if an I/O error occurs
      */
     public void save(File file) throws IOException {
         Files.write(file.toPath(), getContent().getBytes(encoding));
