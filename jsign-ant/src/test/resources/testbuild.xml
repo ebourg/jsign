@@ -129,7 +129,9 @@
              alias="${alias}"
              keypass="${keypass}"
              tsaurl="http://timestamp.comodoca.com/authenticode"
-             tsmode="authenticode"/>
+             tsmode="authenticode"
+             tsretries="5"
+             tsretrywait="15"/>
   </target>
 
   <target name="timestamping-rfc3161">
@@ -139,7 +141,9 @@
              alias="${alias}"
              keypass="${keypass}"
              tsaurl="http://timestamp.comodoca.com/rfc3161"
-             tsmode="rfc3161"/>
+             tsmode="rfc3161"
+             tsretries="5"
+             tsretrywait="15"/>
   </target>
 
   <target name="replace-signature">
