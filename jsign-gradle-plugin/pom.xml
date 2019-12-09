@@ -13,20 +13,6 @@
   <version>3.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <inceptionYear>2017</inceptionYear>
-
-  <description>
-    Pure Java implementation of Microsoft Authenticode for signing Windows executable files
-  </description>
-  <url>https://ebourg.github.com/jsign</url>
-
-  <licenses>
-    <license>
-      <name>The Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-    </license>
-  </licenses>
-
   <repositories>
     <repository>
       <id>gradle-repository</id>
