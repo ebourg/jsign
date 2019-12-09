@@ -238,14 +238,16 @@ are the same as those described above for the Ant task.</p>
     
     apply plugin: 'net.jsign'
     
-    task sign << {
-        jsign(file      : 'application.exe',
-              name      : 'My Application',
-              url       : 'http://www.example.com',
-              keystore  : 'keystore.p12',
-              alias     : 'test',
-              storepass : 'secret',
-              tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+    task sign {
+        doLast {
+            jsign(file      : 'application.exe',
+                  name      : 'My Application',
+                  url       : 'http://www.example.com',
+                  keystore  : 'keystore.p12',
+                  alias     : 'test',
+                  storepass : 'secret',
+                  tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+        }
     }
 </pre>
 
