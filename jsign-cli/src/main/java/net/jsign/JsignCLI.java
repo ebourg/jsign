@@ -117,7 +117,7 @@ public class JsignCLI {
     }
 
     private void printHelp() {
-        String header = "Sign and timestamp a Windows executable file.\n\n";
+        String header = "Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a PowerShell script.\n\n";
         String footer = "\nPlease report suggestions and issues on the GitHub project at https://github.com/ebourg/jsign/issues";
 
         HelpFormatter formatter = new HelpFormatter();

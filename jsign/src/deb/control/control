@@ -7,8 +7,9 @@ Depends: default-jre-headless (>= 2:1.7) | java7-runtime-headless
 Recommends: bash-completion
 Maintainer: Emmanuel Bourg <ebourg@apache.org>
 Homepage: https://ebourg.github.com/jsign
-Description: Implementation of Microsoft Authenticode for signing Windows executable files
+Description: Code signing for Windows executables, Microsoft Installers and PowerShell scripts
  Jsign is a Java implementation of Microsoft Authenticode that lets you sign
- and timestamp executable files for Windows. Jsign is platform independent
- and provides an alternative to native tools like signcode/signtool on Windows
- or the Mono development tools on Unix systems.
+ and timestamp executable files for Windows, Microsoft Installers (MSI) and
+ PowerShell scripts. Jsign is platform independent and provides an alternative
+ to native tools like signcode/signtool on Windows or the Mono development
+ tools on Unix systems.

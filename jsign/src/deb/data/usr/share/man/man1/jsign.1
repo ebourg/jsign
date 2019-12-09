@@ -1,17 +1,19 @@
 .\" Manpage for jsign.
-.TH man 1 "10 Jan 2013" "@VERSION@" "jsign man page"
+.TH man 1 "1 Dec 2019" "@VERSION@" "jsign man page"
 
 .SH NAME
-jsign \- sign and timestamp portable executable files (Windows executables)
+jsign \- sign and timestamp executable files for Windows, Microsoft Installers (MSI) and PowerShell scripts
 
 .SH SYNOPSIS
 .B jsign
 [OPTIONS] FILE
 
 .SH DESCRIPTION
-jsign is a Java implementation of Microsoft Authenticode that lets you sign and
-timestamp executable files for Windows. It provides an alternative to native tools
-like signcode/signtool on Windows or the Mono development tools on Unix systems.
+Jsign is a Java implementation of Microsoft Authenticode that lets you sign
+and timestamp executable files for Windows, Microsoft Installers (MSI) and
+PowerShell scripts. Jsign is platform independent and provides an alternative
+to native tools like signcode/signtool on Windows or the Mono development tools
+on Unix systems.
 
 jsign can use private keys and certificates in various formats, either Java keystores,
 PKCS#12 keystores, or SPC/PVK files.
