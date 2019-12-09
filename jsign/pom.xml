@@ -186,14 +186,14 @@
           <dependency>
             <groupId>org.redline-rpm</groupId>
             <artifactId>redline</artifactId>
-            <version>1.1.9</version>
+            <version>1.1.12</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <artifactId>jdeb</artifactId>
         <groupId>org.vafer</groupId>
-        <version>1.2</version>
+        <version>1.8</version>
         <executions>
           <execution>
             <phase>package</phase>
