@@ -438,7 +438,7 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
         SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
 
-        return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[attributes.size()])));
+        return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
     }
 
     /**
