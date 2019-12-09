@@ -821,7 +821,7 @@ public class PEFile implements Closeable {
         for (DataDirectoryType type : DataDirectoryType.values()) {
             DataDirectory entry = getDataDirectory(type);
             if (entry != null && entry.exists()) {
-                out.printf("  %-30s 0x%08x %8d bytes\n", type, entry.getVirtualAddress(), entry.getSize());
+                out.printf("  %-30s 0x%08x %8d bytes%n", type, entry.getVirtualAddress(), entry.getSize());
             }
         }
         out.println();
@@ -831,7 +831,7 @@ public class PEFile implements Closeable {
         List<Section> sections = getSections();
         for (int i = 0; i < sections.size(); i++) {
             Section section = sections.get(i);
-            out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s\n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());
+            out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s%n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());
         }
         out.println();
         
