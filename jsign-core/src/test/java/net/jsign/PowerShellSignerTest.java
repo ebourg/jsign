@@ -200,7 +200,8 @@ public class PowerShellSignerTest {
 
     @Test
     public void testSignInMemory() throws Exception {
-        PowerShellScript script = new PowerShellScript("write-host \"Hello World!\"\n");
+        PowerShellScript script = new PowerShellScript();
+        script.setContent("write-host \"Hello World!\"\n");
         
         PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA512)
@@ -210,9 +211,10 @@ public class PowerShellSignerTest {
         signer.sign(script);
         script.save();
         
-        script = new PowerShellScript(script.getContent());
+        PowerShellScript script2 = new PowerShellScript();
+        script2.setContent(script.getContent());
         
-        List<CMSSignedData> signatures = script.getSignatures();
+        List<CMSSignedData> signatures = script2.getSignatures();
         assertNotNull(signatures);
         assertEquals(1, signatures.size());
         

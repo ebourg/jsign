@@ -62,6 +62,14 @@ public class PowerShellScript {
     private Charset encoding;
 
     /**
+     * Create a PowerShell script.
+     * The encoding is assumed to be UTF-8.
+     */
+    public PowerShellScript() {
+        this.encoding = StandardCharsets.UTF_8;
+    }
+
+    /**
      * Create a PowerShell script from the specified file and load its content.
      * The encoding is assumed to be UTF-8.
      * 
@@ -81,15 +89,6 @@ public class PowerShellScript {
         this.file = file;
         this.encoding = encoding != null ? encoding : StandardCharsets.UTF_8;
         setContent(new String(Files.readAllBytes(file.toPath()), this.encoding));
-    }
-
-    /**
-     * Create a PowerShell script with the specified content.
-     * The encoding is assumed to be UTF-8.
-     */
-    public PowerShellScript(String content) {
-        this.content = content;
-        this.encoding = StandardCharsets.UTF_8;
     }
 
     /**
