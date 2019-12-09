@@ -43,7 +43,7 @@ public class JsignCLI {
             if (e.getCause() != null) {
                 e.getCause().printStackTrace(System.err);
             }
-            System.err.println("Try `jsign --help' for more information.");
+            System.err.println("Try `" + getProgramName() + " --help' for more information.");
             System.exit(1);
         }
     }
@@ -124,6 +124,10 @@ public class JsignCLI {
         formatter.setOptionComparator(null);
         formatter.setWidth(85);
         formatter.setDescPadding(1);
-        formatter.printHelp("java -jar jsign.jar [OPTIONS] FILE", header, options, footer);
+        formatter.printHelp(getProgramName() + " [OPTIONS] FILE", header, options, footer);
+    }
+
+    private static String getProgramName() {
+        return System.getProperty("basename", "java -jar jsign.jar");
     }
 }
