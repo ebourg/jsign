@@ -3,7 +3,7 @@ Version: [[version]]
 Section: utils
 Priority: optional
 Architecture: all
-Depends: default-jre-headless (>= 2:1.7) | java7-runtime-headless
+Depends: default-jre-headless (>= 2:1.8) | java8-runtime-headless
 Recommends: bash-completion
 Maintainer: Emmanuel Bourg <ebourg@apache.org>
 Homepage: https://ebourg.github.com/jsign

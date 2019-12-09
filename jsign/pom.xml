@@ -176,7 +176,7 @@
                   <tarfileset dir="${project.build.directory}" prefix="/usr/share/${project.artifactId}">
                     <include name="${project.build.finalName}.jar" />
                   </tarfileset>
-                  <depends name="java" version="&gt;= 1.7" />
+                  <depends name="java" version="&gt;= 1.8" />
                 </redline>
               </target>
             </configuration>
