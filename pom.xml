@@ -188,7 +188,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.1</version>
         <configuration>
           <linksource>true</linksource>
           <links>
@@ -196,6 +196,7 @@
             <link>http://www.bouncycastle.org/docs/docs1.5on</link>
             <link>http://www.bouncycastle.org/docs/pkixdocs1.5on</link>
           </links>
+          <source>8</source>
           <show>public</show>
           <excludePackageNames>*.asn1.*</excludePackageNames>
           <quiet>true</quiet>
@@ -237,7 +238,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -291,7 +292,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.1</version>
         <reportSets>
           <reportSet>
             <reports>
