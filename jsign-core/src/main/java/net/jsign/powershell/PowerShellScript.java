@@ -54,7 +54,7 @@ public class PowerShellScript {
     private static final Pattern SIGNATURE_BLOCK_PATTERN = Pattern.compile("(?s)" +
             "\\r\\n" +
             "# SIG # Begin signature block\\r\\n" +
-            ".*" +
+            "(?<signatureBlock>.*)" +
             "# SIG # End signature block\\r\\n");
 
     private File file;
@@ -147,7 +147,7 @@ public class PowerShellScript {
             return null;
         }
         
-        return matcher.group(0);
+        return matcher.group("signatureBlock");
     }
 
     private CMSSignedData decodeSignatureBlock() throws CMSException {
@@ -156,8 +156,6 @@ public class PowerShellScript {
             return null;
         }
         
-        signatureBlock = signatureBlock.replaceAll("# SIG # Begin signature block", "");
-        signatureBlock = signatureBlock.replaceAll("# SIG # End signature block", "");
         signatureBlock = signatureBlock.replaceAll("# ", "");
         signatureBlock = signatureBlock.replaceAll("\r|\n", "");
 
