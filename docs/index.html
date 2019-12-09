@@ -178,6 +178,11 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">Tells if previous signatures should be replaced.</td>
       <td valign="top" align="center">No; defaults to "false"</td>
     </tr>
+    <tr>
+      <td valign="top">encoding</td>
+      <td valign="top">The encoding of the PowerShell script to be signed.</td>
+      <td valign="top" align="center">No; defaults to "UTF-8"</td>
+    </tr>
   </table>
 
 <br>
@@ -289,6 +294,8 @@ are provided to install it easily on most Linux distributions. On these systems 
      --proxyUser &lt;NAME>      The user for the HTTP proxy. If an user is needed.
      --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is needed.
      --replace               Tells if previous signatures should be replaced.
+     --encoding &lt;ENCODING>   The encoding of the PowerShell script to be signed (UTF-8
+                             by default).
   -h,--help                  Print the help
 </pre>
 
