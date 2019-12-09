@@ -270,7 +270,8 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <pre>
   usage: jsign [OPTIONS] FILE
-  Sign and timestamp a Windows executable file.
+  Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a
+  PowerShell script.
   
   -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
      --storepass &lt;PASSWORD>  The password to open the keystore
@@ -278,25 +279,29 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - JKS: Java keystore (.jks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
-  -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
+  -a,--alias &lt;NAME>          The alias of the certificate used for signing in the
+                             keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
                              same password.
-     --keyfile &lt;FILE>        The file containing the private key (supports PEM &amp; PVK files)
+     --keyfile &lt;FILE>        The file containing the private key. PEM and PVK files
+                             are supported.
   -c,--certfile &lt;FILE>       The file containing the PKCS#7 certificate chain
                              (.p7b or .spc files).
   -d,--alg &lt;ALGORITHM>       The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)
   -t,--tsaurl &lt;URL>          The URL of the timestamping authority.
   -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
   -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
-  -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
+  -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping
+                             retries
   -n,--name &lt;NAME>           The name of the application
   -u,--url &lt;URL>             The URL of the application
      --proxyUrl &lt;URL>        The URL of the HTTP proxy
      --proxyUser &lt;NAME>      The user for the HTTP proxy. If an user is needed.
-     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is needed.
+     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is
+                             needed.
      --replace               Tells if previous signatures should be replaced.
-     --encoding &lt;ENCODING>   The encoding of the PowerShell script to be signed (UTF-8
+  -e,--encoding &lt;ENCODING>   The encoding of the PowerShell script to be signed (UTF-8
                              by default).
   -h,--help                  Print the help
 </pre>
