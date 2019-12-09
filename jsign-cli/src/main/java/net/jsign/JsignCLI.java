@@ -103,7 +103,7 @@ public class JsignCLI {
         setOption(PARAM_PROXY_URL, helper, cmd);
         setOption(PARAM_PROXY_USER, helper, cmd);
         setOption(PARAM_PROXY_PASS, helper, cmd);
-        helper.replace(cmd.hasOption("replace"));
+        helper.replace(cmd.hasOption(PARAM_REPLACE));
         setOption(PARAM_ENCODING, helper, cmd);
 
         File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
