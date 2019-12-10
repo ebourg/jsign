@@ -317,8 +317,7 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <h3>API</h3>
 
-<p>Jsign also provides a simple API for signing executable files and can
-be embedded in another application.</p>
+<p>Jsign also provides a simple API for signing files and can be embedded in another application.</p>
 
 <p>Simply add this dependency to the project:<p>
 
@@ -330,7 +329,7 @@ be embedded in another application.</p>
     &lt;/dependency>
 </pre>
 
-<p>and then use the <code>PESigner</code> class like this:</p>
+<p>and then use one of the signer classes like this:</p>
 
 <pre class="prettyprint lang-java">
  KeyStore keystore = KeyStoreUtils.load(new File("keystore.p12"), "PKCS12", "password", null);
@@ -343,6 +342,8 @@ be embedded in another application.</p>
 
  signer.sign(new PEFile(new File("application.exe")));
 </pre>
+
+<p>Similar signer classes exist for MSI files (<code>MSISigner</code>) and PowerShell scripts (<code>PowerShellSigner</code>).</p>
 
 <p>See the <a href="apidocs/index.html">Javadoc</a> for more details about the API.</p>
 
