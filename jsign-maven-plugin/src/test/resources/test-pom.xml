@@ -13,7 +13,7 @@
         <artifactId>jsign-maven-plugin</artifactId>
         <version>3.0</version>
         <configuration>
-          <file>wineyes.exe</file>
+          <file>target/test-classes/wineyes.exe</file>
         </configuration>
       </plugin>
     </plugins>

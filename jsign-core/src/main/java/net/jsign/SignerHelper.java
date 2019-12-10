@@ -406,15 +406,6 @@ class SignerHelper {
     }
 
     public void sign(File file) throws SignerException {
-        AuthenticodeSigner signer;
-        try {
-            signer = build(file);
-        } catch (SignerException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new SignerException("Couldn't sign " + file, e);
-        }
-
         if (file == null) {
             throw new SignerException("file must be set");
         }
@@ -423,10 +414,14 @@ class SignerHelper {
         }
 
         try {
+            AuthenticodeSigner signer = build(file);
+            
             if (console != null) {
                 console.info("Adding Authenticode signature to " + file);
             }
             signer.sign(file);
+        } catch (SignerException e) {
+            throw e;
         } catch (Exception e) {
             throw new SignerException("Couldn't sign " + file, e);
         }
