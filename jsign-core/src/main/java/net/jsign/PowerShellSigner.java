@@ -92,7 +92,13 @@ public class PowerShellSigner extends AuthenticodeSigner<PowerShellSigner, Power
 
     @Override
     void sign(File file) throws Exception {
-        sign(new PowerShellScript(file, encoding));
+        PowerShellScript powerShellScript;
+        try {
+            powerShellScript = new PowerShellScript(file, encoding);
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the PowerShell script " + file, e);
+        }
+        sign(powerShellScript);
     }
 
     /**
