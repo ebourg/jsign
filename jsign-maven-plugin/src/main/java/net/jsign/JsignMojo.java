@@ -22,6 +22,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Proxy;
@@ -35,7 +36,7 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
  * @author Emmanuel Bourg
  * @since 2.0
  */
-@Mojo(name = "sign")
+@Mojo(name = "sign", defaultPhase = LifecyclePhase.PACKAGE)
 public class JsignMojo extends AbstractMojo {
 
     /** The file to be signed. */
