@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
@@ -82,6 +83,7 @@ public class PESignerTest {
         CMSSignedData signature = signatures.get(0);
         
         assertNotNull(signature);
+        assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
         
         peFile.printInfo(System.out);
     }

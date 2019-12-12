@@ -49,6 +49,7 @@ See https://ebourg.github.io/jsign for more information.
 * Renamed the Ant task and the Gradle extension method from `signexe` to `jsign`
 * SOCKS proxies are now supported
 * Fixed the invalid SHA-512 signatures (contributed by Markus Kilås)
+* The non-timestamped signatures are now reproducible (the `signingTime` attribute has been removed)
 * Upgraded BouncyCastle to 1.64
 
 #### Version 2.1 (2018-10-08)

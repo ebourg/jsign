@@ -37,6 +37,7 @@ import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
@@ -58,6 +59,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import net.jsign.asn1.authenticode.AuthenticodeDigestCalculatorProvider;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
+import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.timestamp.Timestamper;
@@ -382,6 +384,7 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
         
         // prepare the authenticated attributes
         CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
+        attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.signingTime);
         
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
