@@ -48,7 +48,7 @@ See https://ebourg.github.io/jsign for more information.
 * Renamed the command line tool from `pesign` to `jsign`
 * Renamed the Ant task and the Gradle extension method from `signexe` to `jsign`
 * SOCKS proxies are now supported
-* Fixed the SHA-512 signature validation error caused by the "`<<<Obsolete>>>`" file field in SpcLink (contributed by Markus Kilås)
+* Fixed the invalid SHA-512 signatures (contributed by Markus Kilås)
 * Upgraded BouncyCastle to 1.64
 
 #### Version 2.1 (2018-10-08)

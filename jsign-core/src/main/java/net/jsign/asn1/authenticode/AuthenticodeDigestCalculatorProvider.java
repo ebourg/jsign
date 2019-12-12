@@ -20,6 +20,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.DigestCalculatorProvider;
@@ -27,7 +30,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
 /**
- * DigestCalculator skipping the first two bytes of the signed data (why?).
+ * DigestCalculator skipping the ASN.1 sequence header (typically 2 or 3 bytes) of the SpcIndirectData structure.
  * 
  * @author Emmanuel Bourg
  * @since 2.1
@@ -54,7 +57,11 @@ public class AuthenticodeDigestCalculatorProvider implements DigestCalculatorPro
             @Override
             public byte[] getDigest() {
                 try {
-                    delegate.getOutputStream().write(out.toByteArray(), 2, out.size() - 2);
+                    ASN1InputStream in = new ASN1InputStream(out.toByteArray());
+                    ASN1Sequence sequence = (ASN1Sequence) in.readObject();
+                    for (ASN1Encodable element : sequence) {
+                        delegate.getOutputStream().write(element.toASN1Primitive().getEncoded());
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
