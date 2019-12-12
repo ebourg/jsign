@@ -111,7 +111,7 @@ public class PESignerTest {
         try (FileInputStream in = new FileInputStream(new File("target/test-classes/keystores/jsign-test-certificate-full-chain.spc"))) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-            chain = certificates.toArray(new Certificate[certificates.size()]);
+            chain = certificates.toArray(new Certificate[0]);
         }
         
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
@@ -164,7 +164,7 @@ public class PESignerTest {
         try (FileInputStream in = new FileInputStream(new File("target/test-classes/keystores/jsign-root-ca.pem"))) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-            chain = certificates.toArray(new Certificate[certificates.size()]);
+            chain = certificates.toArray(new Certificate[0]);
         }
         
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");

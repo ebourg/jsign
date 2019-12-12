@@ -434,7 +434,7 @@ class SignerHelper {
         try (FileInputStream in = new FileInputStream(file)) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-            return certificates.toArray(new Certificate[certificates.size()]);
+            return certificates.toArray(new Certificate[0]);
         }
     }
 
