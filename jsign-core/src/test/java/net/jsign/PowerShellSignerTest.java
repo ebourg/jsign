@@ -22,6 +22,7 @@ import java.security.KeyStore;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
@@ -221,5 +222,37 @@ public class PowerShellSignerTest {
         CMSSignedData signature = signatures.get(0);
         
         assertNotNull(signature);
+    }
+
+    @Test
+    public void testSignScriptWithMessedEOL() throws Exception {
+        PowerShellScript script = new PowerShellScript();
+        script.setContent("write-host \"Hello World!\"\n");
+        
+        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withTimestamping(false);
+        
+        signer.sign(script);
+
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        // convert the file from CRLF to LF, the signature should become unavailable
+        script.setContent(script.getContent().replace("\r\n", "\n"));
+        
+        signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(0, signatures.size());
+        
+        // sign again, the previous invalid signature block should be removed (as done by Set-AuthenticodeSignature cmdlet)
+        signer.sign(script);
+        
+        signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        assertEquals("Number of signature blocks", 1, StringUtils.countMatches(script.getContent(), "Begin signature block"));
     }
 }

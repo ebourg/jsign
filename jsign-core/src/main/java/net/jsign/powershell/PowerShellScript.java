@@ -57,6 +57,11 @@ public class PowerShellScript {
             "(?<signatureBlock>.*)" +
             "# SIG # End signature block\\r\\n");
 
+    /** Pattern for removing signatures, even if the file EOL was converted to LF */
+    private static final Pattern SIGNATURE_BLOCK_REMOVAL_PATTERN = Pattern.compile("(?s)" +
+            "\\r?\\n" +
+            "# SIG # Begin signature block.*$");
+
     private File file;
     private String content;
     private Charset encoding;
@@ -205,7 +210,7 @@ public class PowerShellScript {
      * @return the content without the signature
      */
     private String getContentWithoutSignatureBlock() {
-        return SIGNATURE_BLOCK_PATTERN.matcher(getContent()).replaceFirst("");
+        return SIGNATURE_BLOCK_REMOVAL_PATTERN.matcher(getContent()).replaceFirst("");
     }
 
     public byte[] computeDigest(MessageDigest digest) {
