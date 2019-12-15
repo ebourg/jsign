@@ -75,7 +75,7 @@ import net.jsign.timestamp.TimestampingMode;
  * @since 3.0
  */
 @SuppressWarnings("unchecked")
-public class AuthenticodeSigner<S extends AuthenticodeSigner> {
+public class AuthenticodeSigner {
 
     protected Certificate[] chain;
     protected PrivateKey privateKey;
@@ -133,9 +133,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param programName the program name
      * @return the current signer
      */
-    public S withProgramName(String programName) {
+    public AuthenticodeSigner withProgramName(String programName) {
         this.programName = programName;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -144,9 +144,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param programURL the program URL
      * @return the current signer
      */
-    public S withProgramURL(String programURL) {
+    public AuthenticodeSigner withProgramURL(String programURL) {
         this.programURL = programURL;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -156,9 +156,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.0
      */
-    public S withSignaturesReplaced(boolean replace) {
+    public AuthenticodeSigner withSignaturesReplaced(boolean replace) {
         this.replace = replace;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -167,9 +167,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param timestamping <code>true</code> to enable timestamping, <code>false</code> to disable it
      * @return the current signer
      */
-    public S withTimestamping(boolean timestamping) {
+    public AuthenticodeSigner withTimestamping(boolean timestamping) {
         this.timestamping = timestamping;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -179,9 +179,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 1.3
      */
-    public S withTimestampingMode(TimestampingMode tsmode) {
+    public AuthenticodeSigner withTimestampingMode(TimestampingMode tsmode) {
         this.tsmode = tsmode;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -192,7 +192,7 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.1
      */
-    public S withTimestampingAuthority(String url) {
+    public AuthenticodeSigner withTimestampingAuthority(String url) {
         return withTimestampingAuthority(new String[] { url });
     }
 
@@ -204,9 +204,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.1
      */
-    public S withTimestampingAuthority(String... urls) {
+    public AuthenticodeSigner withTimestampingAuthority(String... urls) {
         this.tsaurlOverride = urls;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -215,9 +215,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param timestamper the timestamper implementation to use
      * @return the current signer
      */
-    public S withTimestamper(Timestamper timestamper) {
+    public AuthenticodeSigner withTimestamper(Timestamper timestamper) {
         this.timestamper = timestamper;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -226,9 +226,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param timestampingRetries the number of retries
      * @return the current signer
      */
-    public S withTimestampingRetries(int timestampingRetries) {
+    public AuthenticodeSigner withTimestampingRetries(int timestampingRetries) {
         this.timestampingRetries = timestampingRetries;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -237,9 +237,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param timestampingRetryWait the wait time between retries (in seconds)
      * @return the current signer
      */
-    public S withTimestampingRetryWait(int timestampingRetryWait) {
+    public AuthenticodeSigner withTimestampingRetryWait(int timestampingRetryWait) {
         this.timestampingRetryWait = timestampingRetryWait;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -248,11 +248,11 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @param algorithm the digest algorithm
      * @return the current signer
      */
-    public S withDigestAlgorithm(DigestAlgorithm algorithm) {
+    public AuthenticodeSigner withDigestAlgorithm(DigestAlgorithm algorithm) {
         if (algorithm != null) {
             this.digestAlgorithm = algorithm;
         }
-        return (S) this;
+        return this;
     }
 
     /**
@@ -262,9 +262,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.0
      */
-    public S withSignatureAlgorithm(String signatureAlgorithm) {
+    public AuthenticodeSigner withSignatureAlgorithm(String signatureAlgorithm) {
         this.signatureAlgorithm = signatureAlgorithm;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -275,7 +275,7 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.0
      */
-    public S withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
+    public AuthenticodeSigner withSignatureAlgorithm(String signatureAlgorithm, String signatureProvider) {
         return withSignatureAlgorithm(signatureAlgorithm, Security.getProvider(signatureProvider));
     }
 
@@ -287,10 +287,10 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.0
      */
-    public S withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
+    public AuthenticodeSigner withSignatureAlgorithm(String signatureAlgorithm, Provider signatureProvider) {
         this.signatureAlgorithm = signatureAlgorithm;
         this.signatureProvider = signatureProvider;
-        return (S) this;
+        return this;
     }
 
     /**
@@ -300,9 +300,9 @@ public class AuthenticodeSigner<S extends AuthenticodeSigner> {
      * @return the current signer
      * @since 2.0
      */
-    public S withSignatureProvider(Provider signatureProvider) {
+    public AuthenticodeSigner withSignatureProvider(Provider signatureProvider) {
         this.signatureProvider = signatureProvider;
-        return (S) this;
+        return this;
     }
 
     /**
