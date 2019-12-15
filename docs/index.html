@@ -334,16 +334,15 @@ are provided to install it easily on most Linux distributions. On these systems 
 <pre class="prettyprint lang-java">
  KeyStore keystore = KeyStoreUtils.load(new File("keystore.p12"), "PKCS12", "password", null);
 
- PESigner signer = new PESigner(keystore, "test", "secret");
+ AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "secret");
  signer.withProgramName("My Application")
        .withProgramURL("http://www.example.com")
        .withTimestamping(true)
-       .withTimestampingAutority("http://timestamp.comodoca.com/authenticode");
+       .withTimestampingAuthority("http://timestamp.comodoca.com/authenticode");
 
- signer.sign(new PEFile(new File("application.exe")));
+ Signable file = Signable.of(new File("application.exe"));
+ signer.sign(file);
 </pre>
-
-<p>Similar signer classes exist for MSI files (<code>MSISigner</code>) and PowerShell scripts (<code>PowerShellSigner</code>).</p>
 
 <p>See the <a href="apidocs/index.html">Javadoc</a> for more details about the API.</p>
 

@@ -43,8 +43,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.jsign.msi.MSIFile;
-import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -249,7 +247,7 @@ class SignerHelper {
         return file == null ? null : new File(file);
     }
 
-    private AuthenticodeSigner build(File file) throws SignerException {
+    private AuthenticodeSigner build() throws SignerException {
         PrivateKey privateKey;
         Certificate[] chain;
 
@@ -345,32 +343,8 @@ class SignerHelper {
             throw new SignerException("Couldn't initialize proxy", e);
         }
         
-        // Instantiate a suitable signer implementation for the file specified
-        AuthenticodeSigner signer;
-        try {
-            if (PEFile.isPEFile(file)) {
-                signer = new PESigner(chain, privateKey);
-
-            } else if (MSIFile.isMSIFile(file)) {
-                signer = new MSISigner(chain, privateKey);
-
-            } else if (file.getName().endsWith(".ps1")
-                    || file.getName().endsWith(".psd1")
-                    || file.getName().endsWith(".psm1")) {
-                signer = new PowerShellSigner(chain, privateKey);
-            } else {
-                throw new SignerException("Unsupported file: " + file);
-            }
-        } catch (IOException e) {
-            throw new SignerException("Couldn't open the file " + file, e);
-        }
-        
-        if (signer instanceof PowerShellSigner) {
-            signer = ((PowerShellSigner) signer).withEncoding(encoding);
-        }
-        
         // configure the signer
-        return signer
+        return new AuthenticodeSigner(chain, privateKey)
                 .withProgramName(name)
                 .withProgramURL(url)
                 .withDigestAlgorithm(DigestAlgorithm.of(alg))
@@ -412,14 +386,23 @@ class SignerHelper {
         if (!file.exists()) {
             throw new SignerException("The file " + file + " couldn't be found");
         }
+        
+        Signable signable;
+        try {
+            signable = Signable.of(file, encoding);
+        } catch (UnsupportedOperationException e) {
+            throw new SignerException(e.getMessage());
+        } catch (IOException e) {
+            throw new SignerException("Couldn't open the file " + file, e);
+        }
 
         try {
-            AuthenticodeSigner signer = build(file);
+            AuthenticodeSigner signer = build();
             
             if (console != null) {
                 console.info("Adding Authenticode signature to " + file);
             }
-            signer.sign(file);
+            signer.sign(signable);
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {

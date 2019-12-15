@@ -31,15 +31,25 @@ import java.util.regex.Pattern;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 
+import net.jsign.DigestAlgorithm;
+import net.jsign.Signable;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
+import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcSipInfo;
+import net.jsign.asn1.authenticode.SpcUuid;
 
 import static java.lang.Math.*;
 import static java.nio.charset.StandardCharsets.*;
@@ -47,9 +57,10 @@ import static java.nio.charset.StandardCharsets.*;
 /**
  * A PowerShell script.
  * 
+ * @author Björn Kautler
  * @since 3.0
  */
-public class PowerShellScript {
+public class PowerShellScript implements Signable {
 
     private static final Pattern SIGNATURE_BLOCK_PATTERN = Pattern.compile("(?s)" +
             "\\r\\n" +
@@ -116,11 +127,7 @@ public class PowerShellScript {
         this.content = content;
     }
 
-    /**
-     * Returns the authenticode signatures on the file.
-     * 
-     * @return the signatures
-     */
+    @Override
     public List<CMSSignedData> getSignatures() {
         List<CMSSignedData> signatures = new ArrayList<>();
         
@@ -182,6 +189,7 @@ public class PowerShellScript {
         }
     }
 
+    @Override
     public void setSignature(CMSSignedData signature) throws IOException {
         // base64 encode the signature blob
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
@@ -213,16 +221,24 @@ public class PowerShellScript {
         return SIGNATURE_BLOCK_REMOVAL_PATTERN.matcher(getContent()).replaceFirst("");
     }
 
+    @Override
     public byte[] computeDigest(MessageDigest digest) {
         digest.update(getContentWithoutSignatureBlock().getBytes(UTF_16LE));
         return digest.digest();
     }
 
-    /**
-     * Save the script.
-     * 
-     * @throws IOException if an I/O error occurs
-     */
+    @Override
+    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
+
+        SpcUuid uuid = new SpcUuid("1FCC3B60-594B-084E-B724-D2C6297EF351");
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(65536, uuid));
+
+        return new SpcIndirectDataContent(data, digestInfo);
+    }
+
+    @Override
     public void save() throws IOException {
         if (file != null) {
             save(file);

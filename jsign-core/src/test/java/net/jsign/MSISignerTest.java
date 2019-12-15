@@ -49,12 +49,12 @@ public class MSISignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        MSISigner signer = new MSISigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withTimestamping(false)
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(targetFile);
+        signer.sign(new MSIFile(targetFile));
 
         MSIFile file = new MSIFile(targetFile);
         
@@ -77,7 +77,7 @@ public class MSISignerTest {
         
         MSIFile file = new MSIFile(targetFile);
         
-        MSISigner signer = new MSISigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withTimestamping(true)
                 .withProgramName("Hello World")
@@ -118,7 +118,7 @@ public class MSISignerTest {
         
         MSIFile file = new MSIFile(targetFile);
         
-        MSISigner signer = new MSISigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withTimestamping(true)
                 .withProgramName("Hello World")
@@ -172,7 +172,7 @@ public class MSISignerTest {
         
         MSIFile file = new MSIFile(targetFile);
         
-        MSISigner signer = new MSISigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withProgramName("Minimal Package")
                 .withProgramURL("http://example.com");
@@ -214,7 +214,7 @@ public class MSISignerTest {
         
         MSIFile file = new MSIFile(channel);
         
-        MSISigner signer = new MSISigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA512)
                 .withProgramName("Minimal Package")
                 .withProgramURL("http://example.com");
@@ -243,7 +243,7 @@ public class MSISignerTest {
         
         MSIFile file = new MSIFile(targetFile);
         
-        MSISigner signer = new MSISigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withProgramName("Minimal Package")
                 .withProgramURL("http://example.com");

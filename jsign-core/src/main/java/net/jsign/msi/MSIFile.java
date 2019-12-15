@@ -44,14 +44,24 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.util.IOUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 
+import net.jsign.DigestAlgorithm;
+import net.jsign.Signable;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
+import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcSipInfo;
+import net.jsign.asn1.authenticode.SpcUuid;
 
 /**
  * A Microsoft Installer package.
@@ -59,7 +69,7 @@ import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
  * @author Emmanuel Bourg
  * @since 3.0
  */
-public class MSIFile implements Closeable {
+public class MSIFile implements Signable, Closeable {
 
     private static final long MSI_HEADER = 0xD0CF11E0A1B11AE1L;
 
@@ -151,6 +161,7 @@ public class MSIFile implements Closeable {
         }
     }
 
+    @Override
     public byte[] computeDigest(MessageDigest digest) throws IOException {
         // hash the entries
         for (DocumentNode entry : getSortedEntries()) {
@@ -177,12 +188,18 @@ public class MSIFile implements Closeable {
         return digest.digest();
     }
 
-    /**
-     * Returns the authenticode signatures on the file.
-     * 
-     * @return the signatures
-     * @throws IOException if an I/O error occurs
-     */
+    @Override
+    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
+
+        SpcUuid uuid = new SpcUuid("F1100C00-0000-0000-C000-000000000046");
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(1, uuid));
+
+        return new SpcIndirectDataContent(data, digestInfo);
+    }
+
+    @Override
     public List<CMSSignedData> getSignatures() throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
 
@@ -217,22 +234,13 @@ public class MSIFile implements Closeable {
         return signatures;
     }
 
-    /**
-     * Sets the signature of the file, overwriting the previous one.
-     * 
-     * @param signature the signature to put
-     * @throws IOException if an I/O error occurs
-     */
+    @Override
     public void setSignature(CMSSignedData signature) throws IOException {
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
         fs.getRoot().createOrUpdateDocument(DIGITAL_SIGNATURE_ENTRY_NAME, new ByteArrayInputStream(signatureBytes));
     }
 
-    /**
-     * Saves the file.
-     * 
-     * @throws IOException if an I/O error occurs
-     */
+    @Override
     public void save() throws IOException {
         if (channel == null) {
             fs.writeFilesystem();

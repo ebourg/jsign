@@ -16,8 +16,7 @@
 
 package net.jsign;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.Closeable;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +32,6 @@ import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -62,6 +60,10 @@ import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
+import net.jsign.msi.MSIFile;
+import net.jsign.pe.DataDirectory;
+import net.jsign.pe.DataDirectoryType;
+import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -73,7 +75,7 @@ import net.jsign.timestamp.TimestampingMode;
  * @since 3.0
  */
 @SuppressWarnings("unchecked")
-abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
+public class AuthenticodeSigner<S extends AuthenticodeSigner> {
 
     protected Certificate[] chain;
     protected PrivateKey privateKey;
@@ -309,15 +311,49 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
      * @param file the file to sign
      * @throws Exception if signing fails
      */
-    abstract void sign(File file) throws Exception;
+    public void sign(Signable file) throws Exception {
+        if (file instanceof PEFile) {
+            PEFile pefile = (PEFile) file;
+            
+            // pad the file on a 8 byte boundary (signtool refuses to sign files not properly padded)
+            // todo only if there was no previous certificate table
+            pefile.pad(8);
 
-    /**
-     * Sign the specified file.
-     *
-     * @param file the file to sign
-     * @throws Exception if signing fails
-     */
-    public abstract void sign(F file) throws Exception;
+            if (replace) {
+                DataDirectory certificateTable = pefile.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+                if (certificateTable != null && !certificateTable.isTrailing()) {
+                    // erase the previous signature
+                    certificateTable.erase();
+                    certificateTable.write(0, 0);
+                }
+            }
+
+        } else if (file instanceof MSIFile) {
+            MSIFile msi = (MSIFile) file;
+            
+            if (!replace && msi.hasExtendedSignature()) {
+                throw new UnsupportedOperationException("The file has an extended signature which isn't supported by Jsign, it can't be signed without replacing the existing signature");
+            }
+        }
+        
+        CMSSignedData sigData = createSignedData(file);
+        
+        if (!replace) {
+            List<CMSSignedData> signatures = file.getSignatures();
+            if (!signatures.isEmpty()) {
+                // append the nested signature
+                sigData = addNestedSignature(signatures.get(0), sigData);
+            }
+        }
+        
+        file.setSignature(sigData);
+        
+        file.save();
+        
+        if (file instanceof Closeable) {
+            ((Closeable) file).close();
+        }
+    }
 
     /**
      * Create the PKCS7 message with the signature and the timestamp.
@@ -326,10 +362,10 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
      * @return the PKCS7 message with the signature and the timestamp
      * @throws Exception if an error occurs
      */
-    protected CMSSignedData createSignedData(F file) throws Exception {
+    protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
         AuthenticodeSignedDataGenerator generator = createSignedDataGenerator();
-        CMSSignedData sigData = generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(file));
+        CMSSignedData sigData = generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, file.createIndirectData(digestAlgorithm));
         
         // verify the signature
         DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
@@ -356,15 +392,6 @@ abstract class AuthenticodeSigner<S extends AuthenticodeSigner, F> {
         
         return sigData;
     }
-
-    /**
-     * Creates the SpcIndirectDataContent structure containing the digest of the file.
-     * 
-     * @param file the file to digest
-     * @return the SpcIndirectDataContent structure in ASN.1 format
-     * @throws IOException if an I/O error occurs
-     */
-    protected abstract ASN1Object createIndirectData(F file) throws IOException;
 
     private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {
         // create content signer

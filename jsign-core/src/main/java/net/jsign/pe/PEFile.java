@@ -32,13 +32,21 @@ import java.util.Date;
 import java.util.List;
 
 import net.jsign.DigestAlgorithm;
+import net.jsign.Signable;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
+import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcPeImageData;
 
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSProcessable;
@@ -55,7 +63,7 @@ import org.bouncycastle.cms.SignerInformation;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public class PEFile implements Closeable {
+public class PEFile implements Signable, Closeable {
 
     /** The position of the PE header in the file */
     private final long peHeaderOffset;
@@ -135,6 +143,9 @@ public class PEFile implements Closeable {
             channel.close();
             throw e;
         }
+    }
+
+    public void save() throws IOException {
     }
 
     public synchronized void close() throws IOException {
@@ -689,11 +700,7 @@ public class PEFile implements Closeable {
         updateChecksum();
     }
 
-    /**
-     * Returns the authenticode signatures on the file.
-     * 
-     * @return the signatures
-     */
+    @Override
     public synchronized List<CMSSignedData> getSignatures() {
         List<CMSSignedData> signatures = new ArrayList<>();
         
@@ -721,6 +728,12 @@ public class PEFile implements Closeable {
         }
         
         return signatures;
+    }
+
+    @Override
+    public void setSignature(CMSSignedData signature) throws IOException {
+        CertificateTableEntry entry = new CertificateTableEntry(signature);
+        writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
     }
 
     private synchronized List<CertificateTableEntry> getCertificateTable() {
@@ -863,7 +876,8 @@ public class PEFile implements Closeable {
      * @return the digest of the file
      * @throws IOException if an I/O error occurs
      */
-    private synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
+    @Override
+    public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         long checksumLocation = peHeaderOffset + 88;
         
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
@@ -931,6 +945,15 @@ public class PEFile implements Closeable {
      */
     public byte[] computeDigest(DigestAlgorithm algorithm) throws IOException {
         return computeDigest(algorithm.getMessageDigest());
+    }
+
+    @Override
+    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
+        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
+
+        return new SpcIndirectDataContent(data, digestInfo);
     }
 
     /**

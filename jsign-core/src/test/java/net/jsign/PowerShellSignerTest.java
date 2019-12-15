@@ -48,12 +48,12 @@ public class PowerShellSignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withTimestamping(false)
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(targetFile);
+        signer.sign(new PowerShellScript(targetFile));
 
         PowerShellScript script = new PowerShellScript(targetFile);
         
@@ -75,7 +75,7 @@ public class PowerShellSignerTest {
         
         PowerShellScript script = new PowerShellScript(targetFile);
         
-        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withTimestamping(true)
                 .withProgramName("Hello World")
@@ -115,7 +115,7 @@ public class PowerShellSignerTest {
         
         PowerShellScript script = new PowerShellScript(targetFile);
         
-        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withTimestamping(true)
                 .withProgramName("Hello World")
@@ -168,7 +168,7 @@ public class PowerShellSignerTest {
         
         PowerShellScript script = new PowerShellScript(targetFile);
         
-        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
@@ -204,7 +204,7 @@ public class PowerShellSignerTest {
         PowerShellScript script = new PowerShellScript();
         script.setContent("write-host \"Hello World!\"\n");
         
-        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA512)
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
@@ -229,7 +229,7 @@ public class PowerShellSignerTest {
         PowerShellScript script = new PowerShellScript();
         script.setContent("write-host \"Hello World!\"\n");
         
-        PowerShellSigner signer = new PowerShellSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
                 .withTimestamping(false);
         

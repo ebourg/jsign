@@ -16,38 +16,14 @@
 
 package net.jsign;
 
-import java.io.File;
-import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.util.List;
 
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
-import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
-import net.jsign.asn1.authenticode.SpcIndirectDataContent;
-import net.jsign.asn1.authenticode.SpcPeImageData;
-import net.jsign.pe.CertificateTableEntry;
-import net.jsign.pe.DataDirectory;
-import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
-
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.DERSet;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
 
 /**
  * Sign a portable executable file. Timestamping is enabled by default
@@ -58,8 +34,10 @@ import org.bouncycastle.cms.SignerInformationStore;
  * 
  * @author Emmanuel Bourg
  * @since 1.0
+ * @deprecated Use {@link AuthenticodeSigner} instead
  */
-public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
+@Deprecated
+public class PESigner extends AuthenticodeSigner<PESigner> {
 
     /**
      * Create a PESigner with the specified certificate chain and private key.
@@ -111,62 +89,13 @@ public class PESigner extends AuthenticodeSigner<PESigner, PEFile> {
         return withTimestampingAuthority(urls);
     }
 
-    @Override
-    void sign(File file) throws Exception {
-        PEFile peFile;
-        try {
-            peFile = new PEFile(file);
-        } catch (IOException e) {
-            throw new SignerException("Couldn't open the executable file " + file, e);
-        }
-        try {
-            sign(peFile);
-        } finally {
-            peFile.close();
-        }
-    }
-
     /**
      * Sign the specified executable file.
      *
      * @param file the file to sign
      * @throws Exception if signing fails
      */
-    @Override
     public void sign(PEFile file) throws Exception {
-        // pad the file on a 8 byte boundary
-        // todo only if there was no previous certificate table
-        file.pad(8);
-        
-        if (replace) {
-            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
-            if (certificateTable != null && !certificateTable.isTrailing()) {
-                // erase the previous signature
-                certificateTable.erase();
-                certificateTable.write(0, 0);
-            }
-        }
-        
-        CMSSignedData sigData = createSignedData(file);
-        
-        List<CMSSignedData> signatures = file.getSignatures();
-        if (!signatures.isEmpty() && !replace) {
-            // append the nested signature
-            sigData = addNestedSignature(signatures.get(0), sigData);
-        }
-
-        CertificateTableEntry entry = new CertificateTableEntry(sigData);
-        
-        file.writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
-        file.close();
-    }
-
-    @Override
-    protected ASN1Object createIndirectData(PEFile file) throws IOException {
-        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, file.computeDigest(digestAlgorithm));
-        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());
-
-        return new SpcIndirectDataContent(data, digestInfo);
+        super.sign(file);
     }
 }
