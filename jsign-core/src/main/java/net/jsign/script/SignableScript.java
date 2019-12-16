@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package net.jsign.powershell;
+package net.jsign.script;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,62 +48,50 @@ import net.jsign.Signable;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
-import net.jsign.asn1.authenticode.SpcSipInfo;
-import net.jsign.asn1.authenticode.SpcUuid;
 
-import static java.lang.Math.*;
+import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.*;
 
 /**
- * A PowerShell script.
- * 
+ * A script (text file) that can be signed.
+ *
  * @author Björn Kautler
+ * @author Emmanuel Bourg
  * @since 3.0
  */
-public class PowerShellScript implements Signable {
-
-    private static final Pattern SIGNATURE_BLOCK_PATTERN = Pattern.compile("(?s)" +
-            "\\r\\n" +
-            "# SIG # Begin signature block\\r\\n" +
-            "(?<signatureBlock>.*)" +
-            "# SIG # End signature block\\r\\n");
-
-    /** Pattern for removing signatures, even if the file EOL was converted to LF */
-    private static final Pattern SIGNATURE_BLOCK_REMOVAL_PATTERN = Pattern.compile("(?s)" +
-            "\\r?\\n" +
-            "# SIG # Begin signature block.*$");
+abstract class SignableScript implements Signable {
 
     private File file;
     private String content;
     private Charset encoding;
 
     /**
-     * Create a PowerShell script.
+     * Create a script.
      * The encoding is assumed to be UTF-8.
      */
-    public PowerShellScript() {
+    public SignableScript() {
         this.encoding = StandardCharsets.UTF_8;
     }
 
     /**
-     * Create a PowerShell script from the specified file and load its content.
+     * Create a script from the specified file and load its content.
      * The encoding is assumed to be UTF-8.
      * 
-     * @param file the PowerShell script
+     * @param file the script
      * @throws IOException if an I/O error occurs
      */
-    public PowerShellScript(File file) throws IOException {
+    public SignableScript(File file) throws IOException {
         this(file, StandardCharsets.UTF_8);
     }
 
     /**
-     * Create a PowerShell script from the specified file and load its content.
+     * Create a script from the specified file and load its content.
      * 
-     * @param file     the PowerShell script
+     * @param file     the script
      * @param encoding the encoding of the script (if null the default UTF-8 encoding is used)
      * @throws IOException if an I/O error occurs
      */
-    public PowerShellScript(File file, Charset encoding) throws IOException {
+    public SignableScript(File file, Charset encoding) throws IOException {
         this.file = file;
         this.encoding = encoding != null ? encoding : StandardCharsets.UTF_8;
         setContent(new String(Files.readAllBytes(file.toPath()), this.encoding));
@@ -125,6 +113,31 @@ public class PowerShellScript implements Signable {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    abstract String getSignatureStart();
+
+    abstract String getSignatureEnd();
+
+    abstract String getLineCommentStart();
+
+    abstract String getLineCommentEnd();
+
+    abstract ASN1Object getSpcSipInfo();
+
+    private Pattern getSignatureBlockPattern() {
+        return Pattern.compile("(?s)" +
+                "\\r\\n" +
+                getSignatureStart() + "\\r\\n" +
+                "(?<signatureBlock>.*)" +
+                getSignatureEnd() + "\\r\\n");
+    }
+
+    private Pattern getSignatureBlockRemovalPattern() {
+        /** Pattern for removing signatures, even if the file EOL was converted to LF */
+        return Pattern.compile("(?s)" +
+                "\\r?\\n" +
+                getSignatureStart() + ".*$");
     }
 
     @Override
@@ -163,7 +176,7 @@ public class PowerShellScript implements Signable {
      * @return the signature block
      */
     private String getSignatureBlock() {
-        Matcher matcher = SIGNATURE_BLOCK_PATTERN.matcher(getContent());
+        Matcher matcher = getSignatureBlockPattern().matcher(getContent());
         if (!matcher.find()) {
             return null;
         }
@@ -177,7 +190,8 @@ public class PowerShellScript implements Signable {
             return null;
         }
         
-        signatureBlock = signatureBlock.replaceAll("# ", "");
+        signatureBlock = signatureBlock.replaceAll(getLineCommentStart(), "");
+        signatureBlock = signatureBlock.replaceAll(getLineCommentEnd(), "");
         signatureBlock = signatureBlock.replaceAll("\r|\n", "");
 
         byte[] signatureBytes = Base64.getDecoder().decode(signatureBlock);
@@ -201,13 +215,14 @@ public class PowerShellScript implements Signable {
         StringBuilder signedContent = new StringBuilder(content.length() + signatureBlob.length() + 100);
         signedContent.append(content);
         signedContent.append("\r\n");
-        signedContent.append("# SIG # Begin signature block\r\n");
+        signedContent.append(getSignatureStart() + "\r\n");
         for (int start = 0, blobLength = signatureBlob.length(); start < blobLength; start += 64) {
-            signedContent.append("# ");
+            signedContent.append(getLineCommentStart());
             signedContent.append(signatureBlob, start, min(blobLength, start + 64));
+            signedContent.append(getLineCommentEnd());
             signedContent.append("\r\n");
         }
-        signedContent.append("# SIG # End signature block\r\n");
+        signedContent.append(getSignatureEnd() + "\r\n");
         
         this.content = signedContent.toString();
     }
@@ -218,7 +233,7 @@ public class PowerShellScript implements Signable {
      * @return the content without the signature
      */
     private String getContentWithoutSignatureBlock() {
-        return SIGNATURE_BLOCK_REMOVAL_PATTERN.matcher(getContent()).replaceFirst("");
+        return getSignatureBlockRemovalPattern().matcher(getContent()).replaceFirst("");
     }
 
     @Override
@@ -231,10 +246,9 @@ public class PowerShellScript implements Signable {
     public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
-
-        SpcUuid uuid = new SpcUuid("1FCC3B60-594B-084E-B724-D2C6297EF351");
-        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(65536, uuid));
-
+        
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, getSpcSipInfo());
+        
         return new SpcIndirectDataContent(data, digestInfo);
     }
 

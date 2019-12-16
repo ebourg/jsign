@@ -27,7 +27,8 @@ import org.bouncycastle.cms.CMSSignedData;
 
 import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
-import net.jsign.powershell.PowerShellScript;
+import net.jsign.script.PowerShellScript;
+import net.jsign.script.PowerShellXMLScript;
 
 /**
  * A file that can be signed with Authenticode.
@@ -109,6 +110,10 @@ public interface Signable {
                 || file.getName().endsWith(".psd1")
                 || file.getName().endsWith(".psm1")) {
             return new PowerShellScript(file, encoding);
+
+        } else if (file.getName().endsWith(".ps1xml")) {
+            return new PowerShellXMLScript(file, encoding);
+
         } else {
             throw new UnsupportedOperationException("Unsupported file: " + file);
         }

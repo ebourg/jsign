@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.powershell;
+package net.jsign.script;
 
 import java.io.File;
 
