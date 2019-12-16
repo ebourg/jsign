@@ -40,7 +40,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * Jsign now requires Java 8 or higher
 * MSI signing has been implemented
-* PowerShell scripts signing has been implemented (contributed by Björn Kautler)
+* Script signing has been implemented: PowerShell (contributed by Björn Kautler), VBScript, JScript and WSF
 * The Maven plugin now uses the proxy defined in the Maven settings for the timestamping (contributed by Denny Bayer)
 * The Maven plugin now accepts passwords encrypted using the Maven security settings (contributed by Denny Bayer)
 * The Maven plugin is now bound by default to the `package` phase
