@@ -42,7 +42,7 @@ import org.bouncycastle.asn1.BERSequence;
  */
 public class SpcSipInfo extends ASN1Object {
 
-    /** A value specific to the type of object signed (1 for MSI, 65536 for PowerShell) */
+    /** A value specific to the type of object signed (1 for MSI, VBScript and JScript, 65536 for PowerShell) */
     private int version;
 
     /** The GUID of the object signed */
