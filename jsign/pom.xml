@@ -126,7 +126,7 @@
                 <option>-keep public class net.jsign.asn1.authenticode.* { *; }</option>
                 <option>-keep public class net.jsign.msi.* { *; }</option>
                 <option>-keep public class net.jsign.pe.* { *; }</option>
-                <option>-keep public class net.jsign.powershell.* { *; }</option>
+                <option>-keep public class net.jsign.script.* { *; }</option>
                 <option>-keep public class net.jsign.timestamp.* { *; }</option>
               </options>
               <injar>${project.build.finalName}.jar</injar>

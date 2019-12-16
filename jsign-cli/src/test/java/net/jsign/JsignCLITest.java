@@ -39,7 +39,7 @@ import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 
 import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
-import net.jsign.powershell.PowerShellScript;
+import net.jsign.script.PowerShellScript;
 
 import static org.junit.Assert.*;
 
