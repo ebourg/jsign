@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<job>
+  <script language="VBScript">
+    <![CDATA[
+    WScript.echo "Hello World!"
+    ]]>
+  </script>
+</job>

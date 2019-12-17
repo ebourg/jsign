@@ -190,8 +190,8 @@ abstract class SignableScript implements Signable {
             return null;
         }
         
-        signatureBlock = signatureBlock.replaceAll(getLineCommentStart(), "");
-        signatureBlock = signatureBlock.replaceAll(getLineCommentEnd(), "");
+        signatureBlock = signatureBlock.replace(getLineCommentStart(), "");
+        signatureBlock = signatureBlock.replace(getLineCommentEnd(), "");
         signatureBlock = signatureBlock.replaceAll("\r|\n", "");
 
         byte[] signatureBytes = Base64.getDecoder().decode(signatureBlock);
