@@ -22,7 +22,17 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class PowerShellScriptTest {
+public class PowerShellScriptTest extends ScriptTest {
+
+    @Override
+    protected String getFileExtension() {
+        return "ps1";
+    }
+
+    @Override
+    protected SignableScript createScript() {
+        return new PowerShellScript();
+    }
 
     @Test
     public void testGetContent() throws Exception {
