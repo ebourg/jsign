@@ -20,72 +20,60 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
-import org.bouncycastle.asn1.ASN1Object;
-
-import net.jsign.asn1.authenticode.SpcSipInfo;
-import net.jsign.asn1.authenticode.SpcUuid;
+import static java.nio.charset.StandardCharsets.*;
 
 /**
- * A JScript file.
- *
+ * A Windows Script Host file (VB/JS/WSF).
+ * 
  * @author Emmanuel Bourg
  * @since 3.0
  */
-public class JScript extends WSHScript {
+abstract class WSHScript extends SignableScript {
 
     /**
-     * Create a JScript.
+     * Create a script.
      * The encoding is assumed to be UTF-8.
      */
-    public JScript() {
+    public WSHScript() {
         super();
     }
 
     /**
-     * Create a JScript from the specified file and load its content.
+     * Create a script from the specified file and load its content.
      * The encoding is assumed to be UTF-8.
      * 
-     * @param file the Visual Basic script
+     * @param file the script
      * @throws IOException if an I/O error occurs
      */
-    public JScript(File file) throws IOException {
+    public WSHScript(File file) throws IOException {
         super(file, StandardCharsets.UTF_8);
     }
 
     /**
-     * Create a JScript from the specified file and load its content.
+     * Create a script from the specified file and load its content.
      * 
-     * @param file     the Visual Basic script
+     * @param file     the script
      * @param encoding the encoding of the script (if null the default UTF-8 encoding is used)
      * @throws IOException if an I/O error occurs
      */
-    public JScript(File file, Charset encoding) throws IOException {
+    public WSHScript(File file, Charset encoding) throws IOException {
         super(file, encoding);
     }
 
     @Override
-    String getSignatureStart() {
-        return "// SIG // Begin signature block";
-    }
+    public byte[] computeDigest(MessageDigest digest) {
+        String content = getContentWithoutSignatureBlock();
+        digest.update(content.getBytes(UTF_16LE));
+        
+        // add the size of the content to the hash
+        int size = content.length();
+        digest.update((byte) size);
+        digest.update((byte) (size >>> 8));
+        digest.update((byte) (size >>> 16));
+        digest.update((byte) (size >>> 24));
 
-    @Override
-    String getSignatureEnd() {
-        return "// SIG // End signature block";
-    }
-
-    @Override
-    String getLineCommentStart() {
-        return "// SIG // ";
-    }
-
-    @Override
-    String getLineCommentEnd() {
-        return "";
-    }
-
-    @Override
-    ASN1Object getSpcSipInfo() {
-        return new SpcSipInfo(1, new SpcUuid("10E0C906-CE38-D411-A2A3-00104BD35090"));
+        return digest.digest();
     }
 }

@@ -242,7 +242,7 @@ abstract class SignableScript implements Signable {
      * 
      * @return the content without the signature
      */
-    private String getContentWithoutSignatureBlock() {
+    protected String getContentWithoutSignatureBlock() {
         return getSignatureBlockRemovalPattern().matcher(getContent()).replaceFirst("");
     }
 

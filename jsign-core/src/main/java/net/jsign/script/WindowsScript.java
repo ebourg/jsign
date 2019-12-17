@@ -32,7 +32,7 @@ import net.jsign.asn1.authenticode.SpcUuid;
  * @author Emmanuel Bourg
  * @since 3.0
  */
-public class WindowsScript extends SignableScript {
+public class WindowsScript extends WSHScript {
 
     /**
      * Create a Windows script.

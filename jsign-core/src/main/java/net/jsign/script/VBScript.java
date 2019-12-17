@@ -32,7 +32,7 @@ import net.jsign.asn1.authenticode.SpcUuid;
  * @author Emmanuel Bourg
  * @since 3.0
  */
-public class VBScript extends SignableScript {
+public class VBScript extends WSHScript {
 
     /**
      * Create a Visual Basic script.
