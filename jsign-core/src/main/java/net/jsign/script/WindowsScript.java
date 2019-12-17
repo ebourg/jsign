@@ -29,8 +29,6 @@ import net.jsign.asn1.authenticode.SpcUuid;
 /**
  * A Windows script.
  * 
- * TODO Insert the signature block inside the job element.
- * 
  * @author Emmanuel Bourg
  * @since 3.0
  */
@@ -84,6 +82,11 @@ public class WindowsScript extends SignableScript {
     @Override
     String getLineCommentEnd() {
         return "";
+    }
+
+    @Override
+    protected int getSignatureInsertionPoint(String content) {
+        return content.lastIndexOf("</job>");
     }
 
     @Override

@@ -207,26 +207,34 @@ abstract class SignableScript implements Signable {
 
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
+        // build the signed script content
+        String content = getContentWithoutSignatureBlock();
+        int pos = getSignatureInsertionPoint(content);
+        
+        this.content = content.substring(0, pos) + createSignatureBlock(signature) + content.substring(pos);
+    }
+
+    private String createSignatureBlock(CMSSignedData signature) throws IOException {
         // base64 encode the signature blob
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
         String signatureBlob = Base64.getEncoder().encodeToString(signatureBytes);
-
-        // build the signed script content
-        String content = getContentWithoutSignatureBlock();
         
-        StringBuilder signedContent = new StringBuilder(content.length() + signatureBlob.length() + 100);
-        signedContent.append(content);
-        signedContent.append("\r\n");
-        signedContent.append(getSignatureStart() + "\r\n");
+        StringBuilder signatureBlock = new StringBuilder();
+        signatureBlock.append("\r\n");
+        signatureBlock.append(getSignatureStart() + "\r\n");
         for (int start = 0, blobLength = signatureBlob.length(); start < blobLength; start += 64) {
-            signedContent.append(getLineCommentStart());
-            signedContent.append(signatureBlob, start, min(blobLength, start + 64));
-            signedContent.append(getLineCommentEnd());
-            signedContent.append("\r\n");
+            signatureBlock.append(getLineCommentStart());
+            signatureBlock.append(signatureBlob, start, min(blobLength, start + 64));
+            signatureBlock.append(getLineCommentEnd());
+            signatureBlock.append("\r\n");
         }
-        signedContent.append(getSignatureEnd() + "\r\n");
+        signatureBlock.append(getSignatureEnd() + "\r\n");
         
-        this.content = signedContent.toString();
+        return signatureBlock.toString();
+    }
+
+    protected int getSignatureInsertionPoint(String content) {
+        return content.length();
     }
 
     /**
