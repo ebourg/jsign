@@ -67,12 +67,12 @@ abstract class WSHScript extends SignableScript {
         String content = getContentWithoutSignatureBlock();
         digest.update(content.getBytes(UTF_16LE));
         
-        // add the size of the content to the hash
-        int size = content.length();
-        digest.update((byte) size);
-        digest.update((byte) (size >>> 8));
-        digest.update((byte) (size >>> 16));
-        digest.update((byte) (size >>> 24));
+        // add the position of the signature block to the hash
+        int pos = getSignatureInsertionPoint(content);
+        digest.update((byte) pos);
+        digest.update((byte) (pos >>> 8));
+        digest.update((byte) (pos >>> 16));
+        digest.update((byte) (pos >>> 24));
 
         return digest.digest();
     }
