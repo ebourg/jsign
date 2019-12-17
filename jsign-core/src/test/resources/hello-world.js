@@ -1,1 +1,1 @@
-print ("Hello World!");
+WScript.Echo("Hello World!");
