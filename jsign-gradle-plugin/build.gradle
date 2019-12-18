@@ -25,7 +25,7 @@ pluginBundle {
     website = 'https://ebourg.github.io/jsign/'
     vcsUrl = 'https://github.com/ebourg/jsign'
 
-    description = 'Code signing for Windows executables, Microsoft Installers and PowerShell scripts'
+    description = 'Code signing for Windows executables, Microsoft Installers and scripts'
 
     plugins {
         jsignPlugin {

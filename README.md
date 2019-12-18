@@ -8,9 +8,9 @@ Jsign - Java implementation of Microsoft Authenticode
 
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows, Microsoft Installers (MSI) and
-PowerShell scripts. Jsign is platform independent and provides an alternative
-to native tools like signcode/signtool on Windows or the Mono development tools
-on Unix systems.
+scripts. Jsign is platform independent and provides an alternative to native
+tools like signcode/signtool on Windows or the Mono development tools on Unix
+systems.
 
 Jsign comes as an easy to use task/plugin for the main build systems (Maven,
 Gradle, Ant). It's especially suitable for signing executable wrappers and
@@ -20,7 +20,7 @@ Jsign can also be used programmatically or standalone as a command line tool.
 Jsign is free to use and licensed under the Apache License version 2.0.
 
 ## Features
-* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI) and PowerShell scripts
+* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
 * Supports multiple signatures per file
 * Hashing algorithm: MD5, SHA-1, SHA-256, SHA-384 and SHA-512

@@ -70,7 +70,7 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If an user is needed.").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If an user is needed.").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if previous signatures should be replaced.").build());
-        options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the PowerShell script to be signed (UTF-8 by default).").build());
+        options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default).").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
     }
 
@@ -117,7 +117,7 @@ public class JsignCLI {
     }
 
     private void printHelp() {
-        String header = "Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a PowerShell script.\n\n";
+        String header = "Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a script (PowerShell, VBScript, JScript, WSF).\n\n";
         String footer = "\nPlease report suggestions and issues on the GitHub project at https://github.com/ebourg/jsign/issues";
 
         HelpFormatter formatter = new HelpFormatter();

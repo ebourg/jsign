@@ -77,7 +77,7 @@ public class JsignTask extends Task {
     /** Tells if previous signatures should be replaced */
     private boolean replace;
 
-    /** The encoding of the PowerShell script to be signed (UTF-8 by default). */
+    /** The encoding of the script to be signed (UTF-8 by default). */
     private String encoding = "UTF-8";
 
     public void setFile(File file) {

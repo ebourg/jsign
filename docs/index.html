@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files" />
+    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)" />
 
     <script src="scripts/prettify/run_prettify.js"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
@@ -20,7 +20,7 @@
           <a id="forkme_banner" href="https://github.com/ebourg/jsign">View on GitHub</a>
 
           <h1 id="project_title">Jsign</h1>
-          <h2 id="project_tagline">Java implementation of Microsoft Authenticode<br>for signing Windows executable files</h2>
+          <h2 id="project_tagline">Java implementation of Microsoft Authenticode<br>for signing Windows executable files, installers and scripts</h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="#files">Download Jsign</a>
@@ -35,9 +35,9 @@
 
 <p>Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows, Microsoft Installers (MSI) and
-PowerShell scripts. Jsign is platform independent and provides an alternative
-to native tools like <em>signcode/signtool</em> on Windows or the Mono development
-tools on Unix systems.</p>
+scripts (PowerShell, VBScript, JScript, WSF). Jsign is platform independent
+and provides an alternative to native tools like <em>signcode/signtool</em>
+on Windows or the Mono development tools on Unix systems.</p>
 
 <p>Jsign comes as an easy to use task/plugin for the main build systems (Maven,
 Gradle, Ant). It's especially suitable for signing executable wrappers and installers
@@ -180,7 +180,7 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td valign="top">encoding</td>
-      <td valign="top">The encoding of the PowerShell script to be signed.</td>
+      <td valign="top">The encoding of the script to be signed.</td>
       <td valign="top" align="center">No; defaults to "UTF-8"</td>
     </tr>
   </table>
@@ -270,7 +270,8 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <pre>
   usage: jsign [OPTIONS] FILE
-  Sign and timestamp a Windows executable file.
+  Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a script
+  (PowerShell, VBScript, JScript, WSF).
   
   -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
      --storepass &lt;PASSWORD>  The password to open the keystore
@@ -296,8 +297,7 @@ are provided to install it easily on most Linux distributions. On these systems 
      --proxyUser &lt;NAME>      The user for the HTTP proxy. If an user is needed.
      --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is needed.
      --replace               Tells if previous signatures should be replaced.
-  -e,--encoding &lt;ENCODING>   The encoding of the PowerShell script to be signed (UTF-8
-                             by default).
+  -e,--encoding &lt;ENCODING>   The encoding of the script to be signed (UTF-8 by default).
   -h,--help                  Print the help
 </pre>
 
@@ -329,7 +329,7 @@ are provided to install it easily on most Linux distributions. On these systems 
     &lt;/dependency>
 </pre>
 
-<p>and then use one of the signer classes like this:</p>
+<p>and then use the <code>AuthenticodeSigner</code> class like this:</p>
 
 <pre class="prettyprint lang-java">
  KeyStore keystore = KeyStoreUtils.load(new File("keystore.p12"), "PKCS12", "password", null);
