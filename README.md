@@ -22,7 +22,7 @@ Jsign is free to use and licensed under the Apache License version 2.0.
 ## Features
 * Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
-* Supports multiple signatures per file
+* Supports multiple signatures per file, for all file types
 * Hashing algorithm: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
