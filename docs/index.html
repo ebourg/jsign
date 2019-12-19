@@ -51,7 +51,25 @@ programmatically or standalone as a command line tool.</p>
 <p>Jsign is free to use and licensed under the Apache License version 2.0.</p>
 
 
-<h3>Ant Task</h3>
+<h3>Features</h3>
+
+<ul>
+  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)</li>
+  <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
+  <li>Supports multiple signatures per file, for all file types</li>
+  <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
+  <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens</li>
+  <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
+  <li>Certificates: PKCS#7 in PEM and DER format</li>
+  <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
+  <li>Command line signing tool</li>
+  <li>Authenticode signing API (<a href="apidocs/index.html">Javadoc</a>)</li>
+</ul>
+
+<br>
+
+
+<h3 id="ant">Ant Task</h3>
 
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
 
@@ -188,7 +206,7 @@ programmatically or standalone as a command line tool.</p>
 <br>
 
 
-<h3>Maven plugin</h3>
+<h3 id="maven">Maven plugin</h3>
 
 <p>Here is an example showing how the signing works with Maven. The parameters
 are the same as those described above for the Ant task. The execution is bound
@@ -224,7 +242,7 @@ by default to the <code>package</code> phase.</p>
 <br>
 
 
-<h3>Gradle plugin</h3>
+<h3 id="gradle">Gradle plugin</h3>
 
 <p>Here is an example showing how to use Jsign with Gradle. The parameters
 are the same as those described above for the Ant task.</p>
