@@ -34,13 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.poi.poifs.filesystem.DirectoryNode;
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
-import org.apache.poi.poifs.filesystem.DocumentNode;
-import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSDocument;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.poifs.property.DirectoryProperty;
+import org.apache.poi.poifs.property.DocumentProperty;
+import org.apache.poi.poifs.property.Property;
 import org.apache.poi.util.IOUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -138,25 +138,25 @@ public class MSIFile implements Signable, Closeable {
         }
     }
 
-    private List<DocumentNode> getSortedEntries() {
-        List<DocumentNode> entries = new ArrayList<>();
+    private List<Property> getSortedProperties() {
+        List<Property> entries = new ArrayList<>();
         
-        append(fs.getRoot(), entries);
+        append(fs.getPropertyTable().getRoot(), entries);
         
         return entries;
     }
 
-    private void append(DirectoryNode node, List<DocumentNode> entries) {
-        Map<MSIStreamName, Entry> sortedEntries = new TreeMap<>();
-        for (Entry entry : node) {
+    private void append(DirectoryProperty node, List<Property> entries) {
+        Map<MSIStreamName, Property> sortedEntries = new TreeMap<>();
+        for (Property entry : node) {
             sortedEntries.put(new MSIStreamName(entry.getName()), entry);
         }
 
-        for (Entry entry : sortedEntries.values()) {
-            if (entry.isDocumentEntry()) {
-                entries.add((DocumentNode) entry);
-            } else if (entry.isDirectoryEntry()) {
-                append((DirectoryNode) entry, entries);
+        for (Property property : sortedEntries.values()) {
+            if (!property.isDirectory()) {
+                entries.add(property);
+            } else {
+                append((DirectoryProperty) property, entries);
             }
         }
     }
@@ -164,14 +164,14 @@ public class MSIFile implements Signable, Closeable {
     @Override
     public byte[] computeDigest(MessageDigest digest) throws IOException {
         // hash the entries
-        for (DocumentNode entry : getSortedEntries()) {
-            String name = new MSIStreamName(entry.getName()).decode();
+        for (Property property : getSortedProperties()) {
+            String name = new MSIStreamName(property.getName()).decode();
             if (name.equals(DIGITAL_SIGNATURE_ENTRY_NAME) || name.equals(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
                 continue;
             }
 
-            POIFSDocument document = new POIFSDocument(entry);
-            long remaining = entry.getSize();
+            POIFSDocument document = new POIFSDocument((DocumentProperty) property, fs);
+            long remaining = document.getSize();
             for (ByteBuffer buffer : document) {
                 int limit = buffer.limit();
                 buffer.limit((int) Math.min(remaining, limit));
