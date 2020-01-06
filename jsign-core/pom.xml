@@ -53,4 +53,36 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.siom79.japicmp</groupId>
+        <artifactId>japicmp-maven-plugin</artifactId>
+        <version>0.14.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>cmp</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <parameter>
+            <onlyModified>true</onlyModified>
+            <onlyBinaryIncompatible>true</onlyBinaryIncompatible>
+            <includeSynthetic>true</includeSynthetic>
+            <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
+            <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
+            <excludes>
+              <exclude>net.jsign.asn1.*</exclude>
+            </excludes>
+            <skipXmlReport>true</skipXmlReport>
+            <skipDiffReport>true</skipDiffReport>
+          </parameter>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
