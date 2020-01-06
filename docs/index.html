@@ -198,7 +198,7 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td valign="top">encoding</td>
-      <td valign="top">The encoding of the script to be signed.</td>
+      <td valign="top">The encoding of the script to be signed (if it doesn't contain a byte order mark).</td>
       <td valign="top" align="center">No; defaults to "UTF-8"</td>
     </tr>
   </table>
@@ -315,7 +315,8 @@ are provided to install it easily on most Linux distributions. On these systems 
      --proxyUser &lt;NAME>      The user for the HTTP proxy. If an user is needed.
      --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is needed.
      --replace               Tells if previous signatures should be replaced.
-  -e,--encoding &lt;ENCODING>   The encoding of the script to be signed (UTF-8 by default).
+  -e,--encoding &lt;ENCODING>   The encoding of the script to be signed (UTF-8 by default,
+                             or the encoding specified by the byte order mark if there is one)
   -h,--help                  Print the help
 </pre>
 
