@@ -148,6 +148,11 @@ public class PEFile implements Signable, Closeable {
     public void save() throws IOException {
     }
 
+    /**
+     * Closes the file
+     *
+     * @throws IOException if an I/O error occurs
+     */
     public synchronized void close() throws IOException {
         channel.close();
     }

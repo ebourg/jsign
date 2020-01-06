@@ -58,6 +58,11 @@ public abstract class Timestamper {
     /** Seconds to wait between retries */
     protected int retryWait = 10;
 
+    /**
+     * Set the URL of the timestamping service.
+     *
+     * @param tsaurl the URL of the timestamping service
+     */
     public void setURL(String tsaurl) {
         setURLs(tsaurl);
     }

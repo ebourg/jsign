@@ -116,6 +116,11 @@ public class MSIFile implements Signable, Closeable {
         this.fs = new POIFSFileSystem(in);
     }
 
+    /**
+     * Closes the file
+     *
+     * @throws IOException if an I/O error occurs
+     */
     public void close() throws IOException {
         fs.close();
         if (channel != null) {
