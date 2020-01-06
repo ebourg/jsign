@@ -19,7 +19,6 @@ package net.jsign.script;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -48,7 +47,7 @@ abstract class WSHScript extends SignableScript {
      * @throws IOException if an I/O error occurs
      */
     public WSHScript(File file) throws IOException {
-        super(file, StandardCharsets.UTF_8);
+        super(file);
     }
 
     /**
