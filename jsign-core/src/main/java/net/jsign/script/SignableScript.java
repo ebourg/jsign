@@ -17,11 +17,13 @@
 
 package net.jsign.script;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -29,6 +31,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
@@ -64,6 +69,7 @@ abstract class SignableScript implements Signable {
     private File file;
     private String content;
     private Charset encoding;
+    private byte[] bom;
 
     /**
      * Create a script.
@@ -75,7 +81,7 @@ abstract class SignableScript implements Signable {
 
     /**
      * Create a script from the specified file and load its content.
-     * The encoding is assumed to be UTF-8.
+     * If the file has no byte order mark the encoding is assumed to be UTF-8.
      * 
      * @param file the script
      * @throws IOException if an I/O error occurs
@@ -88,14 +94,30 @@ abstract class SignableScript implements Signable {
      * Create a script from the specified file and load its content.
      * 
      * @param file     the script
-     * @param encoding the encoding of the script (if null the default UTF-8 encoding is used)
+     * @param encoding the encoding of the script if there is no byte order mark (if null UTF-8 is used by default)
      * @throws IOException if an I/O error occurs
      */
     public SignableScript(File file, Charset encoding) throws IOException {
         this.file = file;
         this.encoding = encoding != null ? encoding : StandardCharsets.UTF_8;
-        setContent(new String(Files.readAllBytes(file.toPath()), this.encoding));
+
+        ByteOrderMark[] supportedBOMs = new ByteOrderMark[] { ByteOrderMark.UTF_8, ByteOrderMark.UTF_16BE, ByteOrderMark.UTF_16LE };
+        try (BOMInputStream in = new BOMInputStream(new BufferedInputStream(new FileInputStream(file)), isByteOrderMarkSigned(), supportedBOMs)) {
+            if (in.hasBOM()) {
+                this.encoding = Charset.forName(in.getBOMCharsetName());
+                if (!isByteOrderMarkSigned()) {
+                    bom = in.getBOM().getBytes();
+                }
+            }
+
+            setContent(new String(IOUtils.toByteArray(in), this.encoding));
+        }
     }
+
+    /**
+     * Tells if the byte order mark (BOM) should be hashed when creating the signature.
+     */
+    abstract boolean isByteOrderMarkSigned();
 
     /**
      * Returns the content of the script.
@@ -276,6 +298,12 @@ abstract class SignableScript implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public void save(File file) throws IOException {
-        Files.write(file.toPath(), getContent().getBytes(encoding));
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            if (bom != null) {
+                out.write(bom);
+            }
+            out.write(getContent().getBytes(encoding));
+            out.flush();
+        }
     }
 }

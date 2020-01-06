@@ -44,7 +44,7 @@ public class WindowsScript extends WSHScript {
 
     /**
      * Create a Windows script from the specified file and load its content.
-     * The encoding is assumed to be UTF-8.
+     * If the file has no byte order mark the encoding is assumed to be UTF-8.
      *
      * @param file the Windows script
      * @throws IOException if an I/O error occurs
@@ -57,7 +57,7 @@ public class WindowsScript extends WSHScript {
      * Create a Windows script from the specified file and load its content.
      *
      * @param file     the Windows script
-     * @param encoding the encoding of the script (if null the default UTF-8 encoding is used)
+     * @param encoding the encoding of the script if there is no byte order mark (if null UTF-8 is used by default)
      * @throws IOException if an I/O error occurs
      */
     public WindowsScript(File file, Charset encoding) throws IOException {
