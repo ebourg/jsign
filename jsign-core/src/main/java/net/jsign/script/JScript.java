@@ -65,6 +65,11 @@ public class JScript extends WSHScript {
     }
 
     @Override
+    boolean isUTF8AutoDetected() {
+        return false;
+    }
+
+    @Override
     String getSignatureStart() {
         return "// SIG // Begin signature block";
     }

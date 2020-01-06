@@ -265,4 +265,122 @@ public abstract class ScriptSignerTest {
     public void testSignUTF32BEWithBOM() throws Exception {
         testSignWithBOM(ByteOrderMark.UTF_32BE);
     }
+
+    @Test
+    public void testSignLatin1() throws Exception {
+        Charset encoding = StandardCharsets.ISO_8859_1;
+        String encodingName = "latin1";
+        
+        // create the test file with the bom
+        String content = FileUtils.readFileToString(new File("target/test-classes/hello-world." + getFileExtension()), StandardCharsets.UTF_8);
+        content = content.replace("Hello World", "Halló heimur");
+        content = content.replace("utf-8", "iso-8859-1");
+        
+        File sourceFile = new File("target/test-classes/hello-world-" + encodingName + "." + getFileExtension());
+        FileOutputStream out = new FileOutputStream(sourceFile);
+        out.write(content.getBytes(encoding));
+        out.flush();
+        out.close();
+        
+        File targetFile = new File("target/test-classes/hello-world-" + encodingName + "-signed." + getFileExtension());
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        // sign
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withTimestamping(false)
+                .withProgramName("Hello World")
+                .withProgramURL("http://example.com");
+        
+        signer.sign(Signable.of(targetFile, encoding));
+        
+        Signable script = Signable.of(targetFile, encoding);
+        
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+    }
+
+    @Test
+    public void testSignUTF8() throws Exception {
+        Charset encoding = StandardCharsets.UTF_8;
+        String encodingName = "utf8";
+        
+        // create the test file with the bom
+        String content = FileUtils.readFileToString(new File("target/test-classes/hello-world." + getFileExtension()), StandardCharsets.UTF_8);
+        content = content.replace("Hello World", "Halló heimur");
+        
+        File sourceFile = new File("target/test-classes/hello-world-" + encodingName + "." + getFileExtension());
+        FileOutputStream out = new FileOutputStream(sourceFile);
+        out.write(content.getBytes(encoding));
+        out.flush();
+        out.close();
+        
+        File targetFile = new File("target/test-classes/hello-world-" + encodingName + "-signed." + getFileExtension());
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        // sign
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withTimestamping(false)
+                .withProgramName("Hello World")
+                .withProgramURL("http://example.com");
+        
+        signer.sign(Signable.of(targetFile, encoding));
+        
+        Signable script = Signable.of(targetFile, encoding);
+        
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+    }
+
+    @Test
+    public void testSignUTF16LE() throws Exception {
+        Charset encoding = StandardCharsets.UTF_16LE;
+        String encodingName = "utf16le";
+        
+        // create the test file with the bom
+        String content = FileUtils.readFileToString(new File("target/test-classes/hello-world." + getFileExtension()), StandardCharsets.UTF_8);
+        content = content.replace("Hello World", "Halló heimur");
+        
+        File sourceFile = new File("target/test-classes/hello-world-" + encodingName + "." + getFileExtension());
+        FileOutputStream out = new FileOutputStream(sourceFile);
+        out.write(content.getBytes(encoding));
+        out.flush();
+        out.close();
+        
+        File targetFile = new File("target/test-classes/hello-world-" + encodingName + "-signed." + getFileExtension());
+        
+        FileUtils.copyFile(sourceFile, targetFile);
+        
+        // sign
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withTimestamping(false)
+                .withProgramName("Hello World")
+                .withProgramURL("http://example.com");
+        
+        signer.sign(Signable.of(targetFile, encoding));
+        
+        Signable script = Signable.of(targetFile, encoding);
+        
+        List<CMSSignedData> signatures = script.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+        
+        CMSSignedData signature = signatures.get(0);
+        
+        assertNotNull(signature);
+    }
 }

@@ -108,6 +108,9 @@ abstract class SignableScript implements Signable {
                 if (!isByteOrderMarkSigned()) {
                     bom = in.getBOM().getBytes();
                 }
+            } else if (StandardCharsets.UTF_8.equals(encoding) && !isUTF8AutoDetected()) {
+                // .vbs, .js and .ps1xml files are signed as ISO-8859-1 even when encoded in UTF-8
+                this.encoding = StandardCharsets.ISO_8859_1;
             }
 
             setContent(new String(IOUtils.toByteArray(in), this.encoding));
@@ -118,6 +121,13 @@ abstract class SignableScript implements Signable {
      * Tells if the byte order mark (BOM) should be hashed when creating the signature.
      */
     abstract boolean isByteOrderMarkSigned();
+
+    /**
+     * Tells if Windows automatically detects bom-less UTF-8 encoded files of this type.
+     */
+    boolean isUTF8AutoDetected() {
+        return true;
+    }
 
     /**
      * Returns the content of the script.
