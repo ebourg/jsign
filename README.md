@@ -36,7 +36,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 3.0 (in development)
+#### Version 3.0 (2020-01-07)
 
 * Jsign now requires Java 8 or higher
 * MSI signing has been implemented
