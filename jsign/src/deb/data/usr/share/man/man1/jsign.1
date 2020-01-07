@@ -116,6 +116,20 @@ The encoding of the script to be signed (UTF-8 by default, or the encoding speci
 Print the help
 
 
+.SH EXAMPLES
+
+.TP
+Signing with a PKCS#12 keystore and timestamping:
+
+jsign --keystore keystore.p12 --alias test --storepass password --tsaurl http://timestamp.comodoca.com/authenticode application.exe
+
+
+.TP
+Signing with a SPC certificate and a PVK key:
+
+jsign --certfile certificate.spc --keyfile key.pvk --keypass password installer.msi
+
+
 .SH REPORTING BUGS
 Bugs and suggestions can be reported to the project home page: https://ebourg.github.io/jsign
 
