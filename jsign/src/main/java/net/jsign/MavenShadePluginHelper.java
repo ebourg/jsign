@@ -28,5 +28,6 @@ class MavenShadePluginHelper {
     static {
         JsignCLI.class.getName();
         JsignTask.class.getName();
+        PESignerTask.class.getName();
     }
 }
