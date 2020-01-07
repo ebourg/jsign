@@ -118,7 +118,14 @@ public class JsignCLI {
 
     private void printHelp() {
         String header = "Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a script (PowerShell, VBScript, JScript, WSF).\n\n";
-        String footer = "\nPlease report suggestions and issues on the GitHub project at https://github.com/ebourg/jsign/issues";
+        String footer ="\n" +
+                "Examples:\n\n" +
+                "   Signing with a PKCS#12 keystore and timestamping:\n\n" +
+                "     jsign --keystore keystore.p12 --alias test --storepass pwd \\\n" +
+                "           --tsaurl http://timestamp.comodoca.com/authenticode application.exe\n\n" +
+                "   Signing with a SPC certificate and a PVK key:\n\n" +
+                "     jsign --certfile certificate.spc --keyfile key.pvk --keypass pwd installer.msi\n\n" +
+                "Please report suggestions and issues on the GitHub project at https://github.com/ebourg/jsign/issues";
 
         HelpFormatter formatter = new HelpFormatter();
         formatter.setOptionComparator(null);
