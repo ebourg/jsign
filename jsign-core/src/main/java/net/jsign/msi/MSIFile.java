@@ -178,10 +178,10 @@ public class MSIFile implements Signable, Closeable {
             POIFSDocument document = new POIFSDocument((DocumentProperty) property, fs);
             long remaining = document.getSize();
             for (ByteBuffer buffer : document) {
-                int limit = buffer.limit();
-                buffer.limit((int) Math.min(remaining, limit));
+                int size = buffer.remaining();
+                buffer.limit(buffer.position() + (int) Math.min(remaining, size));
                 digest.update(buffer);
-                remaining -= limit;
+                remaining -= size;
             }
         }
 
