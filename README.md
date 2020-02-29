@@ -36,6 +36,11 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 3.1 (2020-03-01)
+
+* Certificate files can now be used with a PKCS11 token to support OpenPGP cards unable to hold a whole certificate chain (contributed by Erwin Tratar)
+* Fixed an IllegalArgumentException when parsing large entries of MSI files
+
 #### Version 3.0 (2020-01-07)
 
 * Jsign now requires Java 8 or higher
