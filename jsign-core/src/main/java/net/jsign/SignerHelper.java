@@ -41,6 +41,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import net.jsign.timestamp.TimestampingMode;
@@ -283,7 +284,20 @@ class SignerHelper {
             }
 
             if (alias == null) {
-                throw new SignerException("alias " + parameterName + " must be set");
+                try {
+                    Enumeration<String> aliases = ks.aliases();
+                    while (aliases.hasMoreElements()) {
+                        if (alias != null) {
+                            throw new SignerException("alias " + parameterName + " must be set because the keystore contains more than one alias");
+                        }
+                        alias = aliases.nextElement();
+                    }
+                } catch (KeyStoreException e) {
+                    throw new SignerException("Failed to enumerate the aliases in the keystore. Use the alias " + parameterName + " instead");
+                }
+                if (alias == null) {
+                    throw new SignerException("no aliases found in keystore");
+                }
             }
 
             try {
