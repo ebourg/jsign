@@ -172,7 +172,7 @@ public class JsignTask extends Task {
             
             helper.sign(file);
         } catch (Exception e) {
-            throw new BuildException(e.getMessage(), e);
+            throw new BuildException(e.getMessage(), e, getLocation());
         }
     }
 }
