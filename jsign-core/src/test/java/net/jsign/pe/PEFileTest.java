@@ -19,6 +19,7 @@ package net.jsign.pe;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -142,7 +143,22 @@ public class PEFileTest {
     public void testComputeChecksum() throws Exception {
         PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
         
-        assertEquals(file.computeChecksum(), 0x0000E7F5);
+        assertEquals("checksum", 0x0000E7F5, file.computeChecksum());
+    }
+
+    @Test
+    public void testUpdateChecksum() throws Exception {
+        // Expand the test file beyond the size of the buffer used in updateChecksum() (> 64K)
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-big.exe");
+        FileUtils.copyFile(srcFile, destFile);
+        RandomAccessFile raf = new RandomAccessFile(destFile, "rw");
+        raf.setLength(1024 * 1024 + 73);
+        raf.close();
+
+        PEFile file = new PEFile(destFile);
+        file.updateChecksum();
+        assertEquals("checksum", 0x0010483E, file.getCheckSum());
     }
 
     @Test

@@ -36,6 +36,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 3.2 (in development)
+
+* Fixed the update of the PE checksum (contributed by Markus Kilås)
+
 #### Version 3.1 (2020-03-01)
 
 * Certificate files can now be used with a PKCS11 token to support OpenPGP cards unable to hold a whole certificate chain (contributed by Erwin Tratar)

@@ -510,6 +510,7 @@ public class PEFile implements Signable, Closeable {
             
             int len;
             while ((len = channel.read(b)) > 0) {
+                b.flip();
                 checksum.update(b.array(), 0, len);
             }
         } catch (IOException e) {
@@ -520,10 +521,10 @@ public class PEFile implements Signable, Closeable {
     }
 
     public synchronized void updateChecksum() {
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) computeChecksum());
-        
+        buffer.flip();
+
         try {
             channel.position(peHeaderOffset + 88);
             channel.write(buffer);
