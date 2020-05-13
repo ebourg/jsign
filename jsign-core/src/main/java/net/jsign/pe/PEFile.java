@@ -511,6 +511,7 @@ public class PEFile implements Signable, Closeable {
             int len;
             while ((len = channel.read(b)) > 0) {
                 checksum.update(b.array(), 0, len);
+                b.clear();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -524,6 +525,8 @@ public class PEFile implements Signable, Closeable {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) computeChecksum());
         
+        buffer.position(0);
+
         try {
             channel.position(peHeaderOffset + 88);
             channel.write(buffer);
