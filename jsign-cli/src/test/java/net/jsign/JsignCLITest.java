@@ -100,6 +100,16 @@ public class JsignCLITest {
         cli.execute("--keystore=" + targetFile, "" + targetFile);
     }
 
+    @Test
+    public void testEmptyKeystore() throws Exception  {
+        try {
+            cli.execute("--keystore=target/test-classes/keystores/keystore-empty.p12", "--alias=unknown", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertTrue(e.getMessage().startsWith("No certificate found in the keystore"));
+        }
+    }
+
     @Test(expected = SignerException.class)
     public void testMissingAlias() throws Exception  {
         cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "" + targetFile);

@@ -279,6 +279,9 @@ class SignerHelper {
             KeyStore ks;
             try {
                 ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
+                if (!ks.aliases().hasMoreElements()) {
+                    throw new KeyStoreException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
+                }
             } catch (KeyStoreException e) {
                 throw new SignerException(e.getMessage(), e);
             }
