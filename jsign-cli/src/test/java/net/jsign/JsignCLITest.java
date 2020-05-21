@@ -120,6 +120,16 @@ public class JsignCLITest {
         cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=unknown", "" + targetFile);
     }
 
+    @Test
+    public void testMultipleAliases() throws Exception  {
+        try {
+            cli.execute("--keystore=target/test-classes/keystores/keystore-two-entries.p12", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertTrue(e.getMessage().equals("alias option must be set because the keystore contains more than one alias"));
+        }
+    }
+
     @Test(expected = SignerException.class)
     public void testCertificateNotFound() throws Exception  {
         cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=foo", "" + targetFile);
@@ -182,7 +192,7 @@ public class JsignCLITest {
 
     @Test
     public void testSigning() throws Exception {
-        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "" + targetFile);
 
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
