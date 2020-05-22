@@ -42,7 +42,9 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.jsign.timestamp.TimestampingMode;
 
@@ -277,9 +279,11 @@ class SignerHelper {
 
         if (keystore != null) {
             KeyStore ks;
+            Set<String> aliases = new LinkedHashSet<>();
             try {
                 ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
-                if (!ks.aliases().hasMoreElements()) {
+                aliases.addAll(Collections.list(ks.aliases()));
+                if (aliases.isEmpty()) {
                     throw new KeyStoreException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
                 }
             } catch (KeyStoreException e) {
@@ -287,19 +291,10 @@ class SignerHelper {
             }
 
             if (alias == null) {
-                try {
-                    Enumeration<String> aliases = ks.aliases();
-                    while (aliases.hasMoreElements()) {
-                        if (alias != null) {
-                            throw new SignerException("alias " + parameterName + " must be set because the keystore contains more than one alias");
-                        }
-                        alias = aliases.nextElement();
-                    }
-                } catch (KeyStoreException e) {
-                    throw new SignerException("Failed to enumerate the aliases in the keystore. Use the alias " + parameterName + " instead");
-                }
-                if (alias == null) {
-                    throw new SignerException("no aliases found in keystore");
+                if (aliases.size() == 1) {
+                    alias = aliases.iterator().next();
+                } else {
+                    throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
                 }
             }
 
@@ -309,7 +304,7 @@ class SignerHelper {
                 throw new SignerException(e.getMessage(), e);
             }
             if (chain == null) {
-                throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore));
+                throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore) + " (available aliases: " + String.join(", ", aliases) + ")");
             }
             if (certfile != null) {
                 if (chain.length != 1) {

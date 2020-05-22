@@ -115,9 +115,13 @@ public class JsignCLITest {
         cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "" + targetFile);
     }
 
-    @Test(expected = SignerException.class)
+    @Test
     public void testAliasNotFound() throws Exception  {
-        cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=unknown", "" + targetFile);
+        try {
+            cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=unknown", "" + targetFile);
+        } catch (SignerException e) {
+            assertEquals("exception message", "No certificate found under the alias 'unknown' in the keystore target/test-classes/keystores/keystore.jks (available aliases: test)", e.getMessage().replace('\\', '/'));
+        }
     }
 
     @Test
@@ -126,7 +130,7 @@ public class JsignCLITest {
             cli.execute("--keystore=target/test-classes/keystores/keystore-two-entries.p12", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
-            assertTrue(e.getMessage().equals("alias option must be set because the keystore contains more than one alias"));
+            assertEquals("exception message", "alias option must be set to select a certificate (available aliases: test, test2)", e.getMessage());
         }
     }
 

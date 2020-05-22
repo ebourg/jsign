@@ -39,6 +39,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 3.2 (in development)
 
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
+* The keystore aliases are now listed in the error message if the alias specified is incorrect
 * Fixed the update of the PE checksum (contributed by Markus Kilås)
 
 #### Version 3.1 (2020-03-01)
