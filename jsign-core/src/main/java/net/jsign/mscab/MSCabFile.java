@@ -73,10 +73,10 @@ public class MSCabFile implements Signable, Closeable {
     }
 
     /**
-     * Tells if the specified file is a Portable Executable file.
+     * Tells if the specified file is a MS Cabinet file.
      *
      * @param file the file to check
-     * @return <code>true</code> if the file is a Portable Executable, <code>false</code> otherwise
+     * @return <code>true</code> if the file is a MS Cabinet, <code>false</code> otherwise
      * @throws IOException if an I/O error occurs
      * @since 3.0
      */
@@ -86,8 +86,8 @@ public class MSCabFile implements Signable, Closeable {
         }
 
         try {
-            MSCabFile peFile = new MSCabFile(file);
-            peFile.close();
+            MSCabFile cabFile = new MSCabFile(file);
+            cabFile.close();
             return true;
         } catch (IOException e) {
             if (e.getMessage().contains("MSCabinet header signature not found") || e.getMessage().contains("MSCabinet file too short")) {
@@ -99,7 +99,7 @@ public class MSCabFile implements Signable, Closeable {
     }
 
     /**
-     * Create a PEFile from the specified file.
+     * Create a MSCabFile from the specified file.
      *
      * @param file the file to open
      * @throws IOException if an I/O error occurs
@@ -110,7 +110,7 @@ public class MSCabFile implements Signable, Closeable {
     }
 
     /**
-     * Create a PEFile from the specified channel.
+     * Create a MSCabFile from the specified channel.
      *
      * @param channel the channel to read the file from
      * @throws IOException if an I/O error occurs
