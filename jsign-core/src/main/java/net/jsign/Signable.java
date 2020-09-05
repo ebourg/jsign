@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.List;
 
+import net.jsign.mscab.MSCabFile;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.cms.CMSSignedData;
 
@@ -109,6 +110,9 @@ public interface Signable {
 
         } else if (MSIFile.isMSIFile(file)) {
             return new MSIFile(file);
+
+        } else if (MSCabFile.isMSCabFile(file)) {
+            return new MSCabFile(file);
 
         } else if (file.getName().endsWith(".ps1")
                 || file.getName().endsWith(".psd1")
