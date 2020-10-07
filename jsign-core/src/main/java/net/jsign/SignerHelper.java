@@ -369,7 +369,7 @@ class SignerHelper {
         }
 
         try {
-            initializeProxy(proxyUrl, proxyUser, proxyPass);
+            initializeProxy(proxyUrl, proxyUser, proxyPass, console);
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
@@ -453,13 +453,28 @@ class SignerHelper {
     }
 
     /**
+     * Initialize the proxy. Information is get from env:
+     * -Dhttp.proxyUrl          proxy url http://proxy-server:port (optional)
+     * -Dhttp.proxyUser         proxy username (optional, but considered only if proxyUrl and proxyPassword set)
+     * -Dhttp.proxyPassword     proxy password (optional, but considered only if proxyUrl and proxyUser set)
+     */
+    public static void initializeProxy() throws MalformedURLException {
+        initializeProxy(
+                System.getProperty("http.proxyUrl"),
+                System.getProperty("http.proxyUser"),
+                System.getProperty("http.proxyPassword"),
+                null);
+    }
+
+    /**
      * Initializes the proxy.
      *
      * @param proxyUrl       the url of the proxy (either as hostname:port or http[s]://hostname:port)
      * @param proxyUser      the username for the proxy authentication
      * @param proxyPassword  the password for the proxy authentication
+     * @param console        console for log. Can be null
      */
-    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
+    private static void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword, Console console) throws MalformedURLException {
         // Do nothing if there is no proxy url.
         if (proxyUrl != null && proxyUrl.trim().length() > 0) {
             if (!proxyUrl.trim().startsWith("http")) {
