@@ -263,6 +263,7 @@ public class MSCabFile implements Signable, Closeable {
         channel.position(0);
 
         while (channel.position() < channel.size()) {
+            bb.clear();
             channel.read(bb);
             bb.flip();
             dest.write(bb);
