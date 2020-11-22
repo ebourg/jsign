@@ -154,6 +154,22 @@ public class MSCabFile implements Signable, Closeable {
         channel.close();
     }
 
+    private byte[] readNullTerminatedString(SeekableByteChannel channel) throws IOException {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            byte singleChar;
+            ByteBuffer bbtmp = ByteBuffer.allocate(1);
+            do {
+                bbtmp.clear();
+                bbtmp.limit(1);
+                channel.read(bbtmp);
+                bbtmp.flip();
+                singleChar = bbtmp.array()[0];
+                bos.write(singleChar);
+            } while (singleChar != 0);
+            return bos.toByteArray();
+        }
+    }
+
     @Override
     public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         CFHeader modifiedHeader = new CFHeader(header);
@@ -179,6 +195,14 @@ public class MSCabFile implements Signable, Closeable {
         ByteBuffer bbtmp = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
         int off = header.getHeaderSize();
         channel.position(off);
+
+        if (CFHeaderFlag.NEXT_CABINET.checkFrom(header.flags)) {
+            byte[] szCabinetNext = readNullTerminatedString(channel);
+            byte[] szDiskNext = readNullTerminatedString(channel);
+            digest.update(szCabinetNext);
+            digest.update(szDiskNext);
+            off += szCabinetNext.length + szDiskNext.length;
+        }
 
         for (int i = 0; i < header.cFolders; i++) {
             bbtmp.clear();
@@ -353,6 +377,16 @@ public class MSCabFile implements Signable, Closeable {
                 channel.write(bb);
             }
             writeOffset = channel.position();
+
+            if (CFHeaderFlag.NEXT_CABINET.checkFrom(header.flags)) {
+                readChannel.position(readOffset);
+                byte[] szCabinetNext = readNullTerminatedString(readChannel);
+                byte[] szDiskNext = readNullTerminatedString(readChannel);
+                channel.write(ByteBuffer.wrap(szCabinetNext));
+                channel.write(ByteBuffer.wrap(szDiskNext));
+                readOffset += szCabinetNext.length + szDiskNext.length;
+                writeOffset += szCabinetNext.length + szDiskNext.length;
+            }
 
             ByteBuffer readBuf = ByteBuffer.allocate(8)
                     .order(ByteOrder.LITTLE_ENDIAN);
