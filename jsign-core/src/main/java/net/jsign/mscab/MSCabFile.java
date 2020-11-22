@@ -185,21 +185,28 @@ public class MSCabFile implements Signable, Closeable {
             bbtmp.limit(8);
             channel.read(bbtmp);
             bbtmp.flip();
-            int a = bbtmp.getInt();
-            int b = bbtmp.getInt();
-            a += 24;
-
-            bbtmp.clear();
-            bbtmp.putInt(a);
-            bbtmp.putInt(b);
-            digest.update(bbtmp.array(), 0, 8);
-
+            if (!CFHeaderFlag.RESERVE_PRESENT.checkFrom(header.flags)) {
+                int a = bbtmp.getInt();
+                int b = bbtmp.getInt();
+                a += 24;
+                bbtmp.clear();
+                bbtmp.putInt(a);
+                bbtmp.putInt(b);
+                digest.update(bbtmp.array(), 0, 8);
+            } else {
+                digest.update(bbtmp.array(), 0, 8);
+            }
             off += 8;
         }
 
+        long endPosition = header.hasSignature() ? header.getSigPos() : channel.size();
         channel.position(off);
-        while(channel.position() < channel.size()) {
+        while(channel.position() < endPosition) {
+            long remaining = endPosition - channel.position();
             bbtmp.clear();
+            if (remaining < bbtmp.capacity()) {
+                bbtmp.limit((int)remaining);
+            }
             channel.read(bbtmp);
             bbtmp.flip();
             digest.update(bbtmp);

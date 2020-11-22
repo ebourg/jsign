@@ -177,6 +177,10 @@ public class CFHeader {
         digest.update(bb);
     }
 
+    public boolean hasSignature() {
+        return this.abReserved != null;
+    }
+
     public int getSigPos() {
         ByteBuffer bb = ByteBuffer.wrap(this.abReserved)
                 .order(ByteOrder.LITTLE_ENDIAN);
