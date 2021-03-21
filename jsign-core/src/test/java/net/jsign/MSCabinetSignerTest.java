@@ -19,14 +19,18 @@ package net.jsign;
 import net.jsign.mscab.MSCabFile;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.KeyStore;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -74,33 +78,39 @@ public class MSCabinetSignerTest {
 
     @Test
     public void testSignSample2() throws Exception {
-        File sourceFile = new File("target/test-classes/cabinet-sample-2/disk1/sample.cab");
-        File targetFile = new File("target/test-classes/cabinet-sample-2-signed/disk1/sample.cab");
+        List<String> disks = Arrays.asList("disk1", "disk2");
+        for (int i=0; i < disks.size(); i++) {
+            String disk = disks.get(i);
+            File sourceFile = new File("target/test-classes/cabinet-sample-2/" + disk + "/sample.cab");
+            File targetFile = new File("target/test-classes/cabinet-sample-2-signed/" + disk + "/sample.cab");
 
-        targetFile.getParentFile().mkdirs();
+            targetFile.getParentFile().mkdirs();
 
-        FileUtils.copyFile(sourceFile, targetFile);
+            FileUtils.copyFile(sourceFile, targetFile);
 
-        MSCabFile cabFile = new MSCabFile(targetFile);
+            MSCabFile cabFile = new MSCabFile(targetFile);
 
-        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withTimestamping(false)
-                .withProgramName("WinEyes")
-                .withProgramURL("http://www.steelblue.com/WinEyes");
+            PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false)
+                    .withProgramName("WinEyes")
+                    .withProgramURL("http://www.steelblue.com/WinEyes");
 
-        signer.sign(cabFile);
+            signer.sign(cabFile);
 
-        cabFile = new MSCabFile(targetFile);
-        List<CMSSignedData> signatures = cabFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
+            cabFile = new MSCabFile(targetFile);
+            List<CMSSignedData> signatures = cabFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
 
-        CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = signatures.get(0);
 
-        assertNotNull(signature);
-        assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+            assertNotNull(signature);
+            assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
 
-        cabFile.printInfo(System.out);
+            cabFile.printInfo(System.out);
+
+            cabFile.close();
+        }
     }
 
     @Test

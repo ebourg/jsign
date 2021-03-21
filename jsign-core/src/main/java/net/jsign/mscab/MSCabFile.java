@@ -122,7 +122,7 @@ public class MSCabFile implements Signable, Closeable {
         channel.position(0);
         header.readFrom(channel, 0);
 
-        if (header.reserved1 != 0) {
+        if (header.csumHeader != 0) {
             throw new IOException("MSCabinet file is corrupt: invalid reserved field");
         }
 
@@ -195,6 +195,14 @@ public class MSCabFile implements Signable, Closeable {
         ByteBuffer bbtmp = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
         int off = header.getHeaderSize();
         channel.position(off);
+
+        if (CFHeaderFlag.PREV_CABINET.checkFrom(header.flags)) {
+            byte[] szCabinetPrev = readNullTerminatedString(channel);
+            byte[] szDiskPrev = readNullTerminatedString(channel);
+            digest.update(szCabinetPrev);
+            digest.update(szDiskPrev);
+            off += szCabinetPrev.length + szDiskPrev.length;
+        }
 
         if (CFHeaderFlag.NEXT_CABINET.checkFrom(header.flags)) {
             byte[] szCabinetNext = readNullTerminatedString(channel);
@@ -378,8 +386,18 @@ public class MSCabFile implements Signable, Closeable {
             }
             writeOffset = channel.position();
 
+            readChannel.position(readOffset);
+
+            if (CFHeaderFlag.PREV_CABINET.checkFrom(header.flags)) {
+                byte[] szCabinetPrev = readNullTerminatedString(readChannel);
+                byte[] szDiskPrev = readNullTerminatedString(readChannel);
+                channel.write(ByteBuffer.wrap(szCabinetPrev));
+                channel.write(ByteBuffer.wrap(szDiskPrev));
+                readOffset += szCabinetPrev.length + szDiskPrev.length;
+                writeOffset += szCabinetPrev.length + szDiskPrev.length;
+            }
+
             if (CFHeaderFlag.NEXT_CABINET.checkFrom(header.flags)) {
-                readChannel.position(readOffset);
                 byte[] szCabinetNext = readNullTerminatedString(readChannel);
                 byte[] szDiskNext = readNullTerminatedString(readChannel);
                 channel.write(ByteBuffer.wrap(szCabinetNext));

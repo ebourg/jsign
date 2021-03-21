@@ -24,11 +24,11 @@ import java.security.MessageDigest;
 
 public class CFHeader {
     public final byte[] signature = new byte[4]; // u4
-    public long reserved1 = 0; // u4
+    public long csumHeader = 0; // u4
     public long cbCabinet = 0; // u4
-    public long reserved2 = 0; // u4
+    public long csumFolders = 0; // u4
     public long coffFiles = 0; // u4
-    public long reserved3 = 0; // u4
+    public long csumFiles = 0; // u4
     public byte versionMinor = 0; // u1
     public byte versionMajor = 0; // u1
     public int cFolders = 0; // u2
@@ -88,11 +88,11 @@ public class CFHeader {
             throw new IOException("MSCabinet header signature not found");
         }
 
-        this.reserved1 = bb.getInt(); // u4
+        this.csumHeader = bb.getInt(); // u4
         this.cbCabinet = bb.getInt(); // u4 H
-        this.reserved2 = bb.getInt(); // u4 H
+        this.csumFolders = bb.getInt(); // u4 H
         this.coffFiles = bb.getInt(); // u4 H
-        this.reserved3 = bb.getInt(); // u4 H
+        this.csumFiles = bb.getInt(); // u4 H
         this.versionMinor = bb.get(); // u1 H
         this.versionMajor = bb.get(); // u1 H
         this.cFolders = bb.getShort(); // u2 H
@@ -123,11 +123,11 @@ public class CFHeader {
 
     public void writeTo(ByteBuffer bb) {
         bb.put(this.signature);
-        bb.putInt((int)this.reserved1);
+        bb.putInt((int)this.csumHeader);
         bb.putInt((int)this.cbCabinet);
-        bb.putInt((int)this.reserved2);
+        bb.putInt((int)this.csumFolders);
         bb.putInt((int)this.coffFiles);
-        bb.putInt((int)this.reserved3);
+        bb.putInt((int)this.csumFiles);
         bb.put(this.versionMinor);
         bb.put(this.versionMajor);
         bb.putShort((short)this.cFolders);
@@ -153,28 +153,37 @@ public class CFHeader {
         }
     }
 
+    private static final int RESERVE_CNT_HDR_LEN = 4; // sizeof(USHORT) * 2
+    // See https://github.com/PubDom/Windows-Server-2003/blob/5c6fe3db626b63a384230a1aa6b92ac416b0765f/ds/security/cryptoapi/pkitrust/mssip32/sipobjcb.cpp
     public void headerDigestUpdate(MessageDigest digest) {
-        ByteBuffer bb = ByteBuffer.allocate(34)
+        ByteBuffer bb = ByteBuffer.allocate(36)
                 .order(ByteOrder.LITTLE_ENDIAN);
 
         bb.put(this.signature);
         bb.putInt((int)this.cbCabinet);
-        bb.putInt((int)this.reserved2);
+        bb.putInt((int)this.csumFolders);
         bb.putInt((int)this.coffFiles);
-        bb.putInt((int)this.reserved3);
+        bb.putInt((int)this.csumFiles);
         bb.put(this.versionMinor);
         bb.put(this.versionMajor);
         bb.putShort((short)this.cFolders);
         bb.putShort((short)this.cFiles);
         bb.putShort((short)this.flags);
         bb.putShort((short)this.setID);
-
-        if (this.abReserved != null) {
-            bb.put(this.abReserved, 16, 4);
-        }
+        bb.putShort((short)this.iCabinet);
 
         bb.flip();
         digest.update(bb);
+
+        if (this.abReserved != null) {
+            if (this.abReserved.length > RESERVE_CNT_HDR_LEN) {
+                int cbJunk = this.abReserved[0] | ((((int)this.abReserved[1] & 0xff) << 8));
+                digest.update(this.abReserved, 0, 2);
+                if (cbJunk > 0) {
+                    digest.update(this.abReserved, RESERVE_CNT_HDR_LEN, cbJunk);
+                }
+            }
+        }
     }
 
     public boolean hasSignature() {
