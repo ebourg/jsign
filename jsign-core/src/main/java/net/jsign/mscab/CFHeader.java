@@ -177,7 +177,9 @@ public class CFHeader {
 
         if (this.abReserved != null) {
             if (this.abReserved.length > RESERVE_CNT_HDR_LEN) {
-                int cbJunk = this.abReserved[0] | ((((int)this.abReserved[1] & 0xff) << 8));
+                ByteBuffer reservedReader = ByteBuffer.wrap(this.abReserved)
+                        .order(ByteOrder.LITTLE_ENDIAN);
+                int cbJunk = reservedReader.getShort() & 0xffff;
                 digest.update(this.abReserved, 0, 2);
                 if (cbJunk > 0) {
                     digest.update(this.abReserved, RESERVE_CNT_HDR_LEN, cbJunk);
