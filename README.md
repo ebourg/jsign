@@ -1,10 +1,10 @@
 Jsign - Java implementation of Microsoft Authenticode
 =====================================================
 
-[![Build Status](https://api.travis-ci.com/ebourg/jsign.svg)](http://travis-ci.com/ebourg/jsign)
+[![Build Status](https://api.travis-ci.com/ebourg/jsign.svg)](https://travis-ci.com/ebourg/jsign)
 [![Coverage Status](https://coveralls.io/repos/github/ebourg/jsign/badge.svg?branch=master)](https://coveralls.io/github/ebourg/jsign?branch=master)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
 
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows, Microsoft Installers (MSI) and
