@@ -502,7 +502,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingRetryWait(1);
