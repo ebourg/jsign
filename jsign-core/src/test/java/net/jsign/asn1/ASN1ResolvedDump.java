@@ -53,7 +53,7 @@ public class ASN1ResolvedDump
             {
                 Object  o = e.nextElement();
 
-                if (o == null || o.equals(new DERNull()))
+                if (o == null || o.equals(DERNull.INSTANCE))
                 {
                     buf.append(tab);
                     buf.append("NULL");
@@ -95,16 +95,7 @@ public class ASN1ResolvedDump
 
             buf.append(nl);
 
-            if (o.isEmpty())
-            {
-                buf.append(tab);
-                buf.append("EMPTY");
-                buf.append(nl);
-            }
-            else
-            {
-                _dumpAsString(tab, verbose, o.getObject(), buf);
-            }
+            _dumpAsString(tab, verbose, o.getObject(), buf);
         }
         else if (obj instanceof BERSet)
         {
@@ -180,18 +171,6 @@ public class ASN1ResolvedDump
         else if (obj instanceof ASN1Integer)
         {
             buf.append(indent + "Integer(" + ((ASN1Integer)obj).getValue() + ")" + nl);
-        }
-        else if (obj instanceof BERConstructedOctetString)
-        {
-            ASN1OctetString oct = (ASN1OctetString)obj;
-            buf.append(indent + "BER Constructed Octet String" + "[" + oct.getOctets().length + "] ");
-            if (verbose)
-            {
-                buf.append(dumpBinaryDataAsString(indent, oct.getOctets()));
-            }
-            else{
-                buf.append(nl);
-            }
         }
         else if (obj instanceof DEROctetString)
         {
