@@ -239,7 +239,9 @@ public class MSCabFile implements Signable, Closeable {
             if (remaining < bbtmp.capacity()) {
                 bbtmp.limit((int)remaining);
             }
-            channel.read(bbtmp);
+            int readBytes = channel.read(bbtmp);
+            if (readBytes < 0)
+                throw new IOException("Unknown file format");
             bbtmp.flip();
             digest.update(bbtmp);
         }
