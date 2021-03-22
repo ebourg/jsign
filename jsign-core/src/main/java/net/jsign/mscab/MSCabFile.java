@@ -413,7 +413,9 @@ public class MSCabFile implements Signable, Closeable {
 
             if (modified) {
                 for (int i = 0; i < header.cFolders; i++) {
+                    writeBuf.clear();
                     readBuf.clear();
+
                     readChannel.position(readOffset);
                     readChannel.read(readBuf);
                     readBuf.flip();
