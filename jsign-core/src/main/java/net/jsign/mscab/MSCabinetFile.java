@@ -202,22 +202,13 @@ public class MSCabinetFile implements Signable, Closeable {
         }
 
         for (int i = 0; i < header.cFolders; i++) {
-            buffer.clear();
-            buffer.limit(CFHeader.CFFOLDER_BASE_SIZE);
-            channel.read(buffer);
-            buffer.flip();
+            CFFolder folder = CFFolder.read(channel);
             if (!header.isReservePresent()) {
-                int folderOffset = buffer.getInt();
-                int folderInfo = buffer.getInt();
-                folderOffset += 4 + CFHeader.RESERVE_SIZE;
-                buffer.clear();
-                buffer.putInt(folderOffset);
-                buffer.putInt(folderInfo);
-                digest.update(buffer.array(), 0, CFHeader.CFFOLDER_BASE_SIZE);
-            } else {
-                digest.update(buffer.array(), 0, CFHeader.CFFOLDER_BASE_SIZE);
+                folder.coffCabStart += 4 + CFHeader.RESERVE_SIZE;
             }
-            offset += CFHeader.CFFOLDER_BASE_SIZE;
+            folder.digest(digest);
+
+            offset += CFFolder.BASE_SIZE;
         }
 
         long endPosition = header.hasSignature() ? header.getSigPos() : channel.size();
@@ -384,29 +375,17 @@ public class MSCabinetFile implements Signable, Closeable {
                 writeOffset += szCabinetNext.length + szDiskNext.length;
             }
 
-            ByteBuffer readBuf = ByteBuffer.allocate(CFHeader.CFFOLDER_BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-            ByteBuffer writeBuf = ByteBuffer.allocate(CFHeader.CFFOLDER_BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-
             if (modified) {
                 for (int i = 0; i < header.cFolders; i++) {
-                    writeBuf.clear();
-                    readBuf.clear();
-
                     readChannel.position(readOffset);
-                    readChannel.read(readBuf);
-                    readBuf.flip();
+                    CFFolder folder = CFFolder.read(readChannel);
+                    folder.coffCabStart += 4 + CFHeader.RESERVE_SIZE;
 
-                    int folderOffset = readBuf.getInt();
-                    int folderInfo = readBuf.getInt();
-                    folderOffset += 4 + CFHeader.RESERVE_SIZE;
-                    writeBuf.putInt(folderOffset);
-                    writeBuf.putInt(folderInfo);
-
-                    writeBuf.flip();
                     channel.position(writeOffset);
-                    channel.write(writeBuf);
-                    readOffset += CFHeader.CFFOLDER_BASE_SIZE;
-                    writeOffset += CFHeader.CFFOLDER_BASE_SIZE;
+                    folder.write(channel);
+
+                    readOffset += CFFolder.BASE_SIZE;
+                    writeOffset += CFFolder.BASE_SIZE;
                 }
             }
 

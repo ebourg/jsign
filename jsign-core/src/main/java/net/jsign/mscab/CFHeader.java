@@ -78,9 +78,6 @@ class CFHeader {
     /** Size of the per-cabinet reserved area */
     public static final int RESERVE_SIZE = RESERVE_HEADER_SIZE + CAB_SIGNATURE_STRUCT_SIZE;
 
-    /** Base size of the CFFOLDER structure (with no optional per-folder reserved area) */
-    public static final int CFFOLDER_BASE_SIZE = 8;
-
     public CFHeader() {
     }
 
@@ -96,7 +93,7 @@ class CFHeader {
     }
 
     public void read(SeekableByteChannel channel) throws IOException {
-        if ((channel.size()) < BASE_SIZE + CFFOLDER_BASE_SIZE) {
+        if ((channel.size()) < BASE_SIZE + CFFolder.BASE_SIZE) {
             throw new IOException("MSCabinet file too short");
         }
         ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
