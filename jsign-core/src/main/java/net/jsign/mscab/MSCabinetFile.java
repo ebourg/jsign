@@ -120,7 +120,7 @@ public class MSCabinetFile implements Signable, Closeable {
             throw new IOException("MSCabinet file is corrupt: invalid reserved field in the header");
         }
 
-        if (CFHeaderFlag.RESERVE_PRESENT.checkFrom(header.flags)) {
+        if (header.isReservePresent()) {
             ByteBuffer buffer = ByteBuffer.wrap(header.abReserved).order(ByteOrder.LITTLE_ENDIAN);
             if (header.cbCFHeader != 20) {
                 throw new IOException("MSCabinet file is corrupt: additional header size is " + header.cbCFHeader);
@@ -164,13 +164,13 @@ public class MSCabinetFile implements Signable, Closeable {
     @Override
     public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         CFHeader modifiedHeader = new CFHeader(header);
-        if (!CFHeaderFlag.RESERVE_PRESENT.checkFrom(header.flags)) {
+        if (!header.isReservePresent()) {
             ByteBuffer buffer = ByteBuffer.allocate(20).order(ByteOrder.LITTLE_ENDIAN);
 
             modifiedHeader.cbCFHeader = 20;
             modifiedHeader.cbCabinet += 24;
             modifiedHeader.coffFiles += 24;
-            modifiedHeader.flags |= CFHeaderFlag.RESERVE_PRESENT.getValue();
+            modifiedHeader.flags |= CFHeader.FLAG_RESERVE_PRESENT;
 
             buffer.putInt(0x00100000);
             buffer.putInt((int) modifiedHeader.cbCabinet); // offset of the signature (end of file)
@@ -185,7 +185,7 @@ public class MSCabinetFile implements Signable, Closeable {
         int offset = header.getHeaderSize();
         channel.position(offset);
 
-        if (CFHeaderFlag.PREV_CABINET.checkFrom(header.flags)) {
+        if (header.hasPreviousCabinet()) {
             byte[] szCabinetPrev = readNullTerminatedString(channel);
             byte[] szDiskPrev = readNullTerminatedString(channel);
             digest.update(szCabinetPrev);
@@ -193,7 +193,7 @@ public class MSCabinetFile implements Signable, Closeable {
             offset += szCabinetPrev.length + szDiskPrev.length;
         }
 
-        if (CFHeaderFlag.NEXT_CABINET.checkFrom(header.flags)) {
+        if (header.hasNextCabinet()) {
             byte[] szCabinetNext = readNullTerminatedString(channel);
             byte[] szDiskNext = readNullTerminatedString(channel);
             digest.update(szCabinetNext);
@@ -206,7 +206,7 @@ public class MSCabinetFile implements Signable, Closeable {
             buffer.limit(8);
             channel.read(buffer);
             buffer.flip();
-            if (!CFHeaderFlag.RESERVE_PRESENT.checkFrom(header.flags)) {
+            if (!header.isReservePresent()) {
                 int folderOffset = buffer.getInt();
                 int folderInfo = buffer.getInt();
                 folderOffset += 24;
@@ -326,7 +326,7 @@ public class MSCabinetFile implements Signable, Closeable {
         long writeOffset;
 
         try {
-            if (!CFHeaderFlag.RESERVE_PRESENT.checkFrom(header.flags)) {
+            if (!header.isReservePresent()) {
                 backupFile = File.createTempFile("tmp", ".cab");
                 backupChannel = Files.newByteChannel(backupFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE);
                 copyAllTo(backupChannel);
@@ -337,7 +337,7 @@ public class MSCabinetFile implements Signable, Closeable {
                 header.cbCFHeader = 20;
                 header.cbCabinet += 24;
                 header.coffFiles += 24;
-                header.flags |= CFHeaderFlag.RESERVE_PRESENT.getValue();
+                header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
 
                 abReserveWriter.putInt(0x00100000);
                 abReserveWriter.putInt((int) header.cbCabinet); // offset of the signature (end of file)
@@ -366,7 +366,7 @@ public class MSCabinetFile implements Signable, Closeable {
 
             readChannel.position(readOffset);
 
-            if (CFHeaderFlag.PREV_CABINET.checkFrom(header.flags)) {
+            if (header.hasPreviousCabinet()) {
                 byte[] szCabinetPrev = readNullTerminatedString(readChannel);
                 byte[] szDiskPrev = readNullTerminatedString(readChannel);
                 channel.write(ByteBuffer.wrap(szCabinetPrev));
@@ -375,7 +375,7 @@ public class MSCabinetFile implements Signable, Closeable {
                 writeOffset += szCabinetPrev.length + szDiskPrev.length;
             }
 
-            if (CFHeaderFlag.NEXT_CABINET.checkFrom(header.flags)) {
+            if (header.hasNextCabinet()) {
                 byte[] szCabinetNext = readNullTerminatedString(readChannel);
                 byte[] szDiskNext = readNullTerminatedString(readChannel);
                 channel.write(ByteBuffer.wrap(szCabinetNext));

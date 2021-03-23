@@ -42,6 +42,27 @@ class CFHeader {
     public byte cbCFData;       // u1
     public byte[] abReserved;
 
+    /**
+     * FLAG_PREV_CABINET is set if this cabinet file is not the first in a set
+     * of cabinet files. When this bit is set, the szCabinetPrev and szDiskPrev
+     * fields are present in this CFHEADER.
+     */
+    public static final int FLAG_PREV_CABINET    = 0b00000001;
+
+    /**
+     * FLAG_NEXT_CABINET is set if this cabinet file is not the last in a set
+     * of cabinet files. When this bit is set, the szCabinetNext and szDiskNext
+     * fields are present in this CFHEADER.
+     */
+    public static final int FLAG_NEXT_CABINET    = 0b00000010;
+
+    /**
+     * FLAG_RESERVE_PRESENT is set if this cabinet file contains any reserved
+     * fields. When this bit is set, the cbCFHeader, cbCFFolder, and cbCFData
+     * fields are present in this CFHEADER.
+     */
+    public static final int FLAG_RESERVE_PRESENT = 0b00000100;
+
     public CFHeader() {
     }
 
@@ -64,7 +85,7 @@ class CFHeader {
         channel.read(buffer);
         buffer.flip();
         readHeaderFirst(buffer);
-        if (CFHeaderFlag.RESERVE_PRESENT.checkFrom(this.flags)) {
+        if (isReservePresent()) {
             buffer.clear();
             buffer.limit(4);
             channel.read(buffer);
@@ -103,7 +124,7 @@ class CFHeader {
     }
 
     private void readHeaderSecond(ByteBuffer buffer) {
-        if (CFHeaderFlag.RESERVE_PRESENT.checkFrom(this.flags)) {
+        if (isReservePresent()) {
             this.cbCFHeader = buffer.getShort(); // u2
             this.cbCFFolder = buffer.get(); // u1
             this.cbCFData = buffer.get(); // u1
@@ -134,7 +155,7 @@ class CFHeader {
         buffer.putShort((short) this.flags);
         buffer.putShort((short) this.setID);
         buffer.putShort((short) this.iCabinet);
-        if (CFHeaderFlag.RESERVE_PRESENT.checkFrom(this.flags)) {
+        if (isReservePresent()) {
             buffer.putShort((short) this.cbCFHeader);
             buffer.put(this.cbCFFolder);
             buffer.put(this.cbCFData);
@@ -145,7 +166,7 @@ class CFHeader {
     }
 
     public int getHeaderSize() {
-        if (CFHeaderFlag.RESERVE_PRESENT.checkFrom(this.flags)) {
+        if (isReservePresent()) {
             return 40 + this.cbCFHeader;
         } else {
             return 36;
@@ -183,6 +204,18 @@ class CFHeader {
                 }
             }
         }
+    }
+
+    public boolean hasPreviousCabinet() {
+        return (FLAG_PREV_CABINET & flags) != 0;
+    }
+
+    public boolean hasNextCabinet() {
+        return (FLAG_NEXT_CABINET & flags) != 0;
+    }
+
+    public boolean isReservePresent() {
+        return (FLAG_RESERVE_PRESENT & flags) != 0;
     }
 
     public boolean hasSignature() {
