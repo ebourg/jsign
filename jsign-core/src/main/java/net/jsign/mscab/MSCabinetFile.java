@@ -16,14 +16,12 @@
 
 package net.jsign.mscab;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
@@ -50,6 +48,8 @@ import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcPeImageData;
+
+import static net.jsign.ChannelUtils.*;
 
 /**
  * Microsoft Cabinet File.
@@ -139,22 +139,6 @@ public class MSCabinetFile implements Signable, Closeable {
         channel.close();
     }
 
-    private byte[] readNullTerminatedString(SeekableByteChannel channel) throws IOException {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            byte singleChar;
-            ByteBuffer buffer = ByteBuffer.allocate(1);
-            do {
-                buffer.clear();
-                buffer.limit(1);
-                channel.read(buffer);
-                buffer.flip();
-                singleChar = buffer.array()[0];
-                bos.write(singleChar);
-            } while (singleChar != 0);
-            return bos.toByteArray();
-        }
-    }
-
     @Override
     public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         CFHeader modifiedHeader = new CFHeader(header);
@@ -171,7 +155,6 @@ public class MSCabinetFile implements Signable, Closeable {
         }
         modifiedHeader.headerDigestUpdate(digest);
 
-        ByteBuffer buffer = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
         channel.position(header.getHeaderSize());
 
         if (header.hasPreviousCabinet()) {
@@ -193,19 +176,7 @@ public class MSCabinetFile implements Signable, Closeable {
         }
 
         long endPosition = header.hasSignature() ? header.getSignature().offset : channel.size();
-        while (channel.position() < endPosition) {
-            long remaining = endPosition - channel.position();
-            buffer.clear();
-            if (remaining < buffer.capacity()) {
-                buffer.limit((int) remaining);
-            }
-            int readBytes = channel.read(buffer);
-            if (readBytes < 0) {
-                throw new IOException("Unknown file format");
-            }
-            buffer.flip();
-            digest.update(buffer);
-        }
+        updateDigest(channel, digest, channel.position(), endPosition);
 
         return digest.digest();
     }
@@ -250,40 +221,6 @@ public class MSCabinetFile implements Signable, Closeable {
         return signatures;
     }
 
-    private void copyAllTo(WritableByteChannel dest) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
-        channel.position(0);
-
-        while (channel.position() < channel.size()) {
-            buffer.clear();
-            channel.read(buffer);
-            buffer.flip();
-            dest.write(buffer);
-        }
-    }
-
-    private void copyFixedSize(SeekableByteChannel dest, SeekableByteChannel src, long copySize) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
-        long remaining = copySize;
-        long destOffset = dest.position();
-        long srcOffset = src.position();
-        while (remaining > 0) {
-            int avail = (int) Math.min(remaining, buffer.capacity());
-            buffer.clear();
-            buffer.limit(avail);
-
-            src.position(srcOffset);
-            src.read(buffer);
-            buffer.flip();
-
-            dest.position(destOffset);
-            dest.write(buffer);
-            remaining -= buffer.position();
-            srcOffset += buffer.position();
-            destOffset += buffer.position();
-        }
-    }
-
     @Override
     public synchronized void setSignature(CMSSignedData signature) throws IOException {
         byte[] content = signature.toASN1Structure().getEncoded("DER");
@@ -301,7 +238,7 @@ public class MSCabinetFile implements Signable, Closeable {
             if (!header.isReservePresent()) {
                 backupFile = File.createTempFile("tmp", ".cab");
                 backupChannel = Files.newByteChannel(backupFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE);
-                copyAllTo(backupChannel);
+                copy(channel, backupChannel);
                 readChannel = backupChannel;
                 readChannel.position(header.getHeaderSize());
 
@@ -348,7 +285,7 @@ public class MSCabinetFile implements Signable, Closeable {
             }
 
             long payloadSize = (readChannel.size() - readChannel.position()) - siglen;
-            copyFixedSize(channel, readChannel, payloadSize);
+            copy(readChannel, channel, payloadSize);
 
             channel.write(ByteBuffer.wrap(content));
 

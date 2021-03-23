@@ -192,6 +192,9 @@
           <source>8</source>
           <show>public</show>
           <excludePackageNames>*.asn1.*</excludePackageNames>
+          <sourceFileExcludes>
+            <exclude>**/ChannelUtils.java</exclude>
+          </sourceFileExcludes>
           <quiet>true</quiet>
           <notimestamp>true</notimestamp>
           <nodeprecated>true</nodeprecated>

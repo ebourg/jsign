@@ -53,6 +53,8 @@ import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 
+import static net.jsign.ChannelUtils.*;
+
 /**
  * Portable Executable File.
  * 
@@ -889,14 +891,14 @@ public class PEFile implements Signable, Closeable {
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
         // digest from the beginning to the checksum field (excluded)
-        updateDigest(digest, 0, checksumLocation);
+        updateDigest(channel, digest, 0, checksumLocation);
         
         // skip the checksum field
         long position = checksumLocation + 4;
         
         // digest from the end of the checksum field to the beginning of the certificate table entry
         int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();
-        updateDigest(digest, position, certificateTableOffset);
+        updateDigest(channel, digest, position, certificateTableOffset);
         
         // skip the certificate entry
         position = certificateTableOffset + 8;
@@ -905,41 +907,14 @@ public class PEFile implements Signable, Closeable {
         
         // digest from the end of the certificate table entry to the beginning of the certificate table
         if (certificateTable != null && certificateTable.exists()) {
-            updateDigest(digest, position, certificateTable.getVirtualAddress());
+            updateDigest(channel, digest, position, certificateTable.getVirtualAddress());
             position = certificateTable.getVirtualAddress() + certificateTable.getSize();
         }
         
         // digest from the end of the certificate table to the end of the file
-        updateDigest(digest, position, channel.size());
+        updateDigest(channel, digest, position, channel.size());
         
         return digest.digest();
-    }
-
-    /**
-     * Update the specified digest by reading the underlying SeekableByteChannel
-     * from the start offset included to the end offset excluded.
-     * 
-     * @param digest      the message digest to update
-     * @param startOffset the start offset
-     * @param endOffset   the end offset
-     * @throws IOException if an I/O error occurs
-     */
-    private void updateDigest(MessageDigest digest, long startOffset, long endOffset) throws IOException {
-        channel.position(startOffset);
-        
-        ByteBuffer buffer = ByteBuffer.allocate(8192);
-        
-        long position = startOffset;
-        while (position < endOffset) {
-            buffer.clear();
-            buffer.limit((int) Math.min(buffer.capacity(), endOffset - position));
-            channel.read(buffer);
-            buffer.rewind();
-            
-            digest.update(buffer);
-            
-            position += buffer.limit();
-        }
     }
 
     /**
