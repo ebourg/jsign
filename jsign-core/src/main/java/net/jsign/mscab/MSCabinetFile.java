@@ -64,8 +64,6 @@ import net.jsign.asn1.authenticode.SpcPeImageData;
 public class MSCabinetFile implements Signable, Closeable {
 
     private final CFHeader header = new CFHeader();
-    private int sigpos;
-    private int siglen;
 
     private final SeekableByteChannel channel;
 
@@ -121,21 +119,17 @@ public class MSCabinetFile implements Signable, Closeable {
         }
 
         if (header.isReservePresent()) {
-            ByteBuffer buffer = ByteBuffer.wrap(header.abReserved).order(ByteOrder.LITTLE_ENDIAN);
-            if (header.cbCFHeader != CFHeader.RESERVE_SIZE) {
-                throw new IOException("MSCabinet file is corrupt: additional header size is " + header.cbCFHeader);
+            if (header.cbCFHeader != CABSignature.SIZE) {
+                throw new IOException("MSCabinet file is corrupt: cabinet reserved area size is " + header.cbCFHeader + " instead of " + CABSignature.SIZE);
             }
 
-            int reserved = buffer.getInt();
-            if (reserved != CFHeader.RESERVE_HEADER) {
-                throw new IOException("MSCabinet file is corrupt: additional abReserved is " + reserved);
+            CABSignature cabsig = header.getSignature();
+            if (cabsig.header != CABSignature.HEADER) {
+                throw new IOException("MSCabinet file is corrupt: signature header is " + cabsig.header);
             }
 
-            sigpos = buffer.getInt();
-            siglen = buffer.getInt();
-
-            if (sigpos < channel.size() && (sigpos + siglen) > channel.size()) {
-                throw new IOException("MSCabinet file is corrupt: Additional data offset=" + sigpos + ", size=" + siglen);
+            if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size()) {
+                throw new IOException("MSCabinet file is corrupt: signature data (offset=" + cabsig.offset + ", size=" + cabsig.length + ") after the end of the file");
             }
         }
     }
@@ -165,19 +159,15 @@ public class MSCabinetFile implements Signable, Closeable {
     public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         CFHeader modifiedHeader = new CFHeader(header);
         if (!header.isReservePresent()) {
-            ByteBuffer buffer = ByteBuffer.allocate(CFHeader.RESERVE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-
-            modifiedHeader.cbCFHeader = CFHeader.RESERVE_SIZE;
-            modifiedHeader.cbCabinet += 4 + CFHeader.RESERVE_SIZE;
-            modifiedHeader.coffFiles += 4 + CFHeader.RESERVE_SIZE;
+            modifiedHeader.cbCFHeader = CABSignature.SIZE;
+            modifiedHeader.cbCabinet += 4 + CABSignature.SIZE;
+            modifiedHeader.coffFiles += 4 + CABSignature.SIZE;
             modifiedHeader.flags |= CFHeader.FLAG_RESERVE_PRESENT;
 
-            buffer.putInt(CFHeader.RESERVE_HEADER);
-            buffer.putInt((int) modifiedHeader.cbCabinet); // offset of the signature (end of file)
-            buffer.putInt(0); // size of the signature
-            buffer.putLong(0); // filler
+            CABSignature cabsig = new CABSignature();
+            cabsig.offset = (int) modifiedHeader.cbCabinet;
 
-            modifiedHeader.abReserved = buffer.array();
+            modifiedHeader.abReserved = cabsig.array();
         }
         modifiedHeader.headerDigestUpdate(digest);
 
@@ -197,12 +187,12 @@ public class MSCabinetFile implements Signable, Closeable {
         for (int i = 0; i < header.cFolders; i++) {
             CFFolder folder = CFFolder.read(channel);
             if (!header.isReservePresent()) {
-                folder.coffCabStart += 4 + CFHeader.RESERVE_SIZE;
+                folder.coffCabStart += 4 + CABSignature.SIZE;
             }
             folder.digest(digest);
         }
 
-        long endPosition = header.hasSignature() ? header.getSigPos() : channel.size();
+        long endPosition = header.hasSignature() ? header.getSignature().offset : channel.size();
         while (channel.position() < endPosition) {
             long remaining = endPosition - channel.position();
             buffer.clear();
@@ -233,9 +223,10 @@ public class MSCabinetFile implements Signable, Closeable {
     public synchronized List<CMSSignedData> getSignatures() throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
         try {
-            if (siglen > 0) {
-                byte[] buffer = new byte[siglen];
-                channel.position(sigpos);
+            CABSignature cabsig = header.getSignature();
+            if (cabsig != null && cabsig.offset > 0) {
+                byte[] buffer = new byte[cabsig.length];
+                channel.position(cabsig.offset);
                 channel.read(ByteBuffer.wrap(buffer));
 
                 CMSSignedData signedData;
@@ -297,13 +288,14 @@ public class MSCabinetFile implements Signable, Closeable {
     public synchronized void setSignature(CMSSignedData signature) throws IOException {
         byte[] content = signature.toASN1Structure().getEncoded("DER");
 
-        ByteBuffer abReserveWriter = ByteBuffer.allocate(CFHeader.RESERVE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
         boolean modified = false;
 
         File backupFile = null;
         SeekableByteChannel backupChannel = null;
         SeekableByteChannel readChannel = channel;
         readChannel.position(header.getHeaderSize());
+
+        int siglen = header.hasSignature() ? header.getSignature().length : 0;
 
         try {
             if (!header.isReservePresent()) {
@@ -315,26 +307,18 @@ public class MSCabinetFile implements Signable, Closeable {
 
                 modified = true;
 
-                header.cbCFHeader = CFHeader.RESERVE_SIZE;
-                header.cbCabinet += 4 + CFHeader.RESERVE_SIZE;
-                header.coffFiles += 4 + CFHeader.RESERVE_SIZE;
+                header.cbCFHeader = CABSignature.SIZE;
+                header.cbCabinet += 4 + CABSignature.SIZE;
+                header.coffFiles += 4 + CABSignature.SIZE;
                 header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-
-                abReserveWriter.putInt(CFHeader.RESERVE_HEADER);
-                abReserveWriter.putInt((int) header.cbCabinet); // offset of the signature (end of file)
-                abReserveWriter.putInt(content.length); // size of the signature
-                abReserveWriter.putLong(0); // filler
-            } else {
-                ByteBuffer buffer = ByteBuffer.wrap(header.abReserved).order(ByteOrder.LITTLE_ENDIAN);
-                abReserveWriter.putInt(buffer.getInt());
-                buffer.getInt();
-                abReserveWriter.putInt((int) header.cbCabinet); // offset of the signature (end of file)
-                buffer.getInt();
-                abReserveWriter.putInt(content.length); // size of the signature
-                abReserveWriter.putLong(buffer.getLong()); // filler
+                header.abReserved = new byte[CABSignature.SIZE];
             }
 
-            header.abReserved = abReserveWriter.array();
+            CABSignature cabsig = new CABSignature(header.abReserved);
+            cabsig.header = CABSignature.HEADER;
+            cabsig.offset = (int) header.cbCabinet;
+            cabsig.length = content.length;
+            header.abReserved = cabsig.array();
 
             channel.position(0);
             {
@@ -357,7 +341,7 @@ public class MSCabinetFile implements Signable, Closeable {
             if (modified) {
                 for (int i = 0; i < header.cFolders; i++) {
                     CFFolder folder = CFFolder.read(readChannel);
-                    folder.coffCabStart += 4 + CFHeader.RESERVE_SIZE;
+                    folder.coffCabStart += 4 + CABSignature.SIZE;
 
                     folder.write(channel);
                 }
@@ -371,9 +355,6 @@ public class MSCabinetFile implements Signable, Closeable {
             if (channel.position() < channel.size()) {
                 channel.truncate(channel.position());
             }
-
-            sigpos = (int)header.cbCabinet;
-            siglen = content.length;
         } finally {
             if (backupChannel != null) {
                 backupChannel.close();

@@ -66,18 +66,6 @@ class CFHeader {
     /** Base size of the header (with no optional fields) */
     public static final int BASE_SIZE = 36;
 
-    /** Header of the per-cabinet reserved area (two zero bytes + size of the signature) */
-    public static final int RESERVE_HEADER = 0x00100000;
-
-    /** Size of the header at the beginning of the per-cabinet reserved area */
-    public static final int RESERVE_HEADER_SIZE = 4;
-
-    /** Size of the CABSignature structure following the reserve header in the per-cabinet reserved area */
-    public static final int CAB_SIGNATURE_STRUCT_SIZE = 16;
-
-    /** Size of the per-cabinet reserved area */
-    public static final int RESERVE_SIZE = RESERVE_HEADER_SIZE + CAB_SIGNATURE_STRUCT_SIZE;
-
     public CFHeader() {
     }
 
@@ -208,14 +196,7 @@ class CFHeader {
         digest.update(buffer);
 
         if (this.abReserved != null) {
-            if (this.abReserved.length > RESERVE_HEADER_SIZE) {
-                ByteBuffer reservedReader = ByteBuffer.wrap(this.abReserved).order(ByteOrder.LITTLE_ENDIAN);
-                int cbJunk = reservedReader.getShort() & 0xFFFF;
-                digest.update(this.abReserved, 0, 2);
-                if (cbJunk > 0) {
-                    digest.update(this.abReserved, RESERVE_HEADER_SIZE, cbJunk);
-                }
-            }
+            digest.update(abReserved, 0, 2); // 0x0000
         }
     }
 
@@ -235,15 +216,7 @@ class CFHeader {
         return this.abReserved != null;
     }
 
-    public int getSigPos() {
-        ByteBuffer buffer = ByteBuffer.wrap(this.abReserved).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.position(4);
-        return buffer.getInt();
-    }
-
-    public int getSigLen() {
-        ByteBuffer buffer = ByteBuffer.wrap(this.abReserved).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.position(8);
-        return buffer.getInt();
+    public CABSignature getSignature() {
+        return abReserved != null ? new CABSignature(abReserved) : null;
     }
 }
