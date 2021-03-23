@@ -182,23 +182,16 @@ public class MSCabinetFile implements Signable, Closeable {
         modifiedHeader.headerDigestUpdate(digest);
 
         ByteBuffer buffer = ByteBuffer.allocate(4096).order(ByteOrder.LITTLE_ENDIAN);
-        int offset = header.getHeaderSize();
-        channel.position(offset);
+        channel.position(header.getHeaderSize());
 
         if (header.hasPreviousCabinet()) {
-            byte[] szCabinetPrev = readNullTerminatedString(channel);
-            byte[] szDiskPrev = readNullTerminatedString(channel);
-            digest.update(szCabinetPrev);
-            digest.update(szDiskPrev);
-            offset += szCabinetPrev.length + szDiskPrev.length;
+            digest.update(readNullTerminatedString(channel)); // szCabinetPrev
+            digest.update(readNullTerminatedString(channel)); // szDiskPrev
         }
 
         if (header.hasNextCabinet()) {
-            byte[] szCabinetNext = readNullTerminatedString(channel);
-            byte[] szDiskNext = readNullTerminatedString(channel);
-            digest.update(szCabinetNext);
-            digest.update(szDiskNext);
-            offset += szCabinetNext.length + szDiskNext.length;
+            digest.update(readNullTerminatedString(channel)); // szCabinetNext
+            digest.update(readNullTerminatedString(channel)); // szDiskNext
         }
 
         for (int i = 0; i < header.cFolders; i++) {
@@ -207,12 +200,9 @@ public class MSCabinetFile implements Signable, Closeable {
                 folder.coffCabStart += 4 + CFHeader.RESERVE_SIZE;
             }
             folder.digest(digest);
-
-            offset += CFFolder.BASE_SIZE;
         }
 
         long endPosition = header.hasSignature() ? header.getSigPos() : channel.size();
-        channel.position(offset);
         while (channel.position() < endPosition) {
             long remaining = endPosition - channel.position();
             buffer.clear();
@@ -313,8 +303,7 @@ public class MSCabinetFile implements Signable, Closeable {
         File backupFile = null;
         SeekableByteChannel backupChannel = null;
         SeekableByteChannel readChannel = channel;
-        long readOffset = header.getHeaderSize();
-        long writeOffset;
+        readChannel.position(header.getHeaderSize());
 
         try {
             if (!header.isReservePresent()) {
@@ -322,6 +311,7 @@ public class MSCabinetFile implements Signable, Closeable {
                 backupChannel = Files.newByteChannel(backupFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE);
                 copyAllTo(backupChannel);
                 readChannel = backupChannel;
+                readChannel.position(header.getHeaderSize());
 
                 modified = true;
 
@@ -353,43 +343,27 @@ public class MSCabinetFile implements Signable, Closeable {
                 buffer.flip();
                 channel.write(buffer);
             }
-            writeOffset = channel.position();
-
-            readChannel.position(readOffset);
 
             if (header.hasPreviousCabinet()) {
-                byte[] szCabinetPrev = readNullTerminatedString(readChannel);
-                byte[] szDiskPrev = readNullTerminatedString(readChannel);
-                channel.write(ByteBuffer.wrap(szCabinetPrev));
-                channel.write(ByteBuffer.wrap(szDiskPrev));
-                readOffset += szCabinetPrev.length + szDiskPrev.length;
-                writeOffset += szCabinetPrev.length + szDiskPrev.length;
+                channel.write(ByteBuffer.wrap(readNullTerminatedString(readChannel))); // szCabinetPrev
+                channel.write(ByteBuffer.wrap(readNullTerminatedString(readChannel))); // szDiskPrev
             }
 
             if (header.hasNextCabinet()) {
-                byte[] szCabinetNext = readNullTerminatedString(readChannel);
-                byte[] szDiskNext = readNullTerminatedString(readChannel);
-                channel.write(ByteBuffer.wrap(szCabinetNext));
-                channel.write(ByteBuffer.wrap(szDiskNext));
-                readOffset += szCabinetNext.length + szDiskNext.length;
-                writeOffset += szCabinetNext.length + szDiskNext.length;
+                channel.write(ByteBuffer.wrap(readNullTerminatedString(readChannel))); // szCabinetNext
+                channel.write(ByteBuffer.wrap(readNullTerminatedString(readChannel))); // szDiskNext
             }
 
             if (modified) {
                 for (int i = 0; i < header.cFolders; i++) {
-                    readChannel.position(readOffset);
                     CFFolder folder = CFFolder.read(readChannel);
                     folder.coffCabStart += 4 + CFHeader.RESERVE_SIZE;
 
-                    channel.position(writeOffset);
                     folder.write(channel);
-
-                    readOffset += CFFolder.BASE_SIZE;
-                    writeOffset += CFFolder.BASE_SIZE;
                 }
             }
 
-            long payloadSize = (readChannel.size() - readOffset) - siglen;
+            long payloadSize = (readChannel.size() - readChannel.position()) - siglen;
             copyFixedSize(channel, readChannel, payloadSize);
 
             channel.write(ByteBuffer.wrap(content));
