@@ -9,7 +9,7 @@
     <version>3.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>Jsign - Code signing for Windows executables, Microsoft Installers and scripts (Distribution)</name>
+  <name>Jsign - Code signing for Windows executables, Microsoft Installers, Cabinet files and scripts (Distribution)</name>
   <version>3.1</version>
   <packaging>jar</packaging>
 

@@ -9,7 +9,7 @@
     <version>3.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>Jsign - Code signing for Windows executables, Microsoft Installers and scripts (Maven Plugin)</name>
+  <name>Jsign - Code signing for Windows executables, Microsoft Installers, Cabinet files and scripts (Maven Plugin)</name>
   <version>3.1</version>
   <packaging>maven-plugin</packaging>
 

@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)" />
+    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)" />
     <meta name="google-site-verification" content="p912kgAnTBOzVbswrU43k3FXUbPnxLHdeW6xsVcq1uU" />
 
     <script src="scripts/prettify/run_prettify.js"></script>
@@ -35,8 +35,8 @@
 
 
 <p>Jsign is a Java implementation of Microsoft Authenticode that lets you sign
-and timestamp executable files for Windows, Microsoft Installers (MSI) and
-scripts (PowerShell, VBScript, JScript, WSF). Jsign is platform independent
+and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB)
+and scripts (PowerShell, VBScript, JScript, WSF). Jsign is platform independent
 and provides an alternative to native tools like <em>signcode/signtool</em>
 on Windows or the Mono development tools on Unix systems.</p>
 
@@ -55,7 +55,7 @@ programmatically or standalone as a command line tool.</p>
 <h3>Features</h3>
 
 <ul>
-  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)</li>
+  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)</li>
   <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
@@ -289,8 +289,8 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <pre>
   usage: jsign [OPTIONS] FILE
-  Sign and timestamp a Windows executable file, a Microsoft Installer (MSI) or a script
-  (PowerShell, VBScript, JScript, WSF).
+  Sign and timestamp a Windows executable file, a Microsoft Installer (MSI), a Cabinet
+  file or a script (PowerShell, VBScript, JScript, WSF).
   
   -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
      --storepass &lt;PASSWORD>  The password to open the keystore
@@ -382,7 +382,7 @@ are provided to install it easily on most Linux distributions. On these systems 
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
 MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
-<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar and Björn Kautler.</p>
+<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler and Joseph Lee.</p>
 
 <h3>Contact</h3>
 

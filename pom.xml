@@ -3,14 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.jsign</groupId>
   <artifactId>jsign-parent</artifactId>
-  <name>Jsign - Code signing for Windows executables, Microsoft Installers and scripts (Parent)</name>
+  <name>Jsign - Code signing for Windows executables, Microsoft Installers, Cabinet files and scripts (Parent)</name>
   <version>3.1</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2012</inceptionYear>
 
   <description>
-    Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF).
+    Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI),
+    Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF).
   </description>
   <url>https://ebourg.github.com/jsign</url>
 

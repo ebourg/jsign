@@ -7,10 +7,10 @@ Jsign - Java implementation of Microsoft Authenticode
 [![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
 
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
-and timestamp executable files for Windows, Microsoft Installers (MSI) and
-scripts. Jsign is platform independent and provides an alternative to native
-tools like signcode/signtool on Windows or the Mono development tools on Unix
-systems.
+and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet
+files (CAB) and scripts. Jsign is platform independent and provides an
+alternative to native tools like signcode/signtool on Windows or the Mono
+development tools on Unix systems.
 
 Jsign comes as an easy to use task/plugin for the main build systems (Maven,
 Gradle, Ant). It's especially suitable for signing executable wrappers and
@@ -20,7 +20,7 @@ Jsign can also be used programmatically or standalone as a command line tool.
 Jsign is free to use and licensed under the Apache License version 2.0.
 
 ## Features
-* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI) and scripts (PowerShell, VBScript, JScript, WSF)
+* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
 * Supports multiple signatures per file, for all file types
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
@@ -38,6 +38,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 3.2 (in development)
 
+* MS Cabinet signing has been implemented (contributed by Joseph Lee)
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
 * The keystore aliases are now listed in the error message if the alias specified is incorrect
 * Fixed the update of the PE checksum (contributed by Markus Kilås)
