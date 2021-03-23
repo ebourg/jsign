@@ -17,11 +17,14 @@
 package net.jsign;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 
 /**
@@ -62,6 +65,29 @@ public class ChannelUtils {
             remaining -= buffer.position();
             srcOffset += buffer.position();
             destOffset += buffer.position();
+        }
+    }
+
+    /**
+     * Insert data into a SeekableByteChannel at the specified position,
+     * shifting the data after the insertion point.
+     */
+    public static void insert(SeekableByteChannel channel, long position, byte[] data) throws IOException {
+        if (position > channel.size()) {
+            throw new IOException("Cannot insert data after the end of the file");
+        }
+
+        File backupFile = File.createTempFile("jsign", ".tmp");
+        try (SeekableByteChannel backupChannel = Files.newByteChannel(backupFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            copy(channel, backupChannel);
+
+            channel.position(position);
+            channel.write(ByteBuffer.wrap(data));
+
+            backupChannel.position(position);
+            copy(backupChannel, channel, backupChannel.size() - position);
+        } finally {
+            backupFile.delete();
         }
     }
 
