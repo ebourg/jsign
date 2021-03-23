@@ -63,6 +63,24 @@ class CFHeader {
      */
     public static final int FLAG_RESERVE_PRESENT = 0b00000100;
 
+    /** Base size of the header (with no optional fields) */
+    public static final int BASE_SIZE = 36;
+
+    /** Header of the per-cabinet reserved area (two zero bytes + size of the signature) */
+    public static final int RESERVE_HEADER = 0x00100000;
+
+    /** Size of the header at the beginning of the per-cabinet reserved area */
+    public static final int RESERVE_HEADER_SIZE = 4;
+
+    /** Size of the CABSignature structure following the reserve header in the per-cabinet reserved area */
+    public static final int CAB_SIGNATURE_STRUCT_SIZE = 16;
+
+    /** Size of the per-cabinet reserved area */
+    public static final int RESERVE_SIZE = RESERVE_HEADER_SIZE + CAB_SIGNATURE_STRUCT_SIZE;
+
+    /** Base size of the CFFOLDER structure (with no optional per-folder reserved area) */
+    public static final int CFFOLDER_BASE_SIZE = 8;
+
     public CFHeader() {
     }
 
@@ -78,10 +96,10 @@ class CFHeader {
     }
 
     public void read(SeekableByteChannel channel) throws IOException {
-        if ((channel.size()) < 44) {
+        if ((channel.size()) < BASE_SIZE + CFFOLDER_BASE_SIZE) {
             throw new IOException("MSCabinet file too short");
         }
-        ByteBuffer buffer = ByteBuffer.allocate(36).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
         channel.read(buffer);
         buffer.flip();
         readHeaderFirst(buffer);
@@ -167,16 +185,14 @@ class CFHeader {
 
     public int getHeaderSize() {
         if (isReservePresent()) {
-            return 40 + this.cbCFHeader;
+            return BASE_SIZE + 4 + this.cbCFHeader;
         } else {
-            return 36;
+            return BASE_SIZE;
         }
     }
 
-    private static final int RESERVE_CNT_HDR_LEN = 4; // sizeof(USHORT) * 2
-
     public void headerDigestUpdate(MessageDigest digest) {
-        ByteBuffer buffer = ByteBuffer.allocate(36).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
         buffer.put(this.signature);
         buffer.putInt((int) this.cbCabinet);
@@ -195,12 +211,12 @@ class CFHeader {
         digest.update(buffer);
 
         if (this.abReserved != null) {
-            if (this.abReserved.length > RESERVE_CNT_HDR_LEN) {
+            if (this.abReserved.length > RESERVE_HEADER_SIZE) {
                 ByteBuffer reservedReader = ByteBuffer.wrap(this.abReserved).order(ByteOrder.LITTLE_ENDIAN);
                 int cbJunk = reservedReader.getShort() & 0xFFFF;
                 digest.update(this.abReserved, 0, 2);
                 if (cbJunk > 0) {
-                    digest.update(this.abReserved, RESERVE_CNT_HDR_LEN, cbJunk);
+                    digest.update(this.abReserved, RESERVE_HEADER_SIZE, cbJunk);
                 }
             }
         }

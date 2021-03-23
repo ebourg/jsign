@@ -122,12 +122,12 @@ public class MSCabinetFile implements Signable, Closeable {
 
         if (header.isReservePresent()) {
             ByteBuffer buffer = ByteBuffer.wrap(header.abReserved).order(ByteOrder.LITTLE_ENDIAN);
-            if (header.cbCFHeader != 20) {
+            if (header.cbCFHeader != CFHeader.RESERVE_SIZE) {
                 throw new IOException("MSCabinet file is corrupt: additional header size is " + header.cbCFHeader);
             }
 
             int reserved = buffer.getInt();
-            if (reserved != 0x00100000) {
+            if (reserved != CFHeader.RESERVE_HEADER) {
                 throw new IOException("MSCabinet file is corrupt: additional abReserved is " + reserved);
             }
 
@@ -165,14 +165,14 @@ public class MSCabinetFile implements Signable, Closeable {
     public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         CFHeader modifiedHeader = new CFHeader(header);
         if (!header.isReservePresent()) {
-            ByteBuffer buffer = ByteBuffer.allocate(20).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer buffer = ByteBuffer.allocate(CFHeader.RESERVE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
-            modifiedHeader.cbCFHeader = 20;
-            modifiedHeader.cbCabinet += 24;
-            modifiedHeader.coffFiles += 24;
+            modifiedHeader.cbCFHeader = CFHeader.RESERVE_SIZE;
+            modifiedHeader.cbCabinet += 4 + CFHeader.RESERVE_SIZE;
+            modifiedHeader.coffFiles += 4 + CFHeader.RESERVE_SIZE;
             modifiedHeader.flags |= CFHeader.FLAG_RESERVE_PRESENT;
 
-            buffer.putInt(0x00100000);
+            buffer.putInt(CFHeader.RESERVE_HEADER);
             buffer.putInt((int) modifiedHeader.cbCabinet); // offset of the signature (end of file)
             buffer.putInt(0); // size of the signature
             buffer.putLong(0); // filler
@@ -203,21 +203,21 @@ public class MSCabinetFile implements Signable, Closeable {
 
         for (int i = 0; i < header.cFolders; i++) {
             buffer.clear();
-            buffer.limit(8);
+            buffer.limit(CFHeader.CFFOLDER_BASE_SIZE);
             channel.read(buffer);
             buffer.flip();
             if (!header.isReservePresent()) {
                 int folderOffset = buffer.getInt();
                 int folderInfo = buffer.getInt();
-                folderOffset += 24;
+                folderOffset += 4 + CFHeader.RESERVE_SIZE;
                 buffer.clear();
                 buffer.putInt(folderOffset);
                 buffer.putInt(folderInfo);
-                digest.update(buffer.array(), 0, 8);
+                digest.update(buffer.array(), 0, CFHeader.CFFOLDER_BASE_SIZE);
             } else {
-                digest.update(buffer.array(), 0, 8);
+                digest.update(buffer.array(), 0, CFHeader.CFFOLDER_BASE_SIZE);
             }
-            offset += 8;
+            offset += CFHeader.CFFOLDER_BASE_SIZE;
         }
 
         long endPosition = header.hasSignature() ? header.getSigPos() : channel.size();
@@ -316,7 +316,7 @@ public class MSCabinetFile implements Signable, Closeable {
     public synchronized void setSignature(CMSSignedData signature) throws IOException {
         byte[] content = signature.toASN1Structure().getEncoded("DER");
 
-        ByteBuffer abReserveWriter = ByteBuffer.allocate(20).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer abReserveWriter = ByteBuffer.allocate(CFHeader.RESERVE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
         boolean modified = false;
 
         File backupFile = null;
@@ -334,12 +334,12 @@ public class MSCabinetFile implements Signable, Closeable {
 
                 modified = true;
 
-                header.cbCFHeader = 20;
-                header.cbCabinet += 24;
-                header.coffFiles += 24;
+                header.cbCFHeader = CFHeader.RESERVE_SIZE;
+                header.cbCabinet += 4 + CFHeader.RESERVE_SIZE;
+                header.coffFiles += 4 + CFHeader.RESERVE_SIZE;
                 header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
 
-                abReserveWriter.putInt(0x00100000);
+                abReserveWriter.putInt(CFHeader.RESERVE_HEADER);
                 abReserveWriter.putInt((int) header.cbCabinet); // offset of the signature (end of file)
                 abReserveWriter.putInt(content.length); // size of the signature
                 abReserveWriter.putLong(0); // filler
@@ -384,8 +384,8 @@ public class MSCabinetFile implements Signable, Closeable {
                 writeOffset += szCabinetNext.length + szDiskNext.length;
             }
 
-            ByteBuffer readBuf = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
-            ByteBuffer writeBuf = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer readBuf = ByteBuffer.allocate(CFHeader.CFFOLDER_BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer writeBuf = ByteBuffer.allocate(CFHeader.CFFOLDER_BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
             if (modified) {
                 for (int i = 0; i < header.cFolders; i++) {
@@ -398,15 +398,15 @@ public class MSCabinetFile implements Signable, Closeable {
 
                     int folderOffset = readBuf.getInt();
                     int folderInfo = readBuf.getInt();
-                    folderOffset += 24;
+                    folderOffset += 4 + CFHeader.RESERVE_SIZE;
                     writeBuf.putInt(folderOffset);
                     writeBuf.putInt(folderInfo);
 
                     writeBuf.flip();
                     channel.position(writeOffset);
                     channel.write(writeBuf);
-                    readOffset += 8;
-                    writeOffset += 8;
+                    readOffset += CFHeader.CFFOLDER_BASE_SIZE;
+                    writeOffset += CFHeader.CFFOLDER_BASE_SIZE;
                 }
             }
 
