@@ -128,7 +128,7 @@ public class MSCabinetFile implements Signable, Closeable {
                 throw new IOException("MSCabinet file is corrupt: signature header is " + cabsig.header);
             }
 
-            if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size()) {
+            if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size() || cabsig.offset > channel.size()) {
                 throw new IOException("MSCabinet file is corrupt: signature data (offset=" + cabsig.offset + ", size=" + cabsig.length + ") after the end of the file");
             }
         }
