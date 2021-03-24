@@ -38,10 +38,10 @@ class CABSignature {
     public int header = HEADER;
 
     /** Position of the signature in the file (u4) */
-    public int offset;
+    public long offset;
 
     /** Size of the signature (u4) */
-    public int length;
+    public long length;
 
     /** Unused extra data (u8) */
     private long filler;
@@ -58,8 +58,8 @@ class CABSignature {
     private void load() {
         buffer.rewind();
         header = buffer.getInt();
-        offset = buffer.getInt();
-        length = buffer.getInt();
+        offset = buffer.getInt() & 0xFFFFFFFFL;
+        length = buffer.getInt() & 0xFFFFFFFFL;
         filler = buffer.getLong();
         buffer.flip();
     }
@@ -67,8 +67,8 @@ class CABSignature {
     private void save() {
         buffer.rewind();
         buffer.putInt(header);
-        buffer.putInt(offset);
-        buffer.putInt(length);
+        buffer.putInt((int) offset);
+        buffer.putInt((int) length);
         buffer.putLong(filler);
         buffer.flip();
     }

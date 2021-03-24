@@ -196,7 +196,7 @@ public class MSCabinetFile implements Signable, Closeable {
         try {
             CABSignature cabsig = header.getSignature();
             if (cabsig != null && cabsig.offset > 0) {
-                byte[] buffer = new byte[cabsig.length];
+                byte[] buffer = new byte[(int) cabsig.length];
                 channel.position(cabsig.offset);
                 channel.read(ByteBuffer.wrap(buffer));
 

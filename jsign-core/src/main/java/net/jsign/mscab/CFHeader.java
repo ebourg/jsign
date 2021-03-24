@@ -38,8 +38,8 @@ class CFHeader {
     public int setID;           // u2
     public int iCabinet;        // u2
     public int cbCFHeader;      // u2
-    public byte cbCFFolder;     // u1
-    public byte cbCFData;       // u1
+    public short cbCFFolder;    // u1
+    public short cbCFData;      // u1
     public byte[] abReserved;
 
     /**
@@ -111,26 +111,26 @@ class CFHeader {
             throw new IOException("MSCabinet header signature not found");
         }
 
-        this.csumHeader = buffer.getInt();  // u4
-        this.cbCabinet = buffer.getInt();   // u4 H
-        this.csumFolders = buffer.getInt(); // u4 H
-        this.coffFiles = buffer.getInt();   // u4 H
-        this.csumFiles = buffer.getInt();   // u4 H
-        this.versionMinor = buffer.get();   // u1 H
-        this.versionMajor = buffer.get();   // u1 H
-        this.cFolders = buffer.getShort();  // u2 H
-        this.cFiles = buffer.getShort();    // u2 H
-        this.flags = buffer.getShort();     // u2 H
-        this.setID = buffer.getShort();     // u2 H
-        this.iCabinet = buffer.getShort();  // u2
+        this.csumHeader = buffer.getInt() & 0xFFFFFFFFL;  // u4
+        this.cbCabinet = buffer.getInt() & 0xFFFFFFFFL;   // u4 H
+        this.csumFolders = buffer.getInt() & 0xFFFFFFFFL; // u4 H
+        this.coffFiles = buffer.getInt() & 0xFFFFFFFFL;   // u4 H
+        this.csumFiles = buffer.getInt() & 0xFFFFFFFFL;   // u4 H
+        this.versionMinor = buffer.get();                 // u1 H
+        this.versionMajor = buffer.get();                 // u1 H
+        this.cFolders = buffer.getShort() & 0xFFFF;       // u2 H
+        this.cFiles = buffer.getShort() & 0xFFFF;         // u2 H
+        this.flags = buffer.getShort() & 0xFFFF;          // u2 H
+        this.setID = buffer.getShort();                   // u2 H
+        this.iCabinet = buffer.getShort() & 0xFFFF;       // u2
         this.abReserved = null;
     }
 
     private void readHeaderSecond(ByteBuffer buffer) {
         if (isReservePresent()) {
-            this.cbCFHeader = buffer.getShort(); // u2
-            this.cbCFFolder = buffer.get(); // u1
-            this.cbCFData = buffer.get(); // u1
+            this.cbCFHeader = buffer.getShort() & 0xFFFF;    // u2
+            this.cbCFFolder = (short) (buffer.get() & 0xFF); // u1
+            this.cbCFData = (short) (buffer.get() & 0xFF);   // u1
             if (this.cbCFHeader > 0) {
                 this.abReserved = new byte[this.cbCFHeader];
             } else {
@@ -160,8 +160,8 @@ class CFHeader {
         buffer.putShort((short) this.iCabinet);
         if (isReservePresent()) {
             buffer.putShort((short) this.cbCFHeader);
-            buffer.put(this.cbCFFolder);
-            buffer.put(this.cbCFData);
+            buffer.put((byte) this.cbCFFolder);
+            buffer.put((byte) this.cbCFData);
             if (this.cbCFHeader > 0) {
                 buffer.put(this.abReserved);
             }

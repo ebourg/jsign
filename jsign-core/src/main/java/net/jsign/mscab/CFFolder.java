@@ -35,7 +35,7 @@ class CFFolder {
     public static final int BASE_SIZE = 8;
 
     /** Offset of the first CFDATA block in this folder */
-    public int coffCabStart;    // u4
+    public long coffCabStart;   // u4
 
     /** Number of CFDATA blocks in this folder */
     public int cCFData;         // u2
@@ -57,15 +57,15 @@ class CFFolder {
 
     private void load() {
         buffer.rewind();
-        coffCabStart = buffer.getInt();
-        cCFData = buffer.getShort();
-        typeCompress = buffer.getShort();
+        coffCabStart = buffer.getInt() & 0xFFFFFFFFL;
+        cCFData = buffer.getShort() & 0xFFFF;
+        typeCompress = buffer.getShort() & 0xFFFF;
         buffer.flip();
     }
 
     private void save() {
         buffer.rewind();
-        buffer.putInt(coffCabStart);
+        buffer.putInt((int) coffCabStart);
         buffer.putShort((short) cCFData);
         buffer.putShort((short) typeCompress);
         buffer.flip();
