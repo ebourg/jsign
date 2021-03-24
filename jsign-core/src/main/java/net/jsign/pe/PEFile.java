@@ -88,7 +88,7 @@ public class PEFile implements Signable, Closeable {
      * @since 3.0
      */
     public static boolean isPEFile(File file) throws IOException {
-        if (!file.exists() && !file.isFile()) {
+        if (!file.exists() || !file.isFile()) {
             return false;
         }
         

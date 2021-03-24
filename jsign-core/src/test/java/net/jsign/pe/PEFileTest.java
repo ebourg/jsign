@@ -27,10 +27,19 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import net.jsign.DigestAlgorithm;
+import net.jsign.mscab.MSCabinetFile;
 
 import static org.junit.Assert.*;
 
 public class PEFileTest {
+
+    @Test
+    public void testIsMSCabinetFile() throws Exception {
+        assertTrue(PEFile.isPEFile(new File("target/test-classes/wineyes.exe")));
+        assertFalse(PEFile.isPEFile(new File("target/test-classes/mscab/sample1.cab")));
+        assertFalse(PEFile.isPEFile(new File("target")));
+        assertFalse(PEFile.isPEFile(new File("target/non-existent")));
+    }
 
     @Test
     public void testLoad() throws Exception {

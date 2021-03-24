@@ -75,7 +75,7 @@ public class MSCabinetFile implements Signable, Closeable {
      * @throws IOException if an I/O error occurs
      */
     public static boolean isMSCabinetFile(File file) throws IOException {
-        if (!file.exists() && !file.isFile()) {
+        if (!file.exists() || !file.isFile()) {
             return false;
         }
 
