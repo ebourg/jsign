@@ -19,7 +19,6 @@ package net.jsign;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.KeyException;
 import java.security.PrivateKey;
 
@@ -72,7 +71,7 @@ public class PrivateKeyUtils {
         throw new IllegalArgumentException("Unsupported private key format (PEM or PVK file expected");
     }
 
-    private static PrivateKey readPrivateKeyPEM(File file, String password) throws IOException, GeneralSecurityException, OperatorCreationException, PKCSException {
+    private static PrivateKey readPrivateKeyPEM(File file, String password) throws IOException, OperatorCreationException, PKCSException {
         try (FileReader reader = new FileReader(file)) {
             PEMParser parser = new PEMParser(reader);
             Object object = parser.readObject();

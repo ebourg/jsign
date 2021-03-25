@@ -70,7 +70,7 @@ public class PEFileTest {
     }
 
     @Test
-    public void testLoadNonExecutable() throws Exception {
+    public void testLoadNonExecutable() {
         try {
             new PEFile(new File("pom.xml"));
             fail("No exception thrown");

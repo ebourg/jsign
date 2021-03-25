@@ -147,7 +147,7 @@ public class PEFile implements Signable, Closeable {
         }
     }
 
-    public void save() throws IOException {
+    public void save() {
     }
 
     /**

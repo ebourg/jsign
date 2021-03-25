@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 public class AntConsoleTest {
 
     @Test
-    public void testConsole() throws Exception {
+    public void testConsole() {
         Task task = mock(Task.class);
         AntConsole console = new AntConsole(task);
         

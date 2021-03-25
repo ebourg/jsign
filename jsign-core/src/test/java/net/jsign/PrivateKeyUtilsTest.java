@@ -65,7 +65,7 @@ public class PrivateKeyUtilsTest {
     }
 
     @Test
-    public void testLoadWrongPEMObject() throws Exception {
+    public void testLoadWrongPEMObject() {
         try {
             PrivateKeyUtils.load(new File("target/test-classes/keystores/jsign-test-certificate.pem"), null);
             fail("No exception thrown");

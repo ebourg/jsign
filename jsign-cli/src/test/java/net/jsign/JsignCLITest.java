@@ -76,7 +76,7 @@ public class JsignCLITest {
     }
 
     @Test
-    public void testPrintHelp() throws Exception {
+    public void testPrintHelp() {
         JsignCLI.main("--help");
     }
 

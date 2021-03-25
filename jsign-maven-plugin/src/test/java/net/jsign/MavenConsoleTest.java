@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 public class MavenConsoleTest {
 
     @Test
-    public void testConsole() throws Exception {
+    public void testConsole() {
         Log log = mock(Log.class);
         MavenConsole console = new MavenConsole(log);
         

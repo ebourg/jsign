@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 public class GradleConsoleTest {
     
     @Test
-    public void testConsole() throws Exception {
+    public void testConsole() {
         Logger logger = mock(Logger.class);
         GradleConsole console = new GradleConsole(logger);
         

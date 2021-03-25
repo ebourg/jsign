@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 public class JsignGradlePluginTest {
 
     @Test
-    public void testRegisterPlugin() throws Exception {
+    public void testRegisterPlugin() {
         Project project = mock(Project.class);
         ExtensionContainer container = new DefaultConvention();
         when(project.getExtensions()).thenReturn(container);
@@ -42,7 +42,7 @@ public class JsignGradlePluginTest {
     }
 
     @Test(expected = SignerException.class)
-    public void testCall() throws Exception {
+    public void testCall() {
         Project project = mock(Project.class);
         ExtensionContainer container = new DefaultConvention();
         when(project.getExtensions()).thenReturn(container);

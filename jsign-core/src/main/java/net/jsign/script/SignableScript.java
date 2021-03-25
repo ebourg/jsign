@@ -285,7 +285,7 @@ abstract class SignableScript implements Signable {
     }
 
     @Override
-    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
+    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
         

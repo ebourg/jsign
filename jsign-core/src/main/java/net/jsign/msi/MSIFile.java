@@ -167,7 +167,7 @@ public class MSIFile implements Signable, Closeable {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) throws IOException {
+    public byte[] computeDigest(MessageDigest digest) {
         // hash the entries
         for (Property property : getSortedProperties()) {
             String name = new MSIStreamName(property.getName()).decode();
@@ -194,7 +194,7 @@ public class MSIFile implements Signable, Closeable {
     }
 
     @Override
-    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
+    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
 

@@ -195,7 +195,7 @@ public abstract class Timestamper {
         return generator.generate(contentType, content);
     }
 
-    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, CMSException, TimestampingException;
+    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException;
 
     /**
      * Returns the timestamper for the specified mode.
