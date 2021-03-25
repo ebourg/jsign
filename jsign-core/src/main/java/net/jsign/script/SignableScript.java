@@ -165,8 +165,8 @@ abstract class SignableScript implements Signable {
                 getSignatureEnd() + "\\r\\n");
     }
 
+    /** Pattern for removing signatures, even if the file EOL was converted to LF */
     private Pattern getSignatureBlockRemovalPattern() {
-        /** Pattern for removing signatures, even if the file EOL was converted to LF */
         return Pattern.compile("(?s)" +
                 "\\r?\\n" +
                 getSignatureStart() + "\\r?\\n" +

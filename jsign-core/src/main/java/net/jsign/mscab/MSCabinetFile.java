@@ -56,7 +56,7 @@ import static net.jsign.ChannelUtils.*;
  *
  * This class is thread safe.
  *
- * @see <a href="http://download.microsoft.com/download/5/0/1/501ED102-E53F-4CE0-AA6B-B0F93629DDC6/Exchange/[MS-CAB].pdf">[MS-CAB]: Cabinet File Format</a>
+ * @see <a href="http://download.microsoft.com/download/5/0/1/501ED102-E53F-4CE0-AA6B-B0F93629DDC6/Exchange/%5BMS-CAB%5D.pdf">[MS-CAB]: Cabinet File Format</a>
  *
  * @author Joseph Lee
  * @since 3.2
