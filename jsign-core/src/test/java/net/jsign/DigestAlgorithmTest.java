@@ -44,6 +44,6 @@ public class DigestAlgorithmTest {
     @Test
     public void testOfOID() {
         assertEquals(DigestAlgorithm.SHA1, DigestAlgorithm.of(TSPAlgorithms.SHA1));
-        assertEquals(null, DigestAlgorithm.of(new ASN1ObjectIdentifier("1.2.3.4.5")));
+        assertNull(DigestAlgorithm.of(new ASN1ObjectIdentifier("1.2.3.4.5")));
     }
 }

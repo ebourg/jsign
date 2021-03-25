@@ -178,13 +178,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
     public void testBrokenSecurityDispatcher() throws Exception {
         JsignMojo mojo = getMojo();
 
-        SecDispatcher dispatcher = new SecDispatcher() {
-            public String decrypt(String str) throws SecDispatcherException {
-                throw new SecDispatcherException();
-            }
-        };
-        
-        setVariableValueToObject(mojo, "securityDispatcher", dispatcher);
+        setVariableValueToObject(mojo, "securityDispatcher", (SecDispatcher) str -> { throw new SecDispatcherException(); });
         
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
         setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));

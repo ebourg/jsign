@@ -401,7 +401,7 @@ class SignerHelper {
                 return (Provider) providerConfigureMethod.invoke(provider, configuration.getPath());
             } catch (NoSuchMethodException e) {
                 // prior to Java 9, direct instantiation of the SunPKCS11 class
-                Constructor sunpkcs11Constructor = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(String.class);
+                Constructor<?> sunpkcs11Constructor = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(String.class);
                 return (Provider) sunpkcs11Constructor.newInstance(configuration.getPath());
             }
         } catch (Exception e) {

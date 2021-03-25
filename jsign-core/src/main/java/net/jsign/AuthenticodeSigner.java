@@ -74,7 +74,6 @@ import net.jsign.timestamp.TimestampingMode;
  * @author Emmanuel Bourg
  * @since 3.0
  */
-@SuppressWarnings("unchecked")
 public class AuthenticodeSigner {
 
     protected Certificate[] chain;

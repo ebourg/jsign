@@ -226,7 +226,7 @@ abstract class SignableScript implements Signable {
         
         signatureBlock = signatureBlock.replace(getLineCommentStart(), "");
         signatureBlock = signatureBlock.replace(getLineCommentEnd(), "");
-        signatureBlock = signatureBlock.replaceAll("\r|\n", "");
+        signatureBlock = signatureBlock.replaceAll("[\r\n]", "");
 
         byte[] signatureBytes = Base64.getDecoder().decode(signatureBlock);
 

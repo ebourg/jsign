@@ -30,7 +30,7 @@ public class ASN1ResolvedDump
         String nl = System.getProperty("line.separator");
         if (obj instanceof ASN1Sequence)
         {
-            Enumeration     e = ((ASN1Sequence)obj).getObjects();
+            Enumeration<?>  e = ((ASN1Sequence)obj).getObjects();
             String          tab = indent + TAB;
 
             buf.append(indent);
@@ -85,7 +85,7 @@ public class ASN1ResolvedDump
 
             ASN1TaggedObject o = (ASN1TaggedObject)obj;
 
-            buf.append(Integer.toString(o.getTagNo()));
+            buf.append(o.getTagNo());
             buf.append(']');
 
             if (!o.isExplicit())
@@ -99,7 +99,7 @@ public class ASN1ResolvedDump
         }
         else if (obj instanceof BERSet)
         {
-            Enumeration     e = ((ASN1Set)obj).getObjects();
+            Enumeration<?>  e = ((ASN1Set)obj).getObjects();
             String          tab = indent + TAB;
 
             buf.append(indent);
@@ -128,7 +128,7 @@ public class ASN1ResolvedDump
         }
         else if (obj instanceof ASN1Set)
         {
-            Enumeration     e = ((ASN1Set)obj).getObjects();
+            Enumeration<?>  e = ((ASN1Set)obj).getObjects();
             String          tab = indent + TAB;
 
             buf.append(indent);
@@ -279,9 +279,9 @@ public class ASN1ResolvedDump
             {
                 ASN1Sequence s = ASN1Sequence.getInstance(app.getObject(BERTags.SEQUENCE));
                 buf.append(indent + type + " ApplicationSpecific[" + app.getApplicationTag() + "]" + nl);
-                for (Enumeration e = s.getObjects(); e.hasMoreElements();)
+                for (Enumeration<ASN1Primitive> e = s.getObjects(); e.hasMoreElements();)
                 {
-                    _dumpAsString(indent + TAB, verbose, (ASN1Primitive)e.nextElement(), buf);
+                    _dumpAsString(indent + TAB, verbose, e.nextElement(), buf);
                 }
             }
             catch (IOException e)

@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
@@ -46,7 +47,6 @@ public class OIDResolver {
         if (file.exists()) {
             try (InputStream in = new FileInputStream(file)) {
                 cache.load(in);
-                in.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -59,7 +59,7 @@ public class OIDResolver {
             URL url = new URL("http://www.oid-info.com/cgi-bin/display?oid=" + oid.getId() + "&action=display");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "iso-8859-1"));
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.ISO_8859_1));
 
             String description = null;
             String ligne;

@@ -71,13 +71,8 @@ public class KeyStoreUtils {
         }
         
         try {
-            FileInputStream in = "PKCS11".equals(storetype) ? null : new FileInputStream(keystore);
-            try {
+            try (FileInputStream in = "PKCS11".equals(storetype) ? null : new FileInputStream(keystore)) {
                 ks.load(in, storepass != null ? storepass.toCharArray() : null);
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
             }
         } catch (Exception e) {
             throw new KeyStoreException("Unable to load the keystore " + keystore, e);

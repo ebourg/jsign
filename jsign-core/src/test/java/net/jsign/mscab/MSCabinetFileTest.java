@@ -142,7 +142,7 @@ public class MSCabinetFileTest {
         header.abReserved = new byte[CABSignature.SIZE];
         CABSignature signature = header.getSignature();
         signature.header = CABSignature.HEADER;
-        signature.offset = (int) header.cbCabinet * 2;
+        signature.offset = header.cbCabinet * 2;
         signature.length = 1024;
         header.abReserved = signature.array();
 

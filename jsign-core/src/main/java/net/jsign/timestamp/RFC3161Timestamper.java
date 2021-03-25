@@ -49,7 +49,7 @@ public class RFC3161Timestamper extends Timestamper {
         TimeStampRequestGenerator reqgen = new TimeStampRequestGenerator();
         reqgen.setCertReq(true);
         TimeStampRequest req = reqgen.generate(algo.oid, algo.getMessageDigest().digest(encryptedDigest));
-        byte request[] = req.getEncoded();
+        byte[] request = req.getEncoded();
 
         HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();
         conn.setConnectTimeout(10000);
