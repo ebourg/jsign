@@ -27,7 +27,6 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import net.jsign.DigestAlgorithm;
-import net.jsign.mscab.MSCabinetFile;
 
 import static org.junit.Assert.*;
 

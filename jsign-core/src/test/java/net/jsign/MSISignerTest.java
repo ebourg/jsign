@@ -17,7 +17,6 @@
 package net.jsign;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.util.List;
