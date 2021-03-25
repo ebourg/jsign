@@ -22,6 +22,8 @@ package net.jsign;
  */
 class SignerException extends Exception {
 
+    private static final long serialVersionUID = 3709689275987235563L;
+
     public SignerException(String message) {
         super(message);
     }
