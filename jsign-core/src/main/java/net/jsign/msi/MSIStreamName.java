@@ -35,10 +35,10 @@ class MSIStreamName implements Comparable<MSIStreamName> {
     private static final byte MASK = 0x3f;
 
     /** The encoded name */
-    private String name;
+    private final String name;
 
     /** The encoded name in UTF-16 */
-    private byte[] nameUTF16;
+    private final byte[] nameUTF16;
 
     /**
      * Creates a MSI stream name

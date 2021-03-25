@@ -27,8 +27,8 @@ import java.util.List;
  */
 public class Section {
     
-    private PEFile peFile;
-    private int baseOffset;
+    private final PEFile peFile;
+    private final int baseOffset;
 
     Section(PEFile peFile, int baseOffset) {
         this.peFile = peFile;

@@ -48,7 +48,7 @@ public class JsignCLI {
         }
     }
 
-    private Options options;
+    private final Options options;
 
     JsignCLI() {
         options = new Options();

@@ -50,8 +50,8 @@ import static org.junit.Assert.*;
 
 public class PESignerTest {
 
-    private static String PRIVATE_KEY_PASSWORD = "password";
-    private static String ALIAS = "test";
+    private static final String PRIVATE_KEY_PASSWORD = "password";
+    private static final String ALIAS = "test";
 
     private KeyStore getKeyStore() throws Exception {
         KeyStore keystore = KeyStore.getInstance("JKS");

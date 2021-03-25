@@ -28,8 +28,8 @@ import java.nio.ByteOrder;
  */
 public class DataDirectory {
 
-    private PEFile peFile;
-    private int index;
+    private final PEFile peFile;
+    private final int index;
 
     DataDirectory(PEFile peFile, int index) {
         this.peFile = peFile;

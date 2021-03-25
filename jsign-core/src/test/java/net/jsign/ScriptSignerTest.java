@@ -34,8 +34,8 @@ import static org.junit.Assert.*;
 
 public abstract class ScriptSignerTest {
 
-    protected static String PRIVATE_KEY_PASSWORD = "password";
-    protected static String ALIAS = "test";
+    protected static final String PRIVATE_KEY_PASSWORD = "password";
+    protected static final String ALIAS = "test";
 
     protected abstract String getFileExtension();
     

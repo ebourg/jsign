@@ -76,10 +76,10 @@ class SignerHelper {
     public static final String PARAM_REPLACE = "replace";
     public static final String PARAM_ENCODING = "encoding";
 
-    private Console console;
+    private final Console console;
 
     /** The name used to refer to a configuration parameter */
-    private String parameterName = "parameter";
+    private final String parameterName;
 
     private File keystore;
     private String storepass;

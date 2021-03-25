@@ -35,14 +35,14 @@ import org.bouncycastle.asn1.DERSequence;
  */
 public class SpcSerializedObject extends ASN1Object {
 
-    private SpcUuid classId = new SpcUuid("A6B586D5-B4A1-2466-AE05-A217DA8E60D6");
+    private final SpcUuid classId = new SpcUuid("A6B586D5-B4A1-2466-AE05-A217DA8E60D6");
 
     /**
      * The serializedData field contains a binary structure. When present in an
      * Authenticode signature generated in Windows Vista, serializedData
      * contains a binary structure that contains page hashes.
      */
-    private DEROctetString serializedData;
+    private final DEROctetString serializedData;
 
     public SpcSerializedObject(byte[] serializedData) {
         this.serializedData = new DEROctetString(serializedData);

@@ -38,7 +38,7 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
  */
 public class AuthenticodeTimeStampRequest extends ASN1Object {
     
-    private ContentInfo contenInfo;
+    private final ContentInfo contenInfo;
 
     public AuthenticodeTimeStampRequest(byte[] digest) {
         contenInfo = new ContentInfo(PKCSObjectIdentifiers.data, new BEROctetString(digest));

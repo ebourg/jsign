@@ -35,8 +35,8 @@ import org.bouncycastle.asn1.BERSequence;
  */
 public class SpcAttributeTypeAndOptionalValue extends ASN1Object {
 
-    private ASN1ObjectIdentifier type;
-    private ASN1Object value;
+    private final ASN1ObjectIdentifier type;
+    private final ASN1Object value;
 
     public SpcAttributeTypeAndOptionalValue(ASN1ObjectIdentifier type, ASN1Object value) {
         this.type = type;

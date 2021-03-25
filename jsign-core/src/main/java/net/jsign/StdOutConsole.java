@@ -25,7 +25,7 @@ package net.jsign;
 class StdOutConsole implements Console {
 
     /** Logging level (0: warn, 1: info, 2: debug) */
-    private int level;
+    private final int level;
 
     public StdOutConsole(int level) {
         this.level = level;

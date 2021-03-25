@@ -40,8 +40,8 @@ public class JsignTaskTest {
 
     private Project project;
     
-    private File sourceFile = new File("target/test-classes/wineyes.exe");
-    private File targetFile = new File("target/test-classes/wineyes-signed-with-ant.exe");
+    private final File sourceFile = new File("target/test-classes/wineyes.exe");
+    private final File targetFile = new File("target/test-classes/wineyes-signed-with-ant.exe");
     
     private static final long SOURCE_FILE_CRC32 = 0xA6A363D8L;
 

@@ -36,7 +36,7 @@ public enum CertificateType {
     /** Terminal Server Protocol Stack Certificate (not supported) */
     TS_STACK_SIGNED(0x0004);
 
-    private short value;
+    private final short value;
 
     CertificateType(int value) {
         this.value = (short) value;

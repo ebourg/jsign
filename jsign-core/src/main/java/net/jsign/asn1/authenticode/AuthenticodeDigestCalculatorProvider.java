@@ -42,7 +42,7 @@ public class AuthenticodeDigestCalculatorProvider implements DigestCalculatorPro
         final DigestCalculator delegate = new JcaDigestCalculatorProviderBuilder().build().get(digestAlgorithmIdentifier);
 
         return new DigestCalculator() {
-            private ByteArrayOutputStream out = new ByteArrayOutputStream();
+            private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             @Override
             public AlgorithmIdentifier getAlgorithmIdentifier() {

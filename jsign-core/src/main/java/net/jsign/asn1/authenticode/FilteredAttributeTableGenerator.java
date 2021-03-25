@@ -31,8 +31,8 @@ import org.bouncycastle.cms.CMSAttributeTableGenerator;
  */
 public class FilteredAttributeTableGenerator implements CMSAttributeTableGenerator {
 
-    private CMSAttributeTableGenerator delegate;
-    private ASN1ObjectIdentifier[] removedAttributes;
+    private final CMSAttributeTableGenerator delegate;
+    private final ASN1ObjectIdentifier[] removedAttributes;
 
     public FilteredAttributeTableGenerator(CMSAttributeTableGenerator delegate, ASN1ObjectIdentifier... removedAttributes) {
         this.delegate = delegate;

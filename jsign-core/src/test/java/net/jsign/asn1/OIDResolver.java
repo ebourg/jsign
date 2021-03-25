@@ -38,9 +38,9 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
  */
 public class OIDResolver {
     
-    private File file = new File("oid.txt");
+    private final File file = new File("oid.txt");
     
-    private Properties cache = new Properties();
+    private final Properties cache = new Properties();
 
     public OIDResolver() {
         if (file.exists()) {

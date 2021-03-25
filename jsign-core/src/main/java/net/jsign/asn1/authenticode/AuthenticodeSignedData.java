@@ -33,10 +33,10 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
  */
 public class AuthenticodeSignedData extends ASN1Object {
 
-    private AlgorithmIdentifier digestAlgorithm;
-    private ContentInfo contentInfo;
-    private ASN1Set certificates;
-    private SignerInfo signerInformation;
+    private final AlgorithmIdentifier digestAlgorithm;
+    private final ContentInfo contentInfo;
+    private final ASN1Set certificates;
+    private final SignerInfo signerInformation;
 
     public AuthenticodeSignedData(AlgorithmIdentifier digestAlgorithm, ContentInfo contentInfo, ASN1Set certificates, SignerInfo signerInformation) {
         this.digestAlgorithm = digestAlgorithm;

@@ -35,8 +35,8 @@ import org.bouncycastle.asn1.x509.DigestInfo;
  */
 public class SpcIndirectDataContent extends ASN1Object {
 
-    private SpcAttributeTypeAndOptionalValue data;
-    private DigestInfo messageDigest;
+    private final SpcAttributeTypeAndOptionalValue data;
+    private final DigestInfo messageDigest;
 
     public SpcIndirectDataContent(SpcAttributeTypeAndOptionalValue data, DigestInfo messageDigest) {
         this.data = data;

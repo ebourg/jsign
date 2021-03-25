@@ -14,7 +14,7 @@ public class ASN1ResolvedDump
     private static final String  TAB = "    ";
     private static final int SAMPLE_SIZE = 32;
     
-    static OIDResolver resolver = new OIDResolver();
+    static final OIDResolver resolver = new OIDResolver();
 
     /**
      * dump a DER object as a formatted string with indentation
