@@ -9,7 +9,7 @@
     <version>3.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>Jsign - Code signing for Windows executables, Microsoft Installers, Cabinet files and scripts (Ant Task)</name>
+  <name>Jsign - Authenticode implementation in Java (Ant Task)</name>
   <version>3.1</version>
   <packaging>jar</packaging>
 
