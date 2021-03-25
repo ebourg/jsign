@@ -71,6 +71,7 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If an user is needed.").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if previous signatures should be replaced.").build());
         options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one).").build());
+        options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused.").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
     }
 
@@ -105,6 +106,7 @@ public class JsignCLI {
         setOption(PARAM_PROXY_PASS, helper, cmd);
         helper.replace(cmd.hasOption(PARAM_REPLACE));
         setOption(PARAM_ENCODING, helper, cmd);
+        helper.detached(cmd.hasOption(PARAM_DETACHED));
 
         File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
 

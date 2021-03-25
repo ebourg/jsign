@@ -107,6 +107,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.encoding", defaultValue = "UTF-8")
     private String encoding = "UTF-8";
 
+    /** Tells if a detached signature should be generated or reused. */
+    @Parameter( property = "jsign.detached", defaultValue = "false")
+    private boolean detached;
+
     @Parameter(defaultValue = "${settings}", readonly = true)
     private Settings settings;
 
@@ -136,6 +140,7 @@ public class JsignMojo extends AbstractMojo {
         helper.tsretrywait(tsretrywait);
         helper.replace(replace);
         helper.encoding(encoding);
+        helper.detached(detached);
 
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {

@@ -317,4 +317,11 @@ public class JsignTaskTest {
             assertEquals("Digest algorithm", DigestAlgorithm.SHA512.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
         }
     }
+
+    @Test
+    public void testDetachedSignature() throws Exception {
+        project.executeTarget("detach-signature");
+
+        assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes-signed-detached.exe.sig").exists());
+    }
 }

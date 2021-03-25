@@ -1,5 +1,5 @@
 .\" Manpage for jsign.
-.TH man 1 "1 Dec 2019" "@VERSION@" "jsign man page"
+.TH man 1 "25 Mar 2021" "@VERSION@" "jsign man page"
 
 .SH NAME
 jsign \- sign and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)
@@ -111,6 +111,19 @@ Tells if previous signatures should be replaced. By default the new signature is
 .TP
 .B -e, --encoding <ENCODING>
 The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one).
+
+.TP
+.B --detached
+Tells if a detached signature should be generated or reused. The detached signature
+is a file in the same directory using the name of the file signed with the .sig
+suffix added (for example application.exe.sig).
+.RS
+.IP \- 2
+If the signature doesn't exist, the file is signed as usual and the detached signature is generated.
+.IP \-
+If the signature exists it is attached to the file, replacing any existing signature
+(in this case the private key isn't used for signing and no timestamping is performed).
+.RE
 
 .TP
 .B -h, --help

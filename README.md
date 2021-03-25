@@ -23,6 +23,7 @@ Jsign is free to use and licensed under the Apache License version 2.0.
 * Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
 * Supports multiple signatures per file, for all file types
+* Extracts and embeds detached signatures to support [reproducible builds](https://reproducible-builds.org/docs/embedded-signatures/)
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
@@ -39,6 +40,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 3.2 (in development)
 
 * MS Cabinet signing has been implemented (contributed by Joseph Lee)
+* Signatures can be detached and re-attached to make the builds reproducible without access to the private key
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
 * The keystore aliases are now listed in the error message if the alias specified is incorrect
 * Fixed the update of the PE checksum (contributed by Markus Kilås)

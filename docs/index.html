@@ -58,6 +58,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)</li>
   <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
   <li>Supports multiple signatures per file, for all file types</li>
+  <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
   <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens</li>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
@@ -202,6 +203,20 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">The encoding of the script to be signed (if it doesn't contain a byte order mark).</td>
       <td valign="top" align="center">No; defaults to "UTF-8"</td>
     </tr>
+    <tr>
+      <td valign="top">detached</td>
+      <td valign="top">
+        Tells if a detached signature should be generated or reused. The detached signature
+        is a file in the same directory using the name of the file signed with the <code>.sig</code>
+        suffix added (for example <code>application.exe.sig</code>).
+        <ul>
+          <li>If the signature doesn't exist, the file is signed as usual and the detached signature is generated.</li>
+          <li>If the signature exists it is attached to the file, replacing any existing signature (in this case
+              the private key isn't used for signing and no timestamping is performed).</li>
+        </ul>
+      </td>
+      <td valign="top" align="center">No; defaults to "false"</td>
+    </tr>
   </table>
 
 <br>
@@ -318,6 +333,7 @@ are provided to install it easily on most Linux distributions. On these systems 
      --replace               Tells if previous signatures should be replaced.
   -e,--encoding &lt;ENCODING>   The encoding of the script to be signed (UTF-8 by default,
                              or the encoding specified by the byte order mark if there is one)
+     --detached              Tells if a detached signature should be generated or reused.
   -h,--help                  Print the help
 </pre>
 

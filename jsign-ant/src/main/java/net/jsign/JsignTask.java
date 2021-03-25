@@ -80,6 +80,9 @@ public class JsignTask extends Task {
     /** The encoding of the script to be signed (UTF-8 by default). */
     private String encoding = "UTF-8";
 
+    /** Tells if a detached signature should be generated or reused. */
+    private boolean detached;
+
     public void setFile(File file) {
         this.file = file;
     }
@@ -148,6 +151,10 @@ public class JsignTask extends Task {
         this.encoding = encoding;
     }
 
+    public void setDetached(boolean detached) {
+        this.detached = detached;
+    }
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -169,6 +176,7 @@ public class JsignTask extends Task {
             helper.tsretrywait(tsretrywait);
             helper.replace(replace);
             helper.encoding(encoding);
+            helper.detached(detached);
             
             helper.sign(file);
         } catch (Exception e) {

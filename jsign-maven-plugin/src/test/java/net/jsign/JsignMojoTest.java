@@ -208,4 +208,18 @@ public class JsignMojoTest extends AbstractMojoTestCase {
             assertEquals("Unsupported file: pom.xml", e.getMessage());
         }
     }
+
+    public void testDetachedSignature() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "password");
+        setVariableValueToObject(mojo, "detached", Boolean.TRUE);
+
+        mojo.execute();
+
+        assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes.exe.sig").exists());
+    }
 }

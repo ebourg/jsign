@@ -160,4 +160,13 @@
              replace="true"/>
   </target>
 
+  <target name="detach-signature">
+    <copy file="wineyes.exe" tofile="wineyes-signed-detached.exe" overwrite="true"/>
+    <jsign file="wineyes-signed-detached.exe"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"
+           detached="true"/>
+  </target>
+
 </project>

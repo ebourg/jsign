@@ -485,6 +485,15 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testDetachedSignature() throws Exception {
+        File targetFile2 = new File("target/test-classes/wineyes-signed-detached.exe");
+        FileUtils.copyFile(sourceFile, targetFile2);
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--detached", "" + targetFile2);
+
+        assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes-signed-detached.exe.sig").exists());
+    }
+
+    @Test
     public void testExitOnError() {
         NoExitSecurityManager manager = new NoExitSecurityManager();
         System.setSecurityManager(manager);

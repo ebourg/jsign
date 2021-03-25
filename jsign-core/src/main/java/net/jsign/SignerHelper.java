@@ -45,6 +45,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessable;
+import org.bouncycastle.cms.CMSSignedData;
+
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -74,6 +81,7 @@ class SignerHelper {
     public static final String PARAM_PROXY_PASS = "proxyPass";
     public static final String PARAM_REPLACE = "replace";
     public static final String PARAM_ENCODING = "encoding";
+    public static final String PARAM_DETACHED = "detached";
 
     private final Console console;
 
@@ -99,6 +107,7 @@ class SignerHelper {
     private String proxyPass;
     private boolean replace;
     private Charset encoding;
+    private boolean detached;
 
     public SignerHelper(Console console, String parameterName) {
         this.console = console;
@@ -215,6 +224,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper detached(boolean detached) {
+        this.detached = detached;
+        return this;
+    }
+
     public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
@@ -240,6 +254,7 @@ class SignerHelper {
             case PARAM_PROXY_PASS: return proxyPass(value);
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
             case PARAM_ENCODING:   return encoding(value);
+            case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -426,6 +441,18 @@ class SignerHelper {
             throw new SignerException("Couldn't open the file " + file, e);
         }
 
+        if (detached && getDetachedSignature(file).exists()) {
+            try {
+                if (console != null) {
+                    console.info("Attaching Authenticode signature to " + file);
+                }
+                attach(file);
+                return;
+            } catch (Exception e) {
+                throw new SignerException("Couldn't attach the signature to " + file, e);
+            }
+        }
+
         try {
             AuthenticodeSigner signer = build();
             
@@ -433,11 +460,40 @@ class SignerHelper {
                 console.info("Adding Authenticode signature to " + file);
             }
             signer.sign(signable);
+
+            if (detached) {
+                detach(file);
+            }
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {
             throw new SignerException("Couldn't sign " + file, e);
         }
+    }
+
+    private void attach(File file) throws IOException, CMSException {
+        File detachedSignature = getDetachedSignature(file);
+        byte[] signatureBytes = FileUtils.readFileToByteArray(detachedSignature);
+        CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
+
+        Signable signable = Signable.of(file, encoding);
+        signable.setSignature(signedData);
+        signable.save();
+
+        // todo warn if the hashes don't match
+    }
+
+    private void detach(File file) throws IOException {
+        Signable signable = Signable.of(file, encoding);
+        CMSSignedData signedData = signable.getSignatures().get(0);
+        File detachedSignature = getDetachedSignature(file);
+        byte[] content = signedData.toASN1Structure().getEncoded("DER");
+
+        FileUtils.writeByteArrayToFile(detachedSignature, content);
+    }
+
+    private File getDetachedSignature(File file) {
+        return new File(file.getParentFile(), file.getName() + ".sig");
     }
 
     /**
