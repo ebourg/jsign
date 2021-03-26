@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
@@ -27,6 +28,7 @@ import java.util.List;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -43,6 +45,11 @@ public abstract class ScriptSignerTest {
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
         return keystore;
+    }
+
+    @BeforeClass
+    public static void initProxy() throws MalformedURLException {
+        SignerHelper.initializeProxy();
     }
 
     @Test

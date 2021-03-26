@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -39,6 +40,8 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TSPAlgorithms;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import net.jsign.pe.PEFile;
@@ -57,6 +60,11 @@ public class PESignerTest {
         KeyStore keystore = KeyStore.getInstance("JKS");
         keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
         return keystore;
+    }
+
+    @Before
+    public void initProxy() throws MalformedURLException {
+        SignerHelper.initializeProxy();
     }
 
     @Test
