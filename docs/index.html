@@ -60,15 +60,13 @@ programmatically or standalone as a command line tool.</p>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
-  <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens (YubiKey, Nitrokey, etc)</li>
+  <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
   <li>Command line signing tool</li>
   <li>Authenticode signing API (<a href="apidocs/index.html">Javadoc</a>)</li>
 </ul>
-
-<br>
 
 
 <h3 id="ant">Ant Task</h3>
@@ -222,8 +220,6 @@ programmatically or standalone as a command line tool.</p>
     </tr>
   </table>
 
-<br>
-
 
 <h3 id="maven">Maven plugin</h3>
 
@@ -258,8 +254,6 @@ by default to the <code>package</code> phase.</p>
     &lt;/build>
 </pre>
 
-<br>
-
 
 <h3 id="gradle">Gradle plugin</h3>
 
@@ -287,8 +281,6 @@ are the same as those described above for the Ant task.</p>
         }
     }
 </pre>
-
-<br>
 
 
 <h3>Command Line Tool</h3>
@@ -340,20 +332,20 @@ are provided to install it easily on most Linux distributions. On these systems 
   -h,--help                  Print the help
 </pre>
 
-<p>Example using a Java keystore:</p>
+<h4>Example using a Java keystore:</h4>
 
 <pre>
  jsign --keystore keystore.jks --alias test --storepass password \
-        --tsaurl http://timestamp.comodoca.com/authenticode application.exe
+       --tsaurl http://timestamp.comodoca.com/authenticode application.exe
 </pre>
 
-<p>Example using SPC/PVK files:</p>
+<h4>Example using SPC/PVK files:</h4>
 
 <pre>
  jsign --certfile certificate.spc --keyfile key.pvk --keypass password application.exe
 </pre>
 
-<p>Example using a YubiKey:</p>
+<h4 id="example-yubikey">Example using a YubiKey:</h4>
 
 <p>When using a YubiKey the <i>X.509 Certificate for Digital Signature</i> certificate (slot 9c)
 is used by default but can be overridden by specifying another alias. The ykcs11 library

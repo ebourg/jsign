@@ -23,8 +23,9 @@ PKCS#12 keystores, PKCS#11 hardware tokens or SPC/PVK files.
 .TP
 .B -s, --keystore <FILE>
 The keystore file containing the certificate and the private key used for signing
-the file. jsign supports Java keystores and PKCS#12 keystores. This option must
-be specified unless the keyfile and certfile options are already specified.
+the file, or the SunPKCS11 configuration file when a PKCS#11 token is used. jsign
+supports Java keystores and PKCS#12 keystores. This option must be specified unless
+the keyfile and certfile options are already specified.
 
 .TP
 .B --storepass <PASSWORD>
