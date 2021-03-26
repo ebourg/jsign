@@ -123,7 +123,7 @@ public class AuthenticodeSigner {
             throw new IllegalArgumentException("No certificate found in the keystore with the alias '" + alias + "'");
         }
         this.chain = chain;
-        this.privateKey = (PrivateKey) keystore.getKey(alias, password.toCharArray());
+        this.privateKey = (PrivateKey) keystore.getKey(alias, password != null ? password.toCharArray() : null);
     }
 
     /**
