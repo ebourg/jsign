@@ -60,7 +60,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
-  <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens</li>
+  <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens (YubiKey, Nitrokey, etc)</li>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
@@ -142,6 +142,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>JKS</code>: Java keystore</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+          <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
         </ul>
       </td>
       <td valign="top" align="center">No; defaults to "JKS".</td>
@@ -350,6 +351,17 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <pre>
  jsign --certfile certificate.spc --keyfile key.pvk --keypass password application.exe
+</pre>
+
+<p>Example using a YubiKey:</p>
+
+<p>When using a YubiKey the <i>X.509 Certificate for Digital Signature</i> certificate (slot 9c)
+is used by default but can be overridden by specifying another alias. The ykcs11 library
+from the <a href="https://developers.yubico.com/yubico-piv-tool/">Yubico PIV Tool</a> must
+be installed on the system at the default location.</p>
+
+<pre>
+ jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
 </pre>
 
 

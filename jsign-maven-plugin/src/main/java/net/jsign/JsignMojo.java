@@ -63,7 +63,7 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.storepass" )
     private String storepass;
 
-    /** The type of the keystore (JKS or PKCS12). */
+    /** The type of the keystore (JKS, PKCS12, PKCS11 or YUBIKEY). */
     @Parameter( property = "jsign.storetype", defaultValue = "JKS" )
     private String storetype;
 

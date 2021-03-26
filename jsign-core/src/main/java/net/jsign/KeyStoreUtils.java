@@ -66,7 +66,7 @@ public class KeyStoreUtils {
             throw new KeyStoreException("keystore type '" + storetype + "' is not supported", e);
         }
 
-        if (keystore == null || !keystore.exists()) {
+        if (!"PKCS11".equals(storetype) && (keystore == null || !keystore.exists())) {
             throw new KeyStoreException("The keystore " + keystore + " couldn't be found");
         }
         

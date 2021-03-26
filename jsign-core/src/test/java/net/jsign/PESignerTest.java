@@ -39,6 +39,7 @@ import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.tsp.TSPAlgorithms;
+import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.pe.PEFile;
@@ -137,6 +138,41 @@ public class PESignerTest {
         X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
         String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
         assertEquals("signer", "Jsign Code Signing Test Certificate", commonName);
+    }
+
+    @Test
+    public void testSigningWithYubikey() throws Exception {
+        Assume.assumeTrue("ykcs11 is not installed", YubiKey.getYkcs11Library().exists());
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-yubikey.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PEFile peFile = new PEFile(targetFile);
+
+        Certificate[] chain;
+        try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.spc")) {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
+            chain = certificates.toArray(new Certificate[0]);
+        }
+
+        KeyStore keystore = KeyStoreUtils.load(null, "PKCS11", "123456", YubiKey.getProvider());
+        PrivateKey privateKey = (PrivateKey) keystore.getKey("X.509 Certificate for Digital Signature", null);
+        AuthenticodeSigner signer = new AuthenticodeSigner(chain, privateKey)
+                .withSignatureProvider(keystore.getProvider());
+
+        signer.sign(peFile);
+
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+
+        CMSSignedData signature = signatures.get(0);
+
+        assertNotNull(signature);
     }
 
     @Test(expected = IllegalArgumentException.class)

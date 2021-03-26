@@ -40,6 +40,8 @@ The type of the keystore:
 .br
 - PKCS11 : PKCS#11 hardware token
 .br
+- YUBIKEY : YubiKey security key (requires ykcs11)
+.br
 This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
 
 .TP
@@ -142,6 +144,18 @@ jsign --keystore keystore.p12 --alias test --storepass password --tsaurl http://
 Signing with a SPC certificate and a PVK key:
 
 jsign --certfile certificate.spc --keyfile key.pvk --keypass password installer.msi
+
+
+.TP
+
+Signing with a YubiKey:
+
+When using a YubiKey the "X.509 Certificate for Digital Signature" certificate (slot 9c)
+is used by default but can be overridden by specifying another alias. The ykcs11 library
+from the Yubico PIV Tool must be installed on the system at the default location. The library
+is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
+
+jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
 
 
 .SH REPORTING BUGS

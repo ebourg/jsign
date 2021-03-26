@@ -29,6 +29,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.cms.CMSSignedData;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.littleshoot.proxy.HttpFilters;
@@ -337,6 +338,13 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testSigningWithYubikey() throws Exception {
+        Assume.assumeTrue("ykcs11 is not installed", YubiKey.getYkcs11Library().exists());
+
+        cli.execute("--storetype=YUBIKEY", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--storepass=123456", "" + targetFile);
+    }
+
+    @Test
     public void testTimestampingAuthenticode() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
@@ -558,7 +566,7 @@ public class JsignCLITest {
             fail("No exception thrown");
         } catch (SignerException e) {
             // expected
-            assertTrue(e.getCause().getCause() instanceof ProviderException // JDK < 9
+            assertTrue(e.getCause() instanceof ProviderException // JDK < 9
                     || e.getCause().getCause() instanceof InvalidParameterException); // JDK 9+
         }
     }

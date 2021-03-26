@@ -19,8 +19,6 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -269,7 +267,7 @@ class SignerHelper {
         Certificate[] chain;
 
         // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null) {
+        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype)) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && keyfile != null) {
@@ -280,7 +278,7 @@ class SignerHelper {
         if ("PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
             if (keystore != null && keystore.exists()) {
-                provider = createSunPKCS11Provider(keystore);
+                provider = ProviderUtils.createSunPKCS11Provider(keystore.getPath());
             } else if (keystore != null && keystore.getName().startsWith("SunPKCS11-")) {
                 provider = Security.getProvider(keystore.getName());
                 if (provider == null) {
@@ -289,13 +287,15 @@ class SignerHelper {
             } else {
                 throw new SignerException("keystore " + parameterName + " should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security");
             }
+        } else if ("YUBIKEY".equals(storetype)) {
+            provider = YubiKey.getProvider();
         }
 
-        if (keystore != null) {
+        if (keystore != null || "YUBIKEY".equals(storetype)) {
             KeyStore ks;
             Set<String> aliases = new LinkedHashSet<>();
             try {
-                ks = KeyStoreUtils.load(keystore, storetype, storepass, provider);
+                ks = KeyStoreUtils.load(keystore, "YUBIKEY".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
                 aliases.addAll(Collections.list(ks.aliases()));
                 if (aliases.isEmpty()) {
                     throw new KeyStoreException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
@@ -305,7 +305,9 @@ class SignerHelper {
             }
 
             if (alias == null) {
-                if (aliases.size() == 1) {
+                if ("YUBIKEY".equals(storetype)) {
+                    alias = "X.509 Certificate for Digital Signature";
+                } else if (aliases.size() == 1) {
                     alias = aliases.iterator().next();
                 } else {
                     throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
@@ -400,28 +402,6 @@ class SignerHelper {
                 .withTimestampingRetries(tsretries)
                 .withTimestampingRetryWait(tsretrywait)
                 .withTimestampingAuthority(tsaurl != null ? tsaurl.split(",") : null);
-    }
-
-    /**
-     * Create a SunPKCS11 provider with the specified configuration file.
-     * 
-     * @param configuration the SunPKCS11 configuration file
-     */
-    private Provider createSunPKCS11Provider(File configuration) throws SignerException {
-        try {
-            try {
-                // Java 9 and later, using the Provider.configure() method
-                Method providerConfigureMethod = Provider.class.getMethod("configure", String.class);
-                Provider provider = Security.getProvider("SunPKCS11");
-                return (Provider) providerConfigureMethod.invoke(provider, configuration.getPath());
-            } catch (NoSuchMethodException e) {
-                // prior to Java 9, direct instantiation of the SunPKCS11 class
-                Constructor<?> sunpkcs11Constructor = Class.forName("sun.security.pkcs11.SunPKCS11").getConstructor(String.class);
-                return (Provider) sunpkcs11Constructor.newInstance(configuration.getPath());
-            }
-        } catch (Exception e) {
-            throw new SignerException("Failed to create a SunPKCS11 provider from the configuration file " + configuration, e);
-        }
     }
 
     public void sign(File file) throws SignerException {
