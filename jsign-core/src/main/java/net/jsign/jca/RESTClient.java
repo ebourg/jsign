@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.function.Consumer;
+import net.jsign.util.function.Consumer;
 
 import com.cedarsoftware.util.io.JsonReader;
 import org.apache.commons.io.IOUtils;

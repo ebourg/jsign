@@ -19,6 +19,7 @@ package net.jsign.jca;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -28,10 +29,10 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.jsign.util.function.Consumer;
 import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
@@ -40,6 +41,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509KeyManager;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import org.apache.commons.codec.binary.Base64;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.KeyStoreUtils;
@@ -77,8 +79,9 @@ public class DigiCertOneSigningService implements SigningService {
      * @param apiKey     the DigiCert ONE API access token
      * @param keyManager the key manager to authenticate the client with the server
      */
-    public DigiCertOneSigningService(String apiKey, X509KeyManager keyManager) {
-        this.client = new RESTClient("https://one.digicert.com/signingmanager/api/v1/", conn -> {
+    public DigiCertOneSigningService(final String apiKey, final X509KeyManager keyManager) {
+        this.client = new RESTClient("https://one.digicert.com/signingmanager/api/v1/", new Consumer<HttpURLConnection>() {
+            public void accept(HttpURLConnection conn) {
             conn.setRequestProperty("x-api-key", apiKey);
             try {
                 SSLContext context = SSLContext.getInstance("TLS");
@@ -86,6 +89,7 @@ public class DigiCertOneSigningService implements SigningService {
                 ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
             } catch (GeneralSecurityException e) {
                 throw new RuntimeException("Unable to load the DigiCert ONE client certificate", e);
+            }
             }
         });
     }
@@ -156,7 +160,7 @@ public class DigiCertOneSigningService implements SigningService {
 
             List<Certificate> chain = new ArrayList<>();
             for (String encodedCertificate : encodedChain) {
-                chain.add(CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(encodedCertificate))));
+                chain.add(CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(new Base64().decode(encodedCertificate))));
             }
             return chain.toArray(new Certificate[0]);
         } catch (IOException | CertificateException e) {
@@ -190,7 +194,7 @@ public class DigiCertOneSigningService implements SigningService {
         Map<String, Object> request = new HashMap<>();
         request.put("account", privateKey.getProperties().get("account"));
         request.put("sig_alg", algorithm);
-        request.put("hash", Base64.getEncoder().encodeToString(data));
+        request.put("hash", new Base64().encodeToString(data));
 
         try {
             Map<String, Object> args = new HashMap<>();
@@ -198,7 +202,7 @@ public class DigiCertOneSigningService implements SigningService {
             Map<String, ?> response = client.post("https://clientauth.one.digicert.com/signingmanager/api/v1/keypairs/" + privateKey.getId() + "/sign", JsonWriter.objectToJson(request, args));
             String value = (String) response.get("signature");
 
-            return Base64.getDecoder().decode(value);
+            return new Base64().decode(value);
         } catch (IOException e) {
             throw new GeneralSecurityException(e);
         }

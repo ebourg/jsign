@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import net.jsign.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -286,7 +287,11 @@ class SignerHelper {
                 String filename = value.substring("file:".length());
                 Path path = new File(filename).toPath();
                 try {
-                    value = String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)).trim();
+                    StringBuilder content = new StringBuilder();
+                    for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
+                        content.append(line).append("\n");
+                    }
+                    value = content.toString().trim();
                 } catch (IOException e) {
                     throw new SignerException("Failed to read the " + name + " " + parameterName + " from the file '" + filename + "'", e);
                 }
@@ -364,11 +369,13 @@ class SignerHelper {
             String[] elements = storepass.split("\\|");
             provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], new File(elements[1]), elements[2]));
         } else if ("GOOGLECLOUD".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, alias -> {
+            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, new Function<String, Certificate[]>() {
+                public Certificate[] apply(String alias) {
                 try {
                     return loadCertificateChain(certfile);
                 } catch (IOException | CertificateException e) {
                     throw new RuntimeException("Failed to load the certificate from " + certfile, e);
+                }
                 }
             }));
         } else if ("ESIGNER".equals(storetype)) {
@@ -407,7 +414,7 @@ class SignerHelper {
                     } else if (aliases.size() == 1) {
                         alias = aliases.iterator().next();
                     } else {
-                        throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
+                        throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + aliases + ")");
                     }
                 }
             }
@@ -425,7 +432,7 @@ class SignerHelper {
                         if (aliases.isEmpty()) {
                             message = "No certificate found in the keystore " + (provider != null ? provider.getName() : keystore);
                         } else {
-                            message += " (available aliases: " + String.join(", ", aliases) + ")";
+                            message += " (available aliases: " + aliases + ")";
                         }
                     } catch (KeyStoreException e) {
                         message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
@@ -527,7 +534,7 @@ class SignerHelper {
             throw new SignerException("The file " + file + " couldn't be found");
         }
         
-        try (Signable signable = Signable.of(file, encoding)) {
+        try (Signable signable = Signable.Builder.of(file, encoding)) {
             File detachedSignature = getDetachedSignature(file);
             if (detached && detachedSignature.exists()) {
                 try {

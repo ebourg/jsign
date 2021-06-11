@@ -46,9 +46,9 @@ public class CatalogSignerTest {
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withTimestamping(false);
 
-        signer.sign(Signable.of(targetFile));
+        signer.sign(Signable.Builder.of(targetFile));
 
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA256);
     }
@@ -60,7 +60,7 @@ public class CatalogSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(SHA1)
@@ -68,7 +68,7 @@ public class CatalogSignerTest {
 
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1);
         SignatureAssert.assertTimestamped("Invalid timestamp", script.getSignatures().get(0));
@@ -78,7 +78,7 @@ public class CatalogSignerTest {
         signer.withTimestamping(false);
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1, SHA256);
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", script.getSignatures().get(0));
@@ -91,7 +91,7 @@ public class CatalogSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(SHA1)
@@ -99,7 +99,7 @@ public class CatalogSignerTest {
 
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1);
         SignatureAssert.assertTimestamped("Invalid timestamp", script.getSignatures().get(0));
@@ -109,7 +109,7 @@ public class CatalogSignerTest {
         signer.withTimestamping(false);
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1, SHA256);
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", script.getSignatures().get(0));
@@ -119,7 +119,7 @@ public class CatalogSignerTest {
         signer.withTimestamping(false);
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1, SHA256, SHA512);
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", script.getSignatures().get(0));
@@ -132,14 +132,14 @@ public class CatalogSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(SHA1);
 
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1);
 
@@ -149,7 +149,7 @@ public class CatalogSignerTest {
         signer.withSignaturesReplaced(true);
         signer.sign(script);
 
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA256);
     }

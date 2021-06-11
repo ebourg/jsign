@@ -30,7 +30,6 @@ import org.bouncycastle.cms.CMSSignedData;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.cat.CatalogFile;
 import net.jsign.mscab.MSCabinetFile;
-import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.JScript;
 import net.jsign.script.PowerShellScript;
@@ -53,9 +52,7 @@ public interface Signable extends Closeable {
      * @throws IOException if an I/O error occurs
      * @since 4.2
      */
-    default ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) throws IOException {
-        return new ContentInfo(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
-    }
+    public ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) throws IOException;
 
     /**
      * Computes the digest of the file.
@@ -98,6 +95,8 @@ public interface Signable extends Closeable {
      */
     void save() throws IOException;
 
+    static class Builder {
+
     /**
      * Returns a signable object for the file specified.
      *
@@ -123,9 +122,6 @@ public interface Signable extends Closeable {
     static Signable of(File file, Charset encoding) throws IOException {
         if (PEFile.isPEFile(file)) {
             return new PEFile(file);
-
-        } else if (MSIFile.isMSIFile(file)) {
-            return new MSIFile(file);
 
         } else if (MSCabinetFile.isMSCabinetFile(file)) {
             return new MSCabinetFile(file);
@@ -155,5 +151,7 @@ public interface Signable extends Closeable {
         } else {
             throw new UnsupportedOperationException("Unsupported file: " + file);
         }
+    }
+
     }
 }

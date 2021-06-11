@@ -28,7 +28,6 @@ import org.apache.tools.ant.ProjectHelper;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.PowerShellScript;
 
@@ -211,20 +210,6 @@ public class JsignTaskTest {
         PowerShellScript script = new PowerShellScript(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1);
-    }
-
-    @Test
-    public void testSigningMSI() throws Exception {
-        File sourceFile = new File("target/test-classes/minimal.msi");
-        File targetFile = new File("target/test-classes/minimal-signed-with-ant.msi");
-        
-        FileUtils.copyFile(sourceFile, targetFile);
-        
-        project.executeTarget("signing-msi");
-        
-        try (MSIFile file = new MSIFile(targetFile)) {
-            SignatureAssert.assertSigned(file, SHA1);
-        }
     }
 
     @Test

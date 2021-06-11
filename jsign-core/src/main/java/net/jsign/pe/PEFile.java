@@ -885,6 +885,11 @@ public class PEFile implements Signable {
         }
     }
 
+    @Override
+    public ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) throws IOException {
+        return new ContentInfo(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
+    }
+
     /**
      * Compute the digest of the file. The checksum field, the certificate
      * directory table entry and the certificate table are excluded from

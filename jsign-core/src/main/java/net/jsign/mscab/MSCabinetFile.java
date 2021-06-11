@@ -140,6 +140,11 @@ public class MSCabinetFile implements Signable {
     }
 
     @Override
+    public ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) throws IOException {
+        return new ContentInfo(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
+    }
+
+    @Override
     public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
         CFHeader modifiedHeader = new CFHeader(header);
         if (!header.isReservePresent()) {

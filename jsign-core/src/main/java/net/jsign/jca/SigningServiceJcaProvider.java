@@ -36,7 +36,8 @@ public class SigningServiceJcaProvider extends Provider {
         super(service.getName(), 1.0, service.getName() + " signing service provider");
         this.service = service;
 
-        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            public Object run() {
             putService(new KeyStoreProviderService());
             for (String alg : new String[]{"RSA", "ECDSA"}) {
                 for (DigestAlgorithm digest : DigestAlgorithm.values()) {
@@ -46,12 +47,13 @@ public class SigningServiceJcaProvider extends Provider {
                 }
             }
             return null;
+            }
         });
     }
 
     private class KeyStoreProviderService extends Service {
         public KeyStoreProviderService() {
-            super(SigningServiceJcaProvider.this, "KeyStore", service.getName().toUpperCase(), SigningServiceKeyStore.class.getName(), Collections.emptyList(), null);
+            super(SigningServiceJcaProvider.this, "KeyStore", service.getName().toUpperCase(), SigningServiceKeyStore.class.getName(), Collections.<String>emptyList(), null);
         }
 
         @Override
@@ -65,7 +67,7 @@ public class SigningServiceJcaProvider extends Provider {
         private final String signingAlgorithm;
 
         public SignatureProviderService(String signingAlgorithm) {
-            super(SigningServiceJcaProvider.this, "Signature", signingAlgorithm, SigningServiceSignature.class.getName(), Collections.emptyList(), Collections.emptyMap());
+            super(SigningServiceJcaProvider.this, "Signature", signingAlgorithm, SigningServiceSignature.class.getName(), Collections.<String>emptyList(), Collections.<String, String>emptyMap());
             this.signingAlgorithm = signingAlgorithm;
         }
 

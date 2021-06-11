@@ -37,7 +37,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -71,7 +71,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.1.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -130,7 +130,7 @@
       <plugin>
         <groupId>com.github.wvengen</groupId>
         <artifactId>proguard-maven-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>2.1.1</version>
         <executions>
           <execution>
             <id>proguard-minimizing</id>
@@ -163,54 +163,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.github.siom79.japicmp</groupId>
-        <artifactId>japicmp-maven-plugin</artifactId>
-        <version>0.15.7</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>cmp</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <parameter>
-            <onlyModified>true</onlyModified>
-            <onlyBinaryIncompatible>true</onlyBinaryIncompatible>
-            <includeSynthetic>true</includeSynthetic>
-            <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
-            <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
-            <excludes>
-              <exclude>net.jsign.asn1.*</exclude>
-              <exclude>net.jsign.bouncycastle.*</exclude>
-              <exclude>net.jsign.poi.*</exclude>
-              <exclude>net.jsign.commons.*</exclude>
-              <exclude>net.jsign.log4j.*</exclude>
-              <exclude>net.jsign.PESigner</exclude>
-              <exclude>net.jsign.PESignerCLI</exclude>
-            </excludes>
-            <ignoreMissingClassesByRegularExpressions>
-              <ignoreMissingClassesByRegularExpression>org.apache.tools.ant.*</ignoreMissingClassesByRegularExpression>
-            </ignoreMissingClassesByRegularExpressions>
-            <skipXmlReport>true</skipXmlReport>
-            <skipDiffReport>true</skipDiffReport>
-            <overrideCompatibilityChangeParameters>
-              <overrideCompatibilityChangeParameter>
-                <compatibilityChange>METHOD_NEW_DEFAULT</compatibilityChange>
-                <binaryCompatible>true</binaryCompatible>
-                <sourceCompatible>true</sourceCompatible>
-              </overrideCompatibilityChangeParameter>
-              <overrideCompatibilityChangeParameter>
-                <compatibilityChange>METHOD_ABSTRACT_NOW_DEFAULT</compatibilityChange>
-                <binaryCompatible>true</binaryCompatible>
-                <sourceCompatible>true</sourceCompatible>
-              </overrideCompatibilityChangeParameter>
-            </overrideCompatibilityChangeParameters>
-          </parameter>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -267,7 +219,7 @@
       <plugin>
         <artifactId>jdeb</artifactId>
         <groupId>org.vafer</groupId>
-        <version>1.10</version>
+        <version>1.5</version>
         <executions>
           <execution>
             <phase>package</phase>

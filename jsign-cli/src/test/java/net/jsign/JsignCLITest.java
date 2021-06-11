@@ -36,7 +36,6 @@ import org.littleshoot.proxy.HttpProxyServer;
 import org.littleshoot.proxy.ProxyAuthenticator;
 import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 
-import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.PowerShellScript;
 
@@ -120,7 +119,7 @@ public class JsignCLITest {
         try {
             cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=unknown", "" + targetFile);
         } catch (SignerException e) {
-            assertEquals("exception message", "No certificate found under the alias 'unknown' in the keystore target/test-classes/keystores/keystore.jks (available aliases: test)", e.getMessage().replace('\\', '/'));
+            assertEquals("exception message", "No certificate found under the alias 'unknown' in the keystore target/test-classes/keystores/keystore.jks (available aliases: [test])", e.getMessage().replace('\\', '/'));
         }
     }
 
@@ -130,7 +129,7 @@ public class JsignCLITest {
             cli.execute("--keystore=target/test-classes/keystores/keystore-two-entries.p12", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
-            assertEquals("exception message", "alias option must be set to select a certificate (available aliases: test, test2)", e.getMessage());
+            assertEquals("exception message", "alias option must be set to select a certificate (available aliases: [test, test2])", e.getMessage());
         }
     }
 
@@ -240,19 +239,6 @@ public class JsignCLITest {
         PowerShellScript script = new PowerShellScript(targetFile);
 
         SignatureAssert.assertSigned(script, SHA1);
-    }
-
-    @Test
-    public void testSigningMSI() throws Exception {
-        File sourceFile = new File("target/test-classes/minimal.msi");
-        File targetFile = new File("target/test-classes/minimal-signed-with-cli.msi");
-        FileUtils.copyFile(sourceFile, targetFile);
-        
-        cli.execute("--alg=SHA-1", "--replace", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
-
-        try (MSIFile file = new MSIFile(targetFile)) {
-            SignatureAssert.assertSigned(file, SHA1);
-        }
     }
 
     @Test
