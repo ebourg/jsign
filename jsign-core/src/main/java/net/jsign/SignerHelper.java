@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import net.jsign.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -365,11 +366,13 @@ class SignerHelper {
             String[] elements = storepass.split("\\|");
             provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], new File(elements[1]), elements[2]));
         } else if ("GOOGLECLOUD".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, alias -> {
+            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, new Function<String, Certificate[]>() {
+                public Certificate[] apply(String alias) {
                 try {
                     return loadCertificateChain(certfile);
                 } catch (IOException | CertificateException e) {
                     throw new RuntimeException("Failed to load the certificate from " + certfile, e);
+                }
                 }
             }));
         } else if ("ESIGNER".equals(storetype)) {
@@ -408,7 +411,7 @@ class SignerHelper {
                     } else if (aliases.size() == 1) {
                         alias = aliases.iterator().next();
                     } else {
-                        throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
+                        throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + aliases + ")");
                     }
                 }
             }
@@ -426,7 +429,7 @@ class SignerHelper {
                         if (aliases.isEmpty()) {
                             message = "No certificate found in the keystore " + (provider != null ? provider.getName() : keystore);
                         } else {
-                            message += " (available aliases: " + String.join(", ", aliases) + ")";
+                            message += " (available aliases: " + aliases + ")";
                         }
                     } catch (KeyStoreException e) {
                         message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
@@ -530,7 +533,7 @@ class SignerHelper {
         
         Signable signable;
         try {
-            signable = Signable.of(file, encoding);
+            signable = Signable.Builder.of(file, encoding);
         } catch (UnsupportedOperationException e) {
             throw new SignerException(e.getMessage());
         } catch (IOException e) {
@@ -582,7 +585,7 @@ class SignerHelper {
         byte[] signatureBytes = FileUtils.readFileToByteArray(detachedSignature);
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
-        Signable signable = Signable.of(file, encoding);
+        Signable signable = Signable.Builder.of(file, encoding);
         try {
             signable.setSignature(signedData);
             signable.save();
@@ -595,7 +598,7 @@ class SignerHelper {
     }
 
     private void detach(File file) throws IOException {
-        Signable signable = Signable.of(file, encoding);
+        Signable signable = Signable.Builder.of(file, encoding);
         try {
             CMSSignedData signedData = signable.getSignatures().get(0);
             File detachedSignature = getDetachedSignature(file);

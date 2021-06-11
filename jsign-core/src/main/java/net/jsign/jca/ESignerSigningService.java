@@ -18,6 +18,7 @@ package net.jsign.jca;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
@@ -27,20 +28,19 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 
 import net.jsign.DigestAlgorithm;
+import net.jsign.util.function.Consumer;
 
 /**
  * SSL.com eSigner signing service.
@@ -63,8 +63,12 @@ public class ESignerSigningService implements SigningService {
                 username, password));
     }
 
-    public ESignerSigningService(String endpoint, String accessToken) {
-        client = new RESTClient(endpoint, conn -> conn.setRequestProperty("Authorization", "Bearer " + accessToken));
+    public ESignerSigningService(String endpoint, final String accessToken) {
+        client = new RESTClient(endpoint, new Consumer<HttpURLConnection>() {
+            public void accept(HttpURLConnection conn) {
+                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            }
+        });
     }
 
     private static String getAccessToken(String endpoint, String clientId, String username, String password) throws IOException {
@@ -91,7 +95,11 @@ public class ESignerSigningService implements SigningService {
             request.put("clientData", "EVCS");
             Map<String, ?> response = client.post("/csc/v0/credentials/list", JsonWriter.objectToJson(request));
             Object[] credentials = (Object[]) response.get("credentialIDs");
-            return Stream.of(credentials).map(Object::toString).collect(Collectors.toList());
+            List<String> aliases = new ArrayList<>();
+            for (Object credential : credentials) {
+                aliases.add(credential.toString());
+            }
+            return aliases;
         } catch (IOException e) {
             throw new KeyStoreException("Unable to retrieve SSL.com certificate aliases", e);
         }
@@ -122,7 +130,7 @@ public class ESignerSigningService implements SigningService {
 
             List<Certificate> chain = new ArrayList<>();
             for (Object encodedCertificate : encodedChain) {
-                chain.add(CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(encodedCertificate.toString()))));
+                chain.add(CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(new Base64().decode(encodedCertificate.toString()))));
             }
             return chain.toArray(new Certificate[0]);
         } catch (IOException | CertificateException e) {
@@ -149,7 +157,7 @@ public class ESignerSigningService implements SigningService {
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
         MessageDigest digest = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with"))).getMessageDigest();
         data = digest.digest(data);
-        String hash = Base64.getEncoder().encodeToString(data);
+        String hash = new Base64().encodeToString(data);
 
         Map<String, Object>  request = new LinkedHashMap<>();
         request.put("credentialID", privateKey.getId());
@@ -163,7 +171,7 @@ public class ESignerSigningService implements SigningService {
             Map<String, ?> response = client.post("/csc/v0/signatures/signHash", JsonWriter.objectToJson(request, args));
             Object[] signatures = (Object[]) response.get("signatures");
 
-            return Base64.getDecoder().decode(signatures[0].toString());
+            return new Base64().decode(signatures[0].toString());
         } catch (IOException e) {
             throw new GeneralSecurityException(e);
         }
@@ -196,7 +204,7 @@ public class ESignerSigningService implements SigningService {
         byte[] counter = new byte[8];
         ByteBuffer.wrap(counter).putLong(System.currentTimeMillis() / 30000);
 
-        mac.init(new SecretKeySpec(Base64.getDecoder().decode(secret), "RAW"));
+        mac.init(new SecretKeySpec(new Base64().decode(secret), "RAW"));
         mac.update(counter);
         ByteBuffer hash = ByteBuffer.wrap(mac.doFinal());
 

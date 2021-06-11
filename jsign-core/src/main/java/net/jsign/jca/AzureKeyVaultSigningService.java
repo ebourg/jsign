@@ -18,6 +18,7 @@ package net.jsign.jca;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStoreException;
@@ -27,12 +28,13 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.jsign.util.function.Consumer;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import org.apache.commons.codec.binary.Base64;
 
 import net.jsign.DigestAlgorithm;
 
@@ -73,11 +75,15 @@ public class AzureKeyVaultSigningService implements SigningService {
      *              or the full URL (e.g. <tt>https://myvault.vault.azure.net</tt>).
      * @param token the Azure API access token
      */
-    public AzureKeyVaultSigningService(String vault, String token) {
+    public AzureKeyVaultSigningService(String vault, final String token) {
         if (!vault.startsWith("http")) {
             vault = "https://" + vault + ".vault.azure.net";
         }
-        this.client = new RESTClient(vault, conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        this.client = new RESTClient(vault, new Consumer<HttpURLConnection>() {
+            public void accept(HttpURLConnection conn) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+        });
     }
 
     @Override
@@ -123,7 +129,7 @@ public class AzureKeyVaultSigningService implements SigningService {
             Map<String, ?> response = getCertificateInfo(alias);
             String pem = (String) response.get("cer");
 
-            Certificate certificate = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(pem)));
+            Certificate certificate = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(new Base64().decode(pem)));
             return new Certificate[]{certificate};
         } catch (IOException | CertificateException e) {
             throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate '" + alias + "'", e);
@@ -157,7 +163,7 @@ public class AzureKeyVaultSigningService implements SigningService {
 
         Map<String, String> request = new HashMap<>();
         request.put("alg", alg);
-        request.put("value", Base64.getEncoder().encodeToString(data));
+        request.put("value", new Base64().encodeToString(data));
 
         try {
             Map<String, Object> args = new HashMap<>();
@@ -165,7 +171,7 @@ public class AzureKeyVaultSigningService implements SigningService {
             Map<String, ?> response = client.post(privateKey.getId() + "/sign?api-version=7.2", JsonWriter.objectToJson(request, args));
             String value = (String) response.get("value");
 
-            return Base64.getUrlDecoder().decode(value);
+            return new Base64(true).decode(value);
         } catch (IOException e) {
             throw new GeneralSecurityException(e);
         }

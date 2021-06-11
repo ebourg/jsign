@@ -64,7 +64,6 @@ import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
-import net.jsign.msi.MSIFile;
 import net.jsign.pe.DataDirectory;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
@@ -325,13 +324,6 @@ public class AuthenticodeSigner {
                     certificateTable.erase();
                     certificateTable.write(0, 0);
                 }
-            }
-
-        } else if (file instanceof MSIFile) {
-            MSIFile msi = (MSIFile) file;
-            
-            if (!replace && msi.hasExtendedSignature()) {
-                throw new UnsupportedOperationException("The file has an extended signature which isn't supported by Jsign, it can't be signed without replacing the existing signature");
             }
         }
         
