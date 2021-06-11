@@ -159,41 +159,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.github.siom79.japicmp</groupId>
-        <artifactId>japicmp-maven-plugin</artifactId>
-        <version>0.15.3</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>cmp</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <parameter>
-            <onlyModified>true</onlyModified>
-            <onlyBinaryIncompatible>true</onlyBinaryIncompatible>
-            <includeSynthetic>true</includeSynthetic>
-            <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
-            <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
-            <excludes>
-              <exclude>net.jsign.asn1.*</exclude>
-              <exclude>net.jsign.bouncycastle.*</exclude>
-              <exclude>net.jsign.poi.*</exclude>
-              <exclude>net.jsign.commons.*</exclude>
-              <exclude>net.jsign.PESigner</exclude>
-              <exclude>net.jsign.PESignerCLI</exclude>
-            </excludes>
-            <ignoreMissingClassesByRegularExpressions>
-              <ignoreMissingClassesByRegularExpression>org.apache.tools.ant.*</ignoreMissingClassesByRegularExpression>
-            </ignoreMissingClassesByRegularExpressions>
-            <skipXmlReport>true</skipXmlReport>
-            <skipDiffReport>true</skipDiffReport>
-          </parameter>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.0.0</version>

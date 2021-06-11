@@ -17,18 +17,20 @@
 package net.jsign.jca;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import net.jsign.util.function.Consumer;
+import net.jsign.util.function.Function;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import org.apache.commons.codec.binary.Base64;
 
 import net.jsign.DigestAlgorithm;
 
@@ -72,10 +74,14 @@ public class GoogleCloudSigningService implements SigningService {
      * @param token            the Google Cloud API access token
      * @param certificateStore provides the certificate chain for the keys
      */
-    public GoogleCloudSigningService(String keyring, String token, Function<String, Certificate[]> certificateStore) {
+    public GoogleCloudSigningService(String keyring, final String token, Function<String, Certificate[]> certificateStore) {
         this.keyring = keyring;
         this.certificateStore = certificateStore;
-        this.client = new RESTClient("https://cloudkms.googleapis.com/v1/", conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        this.client = new RESTClient("https://cloudkms.googleapis.com/v1/", new Consumer<HttpURLConnection>() {
+            public void accept(HttpURLConnection conn) {
+                conn.setRequestProperty("Authorization", "Bearer " + token);
+            }
+        });
     }
 
     @Override
@@ -159,7 +165,7 @@ public class GoogleCloudSigningService implements SigningService {
         data = digestAlgorithm.getMessageDigest().digest(data);
 
         Map<String, String> digest = new HashMap<>();
-        digest.put(digestAlgorithm.name().toLowerCase(), Base64.getEncoder().encodeToString(data));
+        digest.put(digestAlgorithm.name().toLowerCase(), new Base64().encodeToString(data));
         Map<String, Object> request = new HashMap<>();
         request.put("digest", digest);
 
@@ -169,7 +175,7 @@ public class GoogleCloudSigningService implements SigningService {
             Map<String, ?> response = client.post(privateKey.getId() + ":asymmetricSign", JsonWriter.objectToJson(request, args));
             String signature = (String) response.get("signature");
 
-            return Base64.getDecoder().decode(signature);
+            return new Base64().decode(signature);
         } catch (IOException e) {
             throw new GeneralSecurityException(e);
         }

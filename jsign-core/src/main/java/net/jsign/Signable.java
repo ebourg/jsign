@@ -26,7 +26,6 @@ import net.jsign.mscab.MSCabinetFile;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.cms.CMSSignedData;
 
-import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.JScript;
 import net.jsign.script.PowerShellScript;
@@ -82,6 +81,8 @@ public interface Signable {
      */
     void save() throws IOException;
 
+    static class Builder {
+
     /**
      * Returns a signable object for the file specified.
      *
@@ -108,9 +109,6 @@ public interface Signable {
         if (PEFile.isPEFile(file)) {
             return new PEFile(file);
 
-        } else if (MSIFile.isMSIFile(file)) {
-            return new MSIFile(file);
-
         } else if (MSCabinetFile.isMSCabinetFile(file)) {
             return new MSCabinetFile(file);
 
@@ -136,5 +134,7 @@ public interface Signable {
         } else {
             throw new UnsupportedOperationException("Unsupported file: " + file);
         }
+    }
+
     }
 }

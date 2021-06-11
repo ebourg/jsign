@@ -26,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.List;
+import net.jsign.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
@@ -97,7 +98,8 @@ public class SigningServiceTest {
 
     @Test
     public void testGoogleCloudProvider() throws Exception {
-        Provider provider = new SigningServiceJcaProvider(new GoogleCloudSigningService("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring", GoogleCloud.getAccessToken(), alias -> {
+        Provider provider = new SigningServiceJcaProvider(new GoogleCloudSigningService("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring", GoogleCloud.getAccessToken(), new Function<String, Certificate[]>() {
+            public Certificate[] apply(String alias) {
             try {
                 try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
@@ -106,6 +108,7 @@ public class SigningServiceTest {
                 }
             } catch (IOException | CertificateException e) {
                 throw new RuntimeException(e);
+            }
             }
         }));
         KeyStore keystore = KeyStore.getInstance("GOOGLECLOUD", provider);

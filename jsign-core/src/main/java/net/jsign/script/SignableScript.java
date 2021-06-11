@@ -26,11 +26,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
@@ -228,7 +228,7 @@ abstract class SignableScript implements Signable {
         signatureBlock = signatureBlock.replace(getLineCommentEnd(), "");
         signatureBlock = signatureBlock.replaceAll("[\r\n]", "");
 
-        byte[] signatureBytes = Base64.getDecoder().decode(signatureBlock);
+        byte[] signatureBytes = new Base64().decode(signatureBlock);
 
         try {
             return new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
@@ -249,7 +249,7 @@ abstract class SignableScript implements Signable {
     private String createSignatureBlock(CMSSignedData signature) throws IOException {
         // base64 encode the signature blob
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
-        String signatureBlob = Base64.getEncoder().encodeToString(signatureBytes);
+        String signatureBlob = new Base64().encodeToString(signatureBytes);
         
         StringBuilder signatureBlock = new StringBuilder();
         signatureBlock.append("\r\n");
