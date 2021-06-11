@@ -81,6 +81,8 @@ public interface Signable {
      */
     void save() throws IOException;
 
+    static class Builder {
+
     /**
      * Returns a signable object for the file specified.
      *
@@ -132,5 +134,7 @@ public interface Signable {
         } else {
             throw new UnsupportedOperationException("Unsupported file: " + file);
         }
+    }
+
     }
 }

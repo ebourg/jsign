@@ -157,8 +157,8 @@
             <onlyModified>true</onlyModified>
             <onlyBinaryIncompatible>true</onlyBinaryIncompatible>
             <includeSynthetic>true</includeSynthetic>
-            <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
-            <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
+            <breakBuildOnBinaryIncompatibleModifications>false</breakBuildOnBinaryIncompatibleModifications>
+            <breakBuildOnSourceIncompatibleModifications>false</breakBuildOnSourceIncompatibleModifications>
             <excludes>
               <exclude>net.jsign.asn1.*</exclude>
               <exclude>net.jsign.bouncycastle.*</exclude>

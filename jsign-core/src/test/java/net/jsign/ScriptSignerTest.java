@@ -57,9 +57,9 @@ public abstract class ScriptSignerTest {
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(Signable.of(targetFile));
+        signer.sign(Signable.Builder.of(targetFile));
 
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -77,7 +77,7 @@ public abstract class ScriptSignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
         
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
@@ -87,7 +87,7 @@ public abstract class ScriptSignerTest {
         
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -101,7 +101,7 @@ public abstract class ScriptSignerTest {
         signer.withTimestamping(false);
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         signatures = script.getSignatures();
         assertNotNull(signatures);
         assertEquals("number of signatures", 2, signatures.size());
@@ -117,7 +117,7 @@ public abstract class ScriptSignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
         
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
@@ -127,7 +127,7 @@ public abstract class ScriptSignerTest {
         
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -141,7 +141,7 @@ public abstract class ScriptSignerTest {
         signer.withTimestamping(false);
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         signatures = script.getSignatures();
         assertNotNull(signatures);
         assertEquals("number of signatures", 2, signatures.size());
@@ -154,7 +154,7 @@ public abstract class ScriptSignerTest {
         signer.withTimestamping(false);
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         signatures = script.getSignatures();
         assertNotNull(signatures);
         assertEquals("number of signatures", 3, signatures.size());
@@ -170,7 +170,7 @@ public abstract class ScriptSignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        Signable script = Signable.of(targetFile);
+        Signable script = Signable.Builder.of(targetFile);
         
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(DigestAlgorithm.SHA1)
@@ -179,7 +179,7 @@ public abstract class ScriptSignerTest {
         
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -193,7 +193,7 @@ public abstract class ScriptSignerTest {
         signer.withSignaturesReplaced(true);
         signer.sign(script);
         
-        script = Signable.of(targetFile);
+        script = Signable.Builder.of(targetFile);
         signatures = script.getSignatures();
         assertNotNull(signatures);
         assertEquals("number of signatures", 1, signatures.size());
@@ -226,9 +226,9 @@ public abstract class ScriptSignerTest {
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(Signable.of(targetFile, encoding));
+        signer.sign(Signable.Builder.of(targetFile, encoding));
         
-        Signable script = Signable.of(targetFile, encoding);
+        Signable script = Signable.Builder.of(targetFile, encoding);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -293,9 +293,9 @@ public abstract class ScriptSignerTest {
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(Signable.of(targetFile, encoding));
+        signer.sign(Signable.Builder.of(targetFile, encoding));
         
-        Signable script = Signable.of(targetFile, encoding);
+        Signable script = Signable.Builder.of(targetFile, encoding);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -332,9 +332,9 @@ public abstract class ScriptSignerTest {
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(Signable.of(targetFile, encoding));
+        signer.sign(Signable.Builder.of(targetFile, encoding));
         
-        Signable script = Signable.of(targetFile, encoding);
+        Signable script = Signable.Builder.of(targetFile, encoding);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);
@@ -371,9 +371,9 @@ public abstract class ScriptSignerTest {
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
-        signer.sign(Signable.of(targetFile, encoding));
+        signer.sign(Signable.Builder.of(targetFile, encoding));
         
-        Signable script = Signable.of(targetFile, encoding);
+        Signable script = Signable.Builder.of(targetFile, encoding);
         
         List<CMSSignedData> signatures = script.getSignatures();
         assertNotNull(signatures);

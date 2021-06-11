@@ -408,7 +408,7 @@ class SignerHelper {
         
         Signable signable;
         try {
-            signable = Signable.of(file, encoding);
+            signable = Signable.Builder.of(file, encoding);
         } catch (UnsupportedOperationException e) {
             throw new SignerException(e.getMessage());
         } catch (IOException e) {
