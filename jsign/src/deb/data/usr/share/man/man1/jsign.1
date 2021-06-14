@@ -43,6 +43,8 @@ The type of the keystore:
 .br
 - YUBIKEY : YubiKey security key (requires ykcs11)
 .br
+- AZUREKEYVAULT : Azure Key Vault key management system
+.br
 This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
 
 .TP
@@ -157,6 +159,15 @@ from the Yubico PIV Tool must be installed on the system at the default location
 is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
 
 jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+
+
+.TP
+
+Signing with Azure Key Vault:
+
+Certificates and keys stored in the Azure Key Vault key management system can be used with:
+
+jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test --storepass &lt;api-access-token&gt; application.exe
 
 
 .SH REPORTING BUGS

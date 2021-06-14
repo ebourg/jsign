@@ -60,7 +60,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
-  <li>Keystores supported: PKCS#12, JKS and PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
+  <li>Keystores supported: PKCS#12, JKS, PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc) and cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>)</li>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
@@ -141,6 +141,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
+          <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
         </ul>
       </td>
       <td valign="top" align="center">No; defaults to "JKS".</td>
@@ -308,6 +309,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - JKS: Java keystore (.jks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
+                             - AZUREKEYVAULT: Azure Key Vault key management system
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
@@ -354,6 +356,16 @@ be installed on the system at the default location.</p>
 
 <pre>
  jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+</pre>
+
+<h4 id="example-azurekeyvault">Example using Azure Key Vault:</h4>
+
+<p>Certificates and keys stored in the <a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>
+key management system can be used with:</p>
+
+<pre>
+ jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test \
+       --storepass &lt;api-access-token&gt; application.exe
 </pre>
 
 

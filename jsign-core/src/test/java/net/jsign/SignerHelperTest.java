@@ -17,10 +17,17 @@
 package net.jsign;
 
 import java.io.File;
+import java.util.List;
 import java.util.zip.CRC32;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
 import org.junit.Test;
+
+import net.jsign.jca.Azure;
+import net.jsign.pe.PEFile;
 
 import static org.junit.Assert.*;
 
@@ -61,5 +68,34 @@ public class SignerHelperTest {
         signer.sign(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
+    }
+
+    @Test
+    public void testAzureKeyVault() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-signing-service.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("AZUREKEYVAULT")
+                .keystore("jsigntestkeyvault")
+                .storepass(Azure.getAccessToken())
+                .alias("jsign")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        PEFile peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+
+        CMSSignedData signedData = signatures.get(0);
+        assertNotNull(signedData);
+
+        // Check the signature algorithm
+        SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
+        assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
     }
 }

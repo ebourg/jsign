@@ -50,6 +50,8 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.jca.AzureKeyVaultSigningService;
+import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -273,6 +275,14 @@ class SignerHelper {
         if (keystore != null && keyfile != null) {
             throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
         }
+        if ("AZUREKEYVAULT".equals(storetype)) {
+            if (keystore == null) {
+                throw new SignerException("keystore " + parameterName + " must specify the Azure vault name");
+            }
+            if (storepass == null) {
+                throw new SignerException("storepass " + parameterName + " must specify the Azure API access token");
+            }
+        }
         
         Provider provider = null;
         if ("PKCS11".equals(storetype)) {
@@ -289,6 +299,8 @@ class SignerHelper {
             }
         } else if ("YUBIKEY".equals(storetype)) {
             provider = YubiKey.getProvider();
+        } else if ("AZUREKEYVAULT".equals(storetype)) {
+            provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore.getName(), storepass));
         }
 
         if (keystore != null || "YUBIKEY".equals(storetype)) {

@@ -57,7 +57,7 @@ public class KeyStoreUtils {
         
         KeyStore ks;
         try {
-            if ("PKCS11".equals(storetype)) {
+            if (provider != null) {
                 ks = KeyStore.getInstance(storetype, provider);
             } else {
                 ks = KeyStore.getInstance(storetype);
@@ -66,12 +66,13 @@ public class KeyStoreUtils {
             throw new KeyStoreException("keystore type '" + storetype + "' is not supported", e);
         }
 
-        if (!"PKCS11".equals(storetype) && (keystore == null || !keystore.exists())) {
+        boolean filebased = "JKS".equals(storetype) || "PKCS12".equals(storetype);
+        if (filebased && (keystore == null || !keystore.exists())) {
             throw new KeyStoreException("The keystore " + keystore + " couldn't be found");
         }
         
         try {
-            try (FileInputStream in = "PKCS11".equals(storetype) ? null : new FileInputStream(keystore)) {
+            try (FileInputStream in = !filebased ? null : new FileInputStream(keystore)) {
                 ks.load(in, storepass != null ? storepass.toCharArray() : null);
             }
         } catch (Exception e) {

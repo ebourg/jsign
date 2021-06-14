@@ -7,3 +7,5 @@ TODO
 - Support unauthenticated blobs
 - Sign multiple files (fileset)
 - Support generating MsiDigitalSignatureEx entries when signing MSI files (requires access to the streams metadata in POI)
+- Google Cloud KMS integration
+- AWS KMS integration
