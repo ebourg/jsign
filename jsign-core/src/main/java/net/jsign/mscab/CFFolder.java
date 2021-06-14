@@ -25,7 +25,7 @@ import java.security.MessageDigest;
 /**
  * Cabinet File Folder structure
  *
- * @since 3.2
+ * @since 4.0
  */
 class CFFolder {
 

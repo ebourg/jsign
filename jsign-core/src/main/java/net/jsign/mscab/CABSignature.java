@@ -22,7 +22,7 @@ import java.nio.ByteOrder;
 /**
  * CABSignature structure found in the per-cabinet reserved area.
  *
- * @since 3.2
+ * @since 4.0
  */
 class CABSignature {
 

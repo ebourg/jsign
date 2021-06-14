@@ -37,7 +37,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 3.2 (in development)
+#### Version 4.0 (in development)
 
 * MS Cabinet signing has been implemented (contributed by Joseph Lee)
 * Signatures can be detached and re-attached to make the builds reproducible without access to the private key

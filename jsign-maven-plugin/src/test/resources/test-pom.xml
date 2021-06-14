@@ -11,7 +11,7 @@
       <plugin>
         <groupId>net.sign</groupId>
         <artifactId>jsign-maven-plugin</artifactId>
-        <version>3.1</version>
+        <version>4.0-SNAPSHOT</version>
         <configuration>
           <file>target/test-classes/wineyes.exe</file>
         </configuration>

@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Helper class for working with YubiKeys.
  *
- * @since 3.2
+ * @since 4.0
  */
 class YubiKey {
 
@@ -35,7 +35,7 @@ class YubiKey {
      *
      * @return the YubiKey security provider
      * @throws KeyStoreException throws if the keystore cannot be loaded
-     * @since 3.2
+     * @since 4.0
      */
     static Provider getProvider() {
         return ProviderUtils.createSunPKCS11Provider(getSunPKCS11Configuration());
@@ -45,7 +45,7 @@ class YubiKey {
      * Returns the SunPKCS11 configuration of the YubiKey.
      *
      * @throws IllegalStateException thrown if the PKCS11 modules cannot be found
-     * @since 3.2
+     * @since 4.0
      */
     static String getSunPKCS11Configuration() {
         File libykcs11 = getYkcs11Library();
@@ -58,7 +58,7 @@ class YubiKey {
     /**
      * Attempts to locate the ykcs11 library on the system.
      *
-     * @since 3.2
+     * @since 4.0
      */
     static File getYkcs11Library() {
         String osname = System.getProperty("os.name");

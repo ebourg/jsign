@@ -30,7 +30,7 @@ import java.security.MessageDigest;
 /**
  * Helper class for Channel operations.
  *
- * @since 3.2
+ * @since 4.0
  */
 public class ChannelUtils {
 

@@ -25,7 +25,7 @@ import java.security.Security;
 /**
  * Helper class for working with security providers.
  *
- * @since 3.2
+ * @since 4.0
  */
 class ProviderUtils {
 
@@ -34,7 +34,7 @@ class ProviderUtils {
      *
      * @param configuration Either the SunPKCS11 configuration file, or the inline SunPKCS11
      *                      configuration (starting with <code>--</code>)
-     * @since 3.2
+     * @since 4.0
      */
     static Provider createSunPKCS11Provider(String configuration) {
         try {
