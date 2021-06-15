@@ -17,8 +17,14 @@
 package net.jsign.jca;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.Provider;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -87,5 +93,24 @@ public class SigningServiceTest {
         keystore.load(null, "".toCharArray());
 
         testCustomProvider(provider, keystore, "jsign", "");
+    }
+
+    @Test
+    public void testGoogleCloudProvider() throws Exception {
+        Provider provider = new SigningServiceJcaProvider(new GoogleCloudSigningService("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring", GoogleCloud.getAccessToken(), alias -> {
+            try {
+                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                    Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
+                    return certificates.toArray(new Certificate[0]);
+                }
+            } catch (IOException | CertificateException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        KeyStore keystore = KeyStore.getInstance("GOOGLECLOUD", provider);
+        keystore.load(null, "".toCharArray());
+
+        testCustomProvider(provider, keystore, "test", "");
     }
 }

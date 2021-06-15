@@ -51,6 +51,7 @@ import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 
 import net.jsign.jca.AzureKeyVaultSigningService;
+import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -283,6 +284,17 @@ class SignerHelper {
                 throw new SignerException("storepass " + parameterName + " must specify the Azure API access token");
             }
         }
+        if ("GOOGLECLOUD".equals(storetype)) {
+            if (keystore == null) {
+                throw new SignerException("keystore " + parameterName + " must specify the Goole Cloud keyring");
+            }
+            if (storepass == null) {
+                throw new SignerException("storepass " + parameterName + " must specify the Goole Cloud API access token");
+            }
+            if (certfile == null) {
+                throw new SignerException("certfile " + parameterName + " must be set");
+            }
+        }
         
         Provider provider = null;
         if ("PKCS11".equals(storetype)) {
@@ -301,6 +313,14 @@ class SignerHelper {
             provider = YubiKey.getProvider();
         } else if ("AZUREKEYVAULT".equals(storetype)) {
             provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore.getName(), storepass));
+        } else if ("GOOGLECLOUD".equals(storetype)) {
+            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore.getName(), storepass, alias -> {
+                try {
+                    return loadCertificateChain(certfile);
+                } catch (IOException | CertificateException e) {
+                    throw new RuntimeException("Failed to load the certificate from " + certfile, e);
+                }
+            }));
         }
 
         if (keystore != null || "YUBIKEY".equals(storetype)) {

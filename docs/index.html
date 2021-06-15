@@ -60,7 +60,12 @@ programmatically or standalone as a command line tool.</p>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
-  <li>Keystores supported: PKCS#12, JKS, PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc) and cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>)</li>
+  <li>Keystores supported:
+    <ul>
+      <li>PKCS#12 and JKS files</li>
+      <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
+      <li>Cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>)</li>
+    </ul>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
@@ -142,6 +147,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
+          <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
         </ul>
       </td>
       <td valign="top" align="center">No; defaults to "JKS".</td>
@@ -310,6 +316,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
                              - AZUREKEYVAULT: Azure Key Vault key management system
+                             - GOOGLECLOUD: Google Cloud KMS
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
@@ -366,6 +373,18 @@ key management system can be used with:</p>
 <pre>
  jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test \
        --storepass &lt;api-access-token&gt; application.exe
+</pre>
+
+<h4 id="example-googlecloud">Example using Google Cloud KMS:</h4>
+
+<p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
+references the path of the keyring. The alias can specify either the full path of the key, or only the short name. If
+the version is omitted the most recent one will be picked automatically.</p>
+
+<pre>
+ jsign --storetype GOOGLECLOUD --storepass &lt;api-access-token&gt; \
+       --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \
+       --alias test --certfile full-chain.pem application.exe
 </pre>
 
 
