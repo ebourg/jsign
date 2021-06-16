@@ -19,15 +19,24 @@ package net.jsign.jca;
 import java.security.PrivateKey;
 
 /**
- * Private key held by the signing service.
+ * Reference to a private key held by the signing service.
+ *
+ * @since 4.0
  */
-class SigningServicePrivateKey implements PrivateKey {
+public class SigningServicePrivateKey implements PrivateKey {
 
+    /** The identifier of the key */
     private final String id;
 
     /** The algorithm of the key (for example RSA or ECDSA) */
     private final String algorithm;
 
+    /**
+     * Creates a new reference to a privaye key.
+     *
+     * @param id        The identifier of the key
+     * @param algorithm The algorithm of the key (RSA or ECDSA)
+     */
     public SigningServicePrivateKey(String id, String algorithm) {
         this.id = id;
         this.algorithm = algorithm;
