@@ -49,7 +49,7 @@ import net.jsign.DigestAlgorithm;
  */
 public class AzureKeyVaultSigningService implements SigningService {
 
-    /** The name of the key vault */
+    /** The URL of the key vault */
     private final String vault;
 
     /** The Azure API access token */
@@ -75,11 +75,16 @@ public class AzureKeyVaultSigningService implements SigningService {
     /**
      * Creates a new Azure Key Vault signing service.
      *
-     * @param vault the path of the key vault
+     * @param vault the name of the key vault, either the short name (e.g. <tt>myvault</tt>),
+     *              or the full URL (e.g. <tt>https://myvault.vault.azure.net</tt>).
      * @param token the Azure API access token
      */
     public AzureKeyVaultSigningService(String vault, String token) {
-        this.vault = vault;
+        if (vault.startsWith("http")) {
+            this.vault = vault;
+        } else {
+            this.vault = "https://" + vault + ".vault.azure.net";
+        }
         this.token = token;
     }
 
@@ -169,7 +174,7 @@ public class AzureKeyVaultSigningService implements SigningService {
     }
 
     private Map<String, ?> query(String method, String resource, String body) throws AzureException, IOException {
-        URL url = new URL((resource.startsWith("http") ? resource : "https://" + vault + ".vault.azure.net/" + resource) + "?api-version=7.2");
+        URL url = new URL((resource.startsWith("http") ? resource : vault + "/" + resource) + "?api-version=7.2");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestProperty("Authorization", "Bearer " + token);
         conn.setRequestMethod(method);
