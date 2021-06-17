@@ -261,6 +261,23 @@ by default to the <code>package</code> phase.</p>
     &lt;/build>
 </pre>
 
+<p>It's possible to sign multiple files by using a <code>fileset</code> element instead of <code>file</code>:</p>
+
+<pre class="prettyprint lang-xml">
+              ...
+              &lt;configuration>
+                &lt;fileset>
+                  &lt;directory>target&lt;/directory>
+                  &lt;includes>
+                    &lt;include>*.exe&lt;/include>
+                  &lt;/includes>
+                &lt;/fileset>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;alias>test&lt;/alias>
+                &lt;storepass>password&lt;/storepass>
+              &lt;/configuration>
+              ...
+</pre>
 
 <h3 id="gradle">Gradle plugin</h3>
 
