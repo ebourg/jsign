@@ -27,6 +27,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.model.fileset.FileSet;
+import org.apache.maven.shared.model.fileset.util.FileSetManager;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
@@ -39,9 +41,13 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 @Mojo(name = "sign", defaultPhase = LifecyclePhase.PACKAGE)
 public class JsignMojo extends AbstractMojo {
 
-    /** The file to be signed. */
-    @Parameter(required = true)
+    /** The file to be signed. Use {@link #fileset} to sign multiple files using the same certificate. */
+    @Parameter
     private File file;
+
+    /** The set of files to be signed. */
+    @Parameter
+    private FileSet fileset;
 
     /** The program name embedded in the signature. */
     @Parameter( property = "jsign.name" )
@@ -122,6 +128,10 @@ public class JsignMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (file == null && fileset == null) {
+            throw new MojoExecutionException("file of fileset must be set");
+        }
+
         SignerHelper helper = new SignerHelper(new MavenConsole(getLog()), "element");
         
         helper.name(name);
@@ -150,7 +160,16 @@ public class JsignMojo extends AbstractMojo {
         }
 
         try {
-            helper.sign(file);
+            if (file != null) {
+                helper.sign(file);
+            }
+
+            if (fileset != null) {
+                for (String filename : new FileSetManager().getIncludedFiles(fileset)) {
+                    File file = new File(fileset.getDirectory(), filename);
+                    helper.sign(file);
+                }
+            }
         } catch (SignerException e) {
             throw new MojoFailureException(e.getMessage(), e);
         }

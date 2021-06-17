@@ -46,6 +46,7 @@ See https://ebourg.github.io/jsign for more information.
 * Signatures can be detached and re-attached to make the builds reproducible without access to the private key
 * The new `YUBIKEY` storetype can be specified to sign with a YubiKey (the SunPKCS11 provider is automatically configured)
 * The Azure Key Vault and Google Cloud KMS cloud key management systems have been integrated
+* The Maven plugin can now sign multiple files by defining a fileset (contributed by Bernhard Stiftner).
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
 * The keystore aliases are now listed in the error message if the alias specified is incorrect
 * Fixed the update of the PE checksum (contributed by Markus Kilås)

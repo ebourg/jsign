@@ -24,6 +24,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Settings;
+import org.apache.maven.shared.model.fileset.FileSet;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
@@ -48,6 +49,36 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         } catch (MojoFailureException e) {
             // expected
             assertEquals("keystore element, or keyfile and certfile elements must be set", e.getMessage());
+        }
+    }
+
+    public void testFileSet() throws Exception {
+        FileSet fileset = new FileSet();
+        fileset.setDirectory("target/test-classes/");
+        fileset.addInclude("*.exe");
+
+        JsignMojo mojo = getMojo();
+        setVariableValueToObject(mojo, "file", null);
+        setVariableValueToObject(mojo, "fileset", fileset);
+
+        try {
+            mojo.execute();
+        } catch (MojoFailureException e) {
+            // expected
+            assertEquals("keystore element, or keyfile and certfile elements must be set", e.getMessage());
+        }
+    }
+
+    public void testMissingFileAndFileSet() throws Exception {
+        JsignMojo mojo = getMojo();
+        setVariableValueToObject(mojo, "file", null);
+        setVariableValueToObject(mojo, "fileset", null);
+
+        try {
+            mojo.execute();
+        } catch (MojoExecutionException e) {
+            // expected
+            assertEquals("file of fileset must be set", e.getMessage());
         }
     }
 
