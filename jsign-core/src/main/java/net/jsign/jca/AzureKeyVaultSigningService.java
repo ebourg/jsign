@@ -126,7 +126,7 @@ public class AzureKeyVaultSigningService implements SigningService {
             String kid = (String) response.get("kid");
             Map policy = (Map) response.get("policy");
             Map keyprops = (Map) policy.get("key_props");
-            String algorithm = (String) keyprops.get("kty");
+            String algorithm = ((String) keyprops.get("kty")).replace("-HSM", "");
 
             return new SigningServicePrivateKey(kid, algorithm);
         } catch (AzureException | IOException e) {
