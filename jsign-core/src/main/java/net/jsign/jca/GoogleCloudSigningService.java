@@ -17,9 +17,6 @@
 package net.jsign.jca;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
@@ -31,9 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
-import org.apache.commons.io.IOUtils;
 
 import net.jsign.DigestAlgorithm;
 
@@ -48,11 +43,10 @@ public class GoogleCloudSigningService implements SigningService {
     /** The name of the keyring */
     private final String keyring;
 
-    /** The Google Cloud API access token */
-    private final String token;
-
     /** Source for the certificates */
     private final Function<String, Certificate[]> certificateStore;
+
+    private final RESTClient client;
 
     /**
      * Creates a new Google Cloud signing service.
@@ -63,8 +57,8 @@ public class GoogleCloudSigningService implements SigningService {
      */
     public GoogleCloudSigningService(String keyring, String token, Function<String, Certificate[]> certificateStore) {
         this.keyring = keyring;
-        this.token = token;
         this.certificateStore = certificateStore;
+        this.client = new RESTClient("https://cloudkms.googleapis.com/v1/", conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     @Override
@@ -77,13 +71,13 @@ public class GoogleCloudSigningService implements SigningService {
         List<String> aliases = new ArrayList<>();
 
         try {
-            Map<String, ?> response = get(keyring + "/cryptoKeys");
+            Map<String, ?> response = client.get(keyring + "/cryptoKeys");
             Object[] cryptoKeys = (Object[]) response.get("cryptoKeys");
             for (Object cryptoKey : cryptoKeys) {
                 String name = (String) ((Map) cryptoKey).get("name");
                 aliases.add(name.substring(name.lastIndexOf("/") + 1));
             }
-        } catch (GoogleCloudException | IOException e) {
+        } catch (IOException e) {
             throw new KeyStoreException(e);
         }
 
@@ -107,11 +101,11 @@ public class GoogleCloudSigningService implements SigningService {
         try {
             if (alias.contains("cryptoKeyVersions")) {
                 // full key with version specified
-                Map<String, ?> response = get(alias);
+                Map<String, ?> response = client.get(alias);
                 algorithm = (String) response.get("algorithm");
             } else {
                 // key version not specified, find the most recent
-                Map<String, ?> response = get(alias + "/cryptoKeyVersions?filter=state%3DENABLED");
+                Map<String, ?> response = client.get(alias + "/cryptoKeyVersions?filter=state%3DENABLED");
                 Object[] cryptoKeyVersions = (Object[]) response.get("cryptoKeyVersions");
                 if (cryptoKeyVersions == null || cryptoKeyVersions.length == 0) {
                     throw new UnrecoverableKeyException("Unable to fetch Google Cloud private key '" + alias + "', no version found");
@@ -121,7 +115,7 @@ public class GoogleCloudSigningService implements SigningService {
                 alias = (String) cryptoKeyVersion.get("name");
                 algorithm = (String) cryptoKeyVersion.get("algorithm");
             }
-        } catch (GoogleCloudException | IOException e) {
+        } catch (IOException e) {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch Google Cloud private key '" + alias + "'").initCause(e);
         }
 
@@ -143,49 +137,12 @@ public class GoogleCloudSigningService implements SigningService {
         try {
             Map<String, Object> args = new HashMap<>();
             args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = post(privateKey.getId() + ":asymmetricSign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post(privateKey.getId() + ":asymmetricSign", JsonWriter.objectToJson(request, args));
             String signature = (String) response.get("signature");
 
             return Base64.getDecoder().decode(signature);
-        } catch (GoogleCloudException | IOException e) {
+        } catch (IOException e) {
             throw new GeneralSecurityException(e);
-        }
-    }
-
-    private Map<String, ?> get(String resource) throws GoogleCloudException, IOException {
-        return query("GET", resource, null);
-    }
-
-    private Map<String, ?> post(String resource, String body) throws GoogleCloudException, IOException {
-        return query("POST", resource, body);
-    }
-
-    private Map<String, ?> query(String method, String resource, String body) throws GoogleCloudException, IOException {
-        URL url = new URL("https://cloudkms.googleapis.com/v1/" + resource);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("Authorization", "Bearer " + token);
-        conn.setRequestMethod(method);
-        if (body != null) {
-            byte[] data = body.getBytes(StandardCharsets.UTF_8);
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-            conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-            conn.getOutputStream().write(data);
-        }
-
-        int responseCode = conn.getResponseCode();
-        String contentType = conn.getHeaderField("Content-Type");
-        if (responseCode < 400) {
-            String response = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
-
-            return JsonReader.jsonToMaps(response);
-        } else {
-            String error = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
-            if (contentType != null && contentType.startsWith("application/json")) {
-                throw new GoogleCloudException(JsonReader.jsonToMaps(error));
-            } else {
-                throw new IOException("HTTP Error " + responseCode);
-            }
         }
     }
 }

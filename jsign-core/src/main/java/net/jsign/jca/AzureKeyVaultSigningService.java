@@ -18,9 +18,6 @@ package net.jsign.jca;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStoreException;
@@ -35,9 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
-import org.apache.commons.io.IOUtils;
 
 import net.jsign.DigestAlgorithm;
 
@@ -49,11 +44,7 @@ import net.jsign.DigestAlgorithm;
  */
 public class AzureKeyVaultSigningService implements SigningService {
 
-    /** The URL of the key vault */
-    private final String vault;
-
-    /** The Azure API access token */
-    private final String token;
+    private final RESTClient client;
 
     /**
      * Mapping between Java and Azure signing algorithms.
@@ -80,12 +71,10 @@ public class AzureKeyVaultSigningService implements SigningService {
      * @param token the Azure API access token
      */
     public AzureKeyVaultSigningService(String vault, String token) {
-        if (vault.startsWith("http")) {
-            this.vault = vault;
-        } else {
-            this.vault = "https://" + vault + ".vault.azure.net";
+        if (!vault.startsWith("http")) {
+            vault = "https://" + vault + ".vault.azure.net";
         }
-        this.token = token;
+        this.client = new RESTClient(vault, conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     @Override
@@ -98,13 +87,13 @@ public class AzureKeyVaultSigningService implements SigningService {
         List<String> aliases = new ArrayList<>();
 
         try {
-            Map<String, ?> response = get("/certificates");
+            Map<String, ?> response = client.get("/certificates?api-version=7.2");
             Object[] certificates = (Object[]) response.get("value");
             for (Object certificate : certificates) {
                 String id = (String) ((Map) certificate).get("id");
                 aliases.add(id.substring(id.lastIndexOf('/') + 1));
             }
-        } catch (AzureException | IOException e) {
+        } catch (IOException e) {
             throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate aliases", e);
         }
 
@@ -114,12 +103,12 @@ public class AzureKeyVaultSigningService implements SigningService {
     @Override
     public Certificate[] getCertificateChain(String alias) throws KeyStoreException {
         try {
-            Map<String, ?> response = get("/certificates/" + alias);
+            Map<String, ?> response = client.get("/certificates/" + alias + "?api-version=7.2");
             String pem = (String) response.get("cer");
 
             Certificate certificate = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(pem)));
             return new Certificate[]{certificate};
-        } catch (AzureException | IOException | CertificateException e) {
+        } catch (IOException | CertificateException e) {
             throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate '" + alias + "'", e);
         }
     }
@@ -127,14 +116,14 @@ public class AzureKeyVaultSigningService implements SigningService {
     @Override
     public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
         try {
-            Map<String, ?> response = get("/certificates/" + alias);
+            Map<String, ?> response = client.get("/certificates/" + alias + "?api-version=7.2");
             String kid = (String) response.get("kid");
             Map policy = (Map) response.get("policy");
             Map keyprops = (Map) policy.get("key_props");
             String algorithm = ((String) keyprops.get("kty")).replace("-HSM", "");
 
             return new SigningServicePrivateKey(kid, algorithm);
-        } catch (AzureException | IOException e) {
+        } catch (IOException e) {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch Azure Key Vault private key for the certificate '" + alias + "'").initCause(e);
         }
     }
@@ -156,48 +145,12 @@ public class AzureKeyVaultSigningService implements SigningService {
         try {
             Map<String, Object> args = new HashMap<>();
             args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = post(privateKey.getId() + "/sign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post(privateKey.getId() + "/sign?api-version=7.2", JsonWriter.objectToJson(request, args));
             String value = (String) response.get("value");
 
             return Base64.getUrlDecoder().decode(value);
-        } catch (AzureException | IOException e) {
+        } catch (IOException e) {
             throw new GeneralSecurityException(e);
-        }
-    }
-
-    private Map<String, ?> get(String resource) throws AzureException, IOException {
-        return query("GET", resource, null);
-    }
-
-    private Map<String, ?> post(String resource, String body) throws AzureException, IOException {
-        return query("POST", resource, body);
-    }
-
-    private Map<String, ?> query(String method, String resource, String body) throws AzureException, IOException {
-        URL url = new URL((resource.startsWith("http") ? resource : vault + "/" + resource) + "?api-version=7.2");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("Authorization", "Bearer " + token);
-        conn.setRequestMethod(method);
-        if (body != null) {
-            byte[] data = body.getBytes(StandardCharsets.UTF_8);
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-            conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-            conn.getOutputStream().write(data);
-        }
-
-        int responseCode = conn.getResponseCode();
-        String contentType = conn.getHeaderField("Content-Type");
-        if (responseCode < 400) {
-            String response = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
-            return JsonReader.jsonToMaps(response);
-        } else {
-            String error = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
-            if (contentType != null && contentType.startsWith("application/json")) {
-                throw new AzureException(JsonReader.jsonToMaps(error));
-            } else {
-                throw new IOException("HTTP Error " + responseCode);
-            }
         }
     }
 }
