@@ -17,6 +17,8 @@
 package net.jsign.jca;
 
 import java.security.PrivateKey;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Reference to a private key held by the signing service.
@@ -31,6 +33,9 @@ public class SigningServicePrivateKey implements PrivateKey {
     /** The algorithm of the key (for example RSA or ECDSA) */
     private final String algorithm;
 
+    /** Extra properties of the key */
+    private final Map<String, Object> properties = new HashMap<>();
+
     /**
      * Creates a new reference to a privaye key.
      *
@@ -44,6 +49,10 @@ public class SigningServicePrivateKey implements PrivateKey {
 
     public String getId() {
         return id;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 
     @Override

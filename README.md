@@ -28,7 +28,7 @@ Jsign is free to use and licensed under the Apache License version 2.0.
 * Keystores supported:
   * PKCS#12 and JKS files
   * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), etc)
-  * Cloud key management systems ([Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [Google Cloud KMS](https://cloud.google.com/security-key-management))
+  * Cloud key management systems ([Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [DigiCert ONE](https://one.digicert.com), [Google Cloud KMS](https://cloud.google.com/security-key-management))
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
 * Build tools integration (Maven, Gradle, Ant)
@@ -45,7 +45,7 @@ See https://ebourg.github.io/jsign for more information.
 * MS Cabinet signing has been implemented (contributed by Joseph Lee)
 * Signatures can be detached and re-attached to make the builds reproducible without access to the private key
 * The new `YUBIKEY` storetype can be specified to sign with a YubiKey (the SunPKCS11 provider is automatically configured)
-* The Azure Key Vault and Google Cloud KMS cloud key management systems have been integrated
+* The Azure Key Vault, DigiCert ONE and Google Cloud KMS cloud key management systems have been integrated
 * The Maven plugin can now sign multiple files by defining a fileset (contributed by Bernhard Stiftner).
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
 * The keystore aliases are now listed in the error message if the alias specified is incorrect

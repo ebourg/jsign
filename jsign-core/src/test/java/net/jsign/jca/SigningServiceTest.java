@@ -113,4 +113,16 @@ public class SigningServiceTest {
 
         testCustomProvider(provider, keystore, "test", "");
     }
+
+    @Test
+    public void testDigiCertProvider() throws Exception {
+        String apikey = DigiCertONE.getApiKey();
+        String keystoreFile = DigiCertONE.getClientCertificateFile();
+
+        Provider provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(apikey, new File(keystoreFile), DigiCertONE.getClientCertificatePassword()));
+        KeyStore keystore = KeyStore.getInstance("DIGICERTONE", provider);
+        keystore.load(null, "".toCharArray());
+
+        testCustomProvider(provider, keystore, "0a50eb72-68d0-4730-96cb-fe648d2c2fd2", "");
+    }
 }

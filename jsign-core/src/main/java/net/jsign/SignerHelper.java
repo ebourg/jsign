@@ -51,6 +51,7 @@ import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 
 import net.jsign.jca.AzureKeyVaultSigningService;
+import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.timestamp.TimestampingMode;
@@ -270,7 +271,7 @@ class SignerHelper {
         Certificate[] chain;
 
         // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype)) {
+        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"DIGICERTONE".equals(storetype)) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && keyfile != null) {
@@ -283,8 +284,11 @@ class SignerHelper {
             if (storepass == null) {
                 throw new SignerException("storepass " + parameterName + " must specify the Azure API access token");
             }
-        }
-        if ("GOOGLECLOUD".equals(storetype)) {
+        } else if ("DIGICERTONE".equals(storetype)) {
+            if (storepass == null || storepass.split("\\|").length != 3) {
+                throw new SignerException("storepass " + parameterName + " must specify the DigiCert ONE API key and the client certificate: <apikey>|<keystore>|<password>");
+            }
+        } else if ("GOOGLECLOUD".equals(storetype)) {
             if (keystore == null) {
                 throw new SignerException("keystore " + parameterName + " must specify the Goole Cloud keyring");
             }
@@ -313,6 +317,9 @@ class SignerHelper {
             provider = YubiKey.getProvider();
         } else if ("AZUREKEYVAULT".equals(storetype)) {
             provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore.getName(), storepass));
+        } else if ("DIGICERTONE".equals(storetype)) {
+            String[] elements = storepass.split("\\|");
+            provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], new File(elements[1]), elements[2]));
         } else if ("GOOGLECLOUD".equals(storetype)) {
             provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore.getName(), storepass, alias -> {
                 try {
@@ -323,7 +330,7 @@ class SignerHelper {
             }));
         }
 
-        if (keystore != null || "YUBIKEY".equals(storetype)) {
+        if (keystore != null || "YUBIKEY".equals(storetype) || "DIGICERTONE".equals(storetype)) {
             KeyStore ks;
             Set<String> aliases = new LinkedHashSet<>();
             try {

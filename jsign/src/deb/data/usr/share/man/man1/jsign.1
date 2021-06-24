@@ -45,6 +45,8 @@ The type of the keystore:
 .br
 - AZUREKEYVAULT : Azure Key Vault key management system
 .br
+- DIGICERTONE : DigiCert ONE Secure Software Manager
+.br
 This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
 
 .TP
@@ -168,6 +170,18 @@ Signing with Azure Key Vault:
 Certificates and keys stored in the Azure Key Vault key management system can be used with:
 
 jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test --storepass &lt;api-access-token&gt; application.exe
+
+
+.TP
+
+Signing with DigiCert ONE:
+
+Certificates and keys stored in the DigiCert ONE Secure Software Manager can be used directly without installing
+the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding a client certificate for the
+authentication.
+
+jsign --storetype DIGICERTONE --alias test \
+      --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" application.exe
 
 
 .SH REPORTING BUGS

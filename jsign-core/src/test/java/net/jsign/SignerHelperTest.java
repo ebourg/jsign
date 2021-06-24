@@ -27,6 +27,7 @@ import org.bouncycastle.cms.SignerInformation;
 import org.junit.Test;
 
 import net.jsign.jca.Azure;
+import net.jsign.jca.DigiCertONE;
 import net.jsign.pe.PEFile;
 
 import static org.junit.Assert.*;
@@ -82,6 +83,36 @@ public class SignerHelperTest {
                 .keystore("jsigntestkeyvault")
                 .storepass(Azure.getAccessToken())
                 .alias("jsign")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        PEFile peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+
+        CMSSignedData signedData = signatures.get(0);
+        assertNotNull(signedData);
+
+        // Check the signature algorithm
+        SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
+        assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
+    }
+
+    @Test
+    public void testDigiCertONE() throws Exception {
+        String apikey = DigiCertONE.getApiKey();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-signing-service.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("DIGICERTONE")
+                .storepass(apikey + "|" + DigiCertONE.getClientCertificateFile() + "|" + DigiCertONE.getClientCertificatePassword())
+                .alias("Tomcat-PMC-cert-2021-04")
                 .alg("SHA-256");
 
         helper.sign(targetFile);
