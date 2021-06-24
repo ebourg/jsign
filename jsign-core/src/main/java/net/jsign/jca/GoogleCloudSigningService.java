@@ -127,7 +127,7 @@ public class GoogleCloudSigningService implements SigningService {
     @Override
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
         DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
-        data = digestAlgorithm.getMessageDigest().digest();
+        data = digestAlgorithm.getMessageDigest().digest(data);
 
         Map<String, String> digest = new HashMap<>();
         digest.put(digestAlgorithm.name().toLowerCase(), Base64.getEncoder().encodeToString(data));
