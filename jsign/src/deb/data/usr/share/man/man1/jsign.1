@@ -47,6 +47,8 @@ The type of the keystore:
 .br
 - DIGICERTONE : DigiCert ONE Secure Software Manager
 .br
+- GOOGLECLOUD : Google Cloud KMS
+.br
 This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
 
 .TP
@@ -182,6 +184,19 @@ authentication.
 
 jsign --storetype DIGICERTONE --alias test \
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" application.exe
+
+
+.TP
+
+Signing with Google Cloud KMS:
+
+Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
+references the path of the keyring. The alias can specify either the full path of the key, or only the short name. If
+the version is omitted the most recent one will be picked automatically.
+
+jsign --storetype GOOGLECLOUD --storepass <api-access-token> \\
+      --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \\
+      --alias test --certfile full-chain.pem application.exe
 
 
 .SH REPORTING BUGS
