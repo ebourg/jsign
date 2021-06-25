@@ -7,5 +7,5 @@ TODO
 - Support unauthenticated blobs
 - Sign multiple files (fileset)
 - Support generating MsiDigitalSignatureEx entries when signing MSI files (requires access to the streams metadata in POI)
-- Google Cloud KMS integration
+- load password from the environment (CLI syntax: env:VARIABLE_NAME)
 - AWS KMS integration
