@@ -46,7 +46,7 @@ class SigningServiceKeyStore extends KeyStoreSpi {
         try {
             return service.getCertificateChain(alias);
         } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
