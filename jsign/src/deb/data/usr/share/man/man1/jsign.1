@@ -16,7 +16,8 @@ alternative to native tools like signcode/signtool on Windows or the Mono
 development tools on Unix systems.
 
 Jsign can use private keys and certificates in various formats, either Java keystores,
-PKCS#12 keystores, PKCS#11 hardware tokens or SPC/PVK files.
+PKCS#12 keystores, PKCS#11 hardware tokens, SPC/PVK files or from cloud key management
+systems.
 
 .SH OPTIONS
 
@@ -35,19 +36,19 @@ The password to open the keystore
 .B --storetype <TYPE>
 The type of the keystore:
 .br
-- JKS    : Java keystore (.jks files)
+- JKS           : Java keystore (.jks files)
 .br
-- PKCS12 : Standard PKCS#12 keystore (.p12 or .pfx files)
+- PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
 .br
-- PKCS11 : PKCS#11 hardware token
+- PKCS11        : PKCS#11 hardware token
 .br
-- YUBIKEY : YubiKey security key (requires ykcs11)
+- YUBIKEY       : YubiKey security key (requires ykcs11)
 .br
 - AZUREKEYVAULT : Azure Key Vault key management system
 .br
-- DIGICERTONE : DigiCert ONE Secure Software Manager
+- DIGICERTONE   : DigiCert ONE Secure Software Manager
 .br
-- GOOGLECLOUD : Google Cloud KMS
+- GOOGLECLOUD   : Google Cloud KMS
 .br
 This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
 
@@ -144,7 +145,8 @@ Print the help
 .TP
 Signing with a PKCS#12 keystore and timestamping:
 
-jsign --keystore keystore.p12 --alias test --storepass password --tsaurl http://timestamp.comodoca.com/authenticode application.exe
+jsign --keystore keystore.p12 --alias test --storepass password \\
+      --tsaurl http://timestamp.comodoca.com/authenticode application.exe
 
 
 .TP
@@ -171,7 +173,8 @@ Signing with Azure Key Vault:
 
 Certificates and keys stored in the Azure Key Vault key management system can be used with:
 
-jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test --storepass &lt;api-access-token&gt; application.exe
+jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test \\
+      --storepass <api-access-token> application.exe
 
 
 .TP
@@ -182,7 +185,7 @@ Certificates and keys stored in the DigiCert ONE Secure Software Manager can be 
 the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding a client certificate for the
 authentication.
 
-jsign --storetype DIGICERTONE --alias test \
+jsign --storetype DIGICERTONE --alias test \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" application.exe
 
 
