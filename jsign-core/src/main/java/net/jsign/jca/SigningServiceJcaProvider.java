@@ -21,6 +21,8 @@ import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.util.Collections;
 
+import net.jsign.DigestAlgorithm;
+
 /**
  * JCA Provider using a signing service.
  *
@@ -36,9 +38,12 @@ public class SigningServiceJcaProvider extends Provider {
 
         AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
             putService(new KeyStoreProviderService());
-            String[] algorithms = new String[]{"SHA1withRSA", "SHA256withRSA", "SHA384withRSA", "SHA512withRSA", "SHA1withECDSA", "SHA256withECDSA", "SHA384withECDSA", "SHA512withECDSA"};
-            for (String algorithm : algorithms) {
-                putService(new SignatureProviderService(algorithm));
+            for (String alg : new String[]{"RSA", "ECDSA"}) {
+                for (DigestAlgorithm digest : DigestAlgorithm.values()) {
+                    if (digest != DigestAlgorithm.MD5) {
+                        putService(new SignatureProviderService(digest.name() + "with" + alg));
+                    }
+                }
             }
             return null;
         });
