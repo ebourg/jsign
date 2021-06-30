@@ -321,7 +321,7 @@ class SignerHelper {
             String[] elements = storepass.split("\\|");
             provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], new File(elements[1]), elements[2]));
         } else if ("GOOGLECLOUD".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore.getName(), storepass, alias -> {
+            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore.getPath(), storepass, alias -> {
                 try {
                     return loadCertificateChain(certfile);
                 } catch (IOException | CertificateException e) {
