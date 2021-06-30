@@ -361,7 +361,7 @@ class SignerHelper {
             if (chain == null) {
                 throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore) + " (available aliases: " + String.join(", ", aliases) + ")");
             }
-            if (certfile != null) {
+            if (certfile != null && !"GOOGLECLOUD".equals(storetype)) {
                 if (chain.length != 1) {
                     throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
                 }
