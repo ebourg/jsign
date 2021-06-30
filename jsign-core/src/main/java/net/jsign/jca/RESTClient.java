@@ -73,7 +73,7 @@ class RESTClient {
             if (contentType != null && contentType.startsWith("application/json")) {
                 throw new IOException(getErrorMessage(JsonReader.jsonToMaps(error)));
             } else {
-                throw new IOException("HTTP Error " + responseCode + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : ""));
+                throw new IOException("HTTP Error " + responseCode + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : "") + " (" + url + ")");
             }
         }
     }
