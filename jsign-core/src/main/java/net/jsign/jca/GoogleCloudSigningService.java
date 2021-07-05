@@ -46,6 +46,9 @@ public class GoogleCloudSigningService implements SigningService {
     /** Source for the certificates */
     private final Function<String, Certificate[]> certificateStore;
 
+    /** Cache of private keys indexed by id */
+    private final Map<String, SigningServicePrivateKey> keys = new HashMap<>();
+
     private final RESTClient client;
 
     /**
@@ -96,6 +99,10 @@ public class GoogleCloudSigningService implements SigningService {
             alias = keyring + "/cryptoKeys/" + alias;
         }
 
+        if (keys.containsKey(alias)) {
+            return keys.get(alias);
+        }
+
         String algorithm;
 
         try {
@@ -121,7 +128,9 @@ public class GoogleCloudSigningService implements SigningService {
 
         algorithm = algorithm.substring(0, algorithm.indexOf("_")); // RSA_SIGN_PKCS1_2048_SHA256 -> RSA
 
-        return new SigningServicePrivateKey(alias, algorithm);
+        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm);
+        keys.put(alias, key);
+        return key;
     }
 
     @Override
