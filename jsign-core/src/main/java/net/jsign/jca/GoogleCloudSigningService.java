@@ -35,6 +35,20 @@ import net.jsign.DigestAlgorithm;
 /**
  * Signing service using the Google Cloud Key Management API.
  *
+ * <p>The key alias can take one of the following forms:</p>
+ *  <ul>
+ *   <li>The absolute path of the key with the exact version specified:
+ *       <tt>projects/first-rain-123/locations/global/keyRings/mykeyring/cryptoKeys/mykey/cryptoKeyVersions/2</tt></li>
+ *   <li>The absolute path of the key without the version specified, the first version enabled will be used:
+ *       <tt>projects/first-rain-123/locations/global/keyRings/mykeyring/cryptoKeys/mykey</tt></li>
+ *   <li>The path of the key relatively to the keyring with the version specified: <tt>mykey/cryptoKeyVersions/2</tt></li>
+ *   <li>The path of the key relatively to the keyring without the version specified: <tt>mykey</tt></li>
+ * </ul>
+ *
+ * <p>When the version of the key is specified, it's also possible to append the algorithm of the key, this saves
+ * a round-trip and reduces the risk of hitting a read request limit when signing a large number of files:
+ * <tt>mykey/cryptoKeyVersions/2:ECDSA</tt></p>
+ *
  * @since 4.0
  * @see <a href="https://cloud.google.com/kms/docs/reference/rest">Cloud Key Management Service (KMS) API</a>
  */
@@ -108,8 +122,14 @@ public class GoogleCloudSigningService implements SigningService {
         try {
             if (alias.contains("cryptoKeyVersions")) {
                 // full key with version specified
-                Map<String, ?> response = client.get(alias);
-                algorithm = (String) response.get("algorithm");
+                if (alias.contains(":")) {
+                    // algorithm appended to the alias
+                    algorithm = alias.substring(alias.indexOf(':') + 1) + "_SIGN";
+                    alias = alias.substring(0, alias.indexOf(':'));
+                } else {
+                    Map<String, ?> response = client.get(alias);
+                    algorithm = (String) response.get("algorithm");
+                }
             } else {
                 // key version not specified, find the most recent
                 Map<String, ?> response = client.get(alias + "/cryptoKeyVersions?filter=state%3DENABLED");
