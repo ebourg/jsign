@@ -111,6 +111,8 @@ class SignerHelper {
     private Charset encoding;
     private boolean detached;
 
+    private AuthenticodeSigner signer;
+
     public SignerHelper(Console console, String parameterName) {
         this.console = console;
         this.parameterName = parameterName;
@@ -473,7 +475,9 @@ class SignerHelper {
         }
 
         try {
-            AuthenticodeSigner signer = build();
+            if (signer == null) {
+                signer = build();
+            }
             
             if (console != null) {
                 console.info("Adding Authenticode signature to " + file);
