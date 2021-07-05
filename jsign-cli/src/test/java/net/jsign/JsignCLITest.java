@@ -213,6 +213,23 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testSigningMultipleFiles() throws Exception {
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "" + targetFile, "" + targetFile);
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(2, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+    }
+
+    @Test
     public void testSigningPowerShell() throws Exception {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");

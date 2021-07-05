@@ -108,9 +108,13 @@ public class JsignCLI {
         setOption(PARAM_ENCODING, helper, cmd);
         helper.detached(cmd.hasOption(PARAM_DETACHED));
 
-        File file = cmd.getArgList().isEmpty() ? null : new File(cmd.getArgList().get(0));
+        if (cmd.getArgList().isEmpty()) {
+            throw new SignerException("No file specified");
+        }
 
-        helper.sign(file);
+        for (String filename : cmd.getArgList()) {
+            helper.sign(new File(filename));
+        }
     }
 
     private void setOption(String key, SignerHelper helper, CommandLine cmd) {
@@ -119,7 +123,7 @@ public class JsignCLI {
     }
 
     private void printHelp() {
-        String header = "Sign and timestamp a Windows executable file, a Microsoft Installer (MSI), a Cabinet file (CAB) or a script (PowerShell, VBScript, JScript, WSF).\n\n";
+        String header = "Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB) or scripts (PowerShell, VBScript, JScript, WSF).\n\n";
         String footer ="\n" +
                 "Examples:\n\n" +
                 "   Signing with a PKCS#12 keystore and timestamping:\n\n" +
@@ -133,7 +137,7 @@ public class JsignCLI {
         formatter.setOptionComparator(null);
         formatter.setWidth(85);
         formatter.setDescPadding(1);
-        formatter.printHelp(getProgramName() + " [OPTIONS] FILE", header, options, footer);
+        formatter.printHelp(getProgramName() + " [OPTIONS] [FILE]...", header, options, footer);
     }
 
     private static String getProgramName() {

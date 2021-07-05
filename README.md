@@ -47,6 +47,7 @@ See https://ebourg.github.io/jsign for more information.
 * The new `YUBIKEY` storetype can be specified to sign with a YubiKey (the SunPKCS11 provider is automatically configured)
 * The Azure Key Vault, DigiCert ONE and Google Cloud KMS cloud key management systems have been integrated
 * The Maven plugin can now sign multiple files by defining a fileset (contributed by Bernhard Stiftner).
+* The command line tool can now sign multiple files
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
 * The keystore aliases are now listed in the error message if the alias specified is incorrect
 * Fixed the update of the PE checksum (contributed by Markus Kilås)

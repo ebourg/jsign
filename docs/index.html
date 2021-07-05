@@ -314,18 +314,18 @@ are the same as those described above for the Ant task.</p>
 and a <a href="https://github.com/ebourg/jsign/releases/download/3.1/jsign-3.1-1.noarch.rpm">RPM package</a>
 are provided to install it easily on most Linux distributions. On these systems the command line is invoked with:</p>
 
-<pre> jsign [OPTIONS] FILE</pre>
+<pre> jsign [OPTIONS] [FILE]...</pre>
 
 <p>On other systems the command line is invoked by running the jar with:</p>
     
-<pre> java -jar jsign-3.1.jar [OPTIONS] FILE</pre>
+<pre> java -jar jsign-3.1.jar [OPTIONS] [FILE]...</pre>
     
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
 <pre>
-  usage: jsign [OPTIONS] FILE
-  Sign and timestamp a Windows executable file, a Microsoft Installer (MSI), a Cabinet
-  file or a script (PowerShell, VBScript, JScript, WSF).
+  usage: jsign [OPTIONS] [FILE]...
+  Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
+  files or scripts (PowerShell, VBScript, JScript, WSF).
   
   -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
      --storepass &lt;PASSWORD>  The password to open the keystore
