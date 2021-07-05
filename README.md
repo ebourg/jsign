@@ -26,7 +26,7 @@ Jsign is free to use and licensed under the Apache License version 2.0.
 * Extracts and embeds detached signatures to support [reproducible builds](https://reproducible-builds.org/docs/embedded-signatures/)
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported:
-  * PKCS#12 and JKS files
+  * PKCS#12, JKS and JCEKS files
   * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), etc)
   * Cloud key management systems ([Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [DigiCert ONE](https://one.digicert.com), [Google Cloud KMS](https://cloud.google.com/security-key-management))
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
@@ -50,6 +50,7 @@ See https://ebourg.github.io/jsign for more information.
 * The command line tool can now sign multiple files
 * The `alias` parameter is now optional if the keystore contains only one entry (contributed by Michele Locati)
 * The keystore aliases are now listed in the error message if the alias specified is incorrect
+* The `storetype` parameter is no longer required for JCEKS keystores
 * Fixed the update of the PE checksum (contributed by Markus Kilås)
 * Upgraded BouncyCastle to 1.69
 

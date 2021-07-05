@@ -23,7 +23,7 @@ import java.security.KeyStoreException;
 import java.security.Provider;
 
 /**
- * Helper class for loading KeyStores (JKS, PKCS#12 or PKCS#11).
+ * Helper class for loading KeyStores (JKS, JCEKS, PKCS#12 or PKCS#11).
  * 
  * @author Emmanuel Bourg
  * @since 2.0
@@ -37,7 +37,7 @@ public class KeyStoreUtils {
      * Load the keystore from the specified file.
      * 
      * @param keystore   the file containing the keystore
-     * @param storetype  the type of the keystore (either JKS, PKCS12 or PKCS11).
+     * @param storetype  the type of the keystore (either JKS, JCEKS, PKCS12 or PKCS11).
      *                   If null the type is inferred from the extension of the file (.p12 or .pfx for PKCS#12 keystores)
      * @param storepass  The password of the keystore
      * @param provider   The security provider used to load the keystore (must be specified for PKCS#11 keystores)
@@ -50,6 +50,8 @@ public class KeyStoreUtils {
             String filename = keystore.getName().toLowerCase();
             if (filename.endsWith(".p12") || filename.endsWith(".pfx")) {
                 storetype = "PKCS12";
+            } else if (filename.endsWith(".jceks")) {
+                storetype = "JCEKS";
             } else {
                 storetype = "JKS";
             }
@@ -66,7 +68,7 @@ public class KeyStoreUtils {
             throw new KeyStoreException("keystore type '" + storetype + "' is not supported", e);
         }
 
-        boolean filebased = "JKS".equals(storetype) || "PKCS12".equals(storetype);
+        boolean filebased = "JKS".equals(storetype) || "JCEKS".equals(storetype) || "PKCS12".equals(storetype);
         if (filebased && (keystore == null || !keystore.exists())) {
             throw new KeyStoreException("The keystore " + keystore + " couldn't be found");
         }

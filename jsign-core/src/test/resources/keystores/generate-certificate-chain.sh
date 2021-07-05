@@ -63,6 +63,9 @@ KEYTOOL_OPTS="-importkeystore -srcstoretype pkcs12 -srcstorepass password -srcal
 keytool $KEYTOOL_OPTS -srckeystore keystore.p12          -destkeystore keystore.jks
 keytool $KEYTOOL_OPTS -srckeystore keystore-no-chain.p12 -destkeystore keystore-no-chain.jks
 
+KEYTOOL_OPTS="-importkeystore -srcstoretype pkcs12 -srcstorepass password -srcalias test -deststoretype jceks -deststorepass password -destalias test"
+keytool $KEYTOOL_OPTS -srckeystore keystore.p12          -destkeystore keystore.jceks
+
 # Cleanup
 rm *.srl
 rm jsign-root-ca.key

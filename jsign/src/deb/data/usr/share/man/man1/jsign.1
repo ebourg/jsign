@@ -38,6 +38,8 @@ The type of the keystore:
 .br
 - JKS           : Java keystore (.jks files)
 .br
+- JCEKS         : SunJCE keystore (.jceks files)
+.br
 - PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
 .br
 - PKCS11        : PKCS#11 hardware token
@@ -50,7 +52,7 @@ The type of the keystore:
 .br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
-This options is not required if the keystore has a known extension (.jks, .p12 or .pfx).
+This options is not required if the keystore has a known extension (.jks, jceks, .p12 or .pfx).
 
 .TP
 .B -a, --alias <NAME>

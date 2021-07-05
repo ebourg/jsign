@@ -304,6 +304,23 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testSigningJCEKS() throws Exception {
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystores/keystore.jceks", "--alias=test", "--storepass=password", "" + targetFile);
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+    }
+
+    @Test
     public void testSigningPVKSPC() throws Exception {
         cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/keystores/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
         

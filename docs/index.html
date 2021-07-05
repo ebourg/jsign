@@ -62,7 +62,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
   <li>Keystores supported:
     <ul>
-      <li>PKCS#12 and JKS files</li>
+      <li>PKCS#12, JKS and JCEKS files</li>
       <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
       <li>Cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>)</li>
     </ul>
@@ -143,6 +143,7 @@ programmatically or standalone as a command line tool.</p>
         The type of the keystore:
         <ul>
           <li><code>JKS</code>: Java keystore</li>
+          <li><code>JCEKS</code>: SunJCE keystore</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
@@ -331,6 +332,7 @@ are provided to install it easily on most Linux distributions. On these systems 
      --storepass &lt;PASSWORD>  The password to open the keystore
      --storetype &lt;TYPE>      The type of the keystore:
                              - JKS: Java keystore (.jks files)
+                             - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
                              - AZUREKEYVAULT: Azure Key Vault key management system
