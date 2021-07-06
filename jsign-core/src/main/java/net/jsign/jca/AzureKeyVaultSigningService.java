@@ -44,6 +44,9 @@ import net.jsign.DigestAlgorithm;
  */
 public class AzureKeyVaultSigningService implements SigningService {
 
+    /** Cache of certificates indexed by alias */
+    private final Map<String, Map<String, ?>> certificates = new HashMap<>();
+
     private final RESTClient client;
 
     /**
@@ -82,6 +85,20 @@ public class AzureKeyVaultSigningService implements SigningService {
         return "AzureKeyVault";
     }
 
+    /**
+     * Returns the certificate details
+     *
+     * @param alias the alias of the certificate
+     */
+    private Map<String, ?> getCertificateInfo(String alias) throws IOException {
+        if (!certificates.containsKey(alias)) {
+            Map<String, ?> response = client.get("/certificates/" + alias + "?api-version=7.2");
+            certificates.put(alias, response);
+        }
+
+        return certificates.get(alias);
+    }
+
     @Override
     public List<String> aliases() throws KeyStoreException {
         List<String> aliases = new ArrayList<>();
@@ -103,7 +120,7 @@ public class AzureKeyVaultSigningService implements SigningService {
     @Override
     public Certificate[] getCertificateChain(String alias) throws KeyStoreException {
         try {
-            Map<String, ?> response = client.get("/certificates/" + alias + "?api-version=7.2");
+            Map<String, ?> response = getCertificateInfo(alias);
             String pem = (String) response.get("cer");
 
             Certificate certificate = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(pem)));
@@ -116,7 +133,7 @@ public class AzureKeyVaultSigningService implements SigningService {
     @Override
     public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
         try {
-            Map<String, ?> response = client.get("/certificates/" + alias + "?api-version=7.2");
+            Map<String, ?> response = getCertificateInfo(alias);
             String kid = (String) response.get("kid");
             Map policy = (Map) response.get("policy");
             Map keyprops = (Map) policy.get("key_props");
