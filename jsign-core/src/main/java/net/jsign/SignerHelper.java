@@ -334,24 +334,32 @@ class SignerHelper {
 
         if (keystore != null || "YUBIKEY".equals(storetype) || "DIGICERTONE".equals(storetype)) {
             KeyStore ks;
-            Set<String> aliases = new LinkedHashSet<>();
             try {
                 ks = KeyStoreUtils.load(keystore, "YUBIKEY".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
-                aliases.addAll(Collections.list(ks.aliases()));
-                if (aliases.isEmpty()) {
-                    throw new KeyStoreException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
-                }
             } catch (KeyStoreException e) {
-                throw new SignerException(e.getMessage(), e);
+                throw new SignerException("Failed to load the keystore " + keystore, e);
             }
 
+            Set<String> aliases = null;
             if (alias == null) {
                 if ("YUBIKEY".equals(storetype)) {
                     alias = "X.509 Certificate for Digital Signature";
-                } else if (aliases.size() == 1) {
-                    alias = aliases.iterator().next();
+
                 } else {
-                    throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
+                    // guess the alias if there is only one in the keystore
+                    try {
+                        aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
+                    } catch (KeyStoreException e) {
+                        throw new SignerException(e.getMessage(), e);
+                    }
+
+                    if (aliases.isEmpty()) {
+                        throw new SignerException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
+                    } else if (aliases.size() == 1) {
+                        alias = aliases.iterator().next();
+                    } else {
+                        throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
+                    }
                 }
             }
 
@@ -361,7 +369,20 @@ class SignerHelper {
                 throw new SignerException(e.getMessage(), e);
             }
             if (chain == null) {
-                throw new SignerException("No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore) + " (available aliases: " + String.join(", ", aliases) + ")");
+                String message = "No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore);
+                if (aliases == null) {
+                    try {
+                        aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
+                        if (aliases.isEmpty()) {
+                            message = "No certificate found in the keystore " + (provider != null ? provider.getName() : keystore);
+                        } else {
+                            message += " (available aliases: " + String.join(", ", aliases) + ")";
+                        }
+                    } catch (KeyStoreException e) {
+                        message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
+                    }
+                }
+                throw new SignerException(message);
             }
             if (certfile != null && !"GOOGLECLOUD".equals(storetype)) {
                 if (chain.length != 1) {
