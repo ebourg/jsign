@@ -32,16 +32,20 @@ import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.DefaultCMSSignatureEncryptionAlgorithmFinder;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
@@ -416,7 +420,17 @@ public class AuthenticodeSigner {
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
         
         // prepare the signerInfo with the extra authenticated attributes
-        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider);
+        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider, new DefaultCMSSignatureEncryptionAlgorithmFinder(){
+            @Override
+            public AlgorithmIdentifier findEncryptionAlgorithm(final AlgorithmIdentifier signatureAlgorithm) {
+                //enforce "RSA" instead of "sha256RSA" for digest signature to be more like signtool
+                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption)) {
+                    return new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
+                } else {
+                    return super.findEncryptionAlgorithm(signatureAlgorithm);
+                }
+            }
+        });
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
         
