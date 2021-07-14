@@ -423,8 +423,10 @@ public class AuthenticodeSigner {
         SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider, new DefaultCMSSignatureEncryptionAlgorithmFinder(){
             @Override
             public AlgorithmIdentifier findEncryptionAlgorithm(final AlgorithmIdentifier signatureAlgorithm) {
-                //enforce "RSA" instead of "sha256RSA" for digest signature to be more like signtool
-                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption)) {
+                //enforce "RSA" instead of "shaXXXRSA" for digest signature to be more like signtool
+                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption) ||
+                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha384WithRSAEncryption) ||
+                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha512WithRSAEncryption)) {
                     return new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
                 } else {
                     return super.findEncryptionAlgorithm(signatureAlgorithm);
