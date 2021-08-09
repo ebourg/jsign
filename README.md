@@ -52,6 +52,8 @@ See https://ebourg.github.io/jsign for more information.
 * The keystore aliases are now listed in the error message if the alias specified is incorrect
 * The `storetype` parameter is no longer required for JCEKS keystores
 * Fixed the update of the PE checksum (contributed by Markus Kilås)
+* The `CMSAlgorithmProtection` attribute is no longer added to the signature (contributed by Yegor Yarko)
+* The signature algorithm is identified as `RSA` instead of `sha*RSA` when using SHA-2 digests (contributed by Yegor Yarko)
 * Upgraded BouncyCastle to 1.69
 
 #### Version 3.1 (2020-03-01)
