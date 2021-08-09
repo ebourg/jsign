@@ -1,4 +1,6 @@
 net.jsign
+net.jsign.jca
+net.jsign.mscab
 net.jsign.msi
 net.jsign.pe
 net.jsign.script

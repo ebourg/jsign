@@ -128,7 +128,7 @@
 <span class="sourceLineNo">120</span>        int attempts = Math.max(retries, tsaurls.size());<a name="line.120"></a>
 <span class="sourceLineNo">121</span>        TimestampingException exception = new TimestampingException("Unable to complete the timestamping after " + attempts + " attempt" + (attempts &gt; 1 ? "s" : ""));<a name="line.121"></a>
 <span class="sourceLineNo">122</span>        int count = 0;<a name="line.122"></a>
-<span class="sourceLineNo">123</span>        while (token == null &amp;&amp; count &lt; Math.max(retries, tsaurls.size())) {<a name="line.123"></a>
+<span class="sourceLineNo">123</span>        while (count &lt; Math.max(retries, tsaurls.size())) {<a name="line.123"></a>
 <span class="sourceLineNo">124</span>            try {<a name="line.124"></a>
 <span class="sourceLineNo">125</span>                tsaurl = tsaurls.get(count % tsaurls.size());<a name="line.125"></a>
 <span class="sourceLineNo">126</span>                token = timestamp(algo, getEncryptedDigest(sigData));<a name="line.126"></a>
@@ -139,7 +139,7 @@
 <span class="sourceLineNo">131</span><a name="line.131"></a>
 <span class="sourceLineNo">132</span>            // pause before the next attempt<a name="line.132"></a>
 <span class="sourceLineNo">133</span>            try {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>                Thread.sleep(retryWait * 1000);<a name="line.134"></a>
+<span class="sourceLineNo">134</span>                Thread.sleep(retryWait * 1000L);<a name="line.134"></a>
 <span class="sourceLineNo">135</span>                count++;<a name="line.135"></a>
 <span class="sourceLineNo">136</span>            } catch (InterruptedException ie) {<a name="line.136"></a>
 <span class="sourceLineNo">137</span>            }<a name="line.137"></a>
@@ -203,7 +203,7 @@
 <span class="sourceLineNo">195</span>        return generator.generate(contentType, content);<a name="line.195"></a>
 <span class="sourceLineNo">196</span>    }<a name="line.196"></a>
 <span class="sourceLineNo">197</span><a name="line.197"></a>
-<span class="sourceLineNo">198</span>    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, CMSException, TimestampingException;<a name="line.198"></a>
+<span class="sourceLineNo">198</span>    protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException;<a name="line.198"></a>
 <span class="sourceLineNo">199</span><a name="line.199"></a>
 <span class="sourceLineNo">200</span>    /**<a name="line.200"></a>
 <span class="sourceLineNo">201</span>     * Returns the timestamper for the specified mode.<a name="line.201"></a>
