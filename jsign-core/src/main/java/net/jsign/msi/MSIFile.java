@@ -76,7 +76,7 @@ public class MSIFile implements Signable, Closeable {
     private static final String DIGITAL_SIGNATURE_ENTRY_NAME = "\u0005DigitalSignature";
     private static final String MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME = "\u0005MsiDigitalSignatureEx";
 
-    private final POIFSFileSystem fs;
+    private final POIFSFileSystem_ fs;
     private SeekableByteChannel channel;
 
     /**
@@ -99,7 +99,7 @@ public class MSIFile implements Signable, Closeable {
      * @throws IOException if an I/O error occurs
      */
     public MSIFile(File file) throws IOException {
-        this.fs = new POIFSFileSystem(file, false);
+        this.fs = new POIFSFileSystem_(file, false);
     }
 
     /**
@@ -113,7 +113,7 @@ public class MSIFile implements Signable, Closeable {
         InputStream in = new FilterInputStream(Channels.newInputStream(channel)) {
             public void close() { }
         };
-        this.fs = new POIFSFileSystem(in);
+        this.fs = new POIFSFileSystem_(in);
     }
 
     /**
@@ -181,6 +181,7 @@ public class MSIFile implements Signable, Closeable {
                 int size = buffer.remaining();
                 buffer.limit(buffer.position() + (int) Math.min(remaining, size));
                 digest.update(buffer);
+                fs.releaseBuffer(buffer);
                 remaining -= size;
             }
         }
@@ -255,4 +256,20 @@ public class MSIFile implements Signable, Closeable {
             channel.truncate(channel.position());
         }
     }
+
+    // allow for protected releaseBuffer usage
+    private static class POIFSFileSystem_ extends POIFSFileSystem {
+        POIFSFileSystem_(final File file, final boolean readOnly) throws IOException {
+            super(file, readOnly);
+        }
+
+        POIFSFileSystem_(final InputStream stream) throws IOException {
+            super(stream);
+        }
+
+        @Override
+        public void releaseBuffer(final ByteBuffer buffer) {
+            super.releaseBuffer(buffer);
+        }
+    } 
 }
