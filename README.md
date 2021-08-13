@@ -40,6 +40,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 4.1 (in development)
+
+* Fixed the _"Map failed"_ OutOfMemoryError when signing large MSI files
+
 #### Version 4.0 (2021-08-09)
 
 * MS Cabinet signing has been implemented (contributed by Joseph Lee)
