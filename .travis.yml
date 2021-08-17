@@ -5,8 +5,13 @@ jdk:
   - openjdk8
 
 matrix:
+  fast_finish: true
   allow_failures:
     - jdk: openjdk-ea
 
 after_success:
   - mvn clean test jacoco:report-aggregate coveralls:report
+
+cache:
+  directories:
+  - $HOME/.m2
