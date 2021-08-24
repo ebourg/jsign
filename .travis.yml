@@ -10,7 +10,7 @@ matrix:
     - jdk: openjdk-ea
 
 after_success:
-  - mvn clean test jacoco:report-aggregate coveralls:report
+  - mvn -T 1C clean test jacoco:report-aggregate coveralls:report
 
 cache:
   directories:

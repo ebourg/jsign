@@ -116,6 +116,7 @@
         <version>2.22.2</version>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
+          <parallel>all</parallel>
         </configuration>
       </plugin>
       <plugin>
