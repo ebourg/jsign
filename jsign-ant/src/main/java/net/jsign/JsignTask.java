@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Ant task for signing files with Authenticode.
@@ -31,6 +32,9 @@ public class JsignTask extends Task {
 
     /** The file to be signed. */
     private File file;
+
+    /** The set of files to be signed. */
+    private FileSet fileset;
 
     /** The program name embedded in the signature. */
     private String name;
@@ -87,6 +91,10 @@ public class JsignTask extends Task {
         this.file = file;
     }
 
+    public void addFileset(FileSet fileset) {
+        this.fileset = fileset;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -100,7 +108,7 @@ public class JsignTask extends Task {
     }
 
     public void setTsmode(String tsmode) {
-        this.tsmode = tsmode;
+        if (tsmode != null) this.tsmode = tsmode;
     }
 
     public void setKeystore(File keystore) {
@@ -132,7 +140,7 @@ public class JsignTask extends Task {
     }
 
     public void setTsaurl(String tsaurl) {
-        this.tsaurl = tsaurl;
+        if (tsmode != null) this.tsaurl = tsaurl;
     }
 
     public void setTsretries(int tsretries) {
@@ -177,8 +185,14 @@ public class JsignTask extends Task {
             helper.replace(replace);
             helper.encoding(encoding);
             helper.detached(detached);
-            
-            helper.sign(file);
+
+            if (fileset != null) {
+                for(String fileElement : fileset.getDirectoryScanner().getIncludedFiles()) {
+                    helper.sign(new File(fileset.getDir(), fileElement));
+                }
+            } else {
+                helper.sign(file);
+            }
         } catch (Exception e) {
             throw new BuildException(e.getMessage(), e, getLocation());
         }

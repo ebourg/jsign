@@ -188,14 +188,62 @@ public class JsignTaskTest {
     }
 
     @Test
+    public void testBlankTsurl() throws Exception {
+        project.executeTarget("blank-tsurl");
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+    }
+
+    @Test
+    public void testSigningMultipleFiles() throws Exception {
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        File targetFile2 = new File("target/test-classes/wineyes-multiple-files-test.exe");
+
+        project.executeTarget("signing-multiple-files");
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+        assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+        try (PEFile peFile = new PEFile(targetFile2)) {
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+        }
+    }
+
+    @Test
     public void testSigningPowerShell() throws Exception {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-ant.ps1");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
-        
+
         project.executeTarget("signing-powershell");
-        
+
         PowerShellScript script = new PowerShellScript(targetFile);
 
         List<CMSSignedData> signatures = script.getSignatures();
@@ -264,9 +312,9 @@ public class JsignTaskTest {
     @Test
     public void testTimestampingAuthenticode() throws Exception {
         project.executeTarget("timestamping-authenticode");
-        
+
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant-authenticode.exe");
-        
+
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile2)) {

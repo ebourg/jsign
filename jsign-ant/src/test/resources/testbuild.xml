@@ -80,12 +80,41 @@
 
   <target name="signing">
     <jsign file="wineyes-signed-with-ant.exe"
-             name="WinEyes"
-             url="http://www.steelblue.com/WinEyes"
-             alg="SHA-1"
-             keystore="${keystore}"
-             alias="${alias}"
-             keypass="${keypass}"/>
+           name="WinEyes"
+           url="http://www.steelblue.com/WinEyes"
+           alg="SHA-1"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"/>
+  </target>
+
+  <target name="blank-tsurl">
+    <property name="tsurl"    value=""/>
+    <jsign file="wineyes-signed-with-ant.exe"
+           name="WinEyes"
+           url="http://www.steelblue.com/WinEyes"
+           alg="SHA-1"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"
+           tsaurl="${tsurl}"
+           tsmode="authenticode"/>
+  </target>
+
+  <target name="signing-multiple-files">
+    <copy file="wineyes.exe" tofile="wineyes-multiple-files-test.exe" overwrite="true"/>
+    <jsign name="WinEyes"
+           url="http://www.steelblue.com/WinEyes"
+           alg="SHA-1"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"
+           tsmode="authenticode">
+      <fileset dir="./">
+        <include name="wineyes-multiple-files-test.exe"/>
+        <include name="wineyes-signed-with-ant.exe"/>
+      </fileset>
+    </jsign>
   </target>
 
   <target name="signing-powershell">
