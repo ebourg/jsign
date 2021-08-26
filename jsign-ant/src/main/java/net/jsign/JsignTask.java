@@ -108,7 +108,7 @@ public class JsignTask extends Task {
     }
 
     public void setTsmode(String tsmode) {
-        if (tsmode != null) this.tsmode = tsmode;
+        this.tsmode = tsmode;
     }
 
     public void setKeystore(File keystore) {
@@ -140,7 +140,7 @@ public class JsignTask extends Task {
     }
 
     public void setTsaurl(String tsaurl) {
-        if (tsmode != null) this.tsaurl = tsaurl;
+        this.tsaurl = tsaurl;
     }
 
     public void setTsretries(int tsretries) {
