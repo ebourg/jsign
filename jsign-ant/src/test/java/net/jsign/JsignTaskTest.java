@@ -191,9 +191,9 @@ public class JsignTaskTest {
     public void testSigningMultipleFiles() throws Exception {
         FileUtils.copyFile(sourceFile, targetFile);
 
-        File targetFile2 = new File("target/test-classes/wineyes-multiple-files-test.exe");
-
         project.executeTarget("signing-multiple-files");
+
+        File targetFile2 = new File("target/test-classes/wineyes-multiple-files-test.exe");
 
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
