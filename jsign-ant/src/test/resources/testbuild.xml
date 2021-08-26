@@ -80,12 +80,12 @@
 
   <target name="signing">
     <jsign file="wineyes-signed-with-ant.exe"
-           name="WinEyes"
-           url="http://www.steelblue.com/WinEyes"
-           alg="SHA-1"
-           keystore="${keystore}"
-           alias="${alias}"
-           keypass="${keypass}"/>
+             name="WinEyes"
+             url="http://www.steelblue.com/WinEyes"
+             alg="SHA-1"
+             keystore="${keystore}"
+             alias="${alias}"
+             keypass="${keypass}"/>
   </target>
 
   <target name="signing-multiple-files">
