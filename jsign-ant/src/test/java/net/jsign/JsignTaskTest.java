@@ -188,23 +188,6 @@ public class JsignTaskTest {
     }
 
     @Test
-    public void testBlankTsurl() throws Exception {
-        project.executeTarget("blank-tsurl");
-
-        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
-
-        try (PEFile peFile = new PEFile(targetFile)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
-        }
-    }
-
-    @Test
     public void testSigningMultipleFiles() throws Exception {
         FileUtils.copyFile(sourceFile, targetFile);
 
