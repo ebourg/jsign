@@ -239,11 +239,11 @@ public class JsignTaskTest {
     public void testSigningPowerShell() throws Exception {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-ant.ps1");
-
+        
         FileUtils.copyFile(sourceFile, targetFile);
-
+        
         project.executeTarget("signing-powershell");
-
+        
         PowerShellScript script = new PowerShellScript(targetFile);
 
         List<CMSSignedData> signatures = script.getSignatures();
@@ -312,9 +312,9 @@ public class JsignTaskTest {
     @Test
     public void testTimestampingAuthenticode() throws Exception {
         project.executeTarget("timestamping-authenticode");
-
+        
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-ant-authenticode.exe");
-
+        
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile2)) {
