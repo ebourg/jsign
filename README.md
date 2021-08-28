@@ -42,6 +42,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 4.1 (in development)
 
+* The Ant task can now sign multiple files by defining a fileset (contributed by Kyle Berezin)
 * Fixed the _"Map failed"_ OutOfMemoryError when signing large MSI files
 
 #### Version 4.0 (2021-08-09)

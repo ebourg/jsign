@@ -88,6 +88,22 @@
              keypass="${keypass}"/>
   </target>
 
+  <target name="signing-multiple-files">
+    <copy file="wineyes.exe" tofile="wineyes-multiple-files-test.exe" overwrite="true"/>
+    <jsign name="WinEyes"
+           url="http://www.steelblue.com/WinEyes"
+           alg="SHA-1"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"
+           tsmode="authenticode">
+      <fileset dir="./">
+        <include name="wineyes-multiple-files-test.exe"/>
+        <include name="wineyes-signed-with-ant.exe"/>
+      </fileset>
+    </jsign>
+  </target>
+
   <target name="signing-powershell">
     <jsign file="hello-world-signed-with-ant.ps1"
            alg="SHA-1"

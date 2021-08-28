@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Ant task for signing files with Authenticode.
@@ -31,6 +32,9 @@ public class JsignTask extends Task {
 
     /** The file to be signed. */
     private File file;
+
+    /** The set of files to be signed. */
+    private FileSet fileset;
 
     /** The program name embedded in the signature. */
     private String name;
@@ -85,6 +89,10 @@ public class JsignTask extends Task {
 
     public void setFile(File file) {
         this.file = file;
+    }
+
+    public void addFileset(FileSet fileset) {
+        this.fileset = fileset;
     }
 
     public void setName(String name) {
@@ -177,8 +185,14 @@ public class JsignTask extends Task {
             helper.replace(replace);
             helper.encoding(encoding);
             helper.detached(detached);
-            
-            helper.sign(file);
+
+            if (fileset != null) {
+                for(String fileElement : fileset.getDirectoryScanner().getIncludedFiles()) {
+                    helper.sign(new File(fileset.getDir(), fileElement));
+                }
+            } else {
+                helper.sign(file);
+            }
         } catch (Exception e) {
             throw new BuildException(e.getMessage(), e, getLocation());
         }
