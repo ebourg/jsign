@@ -26,8 +26,8 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
-import net.jsign.DigestAlgorithm;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public abstract class ScriptTest {
@@ -47,7 +47,7 @@ public abstract class ScriptTest {
 
     private AuthenticodeSigner getSigner() throws Exception {
         return new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                        .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                        .withDigestAlgorithm(SHA1)
                         .withProgramName("Hello World")
                         .withProgramURL("http://example.com");
     }

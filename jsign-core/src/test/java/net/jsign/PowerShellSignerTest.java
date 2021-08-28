@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import net.jsign.script.PowerShellScript;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class PowerShellSignerTest extends ScriptSignerTest {
@@ -39,7 +40,7 @@ public class PowerShellSignerTest extends ScriptSignerTest {
         script.setContent("write-host \"Hello World!\"\n");
         
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA512)
+                .withDigestAlgorithm(SHA512)
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
         
@@ -64,7 +65,7 @@ public class PowerShellSignerTest extends ScriptSignerTest {
         script.setContent("write-host \"Hello World!\"\n");
         
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withDigestAlgorithm(SHA1)
                 .withTimestamping(false);
         
         signer.sign(script);

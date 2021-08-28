@@ -34,9 +34,9 @@ import org.bouncycastle.cms.SignerInformation;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
-import net.jsign.DigestAlgorithm;
 import net.jsign.pe.PEFile;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class SigningServiceTest {
@@ -54,7 +54,7 @@ public class SigningServiceTest {
             AuthenticodeSigner signer = new AuthenticodeSigner(keystore, alias, keypass)
                     .withSignatureProvider(signingProvider)
                     .withTimestamping(false)
-                    .withDigestAlgorithm(DigestAlgorithm.SHA256);
+                    .withDigestAlgorithm(SHA256);
 
             signer.sign(peFile);
 

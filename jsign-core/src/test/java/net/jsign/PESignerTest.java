@@ -47,6 +47,7 @@ import net.jsign.timestamp.AuthenticodeTimestamper;
 import net.jsign.timestamp.TimestampingException;
 import net.jsign.timestamp.TimestampingMode;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class PESignerTest {
@@ -220,12 +221,12 @@ public class PESignerTest {
 
     @Test
     public void testTimestampAuthenticode() throws Exception {
-        testTimestamp(TimestampingMode.AUTHENTICODE, DigestAlgorithm.SHA1);
+        testTimestamp(TimestampingMode.AUTHENTICODE, SHA1);
     }
 
     @Test
     public void testTimestampRFC3161() throws Exception {
-        testTimestamp(TimestampingMode.RFC3161, DigestAlgorithm.SHA256);
+        testTimestamp(TimestampingMode.RFC3161, SHA256);
     }
 
     public void testTimestamp(TimestampingMode mode, DigestAlgorithm alg) throws Exception {
@@ -268,7 +269,7 @@ public class PESignerTest {
         final HashSet<Boolean> called = new HashSet<>();
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestamper(new AuthenticodeTimestamper() {
             
@@ -305,7 +306,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withDigestAlgorithm(SHA1)
                 .withTimestamping(true)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
@@ -322,7 +323,7 @@ public class PESignerTest {
         SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
         
         // second signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.sign(peFile);
         
@@ -345,7 +346,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withDigestAlgorithm(SHA1)
                 .withTimestamping(true)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
@@ -362,7 +363,7 @@ public class PESignerTest {
         SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
         
         // second signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.sign(peFile);
         
@@ -375,7 +376,7 @@ public class PESignerTest {
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
         
         // third signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA512);
+        signer.withDigestAlgorithm(SHA512);
         signer.withTimestamping(false);
         signer.sign(peFile);
         
@@ -398,7 +399,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withDigestAlgorithm(SHA1)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
         
@@ -413,7 +414,7 @@ public class PESignerTest {
         assertNotNull(signatures.get(0));
         
         // second signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.withSignaturesReplaced(true);
         signer.sign(peFile);
@@ -425,7 +426,7 @@ public class PESignerTest {
         
         assertNotNull(signatures.get(0));
         
-        assertEquals("Digest algorithm", DigestAlgorithm.SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+        assertEquals("Digest algorithm", SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
     }
 
     @Test
@@ -447,7 +448,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingAuthority("http://www.google.com/" + mode.name().toLowerCase());
@@ -486,7 +487,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingAuthority("http://github.com");
@@ -510,7 +511,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"));
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA1);
+        signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(TimestampingMode.RFC3161);
         signer.withTimestampingAuthority("example://example.com");
@@ -538,7 +539,7 @@ public class PESignerTest {
         PEFile peFile = new PEFile(targetFile);
         
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingRetryWait(1);
@@ -571,7 +572,7 @@ public class PESignerTest {
 
             PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false)
-                    .withDigestAlgorithm(DigestAlgorithm.SHA256)
+                    .withDigestAlgorithm(SHA256)
                     .withSignatureAlgorithm("SHA1withRSA");
 
             signer.sign(peFile);
@@ -617,7 +618,7 @@ public class PESignerTest {
 
             PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false)
-                    .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                    .withDigestAlgorithm(SHA1)
                     .withSignatureAlgorithm("SHA256withRSAandMGF1", "BC");
 
             signer.sign(peFile);

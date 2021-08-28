@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import net.jsign.mscab.MSCabinetFile;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class MSCabinetSignerTest {
@@ -114,7 +115,7 @@ public class MSCabinetSignerTest {
         MSCabinetFile file = new MSCabinetFile(targetFile);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withDigestAlgorithm(SHA1)
                 .withTimestamping(true);
 
         signer.sign(file);
@@ -129,7 +130,7 @@ public class MSCabinetSignerTest {
         SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
 
         // second signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.sign(file);
 
@@ -153,7 +154,7 @@ public class MSCabinetSignerTest {
         MSCabinetFile file = new MSCabinetFile(targetFile);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1)
+                .withDigestAlgorithm(SHA1)
                 .withTimestamping(true);
 
         signer.sign(file);
@@ -168,7 +169,7 @@ public class MSCabinetSignerTest {
         SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
 
         // second signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.sign(file);
 
@@ -181,7 +182,7 @@ public class MSCabinetSignerTest {
         SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
 
         // third signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA512);
+        signer.withDigestAlgorithm(SHA512);
         signer.withTimestamping(false);
         signer.sign(file);
 
@@ -205,7 +206,7 @@ public class MSCabinetSignerTest {
         MSCabinetFile file = new MSCabinetFile(targetFile);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA1);
+                .withDigestAlgorithm(SHA1);
 
         signer.sign(file);
 
@@ -218,7 +219,7 @@ public class MSCabinetSignerTest {
         assertNotNull(signatures.get(0));
 
         // second signature
-        signer.withDigestAlgorithm(DigestAlgorithm.SHA256);
+        signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.withSignaturesReplaced(true);
         signer.sign(file);
@@ -231,7 +232,7 @@ public class MSCabinetSignerTest {
 
         assertNotNull(signatures.get(0));
 
-        assertEquals("Digest algorithm", DigestAlgorithm.SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+        assertEquals("Digest algorithm", SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
     }
 
     @Test
@@ -245,7 +246,7 @@ public class MSCabinetSignerTest {
         MSCabinetFile file = new MSCabinetFile(channel);
 
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(DigestAlgorithm.SHA512);
+                .withDigestAlgorithm(SHA512);
 
         signer.sign(file);
 
