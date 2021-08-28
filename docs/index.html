@@ -102,6 +102,18 @@ programmatically or standalone as a command line tool.</p>
         tsaurl="http://timestamp.verisign.com/scripts/timstamp.dll"/>
 </pre>
 
+<br>
+
+<p>The task also accepts a fileset to sign multiple files:</p>
+
+<pre class="prettyprint lang-xml">
+ &lt;jsign keystore="keystore.p12"
+        alias="test"
+        storepass="password">
+   &ltfileset dir="build/binaries" includes="*.exe"/>
+ &lt;/jsign>
+</pre>
+
 <br><br>
 
   <table border="1" style="border-collapse: collapse; width: 100%">
@@ -115,7 +127,7 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">
           The file to be signed. The supported files are Windows executables (EXE), DLLs, Microsoft Installers (MSI),
           Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)</td>
-      <td valign="top" align="center">Yes.</td>
+      <td valign="top" align="center">Yes, unless a fileset is specified.</td>
     </tr>
     <tr>
       <td valign="top">name</td>
