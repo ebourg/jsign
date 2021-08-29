@@ -38,7 +38,6 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.tsp.TSPAlgorithms;
 import org.junit.Assume;
 import org.junit.Test;
 
@@ -167,13 +166,8 @@ public class PESignerTest {
         signer.sign(peFile);
 
         peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
 
-        CMSSignedData signature = signatures.get(0);
-
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(peFile, SHA256);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -244,12 +238,9 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull("list of signatures null", signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull("null signature", signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, alg);
+        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
         
         peFile.printInfo(System.out);
     }
@@ -281,19 +272,13 @@ public class PESignerTest {
 
         });
         signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
-        
+
         assertTrue("expecting our Timestamper to be used", called.contains(true));
+
+        peFile = new PEFile(targetFile);
         
-        SignatureAssert.assertTimestamped("Invalid timestamp", signature);
+        SignatureAssert.assertSigned(peFile, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
     }
 
     @Test
@@ -314,13 +299,9 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -328,12 +309,9 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", peFile.getSignatures().get(0));
     }
 
     @Test
@@ -355,12 +333,8 @@ public class PESignerTest {
         
         peFile = new PEFile(targetFile);
         
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        SignatureAssert.assertSigned(peFile, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -368,12 +342,9 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", peFile.getSignatures().get(0));
         
         // third signature
         signer.withDigestAlgorithm(SHA512);
@@ -381,12 +352,9 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 3, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, SHA1, SHA256, SHA512);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", peFile.getSignatures().get(0));
     }
 
     @Test
@@ -406,12 +374,8 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, SHA1);
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -420,13 +384,8 @@ public class PESignerTest {
         signer.sign(peFile);
         
         peFile = new PEFile(targetFile);
-        signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        
-        assertEquals("Digest algorithm", SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+
+        SignatureAssert.assertSigned(peFile, SHA256);
     }
 
     @Test
@@ -462,10 +421,7 @@ public class PESignerTest {
             // expected
         }
 
-        peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertTrue(signatures.isEmpty());
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
     }
 
     @Test
@@ -500,10 +456,7 @@ public class PESignerTest {
             // expected
         }
 
-        peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertTrue(signatures.isEmpty());
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -548,12 +501,9 @@ public class PESignerTest {
         signer.sign(peFile);
 
         peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+
+        SignatureAssert.assertSigned(peFile, SHA256);
+        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
     }
 
     /**
@@ -578,16 +528,13 @@ public class PESignerTest {
             signer.sign(peFile);
 
             peFile = new PEFile(targetFile);
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
 
-            CMSSignedData signedData = signatures.get(0);
-            assertNotNull(signedData);
+            SignatureAssert.assertSigned(peFile, SHA1);
 
             // Check the signature algorithm
+            CMSSignedData signedData = peFile.getSignatures().get(0);
             SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
-            assertEquals("Digest algorithm", TSPAlgorithms.SHA1, si.getDigestAlgorithmID().getAlgorithm());
+            assertEquals("Digest algorithm", SHA1.oid, si.getDigestAlgorithmID().getAlgorithm());
             assertEquals("Encryption algorithm", PKCSObjectIdentifiers.rsaEncryption.getId(), si.getEncryptionAlgOID());
         } finally {
             if (peFile != null) {

@@ -19,10 +19,9 @@ package net.jsign.script;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
-import java.util.List;
 
+import net.jsign.SignatureAssert;
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
@@ -61,11 +60,7 @@ public abstract class ScriptTest {
         script.setContent(content);
         getSigner().sign(script);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        CMSSignedData signature = signatures.get(0);
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA1);
         
         assertEquals("script with the signature removed", content, script.getContentWithoutSignatureBlock());
     }

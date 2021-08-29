@@ -17,13 +17,9 @@
 package net.jsign;
 
 import java.io.File;
-import java.util.List;
 import java.util.zip.CRC32;
 
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
 import org.junit.Test;
 
 import net.jsign.jca.Azure;
@@ -31,6 +27,7 @@ import net.jsign.jca.DigiCertONE;
 import net.jsign.jca.GoogleCloud;
 import net.jsign.pe.PEFile;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class SignerHelperTest {
@@ -88,17 +85,7 @@ public class SignerHelperTest {
 
         helper.sign(targetFile);
 
-        PEFile peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-
-        CMSSignedData signedData = signatures.get(0);
-        assertNotNull(signedData);
-
-        // Check the signature algorithm
-        SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
-        assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
 
     @Test
@@ -118,17 +105,7 @@ public class SignerHelperTest {
 
         helper.sign(targetFile);
 
-        PEFile peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-
-        CMSSignedData signedData = signatures.get(0);
-        assertNotNull(signedData);
-
-        // Check the signature algorithm
-        SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
-        assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
 
     @Test
@@ -148,16 +125,6 @@ public class SignerHelperTest {
 
         helper.sign(targetFile);
 
-        PEFile peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-
-        CMSSignedData signedData = signatures.get(0);
-        assertNotNull(signedData);
-
-        // Check the signature algorithm
-        SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
-        assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
 }

@@ -16,6 +16,9 @@
 
 package net.jsign;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -47,5 +50,29 @@ public class SignatureAssert {
             assertTrue(message + " (counter signature attribute value is empty)", rfc3161TimestampAttribute.getAttributeValues().length > 0);
         }
         
+    }
+
+    public static void assertSigned(Signable signable, DigestAlgorithm... algorithms) throws IOException {
+        List<CMSSignedData> signatures = signable.getSignatures();
+        assertNotNull("list of signatures null", signatures);
+        assertEquals("number of signatures", algorithms.length, signatures.size());
+
+        for (int i = 0, signaturesSize = signatures.size(); i < signaturesSize; i++) {
+            CMSSignedData signature = signatures.get(i);
+            assertNotNull("signature " + i + " is null", signatures.get(0));
+
+            // Check the signature algorithm
+            SignerInformation si = signature.getSignerInfos().getSigners().iterator().next();
+            assertEquals("Digest algorithm of signature " + i, algorithms[i].oid, si.getDigestAlgorithmID().getAlgorithm());
+
+            // Check if the signingTime attribute is present
+            assertNull("signingTime attribute found in signature " + i, signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+        }
+    }
+
+    public static void assertNotSigned(Signable signable) throws IOException {
+        List<CMSSignedData> signatures = signable.getSignatures();
+        assertNotNull("list of signatures null", signatures);
+        assertTrue("signature found", signatures.isEmpty());
     }
 }

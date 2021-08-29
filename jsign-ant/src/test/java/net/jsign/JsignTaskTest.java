@@ -19,14 +19,12 @@ package net.jsign;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
-import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,6 +32,7 @@ import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.PowerShellScript;
 
+import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class JsignTaskTest {
@@ -177,13 +176,7 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA1);
         }
     }
 
@@ -199,22 +192,10 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA1);
         }
         try (PEFile peFile = new PEFile(targetFile2)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA1);
         }
     }
 
@@ -229,13 +210,7 @@ public class JsignTaskTest {
         
         PowerShellScript script = new PowerShellScript(targetFile);
 
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-
-        CMSSignedData signature = signatures.get(0);
-
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA1);
     }
 
     @Test
@@ -248,13 +223,7 @@ public class JsignTaskTest {
         project.executeTarget("signing-msi");
         
         try (MSIFile file = new MSIFile(targetFile)) {
-            List<CMSSignedData> signatures = file.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(file, SHA1);
         }
     }
 
@@ -265,13 +234,7 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA256);
         }
     }
 
@@ -282,13 +245,7 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA256);
         }
     }
 
@@ -301,13 +258,7 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile2)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA256);
         }
     }
 
@@ -320,13 +271,7 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile2)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
+            SignatureAssert.assertSigned(peFile, SHA256);
         }
     }
 
@@ -339,13 +284,7 @@ public class JsignTaskTest {
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
         
         try (PEFile peFile = new PEFile(targetFile2)) {
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            assertNotNull(signatures.get(0));
-            
-            assertEquals("Digest algorithm", DigestAlgorithm.SHA512.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+            SignatureAssert.assertSigned(peFile, SHA512);
         }
     }
 

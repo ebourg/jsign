@@ -22,16 +22,13 @@ import java.io.FileOutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
-import java.util.List;
 
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static net.jsign.DigestAlgorithm.*;
-import static org.junit.Assert.*;
 
 public abstract class ScriptSignerTest {
 
@@ -62,13 +59,7 @@ public abstract class ScriptSignerTest {
 
         Signable script = Signable.of(targetFile);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA256);
     }
 
     @Test
@@ -89,13 +80,9 @@ public abstract class ScriptSignerTest {
         signer.sign(script);
         
         script = Signable.of(targetFile);
-        
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+
+        SignatureAssert.assertSigned(script, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", script.getSignatures().get(0));
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -103,12 +90,9 @@ public abstract class ScriptSignerTest {
         signer.sign(script);
         
         script = Signable.of(targetFile);
-        signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(script, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", script.getSignatures().get(0));
     }
 
     @Test
@@ -130,12 +114,8 @@ public abstract class ScriptSignerTest {
         
         script = Signable.of(targetFile);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        SignatureAssert.assertSigned(script, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", script.getSignatures().get(0));
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -143,12 +123,9 @@ public abstract class ScriptSignerTest {
         signer.sign(script);
         
         script = Signable.of(targetFile);
-        signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(script, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", script.getSignatures().get(0));
         
         // third signature
         signer.withDigestAlgorithm(SHA512);
@@ -156,12 +133,9 @@ public abstract class ScriptSignerTest {
         signer.sign(script);
         
         script = Signable.of(targetFile);
-        signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 3, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(script, SHA1, SHA256, SHA512);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", script.getSignatures().get(0));
     }
 
     @Test
@@ -181,12 +155,8 @@ public abstract class ScriptSignerTest {
         signer.sign(script);
         
         script = Signable.of(targetFile);
-        
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
+
+        SignatureAssert.assertSigned(script, SHA1);
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -195,13 +165,8 @@ public abstract class ScriptSignerTest {
         signer.sign(script);
         
         script = Signable.of(targetFile);
-        signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        
-        assertEquals("Digest algorithm", SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+
+        SignatureAssert.assertSigned(script, SHA256);
     }
 
     public void testSignWithBOM(ByteOrderMark bom) throws Exception {
@@ -231,13 +196,7 @@ public abstract class ScriptSignerTest {
         
         Signable script = Signable.of(targetFile, encoding);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA1);
     }
 
     @Test
@@ -298,13 +257,7 @@ public abstract class ScriptSignerTest {
         
         Signable script = Signable.of(targetFile, encoding);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA1);
     }
 
     @Test
@@ -337,13 +290,7 @@ public abstract class ScriptSignerTest {
         
         Signable script = Signable.of(targetFile, encoding);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA1);
     }
 
     @Test
@@ -376,12 +323,6 @@ public abstract class ScriptSignerTest {
         
         Signable script = Signable.of(targetFile, encoding);
         
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+        SignatureAssert.assertSigned(script, SHA1);
     }
 }

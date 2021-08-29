@@ -16,10 +16,7 @@
 
 package net.jsign;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
 import net.jsign.script.PowerShellScript;
@@ -49,14 +46,8 @@ public class PowerShellSignerTest extends ScriptSignerTest {
         
         PowerShellScript script2 = new PowerShellScript();
         script2.setContent(script.getContent());
-        
-        List<CMSSignedData> signatures = script2.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+
+        SignatureAssert.assertSigned(script2, SHA512);
     }
 
     @Test
@@ -70,23 +61,17 @@ public class PowerShellSignerTest extends ScriptSignerTest {
         
         signer.sign(script);
 
-        List<CMSSignedData> signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
+        SignatureAssert.assertSigned(script, SHA1);
         
         // convert the file from CRLF to LF, the signature should become unavailable
         script.setContent(script.getContent().replace("\r\n", "\n"));
-        
-        signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(0, signatures.size());
+
+        SignatureAssert.assertNotSigned(script);
         
         // sign again, the previous invalid signature block should be removed (as done by Set-AuthenticodeSignature cmdlet)
         signer.sign(script);
-        
-        signatures = script.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
+
+        SignatureAssert.assertSigned(script, SHA1);
         
         assertEquals("Number of signature blocks", 1, StringUtils.countMatches(script.getContent(), "Begin signature block"));
     }

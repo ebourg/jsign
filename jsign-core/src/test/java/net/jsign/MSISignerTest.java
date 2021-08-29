@@ -19,17 +19,14 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
-import java.util.List;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
 import net.jsign.msi.MSIFile;
 
 import static net.jsign.DigestAlgorithm.*;
-import static org.junit.Assert.*;
 
 public class MSISignerTest {
 
@@ -56,16 +53,9 @@ public class MSISignerTest {
         
         signer.sign(new MSIFile(targetFile));
 
-        MSIFile file = new MSIFile(targetFile);
-        
-        List<CMSSignedData> signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+        try (MSIFile file = new MSIFile(targetFile)) {
+            SignatureAssert.assertSigned(file, SHA256);
+        }
     }
 
     @Test
@@ -86,13 +76,9 @@ public class MSISignerTest {
         signer.sign(file);
         
         file = new MSIFile(targetFile);
-        
-        List<CMSSignedData> signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+
+        SignatureAssert.assertSigned(file, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -100,13 +86,9 @@ public class MSISignerTest {
         signer.sign(file);
         
         file = new MSIFile(targetFile);
-        signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(file, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
     }
 
     @Test
@@ -128,12 +110,8 @@ public class MSISignerTest {
         
         file = new MSIFile(targetFile);
         
-        List<CMSSignedData> signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        SignatureAssert.assertSigned(file, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -141,12 +119,9 @@ public class MSISignerTest {
         signer.sign(file);
         
         file = new MSIFile(targetFile);
-        signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(file, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
         
         // third signature
         signer.withDigestAlgorithm(SHA512);
@@ -154,13 +129,9 @@ public class MSISignerTest {
         signer.sign(file);
         
         file = new MSIFile(targetFile);
-        signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 3, signatures.size());
-        
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
+
+        SignatureAssert.assertSigned(file, SHA1, SHA256, SHA512);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
     }
 
     @Test
@@ -180,12 +151,8 @@ public class MSISignerTest {
         signer.sign(file);
         
         file = new MSIFile(targetFile);
-        
-        List<CMSSignedData> signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-        
-        assertNotNull(signatures.get(0));
+
+        SignatureAssert.assertSigned(file, SHA1);
         
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -194,14 +161,8 @@ public class MSISignerTest {
         signer.sign(file);
         
         file = new MSIFile(targetFile);
-        signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
 
-        assertNotNull(signatures.get(0));
-
-        assertEquals("Digest algorithm", SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+        SignatureAssert.assertSigned(file, SHA256);
     }
 
     @Test
@@ -211,27 +172,20 @@ public class MSISignerTest {
         byte[] data = FileUtils.readFileToByteArray(sourceFile);
 
         SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data);
-        
-        MSIFile file = new MSIFile(channel);
-        
+
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(SHA512)
                 .withProgramName("Minimal Package")
                 .withProgramURL("http://example.com");
-        
-        signer.sign(file);
-        
-        data = channel.array();
-        file = new MSIFile(new SeekableInMemoryByteChannel(data));
-        
-        List<CMSSignedData> signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
+
+        try (MSIFile file = new MSIFile(channel)) {
+            signer.sign(file);
+            data = channel.array();
+        }
+
+        try (MSIFile file = new MSIFile(new SeekableInMemoryByteChannel(data))) {
+            SignatureAssert.assertSigned(file, SHA512);
+        }
     }
 
     @Test(expected = UnsupportedOperationException.class)

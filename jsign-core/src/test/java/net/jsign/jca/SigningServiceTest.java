@@ -25,19 +25,15 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
-import java.util.List;
 
+import net.jsign.SignatureAssert;
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
 import net.jsign.pe.PEFile;
 
 import static net.jsign.DigestAlgorithm.*;
-import static org.junit.Assert.*;
 
 public class SigningServiceTest {
 
@@ -59,16 +55,8 @@ public class SigningServiceTest {
             signer.sign(peFile);
 
             peFile = new PEFile(targetFile);
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
 
-            CMSSignedData signedData = signatures.get(0);
-            assertNotNull(signedData);
-
-            // Check the signature algorithm
-            SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
-            assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
+            SignatureAssert.assertSigned(peFile, SHA256);
         } finally {
             if (peFile != null) {
                 peFile.close();

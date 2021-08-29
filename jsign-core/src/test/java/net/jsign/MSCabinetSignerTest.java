@@ -24,14 +24,11 @@ import java.util.List;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.asn1.cms.CMSAttributes;
-import org.bouncycastle.cms.CMSSignedData;
 import org.junit.Test;
 
 import net.jsign.mscab.MSCabinetFile;
 
 import static net.jsign.DigestAlgorithm.*;
-import static org.junit.Assert.*;
 
 public class MSCabinetSignerTest {
 
@@ -61,14 +58,8 @@ public class MSCabinetSignerTest {
         signer.sign(cabFile);
 
         cabFile = new MSCabinetFile(targetFile);
-        List<CMSSignedData> signatures = cabFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
 
-        CMSSignedData signature = signatures.get(0);
-
-        assertNotNull(signature);
-        assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+        SignatureAssert.assertSigned(cabFile, SHA256);
     }
 
     @Test
@@ -82,24 +73,17 @@ public class MSCabinetSignerTest {
 
             FileUtils.copyFile(sourceFile, targetFile);
 
-            MSCabinetFile cabFile = new MSCabinetFile(targetFile);
 
             AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false);
 
-            signer.sign(cabFile);
+            try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+                signer.sign(cabFile);
+            }
 
-            cabFile = new MSCabinetFile(targetFile);
-            List<CMSSignedData> signatures = cabFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
-
-            CMSSignedData signature = signatures.get(0);
-
-            assertNotNull(signature);
-            assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
-
-            cabFile.close();
+            try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+                SignatureAssert.assertSigned(cabFile, SHA256);
+            }
         }
     }
 
@@ -122,12 +106,8 @@ public class MSCabinetSignerTest {
 
         file = new MSCabinetFile(targetFile);
 
-        List<CMSSignedData> signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        SignatureAssert.assertSigned(file, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
 
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -135,13 +115,9 @@ public class MSCabinetSignerTest {
         signer.sign(file);
 
         file = new MSCabinetFile(targetFile);
-        signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
 
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+        SignatureAssert.assertSigned(file, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
     }
 
     @Test
@@ -161,12 +137,8 @@ public class MSCabinetSignerTest {
 
         file = new MSCabinetFile(targetFile);
 
-        List<CMSSignedData> signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Invalid timestamp", signatures.get(0));
+        SignatureAssert.assertSigned(file, SHA1);
+        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
 
         // second signature
         signer.withDigestAlgorithm(SHA256);
@@ -174,12 +146,9 @@ public class MSCabinetSignerTest {
         signer.sign(file);
 
         file = new MSCabinetFile(targetFile);
-        signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 2, signatures.size());
 
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", signatures.get(0));
+        SignatureAssert.assertSigned(file, SHA1, SHA256);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
 
         // third signature
         signer.withDigestAlgorithm(SHA512);
@@ -187,13 +156,9 @@ public class MSCabinetSignerTest {
         signer.sign(file);
 
         file = new MSCabinetFile(targetFile);
-        signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 3, signatures.size());
 
-        assertNotNull(signatures.get(0));
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", signatures.get(0));
+        SignatureAssert.assertSigned(file, SHA1, SHA256, SHA512);
+        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
     }
 
     @Test
@@ -203,36 +168,29 @@ public class MSCabinetSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        MSCabinetFile file = new MSCabinetFile(targetFile);
-
         AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withDigestAlgorithm(SHA1);
 
-        signer.sign(file);
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            signer.sign(file);
+        }
 
-        file = new MSCabinetFile(targetFile);
-
-        List<CMSSignedData> signatures = file.getSignatures();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
-
-        assertNotNull(signatures.get(0));
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            SignatureAssert.assertSigned(file, SHA1);
+        }
 
         // second signature
         signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(false);
         signer.withSignaturesReplaced(true);
-        signer.sign(file);
 
-        file = new MSCabinetFile(targetFile);
-        signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals("number of signatures", 1, signatures.size());
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            signer.sign(file);
+        }
 
-        assertNotNull(signatures.get(0));
-
-        assertEquals("Digest algorithm", SHA256.oid, signatures.get(0).getDigestAlgorithmIDs().iterator().next().getAlgorithm());
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            SignatureAssert.assertSigned(file, SHA256);
+        }
     }
 
     @Test
@@ -243,23 +201,16 @@ public class MSCabinetSignerTest {
 
         SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data);
 
-        MSCabinetFile file = new MSCabinetFile(channel);
+        try (MSCabinetFile file = new MSCabinetFile(channel)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA512);
 
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA512);
+            signer.sign(file);
+            data = channel.array();
+        }
 
-        signer.sign(file);
-
-        data = channel.array();
-        file = new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-
-        List<CMSSignedData> signatures = file.getSignatures();
-        file.close();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-
-        CMSSignedData signature = signatures.get(0);
-
-        assertNotNull(signature);
+        try (MSCabinetFile file = new MSCabinetFile(new SeekableInMemoryByteChannel(data))) {
+            SignatureAssert.assertSigned(file, SHA512);
+        }
     }
 }

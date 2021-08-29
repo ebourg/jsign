@@ -26,6 +26,14 @@
       <version>1.8.4</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>net.jsign</groupId>
+      <artifactId>jsign-core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
