@@ -144,7 +144,7 @@
              keystore="${keystore}"
              alias="${alias}"
              keypass="${keypass}"
-             tsaurl="http://timestamp.comodoca.com/authenticode"
+             tsaurl="http://timestamp.sectigo.com"
              tsmode="authenticode"
              tsretries="5"
              tsretrywait="15"/>
@@ -156,7 +156,7 @@
              keystore="${keystore}"
              alias="${alias}"
              keypass="${keypass}"
-             tsaurl="http://timestamp.comodoca.com/rfc3161"
+             tsaurl="http://timestamp.sectigo.com"
              tsmode="rfc3161"
              tsretries="5"
              tsretrywait="15"/>

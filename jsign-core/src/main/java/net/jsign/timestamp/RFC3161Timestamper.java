@@ -42,7 +42,7 @@ import org.bouncycastle.tsp.TimeStampResponse;
 public class RFC3161Timestamper extends Timestamper {
 
     public RFC3161Timestamper() {
-        setURL("http://timestamp.comodoca.com/rfc3161");
+        setURL("http://timestamp.sectigo.com");
     }
 
     protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {

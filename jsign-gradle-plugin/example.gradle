@@ -18,6 +18,6 @@ task sign {
               keystore  : 'keystore.p12',
               alias     : 'test',
               storepass : 'secret',
-              tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+              tsaurl    : 'http://timestamp.sectigo.com')
     }
 }

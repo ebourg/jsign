@@ -73,7 +73,7 @@ import net.jsign.timestamp.TimestampingMode;
 
 /**
  * Sign a file with Authenticode. Timestamping is enabled by default and relies
- * on the Comodo server (http://timestamp.comodoca.com/authenticode).
+ * on the Sectigo server (http://timestamp.sectigo.com).
  * 
  * @author Emmanuel Bourg
  * @since 3.0

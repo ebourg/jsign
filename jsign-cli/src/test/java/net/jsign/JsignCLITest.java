@@ -321,7 +321,7 @@ public class JsignCLITest {
     public void testTimestampingAuthenticode() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
-        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.comodoca.com/authenticode", "--tsmode=authenticode", "" + targetFile2);
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.sectigo.com", "--tsmode=authenticode", "" + targetFile2);
         
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
@@ -334,7 +334,7 @@ public class JsignCLITest {
     public void testTimestampingRFC3161() throws Exception {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
-        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.comodoca.com/rfc3161", "--tsmode=rfc3161", "" + targetFile2);
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.sectigo.com", "--tsmode=rfc3161", "" + targetFile2);
 
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
@@ -360,7 +360,7 @@ public class JsignCLITest {
             File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161-proxy-unauthenticated.exe");
             FileUtils.copyFile(sourceFile, targetFile2);
             cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass,
-                        "--tsaurl=http://timestamp.comodoca.com/rfc3161", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
+                        "--tsaurl=http://timestamp.sectigo.com", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
                         "--proxyUrl=localhost:" + proxy.getListenAddress().getPort(),
                         "" + targetFile2);
             
@@ -403,7 +403,7 @@ public class JsignCLITest {
             File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161-proxy-authenticated.exe");
             FileUtils.copyFile(sourceFile, targetFile2);
             cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass,
-                        "--tsaurl=http://timestamp.comodoca.com/rfc3161", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
+                        "--tsaurl=http://timestamp.sectigo.com", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
                         "--proxyUrl=http://localhost:" + proxy.getListenAddress().getPort(),
                         "--proxyUser=jsign",
                         "--proxyPass=jsign",

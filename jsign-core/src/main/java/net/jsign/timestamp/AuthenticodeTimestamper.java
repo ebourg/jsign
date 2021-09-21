@@ -43,7 +43,7 @@ import org.bouncycastle.util.encoders.Base64;
 public class AuthenticodeTimestamper extends Timestamper {
 
     public AuthenticodeTimestamper() {
-        setURL("http://timestamp.comodoca.com/authenticode");
+        setURL("http://timestamp.sectigo.com");
     }
 
     protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {

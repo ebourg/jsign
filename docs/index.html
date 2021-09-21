@@ -87,7 +87,7 @@ programmatically or standalone as a command line tool.</p>
         keystore="keystore.jks"
         alias="test"
         storepass="password"
-        tsaurl="http://timestamp.comodoca.com/authenticode"/>
+        tsaurl="http://timestamp.sectigo.com"/>
 </pre>
 
 <br>
@@ -196,7 +196,7 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">tsaurl</td>
       <td valign="top">
           The URL of the timestamping authority, either RFC 3161 or Authenticode services.
-          You can use for example the COMODO (http://timestamp.comodoca.com/authenticode)
+          You can use for example the Sectigo (http://timestamp.sectigo.com)
           or the Verisign (http://timestamp.verisign.com/scripts/timstamp.dll) services.</td>
       <td valign="top" align="center">No</td>
     </tr>
@@ -315,7 +315,7 @@ are the same as those described above for the Ant task.</p>
                   keystore  : 'keystore.p12',
                   alias     : 'test',
                   storepass : 'secret',
-                  tsaurl    : 'http://timestamp.comodoca.com/authenticode')
+                  tsaurl    : 'http://timestamp.sectigo.com')
         }
     }
 </pre>
@@ -378,7 +378,7 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <pre>
  jsign --keystore keystore.jks --alias test --storepass password \
-       --tsaurl http://timestamp.comodoca.com/authenticode application.exe
+       --tsaurl http://timestamp.sectigo.com application.exe
 </pre>
 
 <h4>Example using SPC/PVK files:</h4>
@@ -455,7 +455,7 @@ the version is omitted the most recent one will be picked automatically.</p>
  signer.withProgramName("My Application")
        .withProgramURL("http://www.example.com")
        .withTimestamping(true)
-       .withTimestampingAuthority("http://timestamp.comodoca.com/authenticode");
+       .withTimestampingAuthority("http://timestamp.sectigo.com");
 
  Signable file = Signable.of(new File("application.exe"));
  signer.sign(file);
