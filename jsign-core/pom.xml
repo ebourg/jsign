@@ -41,7 +41,7 @@
     <dependency>
       <groupId>com.cedarsoftware</groupId>
       <artifactId>json-io</artifactId>
-      <version>4.12.0</version>
+      <version>4.13.0</version>
     </dependency>
 
     <dependency>
