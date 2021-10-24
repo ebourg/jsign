@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.security.KeyException;
 import java.security.PrivateKey;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
@@ -75,6 +76,10 @@ public class PrivateKeyUtils {
         try (FileReader reader = new FileReader(file)) {
             PEMParser parser = new PEMParser(reader);
             Object object = parser.readObject();
+            if (object instanceof ASN1ObjectIdentifier) {
+                // ignore the EC key parameters
+                object = parser.readObject();
+            }
             
             if (object == null) {
                 throw new IllegalArgumentException("No key found in " + file);

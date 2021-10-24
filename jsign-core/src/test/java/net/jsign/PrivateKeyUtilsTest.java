@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.math.BigInteger;
 import java.security.KeyException;
 import java.security.PrivateKey;
+import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 
 import org.junit.Test;
@@ -89,5 +90,14 @@ public class PrivateKeyUtilsTest {
             Throwable cause = e.getCause();
             assertTrue(cause.getMessage().startsWith("No key found in"));
         }
+    }
+
+    @Test
+    public void testLoadECKey() throws Exception {
+        PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-ec-p384.pkcs1.pem"), null);
+        assertNotNull("null key", key);
+        assertEquals("algorithm", "ECDSA", key.getAlgorithm());
+        ECPrivateKey eckey = (ECPrivateKey) key;
+        assertEquals(new BigInteger("20257491648229957920568032976799761096297361118969955946704763806669063295695225962636427229581436831963662222302926"), eckey.getS());
     }
 }
