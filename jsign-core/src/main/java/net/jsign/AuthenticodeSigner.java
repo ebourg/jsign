@@ -399,10 +399,12 @@ public class AuthenticodeSigner {
     private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {
         // create content signer
         final String sigAlg;
-        if (signatureAlgorithm == null) {
-            sigAlg = digestAlgorithm + "with" + privateKey.getAlgorithm();
-        } else {
+        if (signatureAlgorithm != null) {
             sigAlg = signatureAlgorithm;
+        } else if ("EC".equals(privateKey.getAlgorithm())) {
+            sigAlg = digestAlgorithm + "withECDSA";
+        } else {
+            sigAlg = digestAlgorithm + "with" + privateKey.getAlgorithm();
         }
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(sigAlg);
         if (signatureProvider != null) {

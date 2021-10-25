@@ -588,4 +588,29 @@ public class PESignerTest {
             }
         }
     }
+
+    @Test
+    public void testSignWithECKey() throws Exception {
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream("target/test-classes/keystores/keystore-ec.p12"), "password".toCharArray());
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-ec.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PEFile peFile = new PEFile(targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, ALIAS, PRIVATE_KEY_PASSWORD)
+                .withTimestamping(false)
+                .withProgramName("WinEyes")
+                .withProgramURL("http://www.steelblue.com/WinEyes");
+
+        signer.sign(peFile);
+
+        peFile = new PEFile(targetFile);
+        List<CMSSignedData> signatures = peFile.getSignatures();
+        assertNotNull(signatures);
+        assertEquals(1, signatures.size());
+    }
 }

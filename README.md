@@ -44,6 +44,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * The Ant task can now sign multiple files by defining a fileset (contributed by Kyle Berezin)
 * Fixed the _"Map failed"_ OutOfMemoryError when signing large MSI files
+* Certificates using an elliptic-curve key are now supported
 * The default timestamping authority is now Sectigo instead of Comodo
 
 #### Version 4.0 (2021-08-09)
