@@ -165,7 +165,7 @@ public class DigiCertOneSigningService implements SigningService {
     }
 
     @Override
-    public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
+    public SigningServicePrivateKey getPrivateKey(String alias, char[] password) throws UnrecoverableKeyException {
         try {
             Map<String, ?> certificate = getCertificateInfo(alias);
             Map<String, Object> keypair = (Map<String, Object>) certificate.get("keypair");

@@ -59,7 +59,7 @@ class LocalKeyStoreSigningService implements SigningService {
     }
 
     @Override
-    public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
+    public SigningServicePrivateKey getPrivateKey(String alias, char[] password) throws UnrecoverableKeyException {
         PrivateKey privateKey;
         try {
             privateKey = (PrivateKey) keystore.getKey(alias, keypass != null ? keypass.toCharArray() : new char[0]);

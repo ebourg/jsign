@@ -107,7 +107,7 @@ public class GoogleCloudSigningService implements SigningService {
     }
 
     @Override
-    public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
+    public SigningServicePrivateKey getPrivateKey(String alias, char[] password) throws UnrecoverableKeyException {
         // check if the alias is absolute or relative to the keyring
         if (!alias.startsWith("projects/")) {
             alias = keyring + "/cryptoKeys/" + alias;

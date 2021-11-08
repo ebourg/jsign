@@ -131,7 +131,7 @@ public class AzureKeyVaultSigningService implements SigningService {
     }
 
     @Override
-    public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
+    public SigningServicePrivateKey getPrivateKey(String alias, char[] password) throws UnrecoverableKeyException {
         try {
             Map<String, ?> response = getCertificateInfo(alias);
             String kid = (String) response.get("kid");

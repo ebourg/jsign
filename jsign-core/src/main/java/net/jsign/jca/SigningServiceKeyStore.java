@@ -38,7 +38,7 @@ class SigningServiceKeyStore extends KeyStoreSpi {
 
     @Override
     public Key engineGetKey(String alias, char[] password) throws UnrecoverableKeyException {
-        return service.getPrivateKey(alias);
+        return service.getPrivateKey(alias, password);
     }
 
     @Override
