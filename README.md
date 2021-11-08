@@ -28,7 +28,7 @@ Jsign is free to use and licensed under the Apache License version 2.0.
 * Keystores supported:
   * PKCS#12, JKS and JCEKS files
   * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), etc)
-  * Cloud key management systems ([Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [DigiCert ONE](https://one.digicert.com), [Google Cloud KMS](https://cloud.google.com/security-key-management))
+  * Cloud key management systems ([Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [DigiCert ONE](https://one.digicert.com), [Google Cloud KMS](https://cloud.google.com/security-key-management), [SSL.com eSigner](https://www.ssl.com/esigner/))
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
 * Build tools integration (Maven, Gradle, Ant)
@@ -42,6 +42,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 4.1 (in development)
 
+* The SSL.com eSigner service has been integrated
 * The Ant task can now sign multiple files by defining a fileset (contributed by Kyle Berezin)
 * Fixed the _"Map failed"_ OutOfMemoryError when signing large MSI files
 * Certificates using an elliptic-curve key are now supported

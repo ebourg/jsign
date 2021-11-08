@@ -52,7 +52,9 @@ class RESTClient {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
         conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)");
-        authenticationHandler.accept(conn);
+        if (authenticationHandler != null) {
+            authenticationHandler.accept(conn);
+        }
 
         if (body != null) {
             byte[] data = body.getBytes(StandardCharsets.UTF_8);
@@ -79,22 +81,30 @@ class RESTClient {
     }
 
     private String getErrorMessage(Map<String, ?> response) {
-        Map error = (Map) response.get("error");
         StringBuilder message = new StringBuilder();
-        if (error.get("code") != null) {
-            message.append(error.get("code"));
-        }
-        if (error.get("status") != null) {
-            if (message.length() > 0) {
-                message.append(" - ");
+
+        if (response.get("error") instanceof Map) {
+            Map error = (Map) response.get("error");
+            if (error.get("code") != null) {
+                message.append(error.get("code"));
             }
-            message.append(error.get("status"));
-        }
-        if (error.get("message") != null) {
-            if (message.length() > 0) {
-                message.append(": ");
+            if (error.get("status") != null) {
+                if (message.length() > 0) {
+                    message.append(" - ");
+                }
+                message.append(error.get("status"));
             }
-            message.append(error.get("message"));
+            if (error.get("message") != null) {
+                if (message.length() > 0) {
+                    message.append(": ");
+                }
+                message.append(error.get("message"));
+            }
+        } else {
+            // error message from the CSC API
+            String error = (String) response.get("error");
+            String description = (String) response.get("error_description");
+            message.append(error).append(": ").append(description);
         }
         return message.toString();
     }

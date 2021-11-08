@@ -113,4 +113,15 @@ public class SigningServiceTest {
 
         testCustomProvider(provider, keystore, "0a50eb72-68d0-4730-96cb-fe648d2c2fd2", "");
     }
+
+    @Test
+    public void testESignerProvider() throws Exception {
+        ESignerSigningService service = new ESignerSigningService("https://cs-try.ssl.com", "esigner_demo", "esignerDemo#1");
+        Provider provider = new SigningServiceJcaProvider(service);
+        KeyStore keystore = KeyStore.getInstance("ESIGNER", provider);
+        keystore.load(null, "".toCharArray());
+        String alias = keystore.aliases().nextElement();
+
+        testCustomProvider(provider, keystore, alias, "RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=");
+    }
 }

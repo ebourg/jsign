@@ -64,7 +64,7 @@ programmatically or standalone as a command line tool.</p>
     <ul>
       <li>PKCS#12, JKS and JCEKS files</li>
       <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
-      <li>Cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>)</li>
+      <li>Cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>, <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a>)</li>
     </ul>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
@@ -161,6 +161,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
+          <li><code>ESIGNER</code>: SSL.com eSigner</li>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
         </ul>
       </td>
@@ -349,6 +350,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - PKCS11: PKCS#11 hardware token
                              - AZUREKEYVAULT: Azure Key Vault key management system
                              - DIGICERTONE: DigiCert ONE Secure Software Manager
+                             - ESIGNER: SSL.com eSigner
                              - GOOGLECLOUD: Google Cloud KMS
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
@@ -418,6 +420,20 @@ a client certificate for the authentication.</p>
  jsign --storetype DIGICERTONE --alias test \
        --storepass "&lt;api-key&gt;|/path/to/Certificate_pkcs12.p12|&lt;password&gt;" application.exe
 </pre>
+
+<h4 id="example-sslcom-esigner">Example using SSL.com eSigner:</h4>
+
+<p>When signing with the <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a> service, the SSL.com username and
+password are used as the keystore password, and the base64 encoded TOTP secret is used as the key password:</p>
+
+<pre>
+ jsign --storetype ESIGNER --storepass "&lt;username&gt;|&lt;password&gt;" \
+       --alias 8b072e22-7685-4771-b5c6-48e46614915f \
+       --keypass &lt;totp-secret&gt; application.exe
+</pre>
+
+<p>SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
+<code>--keystore https://cs-try.ssl.com</code>.</p>
 
 <h4 id="example-googlecloud">Example using Google Cloud KMS:</h4>
 

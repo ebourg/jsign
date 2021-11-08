@@ -52,6 +52,7 @@ import org.bouncycastle.cms.CMSSignedData;
 
 import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
+import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.timestamp.TimestampingMode;
@@ -273,7 +274,7 @@ class SignerHelper {
         Certificate[] chain;
 
         // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"DIGICERTONE".equals(storetype)) {
+        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && keyfile != null) {
@@ -299,6 +300,10 @@ class SignerHelper {
             }
             if (certfile == null) {
                 throw new SignerException("certfile " + parameterName + " must be set");
+            }
+        } else if ("ESIGNER".equals(storetype)) {
+            if (storepass == null || !storepass.contains("|")) {
+                throw new SignerException("storepass " + parameterName + " must specify the SSL.com username and password: <username>|<password>");
             }
         }
         
@@ -330,6 +335,14 @@ class SignerHelper {
                     throw new RuntimeException("Failed to load the certificate from " + certfile, e);
                 }
             }));
+        } else if ("ESIGNER".equals(storetype)) {
+            String[] elements = storepass.split("\\|", 2);
+            String endpoint = keystore != null ? keystore : "https://cs.ssl.com";
+            try {
+                provider = new SigningServiceJcaProvider(new ESignerSigningService(endpoint, elements[0], elements[1]));
+            } catch (IOException e) {
+                throw new SignerException("Authentication failed with SSL.com", e);
+            }
         }
 
         if (keystore != null || "YUBIKEY".equals(storetype) || "DIGICERTONE".equals(storetype)) {
@@ -384,7 +397,7 @@ class SignerHelper {
                 }
                 throw new SignerException(message);
             }
-            if (certfile != null && !"GOOGLECLOUD".equals(storetype)) {
+            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype)) {
                 if (chain.length != 1) {
                     throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
                 }
@@ -405,7 +418,7 @@ class SignerHelper {
             }
 
             char[] password = keypass != null ? keypass.toCharArray() : null;
-            if (password == null && storepass != null) {
+            if (password == null && storepass != null && !"ESIGNER".equals(storetype)) {
                 // use the storepass as the keypass
                 password = storepass.toCharArray();
             }

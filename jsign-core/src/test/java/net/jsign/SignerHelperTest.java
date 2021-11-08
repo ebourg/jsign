@@ -127,4 +127,23 @@ public class SignerHelperTest {
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
+
+    @Test
+    public void testESigner() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-signing-service.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("ESIGNER")
+                .storepass("esigner_demo|esignerDemo#1")
+                .keystore("https://cs-try.ssl.com")
+                .keypass("RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
 }

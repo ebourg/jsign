@@ -50,6 +50,8 @@ The type of the keystore:
 .br
 - DIGICERTONE   : DigiCert ONE Secure Software Manager
 .br
+- ESIGNER       : SSL.com eSigner
+.br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
 This options is not required if the keystore has a known extension (.jks, jceks, .p12 or .pfx).
@@ -189,6 +191,21 @@ authentication.
 
 jsign --storetype DIGICERTONE --alias test \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" application.exe
+
+
+.TP
+
+Signing with SSL.com eSigner:
+
+When signing with the SSL.com eSigner service, the SSL.com username and password are used as the keystore password,
+and the base64 encoded TOTP secret is used as the key password:
+
+jsign --storetype ESIGNER --storepass "&lt;username&gt;|&lt;password&gt;" \\
+      --alias 8b072e22-7685-4771-b5c6-48e46614915f \\
+      --keypass &lt;totp-secret&gt; application.exe
+
+SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
+"--keystore https://cs-try.ssl.com".
 
 
 .TP
