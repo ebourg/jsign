@@ -404,7 +404,11 @@ class SignerHelper {
                 }
             }
 
-            char[] password = keypass != null ? keypass.toCharArray() : storepass.toCharArray();
+            char[] password = keypass != null ? keypass.toCharArray() : null;
+            if (password == null && storepass != null) {
+                // use the storepass as the keypass
+                password = storepass.toCharArray();
+            }
 
             try {
                 privateKey = (PrivateKey) ks.getKey(alias, password);
