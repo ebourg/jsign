@@ -143,6 +143,7 @@
                 <option>-keep public class net.jsign.* { *; }</option>
                 <option>-keep public class net.jsign.asn1.authenticode.* { *; }</option>
                 <option>-keep public class net.jsign.asn1.authenticode.* { *; }</option>
+                <option>-keep public class net.jsign.jca.* { *; }</option>
                 <option>-keep public class net.jsign.msi.* { *; }</option>
                 <option>-keep public class net.jsign.pe.* { *; }</option>
                 <option>-keep public class net.jsign.script.* { *; }</option>
@@ -190,6 +191,13 @@
             </ignoreMissingClassesByRegularExpressions>
             <skipXmlReport>true</skipXmlReport>
             <skipDiffReport>true</skipDiffReport>
+            <overrideCompatibilityChangeParameters>
+              <overrideCompatibilityChangeParameter>
+                <compatibilityChange>METHOD_ABSTRACT_NOW_DEFAULT</compatibilityChange>
+                <binaryCompatible>true</binaryCompatible>
+                <sourceCompatible>true</sourceCompatible>
+              </overrideCompatibilityChangeParameter>
+            </overrideCompatibilityChangeParameters>
           </parameter>
         </configuration>
       </plugin>

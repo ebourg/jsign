@@ -85,6 +85,13 @@
             </excludes>
             <skipXmlReport>true</skipXmlReport>
             <skipDiffReport>true</skipDiffReport>
+            <overrideCompatibilityChangeParameters>
+              <overrideCompatibilityChangeParameter>
+                <compatibilityChange>METHOD_ABSTRACT_NOW_DEFAULT</compatibilityChange>
+                <binaryCompatible>true</binaryCompatible>
+                <sourceCompatible>true</sourceCompatible>
+              </overrideCompatibilityChangeParameter>
+            </overrideCompatibilityChangeParameters>
           </parameter>
         </configuration>
       </plugin>

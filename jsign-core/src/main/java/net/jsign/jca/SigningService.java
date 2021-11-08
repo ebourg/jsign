@@ -55,6 +55,16 @@ public interface SigningService {
     SigningServicePrivateKey getPrivateKey(String alias, char[] password) throws UnrecoverableKeyException;
 
     /**
+     * Returns the private key for the certificate alias specified.
+     *
+     * @param alias the name of the certificate
+     */
+    @Deprecated
+    default SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {
+        return getPrivateKey(alias, null);
+    }
+
+    /**
      * Sign the data with the private key specified.
      *
      * @param privateKey the private key
