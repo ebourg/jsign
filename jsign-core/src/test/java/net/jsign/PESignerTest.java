@@ -158,7 +158,7 @@ public class PESignerTest {
             chain = certificates.toArray(new Certificate[0]);
         }
 
-        KeyStore keystore = KeyStoreUtils.load(null, "PKCS11", "123456", YubiKey.getProvider());
+        KeyStore keystore = KeyStoreUtils.load((String) null, "PKCS11", "123456", YubiKey.getProvider());
         PrivateKey privateKey = (PrivateKey) keystore.getKey("X.509 Certificate for Digital Signature", null);
         AuthenticodeSigner signer = new AuthenticodeSigner(chain, privateKey)
                 .withSignatureProvider(keystore.getProvider());

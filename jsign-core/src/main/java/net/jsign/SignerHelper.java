@@ -90,7 +90,7 @@ class SignerHelper {
     /** The name used to refer to a configuration parameter */
     private final String parameterName;
 
-    private File keystore;
+    private String keystore;
     private String storepass;
     private String storetype;
     private String alias;
@@ -119,12 +119,12 @@ class SignerHelper {
     }
 
     public SignerHelper keystore(String keystore) {
-        keystore(createFile(keystore));
+        this.keystore = keystore;
         return this;
     }
 
     public SignerHelper keystore(File keystore) {
-        this.keystore = keystore;
+        this.keystore = keystore != null ? keystore.getPath() : null;
         return this;
     }
 
@@ -305,12 +305,12 @@ class SignerHelper {
         Provider provider = null;
         if ("PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
-            if (keystore != null && keystore.exists()) {
-                provider = ProviderUtils.createSunPKCS11Provider(keystore.getPath());
-            } else if (keystore != null && keystore.getName().startsWith("SunPKCS11-")) {
-                provider = Security.getProvider(keystore.getName());
+            if (keystore != null && new File(keystore).exists()) {
+                provider = ProviderUtils.createSunPKCS11Provider(keystore);
+            } else if (keystore != null && keystore.startsWith("SunPKCS11-")) {
+                provider = Security.getProvider(keystore);
                 if (provider == null) {
-                    throw new SignerException("Security provider " + keystore.getName() + " not found");
+                    throw new SignerException("Security provider " + keystore + " not found");
                 }
             } else {
                 throw new SignerException("keystore " + parameterName + " should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security");
@@ -318,12 +318,12 @@ class SignerHelper {
         } else if ("YUBIKEY".equals(storetype)) {
             provider = YubiKey.getProvider();
         } else if ("AZUREKEYVAULT".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore.getName(), storepass));
+            provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore, storepass));
         } else if ("DIGICERTONE".equals(storetype)) {
             String[] elements = storepass.split("\\|");
             provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], new File(elements[1]), elements[2]));
         } else if ("GOOGLECLOUD".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore.getPath(), storepass, alias -> {
+            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, alias -> {
                 try {
                     return loadCertificateChain(certfile);
                 } catch (IOException | CertificateException e) {

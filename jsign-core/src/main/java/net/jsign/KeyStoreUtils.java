@@ -45,9 +45,24 @@ public class KeyStoreUtils {
      * @throws KeyStoreException thrown if the keystore cannot be loaded
      */
     public static KeyStore load(File keystore, String storetype, String storepass, Provider provider) throws KeyStoreException {
+        return load(keystore != null ? keystore.getPath() : null, storetype, storepass, provider);
+    }
+
+    /**
+     * Load the keystore from the specified path.
+     *
+     * @param keystore   the path to the keystore
+     * @param storetype  the type of the keystore (either JKS, JCEKS, PKCS12 or PKCS11).
+     *                   If null the type is inferred from the extension of the file (.p12 or .pfx for PKCS#12 keystores)
+     * @param storepass  The password of the keystore
+     * @param provider   The security provider used to load the keystore (must be specified for PKCS#11 keystores)
+     * @return the keystore loaded
+     * @throws KeyStoreException thrown if the keystore cannot be loaded
+     */
+    public static KeyStore load(String keystore, String storetype, String storepass, Provider provider) throws KeyStoreException {
         if (keystore != null && storetype == null) {
             // guess the type of the keystore from the extension of the file
-            String filename = keystore.getName().toLowerCase();
+            String filename = keystore.toLowerCase();
             if (filename.endsWith(".p12") || filename.endsWith(".pfx")) {
                 storetype = "PKCS12";
             } else if (filename.endsWith(".jceks")) {
@@ -69,7 +84,7 @@ public class KeyStoreUtils {
         }
 
         boolean filebased = "JKS".equals(storetype) || "JCEKS".equals(storetype) || "PKCS12".equals(storetype);
-        if (filebased && (keystore == null || !keystore.exists())) {
+        if (filebased && (keystore == null || !new File(keystore).exists())) {
             throw new KeyStoreException("The keystore " + keystore + " couldn't be found");
         }
         
