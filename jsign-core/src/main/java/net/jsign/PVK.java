@@ -79,7 +79,7 @@ class PVK {
         byte[] salt = new byte[saltLength];
         buffer.get(salt);
         
-        // BLOBHEADER structure: https://msdn.microsoft.com/en-us/library/cc235198.aspx
+        // BLOBHEADER structure: https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-mqds/588d8ab6-a559-4698-af82-8f4d489cfc0e
         byte btype = buffer.get();
         byte version = buffer.get();
         buffer.position(buffer.position() + 2); // reserved
@@ -137,7 +137,7 @@ class PVK {
     /**
      * Parses a private key blob.
      *
-     * @see <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa375601.aspx#priv_BLOB">MSDN - Private Key BLOBs</a>
+     * @see <a href="https://docs.microsoft.com/en-us/windows/win32/seccrypto/base-provider-key-blobs#private-key-blobs">Microsoft Docs - Private Key BLOBs</a>
      */
     private static PrivateKey parseKey(byte[] key) throws GeneralSecurityException {
         ByteBuffer buffer = ByteBuffer.wrap(key);

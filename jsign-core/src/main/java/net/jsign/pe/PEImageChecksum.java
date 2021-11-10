@@ -23,7 +23,7 @@ import java.util.zip.Checksum;
  * function implemented into IMAGHELP.DLL. The checksum can only be updated
  * with buffers with a size that is a multiple of 4.
  * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms680181%28v=vs.85%29.aspx">ImageHlp Functions</a>
+ * @see <a href="https://docs.microsoft.com/en-us/windows/win32/debug/imagehlp-functions">ImageHlp Functions</a>
  * @see <a href="http://www.codeproject.com/KB/cpp/PEChecksum.aspx">An Analysis of the Windows PE Checksum Algorithm</a>
  * 
  * @author Emmanuel Bourg

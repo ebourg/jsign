@@ -33,8 +33,8 @@ import net.jsign.timestamp.TimestampingMode;
  * Sign a portable executable file. Timestamping is enabled by default
  * and relies on the Sectigo server (http://timestamp.sectigo.com).
  * 
- * @see <a href="http://download.microsoft.com/download/9/c/5/9c5b2167-8017-4bae-9fde-d599bac8184a/Authenticode_PE.docx">Windows Authenticode Portable Executable Signature Format</a>
- * @see <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/bb931395%28v=vs.85%29.aspx?ppud=4">Time Stamping Authenticode Signatures</a>
+ * @see <a href="https://download.microsoft.com/download/9/c/5/9c5b2167-8017-4bae-9fde-d599bac8184a/Authenticode_PE.docx">Windows Authenticode Portable Executable Signature Format</a>
+ * @see <a href="https://docs.microsoft.com/en-us/windows/win32/seccrypto/time-stamping-authenticode-signatures">Time Stamping Authenticode Signatures</a>
  * 
  * @author Emmanuel Bourg
  * @since 1.0

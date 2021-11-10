@@ -60,7 +60,7 @@ import static net.jsign.ChannelUtils.*;
  * 
  * This class is thread safe.
  * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/windows/hardware/gg463119.aspx">Microsoft PE and COFF Specification </a>
+ * @see <a href="https://docs.microsoft.com/en-us/windows/win32/debug/pe-format">Microsoft PE and COFF Specification </a>
  * 
  * @author Emmanuel Bourg
  * @since 1.0
