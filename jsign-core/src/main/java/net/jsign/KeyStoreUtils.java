@@ -61,15 +61,7 @@ public class KeyStoreUtils {
      */
     public static KeyStore load(String keystore, String storetype, String storepass, Provider provider) throws KeyStoreException {
         if (keystore != null && storetype == null) {
-            // guess the type of the keystore from the extension of the file
-            String filename = keystore.toLowerCase();
-            if (filename.endsWith(".p12") || filename.endsWith(".pfx")) {
-                storetype = "PKCS12";
-            } else if (filename.endsWith(".jceks")) {
-                storetype = "JCEKS";
-            } else {
-                storetype = "JKS";
-            }
+            storetype = getType(keystore);
         }
         
         KeyStore ks;
@@ -97,5 +89,26 @@ public class KeyStoreUtils {
         }
         
         return ks;
+    }
+
+    /**
+     * Guess the type of the keystore from the extension of the file.
+     *
+     * @param keystore   the path to the keystore
+     */
+    static String getType(String keystore) {
+        if (keystore == null) {
+            return null;
+        }
+
+        // guess the type of the keystore from the extension of the file
+        String filename = keystore.toLowerCase();
+        if (filename.endsWith(".p12") || filename.endsWith(".pfx")) {
+            return "PKCS12";
+        } else if (filename.endsWith(".jceks")) {
+            return "JCEKS";
+        } else {
+            return "JKS";
+        }
     }
 }
