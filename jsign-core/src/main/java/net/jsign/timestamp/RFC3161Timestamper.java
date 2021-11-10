@@ -19,9 +19,6 @@ package net.jsign.timestamp;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
-import net.jsign.DigestAlgorithm;
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
-
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -31,6 +28,9 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
 import org.bouncycastle.tsp.TimeStampResponse;
+
+import net.jsign.DigestAlgorithm;
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 
 /**
  * RFC 3161 timestamping.

@@ -54,7 +54,7 @@ import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 import static java.nio.charset.StandardCharsets.*;
 
 /**

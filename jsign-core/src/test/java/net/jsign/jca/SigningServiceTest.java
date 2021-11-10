@@ -26,11 +26,11 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
-import net.jsign.SignatureAssert;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
+import net.jsign.SignatureAssert;
 import net.jsign.pe.PEFile;
 
 import static net.jsign.DigestAlgorithm.*;

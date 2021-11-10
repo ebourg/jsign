@@ -22,10 +22,10 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.List;
 
-import net.jsign.mscab.MSCabinetFile;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.mscab.MSCabinetFile;
 import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.JScript;

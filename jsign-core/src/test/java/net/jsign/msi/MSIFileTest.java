@@ -19,6 +19,7 @@ package net.jsign.msi;
 import java.io.File;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class MSIFileTest {

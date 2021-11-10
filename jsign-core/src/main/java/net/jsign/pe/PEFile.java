@@ -31,13 +31,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.jsign.DigestAlgorithm;
-import net.jsign.Signable;
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
-import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
-import net.jsign.asn1.authenticode.SpcIndirectDataContent;
-import net.jsign.asn1.authenticode.SpcPeImageData;
-
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
@@ -52,6 +45,13 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+
+import net.jsign.DigestAlgorithm;
+import net.jsign.Signable;
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
+import net.jsign.asn1.authenticode.SpcIndirectDataContent;
+import net.jsign.asn1.authenticode.SpcPeImageData;
 
 import static net.jsign.ChannelUtils.*;
 

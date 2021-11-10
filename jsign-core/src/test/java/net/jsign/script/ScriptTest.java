@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 
-import net.jsign.SignatureAssert;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
+import net.jsign.SignatureAssert;
 
 import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
