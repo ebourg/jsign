@@ -44,6 +44,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * The SSL.com eSigner service has been integrated
 * The Ant task can now sign multiple files by defining a fileset (contributed by Kyle Berezin)
+* The type of the keystore is now automatically detected from the file header
 * Fixed the _"Map failed"_ OutOfMemoryError when signing large MSI files
 * Certificates using an elliptic-curve key are now supported
 * The default timestamping authority is now Sectigo instead of Comodo

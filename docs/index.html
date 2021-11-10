@@ -154,8 +154,8 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">
         The type of the keystore:
         <ul>
-          <li><code>JKS</code>: Java keystore</li>
-          <li><code>JCEKS</code>: SunJCE keystore</li>
+          <li><code>JKS</code>: Java keystore (<code>.jks</code> files)</li>
+          <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
@@ -165,7 +165,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
         </ul>
       </td>
-      <td valign="top" align="center">No; defaults to "JKS".</td>
+      <td valign="top" align="center">No, automatically detected for file based keystores.</td>
     </tr>
     <tr>
       <td valign="top">alias</td>

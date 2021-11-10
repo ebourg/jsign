@@ -3,7 +3,6 @@ TODO
 - Verify signed files
 - GUI
 - Support private keys exported with PKCS#8 
-- Detect the type of the keystore automatically (guess from the extension and try all the other types as a fallback)
 - Support unauthenticated blobs
 - Support generating MsiDigitalSignatureEx entries when signing MSI files (requires access to the streams metadata in POI)
 - load password from the environment (CLI syntax: env:VARIABLE_NAME)

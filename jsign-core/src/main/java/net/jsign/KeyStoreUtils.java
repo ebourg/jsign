@@ -18,6 +18,8 @@ package net.jsign;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.Provider;
@@ -92,13 +94,32 @@ public class KeyStoreUtils {
     }
 
     /**
-     * Guess the type of the keystore from the extension of the file.
+     * Guess the type of the keystore from the header or the extension of the file.
      *
      * @param keystore   the path to the keystore
      */
-    static String getType(String keystore) {
+    static String getType(String keystore) throws KeyStoreException {
         if (keystore == null) {
             return null;
+        }
+
+        // guess the type of the keystore from the header of the file
+        File file = new File(keystore);
+        if (file.exists()) {
+            try (FileInputStream in = new FileInputStream(file)) {
+                byte[] header = new byte[4];
+                in.read(header);
+                ByteBuffer buffer = ByteBuffer.wrap(header);
+                if (buffer.get(0) == 0x30) {
+                    return "PKCS12";
+                } else if ((buffer.getInt(0) & 0xFFFFFFFFL) == 0xCECECECEL) {
+                    return "JCEKS";
+                } else if ((buffer.getInt(0) & 0xFFFFFFFFL) == 0xFEEDFEEDL) {
+                    return "JKS";
+                }
+            } catch (IOException e) {
+                throw new KeyStoreException("Unable to load the keystore " + keystore, e);
+            }
         }
 
         // guess the type of the keystore from the extension of the file
@@ -107,8 +128,10 @@ public class KeyStoreUtils {
             return "PKCS12";
         } else if (filename.endsWith(".jceks")) {
             return "JCEKS";
-        } else {
+        } else if (filename.endsWith(".jks")) {
             return "JKS";
+        } else {
+            return null;
         }
     }
 }
