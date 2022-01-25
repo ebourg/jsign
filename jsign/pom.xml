@@ -149,6 +149,7 @@
                 <option>-keep public class net.jsign.script.* { *; }</option>
                 <option>-keep public class net.jsign.timestamp.* { *; }</option>
                 <option>-keeppackagenames net.jsign</option>
+                <option>-keepclassmembers class * extends java.lang.Enum { *; }</option>
               </options>
               <injar>${project.build.finalName}.jar</injar>
               <includeDependency>false</includeDependency>
