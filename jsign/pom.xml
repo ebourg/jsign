@@ -106,6 +106,10 @@
                   <shadedPattern>net.jsign.commons</shadedPattern>
                 </relocation>
                 <relocation>
+                  <pattern>org.apache.logging.log4j</pattern>
+                  <shadedPattern>net.jsign.log4j</shadedPattern>
+                </relocation>
+                <relocation>
                   <pattern>org.apache.poi</pattern>
                   <shadedPattern>net.jsign.poi</shadedPattern>
                 </relocation>
