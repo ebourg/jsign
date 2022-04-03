@@ -49,6 +49,7 @@ See https://ebourg.github.io/jsign for more information.
 * Certificates using an elliptic-curve key are now supported
 * The default timestamping authority is now Sectigo instead of Comodo
 * The signed file is now properly closed after attaching or detaching a signature (contributed by Mark Thomas)
+* Upgraded BouncyCastle to 1.70
 
 #### Version 4.0 (2021-08-09)
 
