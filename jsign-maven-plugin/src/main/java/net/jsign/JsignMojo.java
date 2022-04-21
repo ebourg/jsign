@@ -123,11 +123,20 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.proxyId" )
     private String proxyId;
 
+    /** Specifies whether the signing should be skipped. */
+    @Parameter( property = "jsign.skip", defaultValue = "false" )
+    protected boolean skip;
+
     @Component(hint = "mng-4384")
     private SecDispatcher securityDispatcher;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (skip) {
+            getLog().info("Skipping signing");
+            return;
+        }
+
         if (file == null && fileset == null) {
             throw new MojoExecutionException("file of fileset must be set");
         }

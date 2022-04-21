@@ -253,4 +253,24 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes.exe.sig").exists());
     }
+
+    public void testSkip() throws Exception {
+        File detachedSignature = new File("target/test-classes/wineyes.exe.sig");
+        if (detachedSignature.exists()) {
+            assertTrue(detachedSignature.delete());
+        }
+
+        JsignMojo mojo = getMojo();
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "password");
+        setVariableValueToObject(mojo, "detached", Boolean.TRUE);
+        setVariableValueToObject(mojo, "skip", Boolean.TRUE);
+
+        mojo.execute();
+
+        assertFalse("Signing not skipped", new File("target/test-classes/wineyes.exe.sig").exists());
+    }
 }
