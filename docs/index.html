@@ -198,7 +198,9 @@ programmatically or standalone as a command line tool.</p>
       <td valign="top">
           The URL of the timestamping authority, either RFC 3161 or Authenticode services.
           You can use for example the Sectigo (http://timestamp.sectigo.com)
-          or the DigiCert (http://timestamp.digicert.com) services.</td>
+          or the DigiCert (http://timestamp.digicert.com) services.<br>
+          Several URLs separated by a comma can be specified to fallback on alternative servers.
+      </td>
       <td valign="top" align="center">No</td>
     </tr>
     <tr>
@@ -360,7 +362,8 @@ are provided to install it easily on most Linux distributions. On these systems 
   -c,--certfile &lt;FILE>       The file containing the PKCS#7 certificate chain
                              (.p7b or .spc files).
   -d,--alg &lt;ALGORITHM>       The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)
-  -t,--tsaurl &lt;URL>          The URL of the timestamping authority.
+  -t,--tsaurl &lt;URL>          The URL of the timestamping authority. Several URLs separated
+                             by a comma can be specified to fallback on alternative servers
   -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
   -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
   -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries

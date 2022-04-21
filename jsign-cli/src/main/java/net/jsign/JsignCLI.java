@@ -60,6 +60,7 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYFILE).argName("FILE").desc("The file containing the private key. PEM and PVK files are supported. ").type(File.class).build());
         options.addOption(Option.builder("c").hasArg().longOpt(PARAM_CERTFILE).argName("FILE").desc("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").type(File.class).build());
         options.addOption(Option.builder("d").hasArg().longOpt(PARAM_ALG).argName("ALGORITHM").desc("The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)").build());
+        options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority. Several URLs separated by a comma can be specified to fallback on alternative servers").build());
         options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority.").build());
         options.addOption(Option.builder("m").hasArg().longOpt(PARAM_TSMODE).argName("MODE").desc("The timestamping mode (RFC3161 or Authenticode)").build());
         options.addOption(Option.builder("r").hasArg().longOpt(PARAM_TSRETRIES).argName("NUMBER").desc("The number of retries for timestamping").build());
