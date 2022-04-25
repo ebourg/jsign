@@ -17,7 +17,6 @@
 package net.jsign;
 
 import java.io.File;
-import java.security.KeyStoreException;
 import java.security.Provider;
 import java.security.ProviderException;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ class YubiKey {
      * Returns the security provider for the YubiKey.
      *
      * @return the YubiKey security provider
-     * @throws KeyStoreException throws if the keystore cannot be loaded
+     * @throws ProviderException thrown if the provider can't be initialized
      * @since 4.0
      */
     static Provider getProvider() {
@@ -44,7 +43,7 @@ class YubiKey {
     /**
      * Returns the SunPKCS11 configuration of the YubiKey.
      *
-     * @throws IllegalStateException thrown if the PKCS11 modules cannot be found
+     * @throws ProviderException thrown if the PKCS11 modules cannot be found
      * @since 4.0
      */
     static String getSunPKCS11Configuration() {
