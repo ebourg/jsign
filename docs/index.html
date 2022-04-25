@@ -146,7 +146,11 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td valign="top">storepass</td>
-      <td valign="top">The password to open the keystore</td>
+      <td valign="top">
+        The password to open the keystore. The password can be loaded from a file by using the <code>file:</code> prefix
+        followed by the path of the file, or from an enviroment variable by using the <code>env:</code> prefix followed
+        by the name of the variable.
+      </td>
       <td valign="top" align="center">No</td>
     </tr>
     <tr>
@@ -185,7 +189,12 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td valign="top">keypass</td>
-      <td valign="top">The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password.</td>
+      <td valign="top">
+        The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares
+        the same password. The password can be loaded from a file by using the <code>file:</code> prefix followed by
+        the path of the file, or from an enviroment variable by using the <code>env:</code> prefix followed by the
+        name of the variable.
+      </td>
       <td valign="top" align="center">No</td>
     </tr>
     <tr>

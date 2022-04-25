@@ -30,6 +30,9 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -270,9 +273,42 @@ class SignerHelper {
         return file == null ? null : new File(file);
     }
 
+    /**
+     * Read the password from the specified value. If the value is prefixed with <code>file:</code>
+     * the password is loaded from a file. If the value is prefixed with <code>env:</code> the password
+     * is loaded from an environment variable. Otherwise the value is returned as is.
+     *
+     * @param name  the name of the parameter
+     * @param value the value to parse
+     */
+    private String readPassword(String name, String value) throws SignerException {
+        if (value != null) {
+            if (value.startsWith("file:")) {
+                String filename = value.substring("file:".length());
+                Path path = new File(filename).toPath();
+                try {
+                    value = String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)).trim();
+                } catch (IOException e) {
+                    throw new SignerException("Failed to read the " + name + " " + parameterName + " from the file '" + filename + "'", e);
+                }
+            } else if (value.startsWith("env:")) {
+                String variable = value.substring("env:".length());
+                if (!System.getenv().containsKey(variable)) {
+                    throw new SignerException("Failed to read the " + name + " " + parameterName + ", the '" + variable + "' environment variable is not defined");
+                }
+                value = System.getenv(variable);
+            }
+        }
+
+        return value;
+    }
+
     private AuthenticodeSigner build() throws SignerException {
         PrivateKey privateKey;
         Certificate[] chain;
+
+        String storepass = readPassword("storepass", this.storepass);
+        String keypass = readPassword("keypass", this.keypass);
 
         // some exciting parameter validation...
         if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {

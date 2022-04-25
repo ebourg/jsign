@@ -45,6 +45,7 @@ See https://ebourg.github.io/jsign for more information.
 * The SSL.com eSigner service has been integrated
 * The Ant task can now sign multiple files by defining a fileset (contributed by Kyle Berezin)
 * The type of the keystore is now automatically detected from the file header
+* The `storepass` and `keypass` parameters can now be read from a file or from an environment variable
 * The execution of the Maven plugin can now be skipped (with the `<skip>` configuration element, or the `jsign.skip` property)
 * Fixed the _"Map failed"_ OutOfMemoryError when signing large MSI files
 * Certificates using an elliptic-curve key are now supported

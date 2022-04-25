@@ -17,9 +17,11 @@
 package net.jsign;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.zip.CRC32;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.jca.Azure;
@@ -67,6 +69,80 @@ public class SignerHelperTest {
         signer.sign(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
+    }
+
+    @Test
+    public void testPasswordFromFile() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-external-password.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        Files.write(new File("target/test-classes/storepass.txt").toPath(), "password".getBytes());
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("file:target/test-classes/storepass.txt");
+
+        signer.sign(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testPasswordFromFileFailed() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-external-password.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("file:/path/to/missing/file");
+
+        try {
+            signer.sign(targetFile);
+        } catch (SignerException e) {
+            assertEquals("message", "Failed to read the keypass parameter from the file '/path/to/missing/file'", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testPasswordFromEnvironment() throws Exception {
+        Assume.assumeTrue("STOREPASS environment variable not defined", System.getenv().containsKey("STOREPASS"));
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-external-password.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("env:STOREPASS");
+
+        signer.sign(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testPasswordFromEnvironmentFailed() throws Exception {
+        Assume.assumeFalse(System.getenv().containsKey("MISSING_VAR"));
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-external-password.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("env:MISSING_VAR");
+
+        try {
+            signer.sign(targetFile);
+        } catch (SignerException e) {
+            assertEquals("message", "Failed to read the keypass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
+        }
     }
 
     @Test
