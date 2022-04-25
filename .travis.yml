@@ -15,7 +15,7 @@ matrix:
     - jdk: openjdk-ea
 
 after_success:
-  - mvn clean test jacoco:report-aggregate coveralls:report
+  - mvn clean test jacoco:report-aggregate coveralls:report -DjacocoReports=jsign/target/site/jacoco-aggregate/jacoco.xml
 
 cache:
   directories:
