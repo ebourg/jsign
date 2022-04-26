@@ -17,10 +17,14 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.Provider;
 import java.security.ProviderException;
 import java.util.ArrayList;
 import java.util.List;
+
+import sun.security.pkcs11.wrapper.PKCS11;
+import sun.security.pkcs11.wrapper.PKCS11Exception;
 
 /**
  * Helper class for working with YubiKeys.
@@ -51,7 +55,27 @@ class YubiKey {
         if (!libykcs11.exists()) {
             throw new ProviderException("YubiKey PKCS11 module (ykcs11) is not installed (" + libykcs11 + " is missing)");
         }
-        return "--name=yubikey\nlibrary = \"" + libykcs11.getAbsolutePath().replace("\\", "\\\\") + "\"";
+        String configuration = "--name=yubikey\nlibrary = \"" + libykcs11.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+        try {
+            long slot = getTokenSlot(libykcs11);
+            if (slot >= 0) {
+                configuration += "slotListIndex=" + slot;
+            }
+        } catch (Exception e) {
+            throw new ProviderException(e);
+        }
+        return configuration;
+    }
+
+    /**
+     * Returns the slot index associated to the token.
+     *
+     * @since 4.1
+     */
+    static long getTokenSlot(File libraryPath) throws PKCS11Exception, IOException {
+        PKCS11 pkcs11 = PKCS11.getInstance(libraryPath.getAbsolutePath(), "C_GetFunctionList", null, false);
+        long[] slots = pkcs11.C_GetSlotList(true);
+        return slots.length > 0 ? slots[0] : -1;
     }
 
     /**

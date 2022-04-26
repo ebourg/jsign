@@ -52,6 +52,7 @@ See https://ebourg.github.io/jsign for more information.
 * The default timestamping authority is now Sectigo instead of Comodo
 * The signed file is now properly closed after attaching or detaching a signature (contributed by Mark Thomas)
 * Fixed an error when signing with a Yubikey on Windows with a 32-bit JRE
+* The PKCS#11 slot of the Yubikey is now automatically detected
 * Upgraded BouncyCastle to 1.70
 
 #### Version 4.0 (2021-08-09)
