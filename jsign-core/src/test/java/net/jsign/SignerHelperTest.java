@@ -196,7 +196,7 @@ public class SignerHelperTest {
         SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
                 .storetype("DIGICERTONE")
                 .storepass(apikey + "|" + DigiCertONE.getClientCertificateFile() + "|" + DigiCertONE.getClientCertificatePassword())
-                .alias("Tomcat-PMC-cert-2021-04")
+                .alias("Tomcat-PMC-cert-2021-11")
                 .alg("SHA-256");
 
         helper.sign(targetFile);
