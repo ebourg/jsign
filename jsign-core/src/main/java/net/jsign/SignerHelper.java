@@ -59,6 +59,7 @@ import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
+import net.jsign.pe.PEFile;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -575,6 +576,11 @@ class SignerHelper {
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
         Signable signable = Signable.of(file, encoding);
+        
+        if (signable instanceof PEFile) {
+            ((PEFile) signable).pad(8);
+        }
+        
         try {
             signable.setSignature(signedData);
             signable.save();
