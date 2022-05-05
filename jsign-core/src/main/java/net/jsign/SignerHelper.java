@@ -547,6 +547,14 @@ class SignerHelper {
                 return;
             } catch (Exception e) {
                 throw new SignerException("Couldn't attach the signature to " + file, e);
+            } finally {
+                try {
+                    if (signable instanceof Closeable) {
+                        ((Closeable) signable).close();
+                    }
+                } catch (IOException ioe) {
+                    // Ignore for now
+                }
             }
         }
 
