@@ -51,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 * Certificates using an elliptic-curve key are now supported
 * The default timestamping authority is now Sectigo instead of Comodo
 * The signed file is now properly closed after attaching or detaching a signature (contributed by Mark Thomas)
+* A detached signature added to a PE file whose length isn't a multiple of 8 is no longer invalid
 * Fixed an error when signing with a Yubikey on Windows with a 32-bit JRE
 * The PKCS#11 slot of the Yubikey is now automatically detected
 * Upgraded BouncyCastle to 1.70
