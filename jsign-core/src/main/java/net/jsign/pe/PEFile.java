@@ -740,6 +740,12 @@ public class PEFile implements Signable, Closeable {
 
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
+        // pad the file before adding the certificate table
+        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+        if (certificateTable == null || !certificateTable.exists()) {
+            pad(8);
+        }
+
         CertificateTableEntry entry = new CertificateTableEntry(signature);
         writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
     }

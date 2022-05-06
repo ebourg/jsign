@@ -317,10 +317,6 @@ public class AuthenticodeSigner {
     public void sign(Signable file) throws Exception {
         if (file instanceof PEFile) {
             PEFile pefile = (PEFile) file;
-            
-            // pad the file on a 8 byte boundary (signtool refuses to sign files not properly padded)
-            // todo only if there was no previous certificate table
-            pefile.pad(8);
 
             if (replace) {
                 DataDirectory certificateTable = pefile.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);

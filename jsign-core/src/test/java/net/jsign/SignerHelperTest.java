@@ -17,7 +17,9 @@
 package net.jsign;
 
 import java.io.File;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.zip.CRC32;
 
 import org.apache.commons.io.FileUtils;
@@ -62,6 +64,48 @@ public class SignerHelperTest {
         File targetFile2 = new File("target/test-classes/wineyes-signed-attached.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
         File detachedSignatureFile2 = new File("target/test-classes/wineyes-signed-attached.exe.sig");
+        detachedSignatureFile2.delete();
+        detachedSignatureFile.renameTo(detachedSignatureFile2);
+
+        signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
+        signer.sign(targetFile2);
+
+        assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
+    }
+
+    @Test
+    public void testDetachedSignatureWithNotPaddedFile() throws Exception {
+        File origFile = new File("target/test-classes/wineyes.exe");
+        File sourceFile = new File("target/test-classes/wineyes-notpadded.exe");
+
+        FileUtils.copyFile(origFile, sourceFile);
+
+        // make the test file not padded on a 8 byte boundary
+        SeekableByteChannel channel = Files.newByteChannel(sourceFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE);
+        channel.truncate(channel.size() - 3);
+        channel.close();
+
+        File targetFile = new File("target/test-classes/wineyes-notpadded-signed-detached.exe");
+
+        File detachedSignatureFile = new File("target/test-classes/wineyes-notpadded-signed-detached.exe.sig");
+        detachedSignatureFile.delete();
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .detached(true);
+
+        // sign and detach
+        signer.sign(targetFile);
+
+        assertTrue("Signature wasn't detached", detachedSignatureFile.exists());
+
+        // attach the signature
+        File targetFile2 = new File("target/test-classes/wineyes-notpadded-signed-attached.exe");
+        FileUtils.copyFile(sourceFile, targetFile2);
+        File detachedSignatureFile2 = new File("target/test-classes/wineyes-notpadded-signed-attached.exe.sig");
         detachedSignatureFile2.delete();
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
