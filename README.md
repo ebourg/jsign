@@ -54,7 +54,7 @@ See https://ebourg.github.io/jsign for more information.
 * A detached signature added to a PE file whose length isn't a multiple of 8 is no longer invalid
 * Fixed an error when signing with a Yubikey on Windows with a 32-bit JRE
 * The PKCS#11 slot of the Yubikey is now automatically detected
-* Upgraded BouncyCastle to 1.70
+* Upgraded BouncyCastle to 1.71
 
 #### Version 4.0 (2021-08-09)
 
