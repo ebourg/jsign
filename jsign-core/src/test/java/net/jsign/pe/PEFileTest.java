@@ -178,4 +178,26 @@ public class PEFileTest {
         assertEquals("d27ec498912807ddfc4bec2be4f62c42814836f3", sha1);
         assertEquals("7bb369df020cea757619e1c1d678dbca06b638f2cc45b740b5eacfc21e76b160", sha256);
     }
+
+    @Test
+    public void testComputeDigestNotPadded() throws Exception {
+        File testFile = new File("target/test-classes/wineyes.exe");
+
+        assertEquals("Test file not padded", 0, testFile.length() % 8);
+
+        File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
+        File testFileNotPadded = new File("target/test-classes/wineyes-notpadded.exe");
+        FileUtils.copyFile(testFile, testFilePadded);
+        FileUtils.copyFile(testFile, testFileNotPadded);
+
+        PEFile file1 = new PEFile(testFilePadded);
+        PEFile file2 = new PEFile(testFileNotPadded);
+        file1.write(file1.channel.size(), new byte[8]);
+        file2.write(file2.channel.size(), new byte[3]);
+
+        String digestPadded = Hex.toHexString(file1.computeDigest(SHA1));
+        String digestNotPadded = Hex.toHexString(file2.computeDigest(SHA1));
+
+        assertEquals(digestPadded, digestNotPadded);
+    }
 }

@@ -914,6 +914,12 @@ public class PEFile implements Signable, Closeable {
         // digest from the end of the certificate table to the end of the file
         updateDigest(channel, digest, position, channel.size());
         
+        if (certificateTable == null || !certificateTable.exists()) {
+            // if the file has never been signed before, update the digest as if the file was padded on a 8 byte boundary
+            int paddingLength = (int) (8 - channel.size() % 8) % 8;
+            digest.update(new byte[paddingLength]);
+        }
+
         return digest.digest();
     }
 
