@@ -40,7 +40,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 4.1 (in development)
+#### Version 4.1 (2022-05-08)
 
 * The SSL.com eSigner service has been integrated
 * The Ant task can now sign multiple files by defining a fileset (contributed by Kyle Berezin)
