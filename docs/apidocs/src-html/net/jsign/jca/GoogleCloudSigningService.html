@@ -115,7 +115,7 @@
 <span class="sourceLineNo">107</span>    }<a name="line.107"></a>
 <span class="sourceLineNo">108</span><a name="line.108"></a>
 <span class="sourceLineNo">109</span>    @Override<a name="line.109"></a>
-<span class="sourceLineNo">110</span>    public SigningServicePrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException {<a name="line.110"></a>
+<span class="sourceLineNo">110</span>    public SigningServicePrivateKey getPrivateKey(String alias, char[] password) throws UnrecoverableKeyException {<a name="line.110"></a>
 <span class="sourceLineNo">111</span>        // check if the alias is absolute or relative to the keyring<a name="line.111"></a>
 <span class="sourceLineNo">112</span>        if (!alias.startsWith("projects/")) {<a name="line.112"></a>
 <span class="sourceLineNo">113</span>            alias = keyring + "/cryptoKeys/" + alias;<a name="line.113"></a>

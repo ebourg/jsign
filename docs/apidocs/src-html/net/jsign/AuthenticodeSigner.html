@@ -81,7 +81,7 @@
 <span class="sourceLineNo">073</span><a name="line.73"></a>
 <span class="sourceLineNo">074</span>/**<a name="line.74"></a>
 <span class="sourceLineNo">075</span> * Sign a file with Authenticode. Timestamping is enabled by default and relies<a name="line.75"></a>
-<span class="sourceLineNo">076</span> * on the Comodo server (http://timestamp.comodoca.com/authenticode).<a name="line.76"></a>
+<span class="sourceLineNo">076</span> * on the Sectigo server (http://timestamp.sectigo.com).<a name="line.76"></a>
 <span class="sourceLineNo">077</span> * <a name="line.77"></a>
 <span class="sourceLineNo">078</span> * @author Emmanuel Bourg<a name="line.78"></a>
 <span class="sourceLineNo">079</span> * @since 3.0<a name="line.79"></a>
@@ -325,211 +325,209 @@
 <span class="sourceLineNo">317</span>    public void sign(Signable file) throws Exception {<a name="line.317"></a>
 <span class="sourceLineNo">318</span>        if (file instanceof PEFile) {<a name="line.318"></a>
 <span class="sourceLineNo">319</span>            PEFile pefile = (PEFile) file;<a name="line.319"></a>
-<span class="sourceLineNo">320</span>            <a name="line.320"></a>
-<span class="sourceLineNo">321</span>            // pad the file on a 8 byte boundary (signtool refuses to sign files not properly padded)<a name="line.321"></a>
-<span class="sourceLineNo">322</span>            // todo only if there was no previous certificate table<a name="line.322"></a>
-<span class="sourceLineNo">323</span>            pefile.pad(8);<a name="line.323"></a>
-<span class="sourceLineNo">324</span><a name="line.324"></a>
-<span class="sourceLineNo">325</span>            if (replace) {<a name="line.325"></a>
-<span class="sourceLineNo">326</span>                DataDirectory certificateTable = pefile.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.326"></a>
-<span class="sourceLineNo">327</span>                if (certificateTable != null &amp;&amp; !certificateTable.isTrailing()) {<a name="line.327"></a>
-<span class="sourceLineNo">328</span>                    // erase the previous signature<a name="line.328"></a>
-<span class="sourceLineNo">329</span>                    certificateTable.erase();<a name="line.329"></a>
-<span class="sourceLineNo">330</span>                    certificateTable.write(0, 0);<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                }<a name="line.331"></a>
-<span class="sourceLineNo">332</span>            }<a name="line.332"></a>
-<span class="sourceLineNo">333</span><a name="line.333"></a>
-<span class="sourceLineNo">334</span>        } else if (file instanceof MSIFile) {<a name="line.334"></a>
-<span class="sourceLineNo">335</span>            MSIFile msi = (MSIFile) file;<a name="line.335"></a>
-<span class="sourceLineNo">336</span>            <a name="line.336"></a>
-<span class="sourceLineNo">337</span>            if (!replace &amp;&amp; msi.hasExtendedSignature()) {<a name="line.337"></a>
-<span class="sourceLineNo">338</span>                throw new UnsupportedOperationException("The file has an extended signature which isn't supported by Jsign, it can't be signed without replacing the existing signature");<a name="line.338"></a>
-<span class="sourceLineNo">339</span>            }<a name="line.339"></a>
-<span class="sourceLineNo">340</span>        }<a name="line.340"></a>
-<span class="sourceLineNo">341</span>        <a name="line.341"></a>
-<span class="sourceLineNo">342</span>        CMSSignedData sigData = createSignedData(file);<a name="line.342"></a>
-<span class="sourceLineNo">343</span>        <a name="line.343"></a>
-<span class="sourceLineNo">344</span>        if (!replace) {<a name="line.344"></a>
-<span class="sourceLineNo">345</span>            List&lt;CMSSignedData&gt; signatures = file.getSignatures();<a name="line.345"></a>
-<span class="sourceLineNo">346</span>            if (!signatures.isEmpty()) {<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                // append the nested signature<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                sigData = addNestedSignature(signatures.get(0), sigData);<a name="line.348"></a>
-<span class="sourceLineNo">349</span>            }<a name="line.349"></a>
-<span class="sourceLineNo">350</span>        }<a name="line.350"></a>
+<span class="sourceLineNo">320</span><a name="line.320"></a>
+<span class="sourceLineNo">321</span>            if (replace) {<a name="line.321"></a>
+<span class="sourceLineNo">322</span>                DataDirectory certificateTable = pefile.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.322"></a>
+<span class="sourceLineNo">323</span>                if (certificateTable != null &amp;&amp; !certificateTable.isTrailing()) {<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                    // erase the previous signature<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                    certificateTable.erase();<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                    certificateTable.write(0, 0);<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                }<a name="line.327"></a>
+<span class="sourceLineNo">328</span>            }<a name="line.328"></a>
+<span class="sourceLineNo">329</span><a name="line.329"></a>
+<span class="sourceLineNo">330</span>        } else if (file instanceof MSIFile) {<a name="line.330"></a>
+<span class="sourceLineNo">331</span>            MSIFile msi = (MSIFile) file;<a name="line.331"></a>
+<span class="sourceLineNo">332</span>            <a name="line.332"></a>
+<span class="sourceLineNo">333</span>            if (!replace &amp;&amp; msi.hasExtendedSignature()) {<a name="line.333"></a>
+<span class="sourceLineNo">334</span>                throw new UnsupportedOperationException("The file has an extended signature which isn't supported by Jsign, it can't be signed without replacing the existing signature");<a name="line.334"></a>
+<span class="sourceLineNo">335</span>            }<a name="line.335"></a>
+<span class="sourceLineNo">336</span>        }<a name="line.336"></a>
+<span class="sourceLineNo">337</span>        <a name="line.337"></a>
+<span class="sourceLineNo">338</span>        CMSSignedData sigData = createSignedData(file);<a name="line.338"></a>
+<span class="sourceLineNo">339</span>        <a name="line.339"></a>
+<span class="sourceLineNo">340</span>        if (!replace) {<a name="line.340"></a>
+<span class="sourceLineNo">341</span>            List&lt;CMSSignedData&gt; signatures = file.getSignatures();<a name="line.341"></a>
+<span class="sourceLineNo">342</span>            if (!signatures.isEmpty()) {<a name="line.342"></a>
+<span class="sourceLineNo">343</span>                // append the nested signature<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                sigData = addNestedSignature(signatures.get(0), sigData);<a name="line.344"></a>
+<span class="sourceLineNo">345</span>            }<a name="line.345"></a>
+<span class="sourceLineNo">346</span>        }<a name="line.346"></a>
+<span class="sourceLineNo">347</span>        <a name="line.347"></a>
+<span class="sourceLineNo">348</span>        file.setSignature(sigData);<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        <a name="line.349"></a>
+<span class="sourceLineNo">350</span>        file.save();<a name="line.350"></a>
 <span class="sourceLineNo">351</span>        <a name="line.351"></a>
-<span class="sourceLineNo">352</span>        file.setSignature(sigData);<a name="line.352"></a>
-<span class="sourceLineNo">353</span>        <a name="line.353"></a>
-<span class="sourceLineNo">354</span>        file.save();<a name="line.354"></a>
-<span class="sourceLineNo">355</span>        <a name="line.355"></a>
-<span class="sourceLineNo">356</span>        if (file instanceof Closeable) {<a name="line.356"></a>
-<span class="sourceLineNo">357</span>            ((Closeable) file).close();<a name="line.357"></a>
-<span class="sourceLineNo">358</span>        }<a name="line.358"></a>
-<span class="sourceLineNo">359</span>    }<a name="line.359"></a>
-<span class="sourceLineNo">360</span><a name="line.360"></a>
-<span class="sourceLineNo">361</span>    /**<a name="line.361"></a>
-<span class="sourceLineNo">362</span>     * Create the PKCS7 message with the signature and the timestamp.<a name="line.362"></a>
-<span class="sourceLineNo">363</span>     * <a name="line.363"></a>
-<span class="sourceLineNo">364</span>     * @param file the file to sign<a name="line.364"></a>
-<span class="sourceLineNo">365</span>     * @return the PKCS7 message with the signature and the timestamp<a name="line.365"></a>
-<span class="sourceLineNo">366</span>     * @throws Exception if an error occurs<a name="line.366"></a>
-<span class="sourceLineNo">367</span>     */<a name="line.367"></a>
-<span class="sourceLineNo">368</span>    protected CMSSignedData createSignedData(Signable file) throws Exception {<a name="line.368"></a>
-<span class="sourceLineNo">369</span>        // compute the signature<a name="line.369"></a>
-<span class="sourceLineNo">370</span>        AuthenticodeSignedDataGenerator generator = createSignedDataGenerator();<a name="line.370"></a>
-<span class="sourceLineNo">371</span>        CMSSignedData sigData = generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, file.createIndirectData(digestAlgorithm));<a name="line.371"></a>
-<span class="sourceLineNo">372</span>        <a name="line.372"></a>
-<span class="sourceLineNo">373</span>        // verify the signature<a name="line.373"></a>
-<span class="sourceLineNo">374</span>        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();<a name="line.374"></a>
-<span class="sourceLineNo">375</span>        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(chain[0].getPublicKey());<a name="line.375"></a>
-<span class="sourceLineNo">376</span>        sigData.getSignerInfos().iterator().next().verify(verifier);<a name="line.376"></a>
-<span class="sourceLineNo">377</span>        <a name="line.377"></a>
-<span class="sourceLineNo">378</span>        // timestamping<a name="line.378"></a>
-<span class="sourceLineNo">379</span>        if (timestamping) {<a name="line.379"></a>
-<span class="sourceLineNo">380</span>            Timestamper ts = timestamper;<a name="line.380"></a>
-<span class="sourceLineNo">381</span>            if (ts == null) {<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                ts = Timestamper.create(tsmode);<a name="line.382"></a>
-<span class="sourceLineNo">383</span>            }<a name="line.383"></a>
-<span class="sourceLineNo">384</span>            if (tsaurlOverride != null) {<a name="line.384"></a>
-<span class="sourceLineNo">385</span>                ts.setURLs(tsaurlOverride);<a name="line.385"></a>
-<span class="sourceLineNo">386</span>            }<a name="line.386"></a>
-<span class="sourceLineNo">387</span>            if (timestampingRetries != -1) {<a name="line.387"></a>
-<span class="sourceLineNo">388</span>                ts.setRetries(timestampingRetries);<a name="line.388"></a>
-<span class="sourceLineNo">389</span>            }<a name="line.389"></a>
-<span class="sourceLineNo">390</span>            if (timestampingRetryWait != -1) {<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                ts.setRetryWait(timestampingRetryWait);<a name="line.391"></a>
-<span class="sourceLineNo">392</span>            }<a name="line.392"></a>
-<span class="sourceLineNo">393</span>            sigData = ts.timestamp(digestAlgorithm, sigData);<a name="line.393"></a>
-<span class="sourceLineNo">394</span>        }<a name="line.394"></a>
-<span class="sourceLineNo">395</span>        <a name="line.395"></a>
-<span class="sourceLineNo">396</span>        return sigData;<a name="line.396"></a>
-<span class="sourceLineNo">397</span>    }<a name="line.397"></a>
-<span class="sourceLineNo">398</span><a name="line.398"></a>
-<span class="sourceLineNo">399</span>    private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {<a name="line.399"></a>
-<span class="sourceLineNo">400</span>        // create content signer<a name="line.400"></a>
-<span class="sourceLineNo">401</span>        final String sigAlg;<a name="line.401"></a>
-<span class="sourceLineNo">402</span>        if (signatureAlgorithm == null) {<a name="line.402"></a>
+<span class="sourceLineNo">352</span>        if (file instanceof Closeable) {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>            ((Closeable) file).close();<a name="line.353"></a>
+<span class="sourceLineNo">354</span>        }<a name="line.354"></a>
+<span class="sourceLineNo">355</span>    }<a name="line.355"></a>
+<span class="sourceLineNo">356</span><a name="line.356"></a>
+<span class="sourceLineNo">357</span>    /**<a name="line.357"></a>
+<span class="sourceLineNo">358</span>     * Create the PKCS7 message with the signature and the timestamp.<a name="line.358"></a>
+<span class="sourceLineNo">359</span>     * <a name="line.359"></a>
+<span class="sourceLineNo">360</span>     * @param file the file to sign<a name="line.360"></a>
+<span class="sourceLineNo">361</span>     * @return the PKCS7 message with the signature and the timestamp<a name="line.361"></a>
+<span class="sourceLineNo">362</span>     * @throws Exception if an error occurs<a name="line.362"></a>
+<span class="sourceLineNo">363</span>     */<a name="line.363"></a>
+<span class="sourceLineNo">364</span>    protected CMSSignedData createSignedData(Signable file) throws Exception {<a name="line.364"></a>
+<span class="sourceLineNo">365</span>        // compute the signature<a name="line.365"></a>
+<span class="sourceLineNo">366</span>        AuthenticodeSignedDataGenerator generator = createSignedDataGenerator();<a name="line.366"></a>
+<span class="sourceLineNo">367</span>        CMSSignedData sigData = generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, file.createIndirectData(digestAlgorithm));<a name="line.367"></a>
+<span class="sourceLineNo">368</span>        <a name="line.368"></a>
+<span class="sourceLineNo">369</span>        // verify the signature<a name="line.369"></a>
+<span class="sourceLineNo">370</span>        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();<a name="line.370"></a>
+<span class="sourceLineNo">371</span>        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(chain[0].getPublicKey());<a name="line.371"></a>
+<span class="sourceLineNo">372</span>        sigData.getSignerInfos().iterator().next().verify(verifier);<a name="line.372"></a>
+<span class="sourceLineNo">373</span>        <a name="line.373"></a>
+<span class="sourceLineNo">374</span>        // timestamping<a name="line.374"></a>
+<span class="sourceLineNo">375</span>        if (timestamping) {<a name="line.375"></a>
+<span class="sourceLineNo">376</span>            Timestamper ts = timestamper;<a name="line.376"></a>
+<span class="sourceLineNo">377</span>            if (ts == null) {<a name="line.377"></a>
+<span class="sourceLineNo">378</span>                ts = Timestamper.create(tsmode);<a name="line.378"></a>
+<span class="sourceLineNo">379</span>            }<a name="line.379"></a>
+<span class="sourceLineNo">380</span>            if (tsaurlOverride != null) {<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                ts.setURLs(tsaurlOverride);<a name="line.381"></a>
+<span class="sourceLineNo">382</span>            }<a name="line.382"></a>
+<span class="sourceLineNo">383</span>            if (timestampingRetries != -1) {<a name="line.383"></a>
+<span class="sourceLineNo">384</span>                ts.setRetries(timestampingRetries);<a name="line.384"></a>
+<span class="sourceLineNo">385</span>            }<a name="line.385"></a>
+<span class="sourceLineNo">386</span>            if (timestampingRetryWait != -1) {<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                ts.setRetryWait(timestampingRetryWait);<a name="line.387"></a>
+<span class="sourceLineNo">388</span>            }<a name="line.388"></a>
+<span class="sourceLineNo">389</span>            sigData = ts.timestamp(digestAlgorithm, sigData);<a name="line.389"></a>
+<span class="sourceLineNo">390</span>        }<a name="line.390"></a>
+<span class="sourceLineNo">391</span>        <a name="line.391"></a>
+<span class="sourceLineNo">392</span>        return sigData;<a name="line.392"></a>
+<span class="sourceLineNo">393</span>    }<a name="line.393"></a>
+<span class="sourceLineNo">394</span><a name="line.394"></a>
+<span class="sourceLineNo">395</span>    private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {<a name="line.395"></a>
+<span class="sourceLineNo">396</span>        // create content signer<a name="line.396"></a>
+<span class="sourceLineNo">397</span>        final String sigAlg;<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        if (signatureAlgorithm != null) {<a name="line.398"></a>
+<span class="sourceLineNo">399</span>            sigAlg = signatureAlgorithm;<a name="line.399"></a>
+<span class="sourceLineNo">400</span>        } else if ("EC".equals(privateKey.getAlgorithm())) {<a name="line.400"></a>
+<span class="sourceLineNo">401</span>            sigAlg = digestAlgorithm + "withECDSA";<a name="line.401"></a>
+<span class="sourceLineNo">402</span>        } else {<a name="line.402"></a>
 <span class="sourceLineNo">403</span>            sigAlg = digestAlgorithm + "with" + privateKey.getAlgorithm();<a name="line.403"></a>
-<span class="sourceLineNo">404</span>        } else {<a name="line.404"></a>
-<span class="sourceLineNo">405</span>            sigAlg = signatureAlgorithm;<a name="line.405"></a>
-<span class="sourceLineNo">406</span>        }<a name="line.406"></a>
-<span class="sourceLineNo">407</span>        JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(sigAlg);<a name="line.407"></a>
-<span class="sourceLineNo">408</span>        if (signatureProvider != null) {<a name="line.408"></a>
-<span class="sourceLineNo">409</span>            contentSignerBuilder.setProvider(signatureProvider);<a name="line.409"></a>
-<span class="sourceLineNo">410</span>        }<a name="line.410"></a>
-<span class="sourceLineNo">411</span>        ContentSigner shaSigner = contentSignerBuilder.build(privateKey);<a name="line.411"></a>
-<span class="sourceLineNo">412</span><a name="line.412"></a>
-<span class="sourceLineNo">413</span>        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();<a name="line.413"></a>
-<span class="sourceLineNo">414</span>        <a name="line.414"></a>
-<span class="sourceLineNo">415</span>        // prepare the authenticated attributes<a name="line.415"></a>
-<span class="sourceLineNo">416</span>        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());<a name="line.416"></a>
-<span class="sourceLineNo">417</span>        attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.signingTime, CMSAttributes.cmsAlgorithmProtect);<a name="line.417"></a>
-<span class="sourceLineNo">418</span>        <a name="line.418"></a>
-<span class="sourceLineNo">419</span>        // fetch the signing certificate<a name="line.419"></a>
-<span class="sourceLineNo">420</span>        X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);<a name="line.420"></a>
-<span class="sourceLineNo">421</span>        <a name="line.421"></a>
-<span class="sourceLineNo">422</span>        // prepare the signerInfo with the extra authenticated attributes<a name="line.422"></a>
-<span class="sourceLineNo">423</span>        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider, new DefaultCMSSignatureEncryptionAlgorithmFinder(){<a name="line.423"></a>
-<span class="sourceLineNo">424</span>            @Override<a name="line.424"></a>
-<span class="sourceLineNo">425</span>            public AlgorithmIdentifier findEncryptionAlgorithm(final AlgorithmIdentifier signatureAlgorithm) {<a name="line.425"></a>
-<span class="sourceLineNo">426</span>                //enforce "RSA" instead of "shaXXXRSA" for digest signature to be more like signtool<a name="line.426"></a>
-<span class="sourceLineNo">427</span>                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption) ||<a name="line.427"></a>
-<span class="sourceLineNo">428</span>                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha384WithRSAEncryption) ||<a name="line.428"></a>
-<span class="sourceLineNo">429</span>                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha512WithRSAEncryption)) {<a name="line.429"></a>
-<span class="sourceLineNo">430</span>                    return new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);<a name="line.430"></a>
-<span class="sourceLineNo">431</span>                } else {<a name="line.431"></a>
-<span class="sourceLineNo">432</span>                    return super.findEncryptionAlgorithm(signatureAlgorithm);<a name="line.432"></a>
-<span class="sourceLineNo">433</span>                }<a name="line.433"></a>
-<span class="sourceLineNo">434</span>            }<a name="line.434"></a>
-<span class="sourceLineNo">435</span>        });<a name="line.435"></a>
-<span class="sourceLineNo">436</span>        signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);<a name="line.436"></a>
-<span class="sourceLineNo">437</span>        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);<a name="line.437"></a>
-<span class="sourceLineNo">438</span>        <a name="line.438"></a>
-<span class="sourceLineNo">439</span>        AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();<a name="line.439"></a>
-<span class="sourceLineNo">440</span>        generator.addCertificates(new JcaCertStore(removeRoot(chain)));<a name="line.440"></a>
-<span class="sourceLineNo">441</span>        generator.addSignerInfoGenerator(signerInfoGenerator);<a name="line.441"></a>
-<span class="sourceLineNo">442</span>        <a name="line.442"></a>
-<span class="sourceLineNo">443</span>        return generator;<a name="line.443"></a>
-<span class="sourceLineNo">444</span>    }<a name="line.444"></a>
-<span class="sourceLineNo">445</span><a name="line.445"></a>
-<span class="sourceLineNo">446</span>    /**<a name="line.446"></a>
-<span class="sourceLineNo">447</span>     * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.<a name="line.447"></a>
-<span class="sourceLineNo">448</span>     * <a name="line.448"></a>
-<span class="sourceLineNo">449</span>     * @param certificates the certificate chain to process<a name="line.449"></a>
-<span class="sourceLineNo">450</span>     * @return the certificate chain without the root certificate<a name="line.450"></a>
-<span class="sourceLineNo">451</span>     */<a name="line.451"></a>
-<span class="sourceLineNo">452</span>    private List&lt;Certificate&gt; removeRoot(Certificate[] certificates) {<a name="line.452"></a>
-<span class="sourceLineNo">453</span>        List&lt;Certificate&gt; list = new ArrayList&lt;&gt;();<a name="line.453"></a>
-<span class="sourceLineNo">454</span>        <a name="line.454"></a>
-<span class="sourceLineNo">455</span>        if (certificates.length == 1) {<a name="line.455"></a>
-<span class="sourceLineNo">456</span>            list.add(certificates[0]);<a name="line.456"></a>
-<span class="sourceLineNo">457</span>        } else {<a name="line.457"></a>
-<span class="sourceLineNo">458</span>            for (Certificate certificate : certificates) {<a name="line.458"></a>
-<span class="sourceLineNo">459</span>                if (!isSelfSigned((X509Certificate) certificate)) {<a name="line.459"></a>
-<span class="sourceLineNo">460</span>                    list.add(certificate);<a name="line.460"></a>
-<span class="sourceLineNo">461</span>                }<a name="line.461"></a>
-<span class="sourceLineNo">462</span>            }<a name="line.462"></a>
-<span class="sourceLineNo">463</span>        }<a name="line.463"></a>
-<span class="sourceLineNo">464</span>        <a name="line.464"></a>
-<span class="sourceLineNo">465</span>        return list;<a name="line.465"></a>
-<span class="sourceLineNo">466</span>    }<a name="line.466"></a>
-<span class="sourceLineNo">467</span><a name="line.467"></a>
-<span class="sourceLineNo">468</span>    private boolean isSelfSigned(X509Certificate certificate) {<a name="line.468"></a>
-<span class="sourceLineNo">469</span>        return certificate.getSubjectDN().equals(certificate.getIssuerDN());<a name="line.469"></a>
-<span class="sourceLineNo">470</span>    }<a name="line.470"></a>
-<span class="sourceLineNo">471</span><a name="line.471"></a>
-<span class="sourceLineNo">472</span>    /**<a name="line.472"></a>
-<span class="sourceLineNo">473</span>     * Creates the authenticated attributes for the SignerInfo section of the signature.<a name="line.473"></a>
-<span class="sourceLineNo">474</span>     * <a name="line.474"></a>
-<span class="sourceLineNo">475</span>     * @return the authenticated attributes<a name="line.475"></a>
-<span class="sourceLineNo">476</span>     */<a name="line.476"></a>
-<span class="sourceLineNo">477</span>    private AttributeTable createAuthenticatedAttributes() {<a name="line.477"></a>
-<span class="sourceLineNo">478</span>        List&lt;Attribute&gt; attributes = new ArrayList&lt;&gt;();<a name="line.478"></a>
-<span class="sourceLineNo">479</span>        <a name="line.479"></a>
-<span class="sourceLineNo">480</span>        SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);<a name="line.480"></a>
-<span class="sourceLineNo">481</span>        attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));<a name="line.481"></a>
-<span class="sourceLineNo">482</span>        <a name="line.482"></a>
-<span class="sourceLineNo">483</span>        SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);<a name="line.483"></a>
-<span class="sourceLineNo">484</span>        attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));<a name="line.484"></a>
-<span class="sourceLineNo">485</span><a name="line.485"></a>
-<span class="sourceLineNo">486</span>        return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));<a name="line.486"></a>
-<span class="sourceLineNo">487</span>    }<a name="line.487"></a>
-<span class="sourceLineNo">488</span><a name="line.488"></a>
-<span class="sourceLineNo">489</span>    /**<a name="line.489"></a>
-<span class="sourceLineNo">490</span>     * Embed a signature as an unsigned attribute of an existing signature.<a name="line.490"></a>
-<span class="sourceLineNo">491</span>     * <a name="line.491"></a>
-<span class="sourceLineNo">492</span>     * @param primary   the root signature hosting the nested secondary signature<a name="line.492"></a>
-<span class="sourceLineNo">493</span>     * @param secondary the additional signature to nest inside the primary one<a name="line.493"></a>
-<span class="sourceLineNo">494</span>     * @return the signature combining the specified signatures<a name="line.494"></a>
-<span class="sourceLineNo">495</span>     */<a name="line.495"></a>
-<span class="sourceLineNo">496</span>    protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {<a name="line.496"></a>
-<span class="sourceLineNo">497</span>        SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();<a name="line.497"></a>
-<span class="sourceLineNo">498</span>        <a name="line.498"></a>
-<span class="sourceLineNo">499</span>        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();<a name="line.499"></a>
-<span class="sourceLineNo">500</span>        if (unsignedAttributes == null) {<a name="line.500"></a>
-<span class="sourceLineNo">501</span>            unsignedAttributes = new AttributeTable(new DERSet());<a name="line.501"></a>
-<span class="sourceLineNo">502</span>        }<a name="line.502"></a>
-<span class="sourceLineNo">503</span>        Attribute nestedSignaturesAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);<a name="line.503"></a>
-<span class="sourceLineNo">504</span>        if (nestedSignaturesAttribute == null) {<a name="line.504"></a>
-<span class="sourceLineNo">505</span>            // first nested signature<a name="line.505"></a>
-<span class="sourceLineNo">506</span>            unsignedAttributes = unsignedAttributes.add(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, secondary.toASN1Structure());<a name="line.506"></a>
-<span class="sourceLineNo">507</span>        } else {<a name="line.507"></a>
-<span class="sourceLineNo">508</span>            // append the signature to the previous nested signatures<a name="line.508"></a>
-<span class="sourceLineNo">509</span>            ASN1EncodableVector nestedSignatures = new ASN1EncodableVector();<a name="line.509"></a>
-<span class="sourceLineNo">510</span>            for (ASN1Encodable nestedSignature : nestedSignaturesAttribute.getAttrValues()) {<a name="line.510"></a>
-<span class="sourceLineNo">511</span>                nestedSignatures.add(nestedSignature);<a name="line.511"></a>
-<span class="sourceLineNo">512</span>            }<a name="line.512"></a>
-<span class="sourceLineNo">513</span>            nestedSignatures.add(secondary.toASN1Structure());<a name="line.513"></a>
-<span class="sourceLineNo">514</span>            <a name="line.514"></a>
-<span class="sourceLineNo">515</span>            ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();<a name="line.515"></a>
-<span class="sourceLineNo">516</span>            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));<a name="line.516"></a>
-<span class="sourceLineNo">517</span>            <a name="line.517"></a>
-<span class="sourceLineNo">518</span>            unsignedAttributes = new AttributeTable(attributes);<a name="line.518"></a>
-<span class="sourceLineNo">519</span>        }<a name="line.519"></a>
-<span class="sourceLineNo">520</span>        <a name="line.520"></a>
-<span class="sourceLineNo">521</span>        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);<a name="line.521"></a>
-<span class="sourceLineNo">522</span>        return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));<a name="line.522"></a>
-<span class="sourceLineNo">523</span>    }<a name="line.523"></a>
-<span class="sourceLineNo">524</span>}<a name="line.524"></a>
+<span class="sourceLineNo">404</span>        }<a name="line.404"></a>
+<span class="sourceLineNo">405</span>        JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(sigAlg);<a name="line.405"></a>
+<span class="sourceLineNo">406</span>        if (signatureProvider != null) {<a name="line.406"></a>
+<span class="sourceLineNo">407</span>            contentSignerBuilder.setProvider(signatureProvider);<a name="line.407"></a>
+<span class="sourceLineNo">408</span>        }<a name="line.408"></a>
+<span class="sourceLineNo">409</span>        ContentSigner shaSigner = contentSignerBuilder.build(privateKey);<a name="line.409"></a>
+<span class="sourceLineNo">410</span><a name="line.410"></a>
+<span class="sourceLineNo">411</span>        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();<a name="line.411"></a>
+<span class="sourceLineNo">412</span>        <a name="line.412"></a>
+<span class="sourceLineNo">413</span>        // prepare the authenticated attributes<a name="line.413"></a>
+<span class="sourceLineNo">414</span>        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());<a name="line.414"></a>
+<span class="sourceLineNo">415</span>        attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.signingTime, CMSAttributes.cmsAlgorithmProtect);<a name="line.415"></a>
+<span class="sourceLineNo">416</span>        <a name="line.416"></a>
+<span class="sourceLineNo">417</span>        // fetch the signing certificate<a name="line.417"></a>
+<span class="sourceLineNo">418</span>        X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);<a name="line.418"></a>
+<span class="sourceLineNo">419</span>        <a name="line.419"></a>
+<span class="sourceLineNo">420</span>        // prepare the signerInfo with the extra authenticated attributes<a name="line.420"></a>
+<span class="sourceLineNo">421</span>        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider, new DefaultCMSSignatureEncryptionAlgorithmFinder(){<a name="line.421"></a>
+<span class="sourceLineNo">422</span>            @Override<a name="line.422"></a>
+<span class="sourceLineNo">423</span>            public AlgorithmIdentifier findEncryptionAlgorithm(final AlgorithmIdentifier signatureAlgorithm) {<a name="line.423"></a>
+<span class="sourceLineNo">424</span>                //enforce "RSA" instead of "shaXXXRSA" for digest signature to be more like signtool<a name="line.424"></a>
+<span class="sourceLineNo">425</span>                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption) ||<a name="line.425"></a>
+<span class="sourceLineNo">426</span>                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha384WithRSAEncryption) ||<a name="line.426"></a>
+<span class="sourceLineNo">427</span>                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha512WithRSAEncryption)) {<a name="line.427"></a>
+<span class="sourceLineNo">428</span>                    return new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);<a name="line.428"></a>
+<span class="sourceLineNo">429</span>                } else {<a name="line.429"></a>
+<span class="sourceLineNo">430</span>                    return super.findEncryptionAlgorithm(signatureAlgorithm);<a name="line.430"></a>
+<span class="sourceLineNo">431</span>                }<a name="line.431"></a>
+<span class="sourceLineNo">432</span>            }<a name="line.432"></a>
+<span class="sourceLineNo">433</span>        });<a name="line.433"></a>
+<span class="sourceLineNo">434</span>        signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);<a name="line.434"></a>
+<span class="sourceLineNo">435</span>        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);<a name="line.435"></a>
+<span class="sourceLineNo">436</span>        <a name="line.436"></a>
+<span class="sourceLineNo">437</span>        AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();<a name="line.437"></a>
+<span class="sourceLineNo">438</span>        generator.addCertificates(new JcaCertStore(removeRoot(chain)));<a name="line.438"></a>
+<span class="sourceLineNo">439</span>        generator.addSignerInfoGenerator(signerInfoGenerator);<a name="line.439"></a>
+<span class="sourceLineNo">440</span>        <a name="line.440"></a>
+<span class="sourceLineNo">441</span>        return generator;<a name="line.441"></a>
+<span class="sourceLineNo">442</span>    }<a name="line.442"></a>
+<span class="sourceLineNo">443</span><a name="line.443"></a>
+<span class="sourceLineNo">444</span>    /**<a name="line.444"></a>
+<span class="sourceLineNo">445</span>     * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.<a name="line.445"></a>
+<span class="sourceLineNo">446</span>     * <a name="line.446"></a>
+<span class="sourceLineNo">447</span>     * @param certificates the certificate chain to process<a name="line.447"></a>
+<span class="sourceLineNo">448</span>     * @return the certificate chain without the root certificate<a name="line.448"></a>
+<span class="sourceLineNo">449</span>     */<a name="line.449"></a>
+<span class="sourceLineNo">450</span>    private List&lt;Certificate&gt; removeRoot(Certificate[] certificates) {<a name="line.450"></a>
+<span class="sourceLineNo">451</span>        List&lt;Certificate&gt; list = new ArrayList&lt;&gt;();<a name="line.451"></a>
+<span class="sourceLineNo">452</span>        <a name="line.452"></a>
+<span class="sourceLineNo">453</span>        if (certificates.length == 1) {<a name="line.453"></a>
+<span class="sourceLineNo">454</span>            list.add(certificates[0]);<a name="line.454"></a>
+<span class="sourceLineNo">455</span>        } else {<a name="line.455"></a>
+<span class="sourceLineNo">456</span>            for (Certificate certificate : certificates) {<a name="line.456"></a>
+<span class="sourceLineNo">457</span>                if (!isSelfSigned((X509Certificate) certificate)) {<a name="line.457"></a>
+<span class="sourceLineNo">458</span>                    list.add(certificate);<a name="line.458"></a>
+<span class="sourceLineNo">459</span>                }<a name="line.459"></a>
+<span class="sourceLineNo">460</span>            }<a name="line.460"></a>
+<span class="sourceLineNo">461</span>        }<a name="line.461"></a>
+<span class="sourceLineNo">462</span>        <a name="line.462"></a>
+<span class="sourceLineNo">463</span>        return list;<a name="line.463"></a>
+<span class="sourceLineNo">464</span>    }<a name="line.464"></a>
+<span class="sourceLineNo">465</span><a name="line.465"></a>
+<span class="sourceLineNo">466</span>    private boolean isSelfSigned(X509Certificate certificate) {<a name="line.466"></a>
+<span class="sourceLineNo">467</span>        return certificate.getSubjectDN().equals(certificate.getIssuerDN());<a name="line.467"></a>
+<span class="sourceLineNo">468</span>    }<a name="line.468"></a>
+<span class="sourceLineNo">469</span><a name="line.469"></a>
+<span class="sourceLineNo">470</span>    /**<a name="line.470"></a>
+<span class="sourceLineNo">471</span>     * Creates the authenticated attributes for the SignerInfo section of the signature.<a name="line.471"></a>
+<span class="sourceLineNo">472</span>     * <a name="line.472"></a>
+<span class="sourceLineNo">473</span>     * @return the authenticated attributes<a name="line.473"></a>
+<span class="sourceLineNo">474</span>     */<a name="line.474"></a>
+<span class="sourceLineNo">475</span>    private AttributeTable createAuthenticatedAttributes() {<a name="line.475"></a>
+<span class="sourceLineNo">476</span>        List&lt;Attribute&gt; attributes = new ArrayList&lt;&gt;();<a name="line.476"></a>
+<span class="sourceLineNo">477</span>        <a name="line.477"></a>
+<span class="sourceLineNo">478</span>        SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);<a name="line.478"></a>
+<span class="sourceLineNo">479</span>        attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));<a name="line.479"></a>
+<span class="sourceLineNo">480</span>        <a name="line.480"></a>
+<span class="sourceLineNo">481</span>        SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);<a name="line.481"></a>
+<span class="sourceLineNo">482</span>        attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));<a name="line.482"></a>
+<span class="sourceLineNo">483</span><a name="line.483"></a>
+<span class="sourceLineNo">484</span>        return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));<a name="line.484"></a>
+<span class="sourceLineNo">485</span>    }<a name="line.485"></a>
+<span class="sourceLineNo">486</span><a name="line.486"></a>
+<span class="sourceLineNo">487</span>    /**<a name="line.487"></a>
+<span class="sourceLineNo">488</span>     * Embed a signature as an unsigned attribute of an existing signature.<a name="line.488"></a>
+<span class="sourceLineNo">489</span>     * <a name="line.489"></a>
+<span class="sourceLineNo">490</span>     * @param primary   the root signature hosting the nested secondary signature<a name="line.490"></a>
+<span class="sourceLineNo">491</span>     * @param secondary the additional signature to nest inside the primary one<a name="line.491"></a>
+<span class="sourceLineNo">492</span>     * @return the signature combining the specified signatures<a name="line.492"></a>
+<span class="sourceLineNo">493</span>     */<a name="line.493"></a>
+<span class="sourceLineNo">494</span>    protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {<a name="line.494"></a>
+<span class="sourceLineNo">495</span>        SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();<a name="line.495"></a>
+<span class="sourceLineNo">496</span>        <a name="line.496"></a>
+<span class="sourceLineNo">497</span>        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();<a name="line.497"></a>
+<span class="sourceLineNo">498</span>        if (unsignedAttributes == null) {<a name="line.498"></a>
+<span class="sourceLineNo">499</span>            unsignedAttributes = new AttributeTable(new DERSet());<a name="line.499"></a>
+<span class="sourceLineNo">500</span>        }<a name="line.500"></a>
+<span class="sourceLineNo">501</span>        Attribute nestedSignaturesAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);<a name="line.501"></a>
+<span class="sourceLineNo">502</span>        if (nestedSignaturesAttribute == null) {<a name="line.502"></a>
+<span class="sourceLineNo">503</span>            // first nested signature<a name="line.503"></a>
+<span class="sourceLineNo">504</span>            unsignedAttributes = unsignedAttributes.add(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, secondary.toASN1Structure());<a name="line.504"></a>
+<span class="sourceLineNo">505</span>        } else {<a name="line.505"></a>
+<span class="sourceLineNo">506</span>            // append the signature to the previous nested signatures<a name="line.506"></a>
+<span class="sourceLineNo">507</span>            ASN1EncodableVector nestedSignatures = new ASN1EncodableVector();<a name="line.507"></a>
+<span class="sourceLineNo">508</span>            for (ASN1Encodable nestedSignature : nestedSignaturesAttribute.getAttrValues()) {<a name="line.508"></a>
+<span class="sourceLineNo">509</span>                nestedSignatures.add(nestedSignature);<a name="line.509"></a>
+<span class="sourceLineNo">510</span>            }<a name="line.510"></a>
+<span class="sourceLineNo">511</span>            nestedSignatures.add(secondary.toASN1Structure());<a name="line.511"></a>
+<span class="sourceLineNo">512</span>            <a name="line.512"></a>
+<span class="sourceLineNo">513</span>            ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();<a name="line.513"></a>
+<span class="sourceLineNo">514</span>            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));<a name="line.514"></a>
+<span class="sourceLineNo">515</span>            <a name="line.515"></a>
+<span class="sourceLineNo">516</span>            unsignedAttributes = new AttributeTable(attributes);<a name="line.516"></a>
+<span class="sourceLineNo">517</span>        }<a name="line.517"></a>
+<span class="sourceLineNo">518</span>        <a name="line.518"></a>
+<span class="sourceLineNo">519</span>        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);<a name="line.519"></a>
+<span class="sourceLineNo">520</span>        return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));<a name="line.520"></a>
+<span class="sourceLineNo">521</span>    }<a name="line.521"></a>
+<span class="sourceLineNo">522</span>}<a name="line.522"></a>
 
 
 

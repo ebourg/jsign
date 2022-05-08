@@ -39,27 +39,27 @@
 <span class="sourceLineNo">031</span>import java.util.Date;<a name="line.31"></a>
 <span class="sourceLineNo">032</span>import java.util.List;<a name="line.32"></a>
 <span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>import net.jsign.DigestAlgorithm;<a name="line.34"></a>
-<span class="sourceLineNo">035</span>import net.jsign.Signable;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;<a name="line.36"></a>
-<span class="sourceLineNo">037</span>import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import net.jsign.asn1.authenticode.SpcIndirectDataContent;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import net.jsign.asn1.authenticode.SpcPeImageData;<a name="line.39"></a>
-<span class="sourceLineNo">040</span><a name="line.40"></a>
-<span class="sourceLineNo">041</span>import org.bouncycastle.asn1.ASN1Encodable;<a name="line.41"></a>
-<span class="sourceLineNo">042</span>import org.bouncycastle.asn1.ASN1Object;<a name="line.42"></a>
-<span class="sourceLineNo">043</span>import org.bouncycastle.asn1.DERNull;<a name="line.43"></a>
-<span class="sourceLineNo">044</span>import org.bouncycastle.asn1.cms.Attribute;<a name="line.44"></a>
-<span class="sourceLineNo">045</span>import org.bouncycastle.asn1.cms.AttributeTable;<a name="line.45"></a>
-<span class="sourceLineNo">046</span>import org.bouncycastle.asn1.cms.ContentInfo;<a name="line.46"></a>
-<span class="sourceLineNo">047</span>import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;<a name="line.47"></a>
-<span class="sourceLineNo">048</span>import org.bouncycastle.asn1.x509.AlgorithmIdentifier;<a name="line.48"></a>
-<span class="sourceLineNo">049</span>import org.bouncycastle.asn1.x509.DigestInfo;<a name="line.49"></a>
-<span class="sourceLineNo">050</span>import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;<a name="line.50"></a>
-<span class="sourceLineNo">051</span>import org.bouncycastle.cert.X509CertificateHolder;<a name="line.51"></a>
-<span class="sourceLineNo">052</span>import org.bouncycastle.cms.CMSProcessable;<a name="line.52"></a>
-<span class="sourceLineNo">053</span>import org.bouncycastle.cms.CMSSignedData;<a name="line.53"></a>
-<span class="sourceLineNo">054</span>import org.bouncycastle.cms.SignerInformation;<a name="line.54"></a>
+<span class="sourceLineNo">034</span>import org.bouncycastle.asn1.ASN1Encodable;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import org.bouncycastle.asn1.ASN1Object;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import org.bouncycastle.asn1.DERNull;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import org.bouncycastle.asn1.cms.Attribute;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import org.bouncycastle.asn1.cms.AttributeTable;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import org.bouncycastle.asn1.cms.ContentInfo;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import org.bouncycastle.asn1.x509.AlgorithmIdentifier;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import org.bouncycastle.asn1.x509.DigestInfo;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;<a name="line.43"></a>
+<span class="sourceLineNo">044</span>import org.bouncycastle.cert.X509CertificateHolder;<a name="line.44"></a>
+<span class="sourceLineNo">045</span>import org.bouncycastle.cms.CMSProcessable;<a name="line.45"></a>
+<span class="sourceLineNo">046</span>import org.bouncycastle.cms.CMSSignedData;<a name="line.46"></a>
+<span class="sourceLineNo">047</span>import org.bouncycastle.cms.SignerInformation;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>import net.jsign.DigestAlgorithm;<a name="line.49"></a>
+<span class="sourceLineNo">050</span>import net.jsign.Signable;<a name="line.50"></a>
+<span class="sourceLineNo">051</span>import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;<a name="line.52"></a>
+<span class="sourceLineNo">053</span>import net.jsign.asn1.authenticode.SpcIndirectDataContent;<a name="line.53"></a>
+<span class="sourceLineNo">054</span>import net.jsign.asn1.authenticode.SpcPeImageData;<a name="line.54"></a>
 <span class="sourceLineNo">055</span><a name="line.55"></a>
 <span class="sourceLineNo">056</span>import static net.jsign.ChannelUtils.*;<a name="line.56"></a>
 <span class="sourceLineNo">057</span><a name="line.57"></a>
@@ -68,7 +68,7 @@
 <span class="sourceLineNo">060</span> * <a name="line.60"></a>
 <span class="sourceLineNo">061</span> * This class is thread safe.<a name="line.61"></a>
 <span class="sourceLineNo">062</span> * <a name="line.62"></a>
-<span class="sourceLineNo">063</span> * @see &lt;a href="http://msdn.microsoft.com/en-us/library/windows/hardware/gg463119.aspx"&gt;Microsoft PE and COFF Specification &lt;/a&gt;<a name="line.63"></a>
+<span class="sourceLineNo">063</span> * @see &lt;a href="https://docs.microsoft.com/en-us/windows/win32/debug/pe-format"&gt;Microsoft PE and COFF Specification &lt;/a&gt;<a name="line.63"></a>
 <span class="sourceLineNo">064</span> * <a name="line.64"></a>
 <span class="sourceLineNo">065</span> * @author Emmanuel Bourg<a name="line.65"></a>
 <span class="sourceLineNo">066</span> * @since 1.0<a name="line.66"></a>
@@ -748,215 +748,227 @@
 <span class="sourceLineNo">740</span><a name="line.740"></a>
 <span class="sourceLineNo">741</span>    @Override<a name="line.741"></a>
 <span class="sourceLineNo">742</span>    public void setSignature(CMSSignedData signature) throws IOException {<a name="line.742"></a>
-<span class="sourceLineNo">743</span>        CertificateTableEntry entry = new CertificateTableEntry(signature);<a name="line.743"></a>
-<span class="sourceLineNo">744</span>        writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());<a name="line.744"></a>
-<span class="sourceLineNo">745</span>    }<a name="line.745"></a>
-<span class="sourceLineNo">746</span><a name="line.746"></a>
-<span class="sourceLineNo">747</span>    private synchronized List&lt;CertificateTableEntry&gt; getCertificateTable() {<a name="line.747"></a>
-<span class="sourceLineNo">748</span>        List&lt;CertificateTableEntry&gt; entries = new ArrayList&lt;&gt;();<a name="line.748"></a>
-<span class="sourceLineNo">749</span>        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.749"></a>
-<span class="sourceLineNo">750</span>        <a name="line.750"></a>
-<span class="sourceLineNo">751</span>        if (certificateTable != null &amp;&amp; certificateTable.exists()) {<a name="line.751"></a>
-<span class="sourceLineNo">752</span>            long position = certificateTable.getVirtualAddress();<a name="line.752"></a>
-<span class="sourceLineNo">753</span>            <a name="line.753"></a>
-<span class="sourceLineNo">754</span>            try {<a name="line.754"></a>
-<span class="sourceLineNo">755</span>                entries.add(new CertificateTableEntry(this, position));<a name="line.755"></a>
-<span class="sourceLineNo">756</span>                <a name="line.756"></a>
-<span class="sourceLineNo">757</span>                // todo read the remaining entries (but Authenticode use only one, extra signatures are appended as a SPC_NESTED_SIGNATURE unauthenticated attribute)<a name="line.757"></a>
-<span class="sourceLineNo">758</span>            } catch (Exception e) {<a name="line.758"></a>
-<span class="sourceLineNo">759</span>                e.printStackTrace();<a name="line.759"></a>
-<span class="sourceLineNo">760</span>            }<a name="line.760"></a>
-<span class="sourceLineNo">761</span>        }<a name="line.761"></a>
-<span class="sourceLineNo">762</span>        <a name="line.762"></a>
-<span class="sourceLineNo">763</span>        return entries;<a name="line.763"></a>
-<span class="sourceLineNo">764</span>    }<a name="line.764"></a>
-<span class="sourceLineNo">765</span><a name="line.765"></a>
-<span class="sourceLineNo">766</span>    public synchronized List&lt;Section&gt; getSections() {<a name="line.766"></a>
-<span class="sourceLineNo">767</span>        List&lt;Section&gt; sections = new ArrayList&lt;&gt;();<a name="line.767"></a>
-<span class="sourceLineNo">768</span>        int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes();<a name="line.768"></a>
-<span class="sourceLineNo">769</span>        <a name="line.769"></a>
-<span class="sourceLineNo">770</span>        for (int i = 0; i &lt; getNumberOfSections(); i++) {<a name="line.770"></a>
-<span class="sourceLineNo">771</span>            sections.add(new Section(this, sectionTableOffset + 40 * i));<a name="line.771"></a>
-<span class="sourceLineNo">772</span>        }<a name="line.772"></a>
-<span class="sourceLineNo">773</span>        <a name="line.773"></a>
-<span class="sourceLineNo">774</span>        return sections;<a name="line.774"></a>
-<span class="sourceLineNo">775</span>    }<a name="line.775"></a>
-<span class="sourceLineNo">776</span><a name="line.776"></a>
-<span class="sourceLineNo">777</span>    /**<a name="line.777"></a>
-<span class="sourceLineNo">778</span>     * Print detailed informations about the PE file.<a name="line.778"></a>
-<span class="sourceLineNo">779</span>     * <a name="line.779"></a>
-<span class="sourceLineNo">780</span>     * @param out the output stream where the info is printed<a name="line.780"></a>
-<span class="sourceLineNo">781</span>     */<a name="line.781"></a>
-<span class="sourceLineNo">782</span>    public void printInfo(OutputStream out) {<a name="line.782"></a>
-<span class="sourceLineNo">783</span>        printInfo(new PrintWriter(out, true));<a name="line.783"></a>
-<span class="sourceLineNo">784</span>    }<a name="line.784"></a>
-<span class="sourceLineNo">785</span><a name="line.785"></a>
-<span class="sourceLineNo">786</span>    /**<a name="line.786"></a>
-<span class="sourceLineNo">787</span>     * Print detailed informations about the PE file.<a name="line.787"></a>
-<span class="sourceLineNo">788</span>     * <a name="line.788"></a>
-<span class="sourceLineNo">789</span>     * @param out the output writer where the info is printed<a name="line.789"></a>
-<span class="sourceLineNo">790</span>     */<a name="line.790"></a>
-<span class="sourceLineNo">791</span>    public void printInfo(PrintWriter out) {<a name="line.791"></a>
-<span class="sourceLineNo">792</span>        if (file != null) {<a name="line.792"></a>
-<span class="sourceLineNo">793</span>            out.println("PE File");<a name="line.793"></a>
-<span class="sourceLineNo">794</span>            out.println("  Name:          " + file.getName());<a name="line.794"></a>
-<span class="sourceLineNo">795</span>            out.println("  Size:          " + file.length());<a name="line.795"></a>
-<span class="sourceLineNo">796</span>            out.println("  Last Modified: " + new Date(file.lastModified()));<a name="line.796"></a>
-<span class="sourceLineNo">797</span>            out.println();<a name="line.797"></a>
-<span class="sourceLineNo">798</span>        }<a name="line.798"></a>
-<span class="sourceLineNo">799</span>        <a name="line.799"></a>
-<span class="sourceLineNo">800</span>        out.println("PE Header");<a name="line.800"></a>
-<span class="sourceLineNo">801</span>        out.println("  Machine:                    " + getMachineType());<a name="line.801"></a>
-<span class="sourceLineNo">802</span>        out.println("  Number of sections:         " + getNumberOfSections());<a name="line.802"></a>
-<span class="sourceLineNo">803</span>        out.println("  Timestamp:                  " + getTimeDateStamp());<a name="line.803"></a>
-<span class="sourceLineNo">804</span>        out.println("  Pointer to symbol table:    0x" + Long.toHexString(getPointerToSymbolTable()));<a name="line.804"></a>
-<span class="sourceLineNo">805</span>        out.println("  Number of symbols:          " + getNumberOfSymbols());<a name="line.805"></a>
-<span class="sourceLineNo">806</span>        out.println("  Size of optional header:    " + getSizeOfOptionalHeader());<a name="line.806"></a>
-<span class="sourceLineNo">807</span>        out.println("  Characteristics:            0x" + Long.toBinaryString(getCharacteristics()));<a name="line.807"></a>
-<span class="sourceLineNo">808</span>        out.println();<a name="line.808"></a>
-<span class="sourceLineNo">809</span>        <a name="line.809"></a>
-<span class="sourceLineNo">810</span>        out.println("Optional Header");<a name="line.810"></a>
-<span class="sourceLineNo">811</span>        PEFormat format = getFormat();<a name="line.811"></a>
-<span class="sourceLineNo">812</span>        out.println("  PE Format:                  0x" + Integer.toHexString(format.value) + " (" + format.label + ")");<a name="line.812"></a>
-<span class="sourceLineNo">813</span>        out.println("  Linker version:             " + getMajorLinkerVersion() + "." + getMinorLinkerVersion());<a name="line.813"></a>
-<span class="sourceLineNo">814</span>        out.println("  Size of code:               " + getSizeOfCode());<a name="line.814"></a>
-<span class="sourceLineNo">815</span>        out.println("  Size of initialized data:   " + getSizeOfInitializedData());<a name="line.815"></a>
-<span class="sourceLineNo">816</span>        out.println("  Size of uninitialized data: " + getSizeOfUninitializedData());<a name="line.816"></a>
-<span class="sourceLineNo">817</span>        out.println("  Address of entry point:     0x" + Long.toHexString(getAddressOfEntryPoint()));<a name="line.817"></a>
-<span class="sourceLineNo">818</span>        out.println("  Base of code:               0x" + Long.toHexString(getBaseOfCode()));<a name="line.818"></a>
-<span class="sourceLineNo">819</span>        if (PEFormat.PE32.equals(getFormat())) {<a name="line.819"></a>
-<span class="sourceLineNo">820</span>            out.println("  Base of data:               0x" + Long.toHexString(getBaseOfData()));<a name="line.820"></a>
-<span class="sourceLineNo">821</span>        }<a name="line.821"></a>
-<span class="sourceLineNo">822</span>        out.println("  Image base:                 0x" + Long.toHexString(getImageBase()));<a name="line.822"></a>
-<span class="sourceLineNo">823</span>        out.println("  Section alignment:          " + getSectionAlignment());<a name="line.823"></a>
-<span class="sourceLineNo">824</span>        out.println("  File alignment:             " + getFileAlignment());<a name="line.824"></a>
-<span class="sourceLineNo">825</span>        out.println("  Operating system version:   " + getMajorOperatingSystemVersion() + "." + getMinorOperatingSystemVersion());<a name="line.825"></a>
-<span class="sourceLineNo">826</span>        out.println("  Image version:              " + getMajorImageVersion() + "." + getMinorImageVersion());<a name="line.826"></a>
-<span class="sourceLineNo">827</span>        out.println("  Subsystem version:          " + getMajorSubsystemVersion() + "." + getMinorSubsystemVersion());<a name="line.827"></a>
-<span class="sourceLineNo">828</span>        out.println("  Size of image:              " + getSizeOfImage());<a name="line.828"></a>
-<span class="sourceLineNo">829</span>        out.println("  Size of headers:            " + getSizeOfHeaders());<a name="line.829"></a>
-<span class="sourceLineNo">830</span>        out.println("  Checksum:                   0x" + Long.toHexString(getCheckSum()));<a name="line.830"></a>
-<span class="sourceLineNo">831</span>        out.println("  Checksum (computed):        0x" + Long.toHexString(computeChecksum()));<a name="line.831"></a>
-<span class="sourceLineNo">832</span>        out.println("  Subsystem:                  " + getSubsystem());<a name="line.832"></a>
-<span class="sourceLineNo">833</span>        out.println("  DLL characteristics:        0x" + Long.toBinaryString(getDllCharacteristics()));<a name="line.833"></a>
-<span class="sourceLineNo">834</span>        out.println("  Size of stack reserve:      " + getSizeOfStackReserve());<a name="line.834"></a>
-<span class="sourceLineNo">835</span>        out.println("  Size of stack commit:       " + getSizeOfStackCommit());<a name="line.835"></a>
-<span class="sourceLineNo">836</span>        out.println("  Size of heap reserve:       " + getSizeOfHeapReserve());<a name="line.836"></a>
-<span class="sourceLineNo">837</span>        out.println("  Size of heap commit:        " + getSizeOfHeapCommit());<a name="line.837"></a>
-<span class="sourceLineNo">838</span>        out.println("  Number of RVA and sizes:    " + getNumberOfRvaAndSizes());<a name="line.838"></a>
-<span class="sourceLineNo">839</span>        out.println();<a name="line.839"></a>
-<span class="sourceLineNo">840</span>        <a name="line.840"></a>
-<span class="sourceLineNo">841</span>        out.println("Data Directory");<a name="line.841"></a>
-<span class="sourceLineNo">842</span>        for (DataDirectoryType type : DataDirectoryType.values()) {<a name="line.842"></a>
-<span class="sourceLineNo">843</span>            DataDirectory entry = getDataDirectory(type);<a name="line.843"></a>
-<span class="sourceLineNo">844</span>            if (entry != null &amp;&amp; entry.exists()) {<a name="line.844"></a>
-<span class="sourceLineNo">845</span>                out.printf("  %-30s 0x%08x %8d bytes%n", type, entry.getVirtualAddress(), entry.getSize());<a name="line.845"></a>
-<span class="sourceLineNo">846</span>            }<a name="line.846"></a>
-<span class="sourceLineNo">847</span>        }<a name="line.847"></a>
-<span class="sourceLineNo">848</span>        out.println();<a name="line.848"></a>
-<span class="sourceLineNo">849</span>        <a name="line.849"></a>
-<span class="sourceLineNo">850</span>        out.println("Sections");<a name="line.850"></a>
-<span class="sourceLineNo">851</span>        out.println("      Name     Virtual Size  Virtual Address  Raw Data Size  Raw Data Ptr  Characteristics");<a name="line.851"></a>
-<span class="sourceLineNo">852</span>        List&lt;Section&gt; sections = getSections();<a name="line.852"></a>
-<span class="sourceLineNo">853</span>        for (int i = 0; i &lt; sections.size(); i++) {<a name="line.853"></a>
-<span class="sourceLineNo">854</span>            Section section = sections.get(i);<a name="line.854"></a>
-<span class="sourceLineNo">855</span>            out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s%n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());<a name="line.855"></a>
-<span class="sourceLineNo">856</span>        }<a name="line.856"></a>
-<span class="sourceLineNo">857</span>        out.println();<a name="line.857"></a>
-<span class="sourceLineNo">858</span>        <a name="line.858"></a>
-<span class="sourceLineNo">859</span>        List&lt;CMSSignedData&gt; signatures = getSignatures();<a name="line.859"></a>
-<span class="sourceLineNo">860</span>        if (!signatures.isEmpty()) {<a name="line.860"></a>
-<span class="sourceLineNo">861</span>            out.println("Signatures");<a name="line.861"></a>
-<span class="sourceLineNo">862</span>            for (CMSSignedData signedData : signatures) {<a name="line.862"></a>
-<span class="sourceLineNo">863</span>                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();<a name="line.863"></a>
-<span class="sourceLineNo">864</span>                X509CertificateHolder certificate = (X509CertificateHolder) signedData.getCertificates().getMatches(signerInformation.getSID()).iterator().next();<a name="line.864"></a>
-<span class="sourceLineNo">865</span>                <a name="line.865"></a>
-<span class="sourceLineNo">866</span>                String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();<a name="line.866"></a>
-<span class="sourceLineNo">867</span>                <a name="line.867"></a>
-<span class="sourceLineNo">868</span>                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();<a name="line.868"></a>
-<span class="sourceLineNo">869</span>                boolean timestamped = unsignedAttributes != null &amp;&amp;<a name="line.869"></a>
-<span class="sourceLineNo">870</span>                           (unsignedAttributes.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null<a name="line.870"></a>
-<span class="sourceLineNo">871</span>                         || unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID)  != null);<a name="line.871"></a>
-<span class="sourceLineNo">872</span>                DigestAlgorithm algorithm = DigestAlgorithm.of(signerInformation.getDigestAlgorithmID().getAlgorithm());<a name="line.872"></a>
-<span class="sourceLineNo">873</span>                out.println("  " + commonName + "  " + (algorithm != null ? "[" + algorithm.id + "]  " : "") + (timestamped ? "(timestamped)" : ""));<a name="line.873"></a>
-<span class="sourceLineNo">874</span>            }<a name="line.874"></a>
-<span class="sourceLineNo">875</span>        }<a name="line.875"></a>
-<span class="sourceLineNo">876</span>    }<a name="line.876"></a>
-<span class="sourceLineNo">877</span><a name="line.877"></a>
-<span class="sourceLineNo">878</span>    /**<a name="line.878"></a>
-<span class="sourceLineNo">879</span>     * Compute the digest of the file. The checksum field, the certificate<a name="line.879"></a>
-<span class="sourceLineNo">880</span>     * directory table entry and the certificate table are excluded from<a name="line.880"></a>
-<span class="sourceLineNo">881</span>     * the digest.<a name="line.881"></a>
-<span class="sourceLineNo">882</span>     * <a name="line.882"></a>
-<span class="sourceLineNo">883</span>     * @param digest the message digest to update<a name="line.883"></a>
-<span class="sourceLineNo">884</span>     * @return the digest of the file<a name="line.884"></a>
-<span class="sourceLineNo">885</span>     * @throws IOException if an I/O error occurs<a name="line.885"></a>
-<span class="sourceLineNo">886</span>     */<a name="line.886"></a>
-<span class="sourceLineNo">887</span>    @Override<a name="line.887"></a>
-<span class="sourceLineNo">888</span>    public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {<a name="line.888"></a>
-<span class="sourceLineNo">889</span>        long checksumLocation = peHeaderOffset + 88;<a name="line.889"></a>
-<span class="sourceLineNo">890</span>        <a name="line.890"></a>
-<span class="sourceLineNo">891</span>        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.891"></a>
-<span class="sourceLineNo">892</span>        <a name="line.892"></a>
-<span class="sourceLineNo">893</span>        // digest from the beginning to the checksum field (excluded)<a name="line.893"></a>
-<span class="sourceLineNo">894</span>        updateDigest(channel, digest, 0, checksumLocation);<a name="line.894"></a>
-<span class="sourceLineNo">895</span>        <a name="line.895"></a>
-<span class="sourceLineNo">896</span>        // skip the checksum field<a name="line.896"></a>
-<span class="sourceLineNo">897</span>        long position = checksumLocation + 4;<a name="line.897"></a>
+<span class="sourceLineNo">743</span>        // pad the file before adding the certificate table<a name="line.743"></a>
+<span class="sourceLineNo">744</span>        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.744"></a>
+<span class="sourceLineNo">745</span>        if (certificateTable == null || !certificateTable.exists()) {<a name="line.745"></a>
+<span class="sourceLineNo">746</span>            pad(8);<a name="line.746"></a>
+<span class="sourceLineNo">747</span>        }<a name="line.747"></a>
+<span class="sourceLineNo">748</span><a name="line.748"></a>
+<span class="sourceLineNo">749</span>        CertificateTableEntry entry = new CertificateTableEntry(signature);<a name="line.749"></a>
+<span class="sourceLineNo">750</span>        writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());<a name="line.750"></a>
+<span class="sourceLineNo">751</span>    }<a name="line.751"></a>
+<span class="sourceLineNo">752</span><a name="line.752"></a>
+<span class="sourceLineNo">753</span>    private synchronized List&lt;CertificateTableEntry&gt; getCertificateTable() {<a name="line.753"></a>
+<span class="sourceLineNo">754</span>        List&lt;CertificateTableEntry&gt; entries = new ArrayList&lt;&gt;();<a name="line.754"></a>
+<span class="sourceLineNo">755</span>        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.755"></a>
+<span class="sourceLineNo">756</span>        <a name="line.756"></a>
+<span class="sourceLineNo">757</span>        if (certificateTable != null &amp;&amp; certificateTable.exists()) {<a name="line.757"></a>
+<span class="sourceLineNo">758</span>            long position = certificateTable.getVirtualAddress();<a name="line.758"></a>
+<span class="sourceLineNo">759</span>            <a name="line.759"></a>
+<span class="sourceLineNo">760</span>            try {<a name="line.760"></a>
+<span class="sourceLineNo">761</span>                entries.add(new CertificateTableEntry(this, position));<a name="line.761"></a>
+<span class="sourceLineNo">762</span>                <a name="line.762"></a>
+<span class="sourceLineNo">763</span>                // todo read the remaining entries (but Authenticode use only one, extra signatures are appended as a SPC_NESTED_SIGNATURE unauthenticated attribute)<a name="line.763"></a>
+<span class="sourceLineNo">764</span>            } catch (Exception e) {<a name="line.764"></a>
+<span class="sourceLineNo">765</span>                e.printStackTrace();<a name="line.765"></a>
+<span class="sourceLineNo">766</span>            }<a name="line.766"></a>
+<span class="sourceLineNo">767</span>        }<a name="line.767"></a>
+<span class="sourceLineNo">768</span>        <a name="line.768"></a>
+<span class="sourceLineNo">769</span>        return entries;<a name="line.769"></a>
+<span class="sourceLineNo">770</span>    }<a name="line.770"></a>
+<span class="sourceLineNo">771</span><a name="line.771"></a>
+<span class="sourceLineNo">772</span>    public synchronized List&lt;Section&gt; getSections() {<a name="line.772"></a>
+<span class="sourceLineNo">773</span>        List&lt;Section&gt; sections = new ArrayList&lt;&gt;();<a name="line.773"></a>
+<span class="sourceLineNo">774</span>        int sectionTableOffset = getDataDirectoryOffset() + 8 * getNumberOfRvaAndSizes();<a name="line.774"></a>
+<span class="sourceLineNo">775</span>        <a name="line.775"></a>
+<span class="sourceLineNo">776</span>        for (int i = 0; i &lt; getNumberOfSections(); i++) {<a name="line.776"></a>
+<span class="sourceLineNo">777</span>            sections.add(new Section(this, sectionTableOffset + 40 * i));<a name="line.777"></a>
+<span class="sourceLineNo">778</span>        }<a name="line.778"></a>
+<span class="sourceLineNo">779</span>        <a name="line.779"></a>
+<span class="sourceLineNo">780</span>        return sections;<a name="line.780"></a>
+<span class="sourceLineNo">781</span>    }<a name="line.781"></a>
+<span class="sourceLineNo">782</span><a name="line.782"></a>
+<span class="sourceLineNo">783</span>    /**<a name="line.783"></a>
+<span class="sourceLineNo">784</span>     * Print detailed informations about the PE file.<a name="line.784"></a>
+<span class="sourceLineNo">785</span>     * <a name="line.785"></a>
+<span class="sourceLineNo">786</span>     * @param out the output stream where the info is printed<a name="line.786"></a>
+<span class="sourceLineNo">787</span>     */<a name="line.787"></a>
+<span class="sourceLineNo">788</span>    public void printInfo(OutputStream out) {<a name="line.788"></a>
+<span class="sourceLineNo">789</span>        printInfo(new PrintWriter(out, true));<a name="line.789"></a>
+<span class="sourceLineNo">790</span>    }<a name="line.790"></a>
+<span class="sourceLineNo">791</span><a name="line.791"></a>
+<span class="sourceLineNo">792</span>    /**<a name="line.792"></a>
+<span class="sourceLineNo">793</span>     * Print detailed informations about the PE file.<a name="line.793"></a>
+<span class="sourceLineNo">794</span>     * <a name="line.794"></a>
+<span class="sourceLineNo">795</span>     * @param out the output writer where the info is printed<a name="line.795"></a>
+<span class="sourceLineNo">796</span>     */<a name="line.796"></a>
+<span class="sourceLineNo">797</span>    public void printInfo(PrintWriter out) {<a name="line.797"></a>
+<span class="sourceLineNo">798</span>        if (file != null) {<a name="line.798"></a>
+<span class="sourceLineNo">799</span>            out.println("PE File");<a name="line.799"></a>
+<span class="sourceLineNo">800</span>            out.println("  Name:          " + file.getName());<a name="line.800"></a>
+<span class="sourceLineNo">801</span>            out.println("  Size:          " + file.length());<a name="line.801"></a>
+<span class="sourceLineNo">802</span>            out.println("  Last Modified: " + new Date(file.lastModified()));<a name="line.802"></a>
+<span class="sourceLineNo">803</span>            out.println();<a name="line.803"></a>
+<span class="sourceLineNo">804</span>        }<a name="line.804"></a>
+<span class="sourceLineNo">805</span>        <a name="line.805"></a>
+<span class="sourceLineNo">806</span>        out.println("PE Header");<a name="line.806"></a>
+<span class="sourceLineNo">807</span>        out.println("  Machine:                    " + getMachineType());<a name="line.807"></a>
+<span class="sourceLineNo">808</span>        out.println("  Number of sections:         " + getNumberOfSections());<a name="line.808"></a>
+<span class="sourceLineNo">809</span>        out.println("  Timestamp:                  " + getTimeDateStamp());<a name="line.809"></a>
+<span class="sourceLineNo">810</span>        out.println("  Pointer to symbol table:    0x" + Long.toHexString(getPointerToSymbolTable()));<a name="line.810"></a>
+<span class="sourceLineNo">811</span>        out.println("  Number of symbols:          " + getNumberOfSymbols());<a name="line.811"></a>
+<span class="sourceLineNo">812</span>        out.println("  Size of optional header:    " + getSizeOfOptionalHeader());<a name="line.812"></a>
+<span class="sourceLineNo">813</span>        out.println("  Characteristics:            0x" + Long.toBinaryString(getCharacteristics()));<a name="line.813"></a>
+<span class="sourceLineNo">814</span>        out.println();<a name="line.814"></a>
+<span class="sourceLineNo">815</span>        <a name="line.815"></a>
+<span class="sourceLineNo">816</span>        out.println("Optional Header");<a name="line.816"></a>
+<span class="sourceLineNo">817</span>        PEFormat format = getFormat();<a name="line.817"></a>
+<span class="sourceLineNo">818</span>        out.println("  PE Format:                  0x" + Integer.toHexString(format.value) + " (" + format.label + ")");<a name="line.818"></a>
+<span class="sourceLineNo">819</span>        out.println("  Linker version:             " + getMajorLinkerVersion() + "." + getMinorLinkerVersion());<a name="line.819"></a>
+<span class="sourceLineNo">820</span>        out.println("  Size of code:               " + getSizeOfCode());<a name="line.820"></a>
+<span class="sourceLineNo">821</span>        out.println("  Size of initialized data:   " + getSizeOfInitializedData());<a name="line.821"></a>
+<span class="sourceLineNo">822</span>        out.println("  Size of uninitialized data: " + getSizeOfUninitializedData());<a name="line.822"></a>
+<span class="sourceLineNo">823</span>        out.println("  Address of entry point:     0x" + Long.toHexString(getAddressOfEntryPoint()));<a name="line.823"></a>
+<span class="sourceLineNo">824</span>        out.println("  Base of code:               0x" + Long.toHexString(getBaseOfCode()));<a name="line.824"></a>
+<span class="sourceLineNo">825</span>        if (PEFormat.PE32.equals(getFormat())) {<a name="line.825"></a>
+<span class="sourceLineNo">826</span>            out.println("  Base of data:               0x" + Long.toHexString(getBaseOfData()));<a name="line.826"></a>
+<span class="sourceLineNo">827</span>        }<a name="line.827"></a>
+<span class="sourceLineNo">828</span>        out.println("  Image base:                 0x" + Long.toHexString(getImageBase()));<a name="line.828"></a>
+<span class="sourceLineNo">829</span>        out.println("  Section alignment:          " + getSectionAlignment());<a name="line.829"></a>
+<span class="sourceLineNo">830</span>        out.println("  File alignment:             " + getFileAlignment());<a name="line.830"></a>
+<span class="sourceLineNo">831</span>        out.println("  Operating system version:   " + getMajorOperatingSystemVersion() + "." + getMinorOperatingSystemVersion());<a name="line.831"></a>
+<span class="sourceLineNo">832</span>        out.println("  Image version:              " + getMajorImageVersion() + "." + getMinorImageVersion());<a name="line.832"></a>
+<span class="sourceLineNo">833</span>        out.println("  Subsystem version:          " + getMajorSubsystemVersion() + "." + getMinorSubsystemVersion());<a name="line.833"></a>
+<span class="sourceLineNo">834</span>        out.println("  Size of image:              " + getSizeOfImage());<a name="line.834"></a>
+<span class="sourceLineNo">835</span>        out.println("  Size of headers:            " + getSizeOfHeaders());<a name="line.835"></a>
+<span class="sourceLineNo">836</span>        out.println("  Checksum:                   0x" + Long.toHexString(getCheckSum()));<a name="line.836"></a>
+<span class="sourceLineNo">837</span>        out.println("  Checksum (computed):        0x" + Long.toHexString(computeChecksum()));<a name="line.837"></a>
+<span class="sourceLineNo">838</span>        out.println("  Subsystem:                  " + getSubsystem());<a name="line.838"></a>
+<span class="sourceLineNo">839</span>        out.println("  DLL characteristics:        0x" + Long.toBinaryString(getDllCharacteristics()));<a name="line.839"></a>
+<span class="sourceLineNo">840</span>        out.println("  Size of stack reserve:      " + getSizeOfStackReserve());<a name="line.840"></a>
+<span class="sourceLineNo">841</span>        out.println("  Size of stack commit:       " + getSizeOfStackCommit());<a name="line.841"></a>
+<span class="sourceLineNo">842</span>        out.println("  Size of heap reserve:       " + getSizeOfHeapReserve());<a name="line.842"></a>
+<span class="sourceLineNo">843</span>        out.println("  Size of heap commit:        " + getSizeOfHeapCommit());<a name="line.843"></a>
+<span class="sourceLineNo">844</span>        out.println("  Number of RVA and sizes:    " + getNumberOfRvaAndSizes());<a name="line.844"></a>
+<span class="sourceLineNo">845</span>        out.println();<a name="line.845"></a>
+<span class="sourceLineNo">846</span>        <a name="line.846"></a>
+<span class="sourceLineNo">847</span>        out.println("Data Directory");<a name="line.847"></a>
+<span class="sourceLineNo">848</span>        for (DataDirectoryType type : DataDirectoryType.values()) {<a name="line.848"></a>
+<span class="sourceLineNo">849</span>            DataDirectory entry = getDataDirectory(type);<a name="line.849"></a>
+<span class="sourceLineNo">850</span>            if (entry != null &amp;&amp; entry.exists()) {<a name="line.850"></a>
+<span class="sourceLineNo">851</span>                out.printf("  %-30s 0x%08x %8d bytes%n", type, entry.getVirtualAddress(), entry.getSize());<a name="line.851"></a>
+<span class="sourceLineNo">852</span>            }<a name="line.852"></a>
+<span class="sourceLineNo">853</span>        }<a name="line.853"></a>
+<span class="sourceLineNo">854</span>        out.println();<a name="line.854"></a>
+<span class="sourceLineNo">855</span>        <a name="line.855"></a>
+<span class="sourceLineNo">856</span>        out.println("Sections");<a name="line.856"></a>
+<span class="sourceLineNo">857</span>        out.println("      Name     Virtual Size  Virtual Address  Raw Data Size  Raw Data Ptr  Characteristics");<a name="line.857"></a>
+<span class="sourceLineNo">858</span>        List&lt;Section&gt; sections = getSections();<a name="line.858"></a>
+<span class="sourceLineNo">859</span>        for (int i = 0; i &lt; sections.size(); i++) {<a name="line.859"></a>
+<span class="sourceLineNo">860</span>            Section section = sections.get(i);<a name="line.860"></a>
+<span class="sourceLineNo">861</span>            out.printf("  #%d  %-8s     %8d       0x%08x       %8d    0x%08x  %s%n", i + 1, section.getName(), section.getVirtualSize(), section.getVirtualAddress(), section.getSizeOfRawData(), section.getPointerToRawData(), section.getCharacteristics());<a name="line.861"></a>
+<span class="sourceLineNo">862</span>        }<a name="line.862"></a>
+<span class="sourceLineNo">863</span>        out.println();<a name="line.863"></a>
+<span class="sourceLineNo">864</span>        <a name="line.864"></a>
+<span class="sourceLineNo">865</span>        List&lt;CMSSignedData&gt; signatures = getSignatures();<a name="line.865"></a>
+<span class="sourceLineNo">866</span>        if (!signatures.isEmpty()) {<a name="line.866"></a>
+<span class="sourceLineNo">867</span>            out.println("Signatures");<a name="line.867"></a>
+<span class="sourceLineNo">868</span>            for (CMSSignedData signedData : signatures) {<a name="line.868"></a>
+<span class="sourceLineNo">869</span>                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();<a name="line.869"></a>
+<span class="sourceLineNo">870</span>                X509CertificateHolder certificate = (X509CertificateHolder) signedData.getCertificates().getMatches(signerInformation.getSID()).iterator().next();<a name="line.870"></a>
+<span class="sourceLineNo">871</span>                <a name="line.871"></a>
+<span class="sourceLineNo">872</span>                String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();<a name="line.872"></a>
+<span class="sourceLineNo">873</span>                <a name="line.873"></a>
+<span class="sourceLineNo">874</span>                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();<a name="line.874"></a>
+<span class="sourceLineNo">875</span>                boolean timestamped = unsignedAttributes != null &amp;&amp;<a name="line.875"></a>
+<span class="sourceLineNo">876</span>                           (unsignedAttributes.get(PKCSObjectIdentifiers.pkcs_9_at_counterSignature) != null<a name="line.876"></a>
+<span class="sourceLineNo">877</span>                         || unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID)  != null);<a name="line.877"></a>
+<span class="sourceLineNo">878</span>                DigestAlgorithm algorithm = DigestAlgorithm.of(signerInformation.getDigestAlgorithmID().getAlgorithm());<a name="line.878"></a>
+<span class="sourceLineNo">879</span>                out.println("  " + commonName + "  " + (algorithm != null ? "[" + algorithm.id + "]  " : "") + (timestamped ? "(timestamped)" : ""));<a name="line.879"></a>
+<span class="sourceLineNo">880</span>            }<a name="line.880"></a>
+<span class="sourceLineNo">881</span>        }<a name="line.881"></a>
+<span class="sourceLineNo">882</span>    }<a name="line.882"></a>
+<span class="sourceLineNo">883</span><a name="line.883"></a>
+<span class="sourceLineNo">884</span>    /**<a name="line.884"></a>
+<span class="sourceLineNo">885</span>     * Compute the digest of the file. The checksum field, the certificate<a name="line.885"></a>
+<span class="sourceLineNo">886</span>     * directory table entry and the certificate table are excluded from<a name="line.886"></a>
+<span class="sourceLineNo">887</span>     * the digest.<a name="line.887"></a>
+<span class="sourceLineNo">888</span>     * <a name="line.888"></a>
+<span class="sourceLineNo">889</span>     * @param digest the message digest to update<a name="line.889"></a>
+<span class="sourceLineNo">890</span>     * @return the digest of the file<a name="line.890"></a>
+<span class="sourceLineNo">891</span>     * @throws IOException if an I/O error occurs<a name="line.891"></a>
+<span class="sourceLineNo">892</span>     */<a name="line.892"></a>
+<span class="sourceLineNo">893</span>    @Override<a name="line.893"></a>
+<span class="sourceLineNo">894</span>    public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {<a name="line.894"></a>
+<span class="sourceLineNo">895</span>        long checksumLocation = peHeaderOffset + 88;<a name="line.895"></a>
+<span class="sourceLineNo">896</span>        <a name="line.896"></a>
+<span class="sourceLineNo">897</span>        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);<a name="line.897"></a>
 <span class="sourceLineNo">898</span>        <a name="line.898"></a>
-<span class="sourceLineNo">899</span>        // digest from the end of the checksum field to the beginning of the certificate table entry<a name="line.899"></a>
-<span class="sourceLineNo">900</span>        int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();<a name="line.900"></a>
-<span class="sourceLineNo">901</span>        updateDigest(channel, digest, position, certificateTableOffset);<a name="line.901"></a>
-<span class="sourceLineNo">902</span>        <a name="line.902"></a>
-<span class="sourceLineNo">903</span>        // skip the certificate entry<a name="line.903"></a>
-<span class="sourceLineNo">904</span>        position = certificateTableOffset + 8;<a name="line.904"></a>
-<span class="sourceLineNo">905</span>        <a name="line.905"></a>
-<span class="sourceLineNo">906</span>        // todo digest the sections in ascending address order<a name="line.906"></a>
-<span class="sourceLineNo">907</span>        <a name="line.907"></a>
-<span class="sourceLineNo">908</span>        // digest from the end of the certificate table entry to the beginning of the certificate table<a name="line.908"></a>
-<span class="sourceLineNo">909</span>        if (certificateTable != null &amp;&amp; certificateTable.exists()) {<a name="line.909"></a>
-<span class="sourceLineNo">910</span>            updateDigest(channel, digest, position, certificateTable.getVirtualAddress());<a name="line.910"></a>
-<span class="sourceLineNo">911</span>            position = certificateTable.getVirtualAddress() + certificateTable.getSize();<a name="line.911"></a>
-<span class="sourceLineNo">912</span>        }<a name="line.912"></a>
+<span class="sourceLineNo">899</span>        // digest from the beginning to the checksum field (excluded)<a name="line.899"></a>
+<span class="sourceLineNo">900</span>        updateDigest(channel, digest, 0, checksumLocation);<a name="line.900"></a>
+<span class="sourceLineNo">901</span>        <a name="line.901"></a>
+<span class="sourceLineNo">902</span>        // skip the checksum field<a name="line.902"></a>
+<span class="sourceLineNo">903</span>        long position = checksumLocation + 4;<a name="line.903"></a>
+<span class="sourceLineNo">904</span>        <a name="line.904"></a>
+<span class="sourceLineNo">905</span>        // digest from the end of the checksum field to the beginning of the certificate table entry<a name="line.905"></a>
+<span class="sourceLineNo">906</span>        int certificateTableOffset = getDataDirectoryOffset() + 8 * DataDirectoryType.CERTIFICATE_TABLE.ordinal();<a name="line.906"></a>
+<span class="sourceLineNo">907</span>        updateDigest(channel, digest, position, certificateTableOffset);<a name="line.907"></a>
+<span class="sourceLineNo">908</span>        <a name="line.908"></a>
+<span class="sourceLineNo">909</span>        // skip the certificate entry<a name="line.909"></a>
+<span class="sourceLineNo">910</span>        position = certificateTableOffset + 8;<a name="line.910"></a>
+<span class="sourceLineNo">911</span>        <a name="line.911"></a>
+<span class="sourceLineNo">912</span>        // todo digest the sections in ascending address order<a name="line.912"></a>
 <span class="sourceLineNo">913</span>        <a name="line.913"></a>
-<span class="sourceLineNo">914</span>        // digest from the end of the certificate table to the end of the file<a name="line.914"></a>
-<span class="sourceLineNo">915</span>        updateDigest(channel, digest, position, channel.size());<a name="line.915"></a>
-<span class="sourceLineNo">916</span>        <a name="line.916"></a>
-<span class="sourceLineNo">917</span>        return digest.digest();<a name="line.917"></a>
-<span class="sourceLineNo">918</span>    }<a name="line.918"></a>
-<span class="sourceLineNo">919</span><a name="line.919"></a>
-<span class="sourceLineNo">920</span>    /**<a name="line.920"></a>
-<span class="sourceLineNo">921</span>     * Compute the checksum of the file using the specified digest algorithm.<a name="line.921"></a>
-<span class="sourceLineNo">922</span>     * <a name="line.922"></a>
-<span class="sourceLineNo">923</span>     * @param algorithm the digest algorithm, typically SHA1<a name="line.923"></a>
-<span class="sourceLineNo">924</span>     * @return the checksum of the file<a name="line.924"></a>
-<span class="sourceLineNo">925</span>     * @throws IOException if an I/O error occurs<a name="line.925"></a>
-<span class="sourceLineNo">926</span>     */<a name="line.926"></a>
-<span class="sourceLineNo">927</span>    public byte[] computeDigest(DigestAlgorithm algorithm) throws IOException {<a name="line.927"></a>
-<span class="sourceLineNo">928</span>        return computeDigest(algorithm.getMessageDigest());<a name="line.928"></a>
-<span class="sourceLineNo">929</span>    }<a name="line.929"></a>
-<span class="sourceLineNo">930</span><a name="line.930"></a>
-<span class="sourceLineNo">931</span>    @Override<a name="line.931"></a>
-<span class="sourceLineNo">932</span>    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {<a name="line.932"></a>
-<span class="sourceLineNo">933</span>        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);<a name="line.933"></a>
-<span class="sourceLineNo">934</span>        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));<a name="line.934"></a>
-<span class="sourceLineNo">935</span>        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());<a name="line.935"></a>
-<span class="sourceLineNo">936</span><a name="line.936"></a>
-<span class="sourceLineNo">937</span>        return new SpcIndirectDataContent(data, digestInfo);<a name="line.937"></a>
-<span class="sourceLineNo">938</span>    }<a name="line.938"></a>
-<span class="sourceLineNo">939</span><a name="line.939"></a>
-<span class="sourceLineNo">940</span>    /**<a name="line.940"></a>
-<span class="sourceLineNo">941</span>     * Increase the size of the file up to a size that is a multiple of the specified value.<a name="line.941"></a>
-<span class="sourceLineNo">942</span>     * <a name="line.942"></a>
-<span class="sourceLineNo">943</span>     * @param multiple the size of the byte alignment<a name="line.943"></a>
-<span class="sourceLineNo">944</span>     * @throws IOException if an I/O error occurs<a name="line.944"></a>
-<span class="sourceLineNo">945</span>     */<a name="line.945"></a>
-<span class="sourceLineNo">946</span>    public synchronized void pad(int multiple) throws IOException {<a name="line.946"></a>
-<span class="sourceLineNo">947</span>        long padding = (multiple - channel.size() % multiple) % multiple;<a name="line.947"></a>
-<span class="sourceLineNo">948</span>        channel.position(channel.size());<a name="line.948"></a>
-<span class="sourceLineNo">949</span>        channel.write(ByteBuffer.allocate((int) padding));<a name="line.949"></a>
+<span class="sourceLineNo">914</span>        // digest from the end of the certificate table entry to the beginning of the certificate table<a name="line.914"></a>
+<span class="sourceLineNo">915</span>        if (certificateTable != null &amp;&amp; certificateTable.exists()) {<a name="line.915"></a>
+<span class="sourceLineNo">916</span>            updateDigest(channel, digest, position, certificateTable.getVirtualAddress());<a name="line.916"></a>
+<span class="sourceLineNo">917</span>            position = certificateTable.getVirtualAddress() + certificateTable.getSize();<a name="line.917"></a>
+<span class="sourceLineNo">918</span>        }<a name="line.918"></a>
+<span class="sourceLineNo">919</span>        <a name="line.919"></a>
+<span class="sourceLineNo">920</span>        // digest from the end of the certificate table to the end of the file<a name="line.920"></a>
+<span class="sourceLineNo">921</span>        updateDigest(channel, digest, position, channel.size());<a name="line.921"></a>
+<span class="sourceLineNo">922</span>        <a name="line.922"></a>
+<span class="sourceLineNo">923</span>        if (certificateTable == null || !certificateTable.exists()) {<a name="line.923"></a>
+<span class="sourceLineNo">924</span>            // if the file has never been signed before, update the digest as if the file was padded on a 8 byte boundary<a name="line.924"></a>
+<span class="sourceLineNo">925</span>            int paddingLength = (int) (8 - channel.size() % 8) % 8;<a name="line.925"></a>
+<span class="sourceLineNo">926</span>            digest.update(new byte[paddingLength]);<a name="line.926"></a>
+<span class="sourceLineNo">927</span>        }<a name="line.927"></a>
+<span class="sourceLineNo">928</span><a name="line.928"></a>
+<span class="sourceLineNo">929</span>        return digest.digest();<a name="line.929"></a>
+<span class="sourceLineNo">930</span>    }<a name="line.930"></a>
+<span class="sourceLineNo">931</span><a name="line.931"></a>
+<span class="sourceLineNo">932</span>    /**<a name="line.932"></a>
+<span class="sourceLineNo">933</span>     * Compute the checksum of the file using the specified digest algorithm.<a name="line.933"></a>
+<span class="sourceLineNo">934</span>     * <a name="line.934"></a>
+<span class="sourceLineNo">935</span>     * @param algorithm the digest algorithm, typically SHA1<a name="line.935"></a>
+<span class="sourceLineNo">936</span>     * @return the checksum of the file<a name="line.936"></a>
+<span class="sourceLineNo">937</span>     * @throws IOException if an I/O error occurs<a name="line.937"></a>
+<span class="sourceLineNo">938</span>     */<a name="line.938"></a>
+<span class="sourceLineNo">939</span>    public byte[] computeDigest(DigestAlgorithm algorithm) throws IOException {<a name="line.939"></a>
+<span class="sourceLineNo">940</span>        return computeDigest(algorithm.getMessageDigest());<a name="line.940"></a>
+<span class="sourceLineNo">941</span>    }<a name="line.941"></a>
+<span class="sourceLineNo">942</span><a name="line.942"></a>
+<span class="sourceLineNo">943</span>    @Override<a name="line.943"></a>
+<span class="sourceLineNo">944</span>    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {<a name="line.944"></a>
+<span class="sourceLineNo">945</span>        AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);<a name="line.945"></a>
+<span class="sourceLineNo">946</span>        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));<a name="line.946"></a>
+<span class="sourceLineNo">947</span>        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID, new SpcPeImageData());<a name="line.947"></a>
+<span class="sourceLineNo">948</span><a name="line.948"></a>
+<span class="sourceLineNo">949</span>        return new SpcIndirectDataContent(data, digestInfo);<a name="line.949"></a>
 <span class="sourceLineNo">950</span>    }<a name="line.950"></a>
-<span class="sourceLineNo">951</span>}<a name="line.951"></a>
+<span class="sourceLineNo">951</span><a name="line.951"></a>
+<span class="sourceLineNo">952</span>    /**<a name="line.952"></a>
+<span class="sourceLineNo">953</span>     * Increase the size of the file up to a size that is a multiple of the specified value.<a name="line.953"></a>
+<span class="sourceLineNo">954</span>     * <a name="line.954"></a>
+<span class="sourceLineNo">955</span>     * @param multiple the size of the byte alignment<a name="line.955"></a>
+<span class="sourceLineNo">956</span>     * @throws IOException if an I/O error occurs<a name="line.956"></a>
+<span class="sourceLineNo">957</span>     */<a name="line.957"></a>
+<span class="sourceLineNo">958</span>    public synchronized void pad(int multiple) throws IOException {<a name="line.958"></a>
+<span class="sourceLineNo">959</span>        long padding = (multiple - channel.size() % multiple) % multiple;<a name="line.959"></a>
+<span class="sourceLineNo">960</span>        channel.position(channel.size());<a name="line.960"></a>
+<span class="sourceLineNo">961</span>        channel.write(ByteBuffer.allocate((int) padding));<a name="line.961"></a>
+<span class="sourceLineNo">962</span>    }<a name="line.962"></a>
+<span class="sourceLineNo">963</span>}<a name="line.963"></a>
 
 
 
