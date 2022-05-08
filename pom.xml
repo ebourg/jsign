@@ -155,8 +155,8 @@
           <linksource>true</linksource>
           <links>
             <link>https://docs.oracle.com/javase/6/docs/api</link>
-            <link>https://javadoc.io/doc/org.bouncycastle/bcprov-jdk15to18</link>
-            <link>https://javadoc.io/doc/org.bouncycastle/bcpkix-jdk15to18</link>
+            <link>https://javadoc.io/doc/org.bouncycastle/bcprov-jdk15to18/latest</link>
+            <link>https://javadoc.io/doc/org.bouncycastle/bcpkix-jdk15to18/latest</link>
           </links>
           <source>8</source>
           <show>public</show>
