@@ -527,46 +527,35 @@ class SignerHelper {
             throw new SignerException("The file " + file + " couldn't be found");
         }
         
-        Signable signable;
-        try {
-            signable = Signable.of(file, encoding);
+        try (Signable signable = Signable.of(file, encoding)) {
+            File detachedSignature = getDetachedSignature(file);
+            if (detached && detachedSignature.exists()) {
+                try {
+                    if (console != null) {
+                        console.info("Attaching Authenticode signature to " + file);
+                    }
+                    attach(signable, detachedSignature);
+                } catch (Exception e) {
+                    throw new SignerException("Couldn't attach the signature to " + file, e);
+                }
+
+            } else {
+                if (signer == null) {
+                    signer = build();
+                }
+
+                if (console != null) {
+                    console.info("Adding Authenticode signature to " + file);
+                }
+                signer.sign(signable);
+
+                if (detached) {
+                    detach(signable, detachedSignature);
+                }
+            }
+
         } catch (UnsupportedOperationException e) {
             throw new SignerException(e.getMessage());
-        } catch (IOException e) {
-            throw new SignerException("Couldn't open the file " + file, e);
-        }
-
-        if (detached && getDetachedSignature(file).exists()) {
-            try {
-                if (console != null) {
-                    console.info("Attaching Authenticode signature to " + file);
-                }
-                attach(file);
-                return;
-            } catch (Exception e) {
-                throw new SignerException("Couldn't attach the signature to " + file, e);
-            } finally {
-                try {
-                    signable.close();
-                } catch (IOException ioe) {
-                    // Ignore for now
-                }
-            }
-        }
-
-        try {
-            if (signer == null) {
-                signer = build();
-            }
-            
-            if (console != null) {
-                console.info("Adding Authenticode signature to " + file);
-            }
-            signer.sign(signable);
-
-            if (detached) {
-                detach(file);
-            }
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {
@@ -574,26 +563,20 @@ class SignerHelper {
         }
     }
 
-    private void attach(File file) throws IOException, CMSException {
-        File detachedSignature = getDetachedSignature(file);
+    private void attach(Signable signable, File detachedSignature) throws IOException, CMSException {
         byte[] signatureBytes = FileUtils.readFileToByteArray(detachedSignature);
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
-        try (Signable signable = Signable.of(file, encoding)) {
-            signable.setSignature(signedData);
-            signable.save();
-        }
+        signable.setSignature(signedData);
+        signable.save();
         // todo warn if the hashes don't match
     }
 
-    private void detach(File file) throws IOException {
-        try (Signable signable = Signable.of(file, encoding)) {
-            CMSSignedData signedData = signable.getSignatures().get(0);
-            File detachedSignature = getDetachedSignature(file);
-            byte[] content = signedData.toASN1Structure().getEncoded("DER");
+    private void detach(Signable signable, File detachedSignature) throws IOException {
+        CMSSignedData signedData = signable.getSignatures().get(0);
+        byte[] content = signedData.toASN1Structure().getEncoded("DER");
 
-            FileUtils.writeByteArrayToFile(detachedSignature, content);
-        }
+        FileUtils.writeByteArrayToFile(detachedSignature, content);
     }
 
     private File getDetachedSignature(File file) {

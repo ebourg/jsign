@@ -66,27 +66,26 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-signed.exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
+
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                 .withTimestamping(false)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
-        
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
-        assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
-        
-        peFile.printInfo(System.out);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+            assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+
+            peFile.printInfo(System.out);
+        }
     }
 
     @Test
@@ -105,39 +104,38 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-signed-key-chain.exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
+
         Certificate[] chain;
         try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.spc")) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             chain = certificates.toArray(new Certificate[0]);
         }
-        
+
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
-        
+
         PESigner signer = new PESigner(chain, key)
                 .withTimestamping(false)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
-        
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
-        
-        CMSSignedData signature = signatures.get(0);
-        
-        assertNotNull(signature);
 
-        // check the signer id
-        SignerId signerId = signature.getSignerInfos().iterator().next().getSID();
-        X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
-        String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
-        assertEquals("signer", "Jsign Code Signing Test Certificate (RSA)", commonName);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+
+            assertNotNull(signature);
+
+            // check the signer id
+            SignerId signerId = signature.getSignerInfos().iterator().next().getSID();
+            X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
+            String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
+            assertEquals("signer", "Jsign Code Signing Test Certificate (RSA)", commonName);
+        }
     }
 
     @Test
@@ -148,8 +146,6 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-signed-yubikey.exe");
 
         FileUtils.copyFile(sourceFile, targetFile);
-
-        PEFile peFile = new PEFile(targetFile);
 
         Certificate[] chain;
         try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.spc")) {
@@ -163,11 +159,11 @@ public class PESignerTest {
         AuthenticodeSigner signer = new AuthenticodeSigner(chain, privateKey)
                 .withSignatureProvider(keystore.getProvider());
 
-        signer.sign(peFile);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
 
-        peFile = new PEFile(targetFile);
-
-        SignatureAssert.assertSigned(peFile, SHA256);
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -188,24 +184,22 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-signed-mismatching-key-certificate.exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
+
         Certificate[] chain;
         try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-root-ca.pem")) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
             chain = certificates.toArray(new Certificate[0]);
         }
-        
+
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
-        
+
         PESigner signer = new PESigner(chain, key)
                 .withTimestamping(false)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
-        
-        try {
+
+        try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
             fail("No exception thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
         } catch (Exception e) {
@@ -228,21 +222,20 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-timestamped-" + mode.name().toLowerCase() + ".exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
+
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(alg);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
 
-        SignatureAssert.assertSigned(peFile, alg);
-        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
-        
-        peFile.printInfo(System.out);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, alg);
+            SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+
+            peFile.printInfo(System.out);
+        }
     }
 
     /**
@@ -254,11 +247,9 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-timestamped-custom.exe");
 
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
 
         final HashSet<Boolean> called = new HashSet<>();
-        
+
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
@@ -271,14 +262,15 @@ public class PESignerTest {
             }
 
         });
-        signer.sign(peFile);
 
-        assertTrue("expecting our Timestamper to be used", called.contains(true));
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
 
-        peFile = new PEFile(targetFile);
-        
-        SignatureAssert.assertSigned(peFile, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+            assertTrue("expecting our Timestamper to be used", called.contains(true));
+
+            SignatureAssert.assertSigned(peFile, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+        }
     }
 
     @Test
@@ -287,31 +279,27 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-signed-twice.exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
-        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(true)
-                .withProgramName("WinEyes")
-                .withProgramURL("http://www.steelblue.com/WinEyes");
-        
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
 
-        SignatureAssert.assertSigned(peFile, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
-        
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withTimestamping(true)
+                    .withProgramName("WinEyes")
+                    .withProgramURL("http://www.steelblue.com/WinEyes");
 
-        SignatureAssert.assertSigned(peFile, SHA1, SHA256);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", peFile.getSignatures().get(0));
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA1, SHA256);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", peFile.getSignatures().get(0));
+        }
     }
 
     @Test
@@ -320,41 +308,35 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-signed-three-times.exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
-        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(true)
-                .withProgramName("WinEyes")
-                .withProgramURL("http://www.steelblue.com/WinEyes");
-        
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
-        
-        SignatureAssert.assertSigned(peFile, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
-        
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
 
-        SignatureAssert.assertSigned(peFile, SHA1, SHA256);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", peFile.getSignatures().get(0));
-        
-        // third signature
-        signer.withDigestAlgorithm(SHA512);
-        signer.withTimestamping(false);
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
+        try (PEFile peFile = new PEFile(targetFile)) {
 
-        SignatureAssert.assertSigned(peFile, SHA1, SHA256, SHA512);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", peFile.getSignatures().get(0));
+            PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withTimestamping(true)
+                    .withProgramName("WinEyes")
+                    .withProgramURL("http://www.steelblue.com/WinEyes");
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA1, SHA256);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", peFile.getSignatures().get(0));
+
+            // third signature
+            signer.withDigestAlgorithm(SHA512);
+            signer.withTimestamping(false);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA1, SHA256, SHA512);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", peFile.getSignatures().get(0));
+        }
     }
 
     @Test
@@ -363,29 +345,25 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-re-signed.exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
-        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withProgramName("WinEyes")
-                .withProgramURL("http://www.steelblue.com/WinEyes");
-        
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
 
-        SignatureAssert.assertSigned(peFile, SHA1);
-        
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.withSignaturesReplaced(true);
-        signer.sign(peFile);
-        
-        peFile = new PEFile(targetFile);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withProgramName("WinEyes")
+                    .withProgramURL("http://www.steelblue.com/WinEyes");
 
-        SignatureAssert.assertSigned(peFile, SHA256);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA1);
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.withSignaturesReplaced(true);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
     }
 
     @Test
@@ -404,8 +382,6 @@ public class PESignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        PEFile peFile = new PEFile(targetFile);
-        
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
@@ -413,7 +389,7 @@ public class PESignerTest {
         signer.withTimestampingAuthority("http://www.google.com/" + mode.name().toLowerCase());
         signer.withTimestampingRetries(1);
         
-        try {
+        try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
             fail("IOException not thrown");
         } catch (TimestampingException e) {
@@ -440,8 +416,6 @@ public class PESignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        PEFile peFile = new PEFile(targetFile);
-        
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
@@ -449,7 +423,7 @@ public class PESignerTest {
         signer.withTimestampingAuthority("http://github.com");
         signer.withTimestampingRetries(1);
         
-        try {
+        try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
             fail("TimestampingException not thrown");
         } catch (TimestampingException e) {
@@ -461,8 +435,6 @@ public class PESignerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidTimestampingURL() throws Exception {
-        PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"));
-        
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
@@ -470,7 +442,9 @@ public class PESignerTest {
         signer.withTimestampingAuthority("example://example.com");
         signer.withTimestampingRetries(1);
 
-        signer.sign(peFile);
+        try (PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            signer.sign(peFile);
+        }
     }
 
     @Test
@@ -488,9 +462,7 @@ public class PESignerTest {
         File targetFile = new File("target/test-classes/wineyes-timestamped-failover-" + mode.name().toLowerCase() + ".exe");
         
         FileUtils.copyFile(sourceFile, targetFile);
-        
-        PEFile peFile = new PEFile(targetFile);
-        
+
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA256);
         signer.withTimestamping(true);
@@ -498,12 +470,12 @@ public class PESignerTest {
         signer.withTimestampingRetryWait(1);
         signer.withTimestampingAuthority("http://www.google.com/" + mode.name().toLowerCase(), "http://github.com", validURL);
 
-        signer.sign(peFile);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
 
-        peFile = new PEFile(targetFile);
-
-        SignatureAssert.assertSigned(peFile, SHA256);
-        SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+            SignatureAssert.assertSigned(peFile, SHA256);
+            SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
+        }
     }
 
     /**
@@ -516,18 +488,13 @@ public class PESignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        PEFile peFile = null;
-        try {
-            peFile = new PEFile(targetFile);
-
+        try (PEFile peFile = new PEFile(targetFile)) {
             PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false)
                     .withDigestAlgorithm(SHA256)
                     .withSignatureAlgorithm("SHA1withRSA");
 
             signer.sign(peFile);
-
-            peFile = new PEFile(targetFile);
 
             SignatureAssert.assertSigned(peFile, SHA1);
 
@@ -536,10 +503,6 @@ public class PESignerTest {
             SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
             assertEquals("Digest algorithm", SHA1.oid, si.getDigestAlgorithmID().getAlgorithm());
             assertEquals("Encryption algorithm", PKCSObjectIdentifiers.rsaEncryption.getId(), si.getEncryptionAlgOID());
-        } finally {
-            if (peFile != null) {
-                peFile.close();
-            }
         }
     }
 
@@ -559,10 +522,7 @@ public class PESignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        PEFile peFile = null;
-        try {
-            peFile = new PEFile(targetFile);
-
+        try (PEFile peFile = new PEFile(targetFile)) {
             PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
                     .withTimestamping(false)
                     .withDigestAlgorithm(SHA1)
@@ -570,7 +530,6 @@ public class PESignerTest {
 
             signer.sign(peFile);
 
-            peFile = new PEFile(targetFile);
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
@@ -582,10 +541,6 @@ public class PESignerTest {
             SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
             assertEquals("Digest algorithm", NISTObjectIdentifiers.id_sha256, si.getDigestAlgorithmID().getAlgorithm());
             assertEquals("Encryption algorithm", PKCSObjectIdentifiers.id_RSASSA_PSS.getId(), si.getEncryptionAlgOID());
-        } finally {
-            if (peFile != null) {
-                peFile.close();
-            }
         }
     }
 
@@ -599,18 +554,17 @@ public class PESignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        PEFile peFile = new PEFile(targetFile);
-
         AuthenticodeSigner signer = new AuthenticodeSigner(keystore, ALIAS, PRIVATE_KEY_PASSWORD)
                 .withTimestamping(false)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
 
-        signer.sign(peFile);
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
 
-        peFile = new PEFile(targetFile);
-        List<CMSSignedData> signatures = peFile.getSignatures();
-        assertNotNull(signatures);
-        assertEquals(1, signatures.size());
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+        }
     }
 }

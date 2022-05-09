@@ -50,16 +50,14 @@ public class MSCabinetSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        MSCabinetFile cabFile = new MSCabinetFile(targetFile);
+        try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false);
 
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withTimestamping(false);
+            signer.sign(cabFile);
 
-        signer.sign(cabFile);
-
-        cabFile = new MSCabinetFile(targetFile);
-
-        SignatureAssert.assertSigned(cabFile, SHA256);
+            SignatureAssert.assertSigned(cabFile, SHA256);
+        }
     }
 
     @Test
@@ -96,28 +94,24 @@ public class MSCabinetSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        MSCabinetFile file = new MSCabinetFile(targetFile);
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withTimestamping(true);
 
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(true);
+            signer.sign(file);
 
-        signer.sign(file);
+            SignatureAssert.assertSigned(file, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
 
-        file = new MSCabinetFile(targetFile);
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.sign(file);
 
-        SignatureAssert.assertSigned(file, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
-
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.sign(file);
-
-        file = new MSCabinetFile(targetFile);
-
-        SignatureAssert.assertSigned(file, SHA1, SHA256);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
+            SignatureAssert.assertSigned(file, SHA1, SHA256);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
+        }
     }
 
     @Test
@@ -127,38 +121,32 @@ public class MSCabinetSignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        MSCabinetFile file = new MSCabinetFile(targetFile);
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withTimestamping(true);
 
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(true);
+            signer.sign(file);
 
-        signer.sign(file);
+            SignatureAssert.assertSigned(file, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
 
-        file = new MSCabinetFile(targetFile);
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.sign(file);
 
-        SignatureAssert.assertSigned(file, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
+            SignatureAssert.assertSigned(file, SHA1, SHA256);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
 
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.sign(file);
+            // third signature
+            signer.withDigestAlgorithm(SHA512);
+            signer.withTimestamping(false);
+            signer.sign(file);
 
-        file = new MSCabinetFile(targetFile);
-
-        SignatureAssert.assertSigned(file, SHA1, SHA256);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
-
-        // third signature
-        signer.withDigestAlgorithm(SHA512);
-        signer.withTimestamping(false);
-        signer.sign(file);
-
-        file = new MSCabinetFile(targetFile);
-
-        SignatureAssert.assertSigned(file, SHA1, SHA256, SHA512);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
+            SignatureAssert.assertSigned(file, SHA1, SHA256, SHA512);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
+        }
     }
 
     @Test

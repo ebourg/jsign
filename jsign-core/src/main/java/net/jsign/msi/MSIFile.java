@@ -81,13 +81,16 @@ public class MSIFile implements Signable {
      * this leads to OOM errors when the file is parsed.
      * See https://github.com/ebourg/jsign/issues/82 for more info.
      */
-    private final POIFSFileSystem fsRead;
+    private POIFSFileSystem fsRead;
 
     /** The POI filesystem used for writing to the file */
     private final POIFSFileSystem fsWrite;
 
     /** The channel used for in-memory signing */
     private SeekableByteChannel channel;
+
+    /** The underlying file */
+    private File file;
 
     /**
      * Tells if the specified file is a MSI file.
@@ -109,6 +112,7 @@ public class MSIFile implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public MSIFile(File file) throws IOException {
+        this.file = file;
         this.fsRead = new POIFSFileSystem(file, true);
         this.fsWrite = new POIFSFileSystem(file, false);
     }
@@ -260,6 +264,8 @@ public class MSIFile implements Signable {
     public void save() throws IOException {
         if (channel == null) {
             fsWrite.writeFilesystem();
+            fsRead.close();
+            fsRead = new POIFSFileSystem(file, true);
         } else {
             channel.position(0);
             fsWrite.writeFilesystem(Channels.newOutputStream(channel));

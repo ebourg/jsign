@@ -50,10 +50,10 @@ public class MSISignerTest {
                 .withTimestamping(false)
                 .withProgramName("Hello World")
                 .withProgramURL("http://example.com");
-        
-        signer.sign(new MSIFile(targetFile));
 
         try (MSIFile file = new MSIFile(targetFile)) {
+            signer.sign(file);
+
             SignatureAssert.assertSigned(file, SHA256);
         }
     }
@@ -65,30 +65,26 @@ public class MSISignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        MSIFile file = new MSIFile(targetFile);
-        
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(true)
-                .withProgramName("Hello World")
-                .withProgramURL("http://example.com");
-        
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
+        try (MSIFile file = new MSIFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withTimestamping(true)
+                    .withProgramName("Hello World")
+                    .withProgramURL("http://example.com");
 
-        SignatureAssert.assertSigned(file, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
-        
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
+            signer.sign(file);
 
-        SignatureAssert.assertSigned(file, SHA1, SHA256);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
+            SignatureAssert.assertSigned(file, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA1, SHA256);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
+        }
     }
 
     @Test
@@ -98,40 +94,34 @@ public class MSISignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        MSIFile file = new MSIFile(targetFile);
-        
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(true)
-                .withProgramName("Hello World")
-                .withProgramURL("http://example.com");
-        
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
-        
-        SignatureAssert.assertSigned(file, SHA1);
-        SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
-        
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
+        try (MSIFile file = new MSIFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withTimestamping(true)
+                    .withProgramName("Hello World")
+                    .withProgramURL("http://example.com");
 
-        SignatureAssert.assertSigned(file, SHA1, SHA256);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
-        
-        // third signature
-        signer.withDigestAlgorithm(SHA512);
-        signer.withTimestamping(false);
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
+            signer.sign(file);
 
-        SignatureAssert.assertSigned(file, SHA1, SHA256, SHA512);
-        SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
+            SignatureAssert.assertSigned(file, SHA1);
+            SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA1, SHA256);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
+
+            // third signature
+            signer.withDigestAlgorithm(SHA512);
+            signer.withTimestamping(false);
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA1, SHA256, SHA512);
+            SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
+        }
     }
 
     @Test
@@ -141,28 +131,24 @@ public class MSISignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        MSIFile file = new MSIFile(targetFile);
-        
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withProgramName("Minimal Package")
-                .withProgramURL("http://example.com");
-        
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
+        try (MSIFile file = new MSIFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withProgramName("Minimal Package")
+                    .withProgramURL("http://example.com");
 
-        SignatureAssert.assertSigned(file, SHA1);
-        
-        // second signature
-        signer.withDigestAlgorithm(SHA256);
-        signer.withTimestamping(false);
-        signer.withSignaturesReplaced(true);
-        signer.sign(file);
-        
-        file = new MSIFile(targetFile);
+            signer.sign(file);
 
-        SignatureAssert.assertSigned(file, SHA256);
+            SignatureAssert.assertSigned(file, SHA1);
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.withTimestamping(false);
+            signer.withSignaturesReplaced(true);
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA256);
+        }
     }
 
     @Test
@@ -195,13 +181,13 @@ public class MSISignerTest {
         
         FileUtils.copyFile(sourceFile, targetFile);
         
-        MSIFile file = new MSIFile(targetFile);
-        
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withProgramName("Minimal Package")
-                .withProgramURL("http://example.com");
-        
-        signer.sign(file);
+        try (MSIFile file = new MSIFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA1)
+                    .withProgramName("Minimal Package")
+                    .withProgramURL("http://example.com");
+
+            signer.sign(file);
+        }
     }
 }

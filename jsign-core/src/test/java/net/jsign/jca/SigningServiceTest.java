@@ -43,10 +43,7 @@ public class SigningServiceTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        PEFile peFile = null;
-        try {
-            peFile = new PEFile(targetFile);
-
+        try (PEFile peFile = new PEFile(targetFile)) {
             AuthenticodeSigner signer = new AuthenticodeSigner(keystore, alias, keypass)
                     .withSignatureProvider(signingProvider)
                     .withTimestamping(false)
@@ -54,13 +51,7 @@ public class SigningServiceTest {
 
             signer.sign(peFile);
 
-            peFile = new PEFile(targetFile);
-
             SignatureAssert.assertSigned(peFile, SHA256);
-        } finally {
-            if (peFile != null) {
-                peFile.close();
-            }
         }
     }
 

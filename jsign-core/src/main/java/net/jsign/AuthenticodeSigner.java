@@ -346,7 +346,6 @@ public class AuthenticodeSigner {
         
         file.setSignature(sigData);
         file.save();
-        file.close();
     }
 
     /**
