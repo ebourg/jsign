@@ -485,8 +485,9 @@ the version is omitted the most recent one will be picked automatically.</p>
        .withTimestamping(true)
        .withTimestampingAuthority("http://timestamp.sectigo.com");
 
- Signable file = Signable.of(new File("application.exe"));
- signer.sign(file);
+ try (Signable file = Signable.of(new File("application.exe"))) {
+     signer.sign(file);
+ }
 </pre>
 
 <p>See the <a href="apidocs/index.html">Javadoc</a> for more details about the API.</p>

@@ -16,7 +16,6 @@
 
 package net.jsign;
 
-import java.io.Closeable;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -346,12 +345,8 @@ public class AuthenticodeSigner {
         }
         
         file.setSignature(sigData);
-        
         file.save();
-        
-        if (file instanceof Closeable) {
-            ((Closeable) file).close();
-        }
+        file.close();
     }
 
     /**

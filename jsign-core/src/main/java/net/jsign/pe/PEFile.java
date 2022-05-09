@@ -16,7 +16,6 @@
 
 package net.jsign.pe;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -65,7 +64,7 @@ import static net.jsign.ChannelUtils.*;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public class PEFile implements Signable, Closeable {
+public class PEFile implements Signable {
 
     /** The position of the PE header in the file */
     private final long peHeaderOffset;

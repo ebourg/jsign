@@ -16,7 +16,6 @@
 
 package net.jsign;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -548,9 +547,7 @@ class SignerHelper {
                 throw new SignerException("Couldn't attach the signature to " + file, e);
             } finally {
                 try {
-                    if (signable instanceof Closeable) {
-                        ((Closeable) signable).close();
-                    }
+                    signable.close();
                 } catch (IOException ioe) {
                     // Ignore for now
                 }
@@ -582,30 +579,20 @@ class SignerHelper {
         byte[] signatureBytes = FileUtils.readFileToByteArray(detachedSignature);
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
-        Signable signable = Signable.of(file, encoding);
-        try {
+        try (Signable signable = Signable.of(file, encoding)) {
             signable.setSignature(signedData);
             signable.save();
-        } finally {
-            if (signable instanceof Closeable) {
-                ((Closeable) signable).close();
-            }
         }
         // todo warn if the hashes don't match
     }
 
     private void detach(File file) throws IOException {
-        Signable signable = Signable.of(file, encoding);
-        try {
+        try (Signable signable = Signable.of(file, encoding)) {
             CMSSignedData signedData = signable.getSignatures().get(0);
             File detachedSignature = getDetachedSignature(file);
             byte[] content = signedData.toASN1Structure().getEncoded("DER");
 
             FileUtils.writeByteArrayToFile(detachedSignature, content);
-        } finally {
-            if (signable instanceof Closeable) {
-                ((Closeable) signable).close();
-            }
         }
     }
 

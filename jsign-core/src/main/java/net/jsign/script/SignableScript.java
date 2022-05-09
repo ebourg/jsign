@@ -316,4 +316,8 @@ abstract class SignableScript implements Signable {
             out.flush();
         }
     }
+
+    @Override
+    public void close() throws IOException {
+    }
 }

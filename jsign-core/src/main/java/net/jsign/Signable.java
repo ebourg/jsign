@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -39,7 +40,7 @@ import net.jsign.script.WindowsScript;
  *
  * @author Emmanuel Bourg
  */
-public interface Signable {
+public interface Signable extends Closeable {
 
     /**
      * Computes the digest of the file.

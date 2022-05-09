@@ -16,7 +16,6 @@
 
 package net.jsign.mscab;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -61,7 +60,7 @@ import static net.jsign.ChannelUtils.*;
  * @author Joseph Lee
  * @since 4.0
  */
-public class MSCabinetFile implements Signable, Closeable {
+public class MSCabinetFile implements Signable {
 
     private final CFHeader header = new CFHeader();
 

@@ -17,7 +17,6 @@
 package net.jsign.msi;
 
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,7 +68,7 @@ import net.jsign.asn1.authenticode.SpcUuid;
  * @author Emmanuel Bourg
  * @since 3.0
  */
-public class MSIFile implements Signable, Closeable {
+public class MSIFile implements Signable {
 
     private static final long MSI_HEADER = 0xD0CF11E0A1B11AE1L;
 
