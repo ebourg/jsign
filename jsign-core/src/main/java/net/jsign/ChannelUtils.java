@@ -128,7 +128,9 @@ public class ChannelUtils {
             do {
                 buffer.clear();
                 buffer.limit(1);
-                channel.read(buffer);
+                if (channel.read(buffer) < 0) {
+                    throw new IOException("End of file reached, cannot read null terminated string");
+                }
                 buffer.flip();
                 singleChar = buffer.array()[0];
                 bos.write(singleChar);
