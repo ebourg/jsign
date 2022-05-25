@@ -40,8 +40,11 @@ public class CertificateTableEntry {
     private byte[] content;
     private CMSSignedData signature;
 
-    CertificateTableEntry(PEFile peFile, long index) {
+    CertificateTableEntry(PEFile peFile, long index) throws IOException {
         size = (int) peFile.readDWord(index, 0);
+        if (size < 8 || size > peFile.channel.size() - index) {
+            throw new IOException("Invalid certificate table size: " + size);
+        }
         revision = peFile.readWord(index, 4);
         type = peFile.readWord(index, 6);
         content = new byte[size - 8];

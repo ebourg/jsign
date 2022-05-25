@@ -20,6 +20,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -251,6 +253,22 @@ public class PEFileTest {
             certificateTable.write(Integer.MAX_VALUE, 1024);
 
             assertTrue("Certificate table after the end of the file not ignored", file.getSignatures().isEmpty());
+        }
+    }
+
+    @Test
+    public void testCertificateTableInvalidSize() throws Exception {
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (PEFile file = new PEFile(destFile)) {
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            certificateTable.write(file.channel.size() - 512, Integer.MAX_VALUE);
+            file.channel.position(certificateTable.getVirtualAddress());
+            file.channel.write((ByteBuffer) ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(Integer.MAX_VALUE).flip());
+
+            assertTrue("Certificate table with invalid size not ignored", file.getSignatures().isEmpty());
         }
     }
 }
