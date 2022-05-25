@@ -757,7 +757,9 @@ public class PEFile implements Signable {
             long position = certificateTable.getVirtualAddress();
             
             try {
-                entries.add(new CertificateTableEntry(this, position));
+                if (position < channel.size()) {
+                    entries.add(new CertificateTableEntry(this, position));
+                }
                 
                 // todo read the remaining entries (but Authenticode use only one, extra signatures are appended as a SPC_NESTED_SIGNATURE unauthenticated attribute)
             } catch (Exception e) {

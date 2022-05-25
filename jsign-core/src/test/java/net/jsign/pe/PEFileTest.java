@@ -200,4 +200,18 @@ public class PEFileTest {
 
         assertEquals(digestPadded, digestNotPadded);
     }
+
+    @Test
+    public void testCertificateTableAfterEndOfFile() throws Exception {
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (PEFile file = new PEFile(destFile)) {
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            certificateTable.write(Integer.MAX_VALUE, 1024);
+
+            assertTrue("Certificate table after the end of the file not ignored", file.getSignatures().isEmpty());
+        }
+    }
 }
