@@ -201,6 +201,45 @@ public class PEFileTest {
         assertEquals(digestPadded, digestNotPadded);
     }
 
+    @Test(expected = IOException.class)
+    public void testComputeDigestInvalidCertificateTableNegativeAddress() throws Exception {
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (PEFile file = new PEFile(destFile)) {
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            certificateTable.write(Integer.MIN_VALUE, 1024);
+            file.computeDigest(SHA1);
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testComputeDigestInvalidCertificateTableNegativeSize() throws Exception {
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (PEFile file = new PEFile(destFile)) {
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            certificateTable.write(1024, Integer.MIN_VALUE);
+            file.computeDigest(SHA1);
+        }
+    }
+
+    @Test(expected = IOException.class)
+    public void testComputeDigestInvalidCertificateTableAfterEndOfFile() throws Exception {
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (PEFile file = new PEFile(destFile)) {
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            certificateTable.write(Integer.MAX_VALUE, Integer.MAX_VALUE);
+            file.computeDigest(SHA1);
+        }
+    }
+
     @Test
     public void testCertificateTableAfterEndOfFile() throws Exception {
         File srcFile = new File("target/test-classes/wineyes.exe");

@@ -49,6 +49,21 @@ public class DataDirectory {
     }
 
     /**
+     * Checks if the entry is valid.
+     *
+     * @throws IOException if the entry is invalid
+     * @since 4.2
+     */
+    void check() throws IOException {
+        long address = getVirtualAddress();
+        int size = getSize();
+
+        if (address < 0 || size < 0 || address + size > peFile.channel.size()) {
+            throw new IOException("Invalid data directory (index=" + index + ", address=" + address + ", size=" + size + ")");
+        }
+    }
+
+    /**
      * Fill the data directory with zeros.
      * 
      * @since 2.0

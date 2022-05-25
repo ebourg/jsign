@@ -917,6 +917,7 @@ public class PEFile implements Signable {
         
         // digest from the end of the certificate table entry to the beginning of the certificate table
         if (certificateTable != null && certificateTable.exists()) {
+            certificateTable.check();
             updateDigest(channel, digest, position, certificateTable.getVirtualAddress());
             position = certificateTable.getVirtualAddress() + certificateTable.getSize();
         }
