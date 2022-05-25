@@ -650,6 +650,9 @@ public class PEFile implements Signable {
      */
     public synchronized void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {
         DataDirectory directory = getDataDirectory(type);
+        if (directory == null) {
+            throw new IOException("No space allocated in the data directories index for the " + type + " directory");
+        }
         
         if (!directory.exists()) {
             // append the data directory at the end of the file
