@@ -239,7 +239,7 @@ public class MSCabinetFile implements Signable {
 
         CABSignature cabsig = new CABSignature(header.abReserved);
         cabsig.header = CABSignature.HEADER;
-        cabsig.offset = (int) header.cbCabinet;
+        cabsig.offset = header.cbCabinet;
         cabsig.length = content.length;
         header.abReserved = cabsig.array();
 
