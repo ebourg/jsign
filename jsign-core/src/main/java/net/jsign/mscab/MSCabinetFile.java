@@ -194,7 +194,7 @@ public class MSCabinetFile implements Signable {
         List<CMSSignedData> signatures = new ArrayList<>();
         try {
             CABSignature cabsig = header.getSignature();
-            if (cabsig != null && cabsig.offset > 0) {
+            if (cabsig != null && cabsig.offset > 0 && cabsig.length > 0 && cabsig.length < channel.size()) {
                 byte[] buffer = new byte[(int) cabsig.length];
                 channel.position(cabsig.offset);
                 channel.read(ByteBuffer.wrap(buffer));
