@@ -113,8 +113,12 @@ public class MSIFile implements Signable {
      */
     public MSIFile(File file) throws IOException {
         this.file = file;
-        this.fsRead = new POIFSFileSystem(file, true);
-        this.fsWrite = new POIFSFileSystem(file, false);
+        try {
+            this.fsRead = new POIFSFileSystem(file, true);
+            this.fsWrite = new POIFSFileSystem(file, false);
+        } catch (IndexOutOfBoundsException | IllegalStateException e) {
+            throw new IOException("MSI file format error", e);
+        }
     }
 
     /**
@@ -182,34 +186,38 @@ public class MSIFile implements Signable {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) {
-        // hash the entries
-        for (Property property : getSortedProperties()) {
-            String name = new MSIStreamName(property.getName()).decode();
-            if (name.equals(DIGITAL_SIGNATURE_ENTRY_NAME) || name.equals(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
-                continue;
+    public byte[] computeDigest(MessageDigest digest) throws IOException {
+        try {
+            // hash the entries
+            for (Property property : getSortedProperties()) {
+                String name = new MSIStreamName(property.getName()).decode();
+                if (name.equals(DIGITAL_SIGNATURE_ENTRY_NAME) || name.equals(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
+                    continue;
+                }
+
+                POIFSDocument document = new POIFSDocument((DocumentProperty) property, fsRead);
+                long remaining = document.getSize();
+                for (ByteBuffer buffer : document) {
+                    int size = buffer.remaining();
+                    buffer.limit(buffer.position() + (int) Math.min(remaining, size));
+                    digest.update(buffer);
+                    remaining -= size;
+                }
             }
 
-            POIFSDocument document = new POIFSDocument((DocumentProperty) property, fsRead);
-            long remaining = document.getSize();
-            for (ByteBuffer buffer : document) {
-                int size = buffer.remaining();
-                buffer.limit(buffer.position() + (int) Math.min(remaining, size));
-                digest.update(buffer);
-                remaining -= size;
-            }
+            // hash the package ClassID, in serialized form
+            byte[] classId = new byte[16];
+            fsRead.getRoot().getStorageClsid().write(classId, 0);
+            digest.update(classId);
+
+            return digest.digest();
+        } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+            throw new IOException("MSI file format error", e);
         }
-
-        // hash the package ClassID, in serialized form
-        byte[] classId = new byte[16];
-        fsRead.getRoot().getStorageClsid().write(classId, 0);
-        digest.update(classId);
-        
-        return digest.digest();
     }
 
     @Override
-    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) {
+    public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
 
