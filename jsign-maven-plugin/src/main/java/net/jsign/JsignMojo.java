@@ -117,6 +117,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.detached", defaultValue = "false")
     private boolean detached;
 
+    /** Tells if the certificate provided by the keystore should be ignored. */
+    @Parameter( property = "jsign.ignorekeycert", defaultValue = "false")
+    private boolean ignorekeycert;
+
     @Parameter(defaultValue = "${settings}", readonly = true)
     private Settings settings;
 
@@ -160,6 +164,7 @@ public class JsignMojo extends AbstractMojo {
         helper.replace(replace);
         helper.encoding(encoding);
         helper.detached(detached);
+        helper.ignorekeycert(ignorekeycert);
 
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {

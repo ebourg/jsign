@@ -87,6 +87,9 @@ public class JsignTask extends Task {
     /** Tells if a detached signature should be generated or reused. */
     private boolean detached;
 
+    /** Tells if the certificate provided by the keystore should be ignored. */
+    private boolean ignorekeycert;
+
     public void setFile(File file) {
         this.file = file;
     }
@@ -163,6 +166,10 @@ public class JsignTask extends Task {
         this.detached = detached;
     }
 
+    public void setIgnorekeycert(boolean ignorekeycert) {
+        this.ignorekeycert = ignorekeycert;
+    }
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -185,6 +192,7 @@ public class JsignTask extends Task {
             helper.replace(replace);
             helper.encoding(encoding);
             helper.detached(detached);
+            helper.ignorekeycert(ignorekeycert);
 
             if (fileset != null) {
                 for(String fileElement : fileset.getDirectoryScanner().getIncludedFiles()) {

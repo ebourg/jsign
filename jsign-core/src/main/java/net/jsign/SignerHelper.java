@@ -88,6 +88,7 @@ class SignerHelper {
     public static final String PARAM_REPLACE = "replace";
     public static final String PARAM_ENCODING = "encoding";
     public static final String PARAM_DETACHED = "detached";
+    public static final String PARAM_IGNOREKEYCERT = "ignorekeycert";
 
     private final Console console;
 
@@ -114,6 +115,7 @@ class SignerHelper {
     private boolean replace;
     private Charset encoding;
     private boolean detached;
+    private boolean ignorekeycert;
 
     private AuthenticodeSigner signer;
 
@@ -237,6 +239,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper ignorekeycert(boolean ignorekeycert) {
+        this.ignorekeycert = ignorekeycert;
+        return this;
+    }
+
     public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
@@ -263,6 +270,7 @@ class SignerHelper {
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
             case PARAM_ENCODING:   return encoding(value);
             case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
+            case PARAM_IGNOREKEYCERT: return ignorekeycert("true".equalsIgnoreCase(value));
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -312,6 +320,9 @@ class SignerHelper {
         // some exciting parameter validation...
         if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
+        }
+        if (ignorekeycert && certfile == null) {
+            throw new SignerException("certfile " + parameterName + "s must be set if ignorekeycert is set");
         }
         if (keystore != null && keyfile != null) {
             throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
@@ -433,7 +444,18 @@ class SignerHelper {
                 }
                 throw new SignerException(message);
             }
-            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype)) {
+            if (ignorekeycert) {
+                if (!certfile.exists()) {
+                    throw new SignerException("The certfile " + certfile + " couldn't be found");
+                }
+
+                // load the certificate chain
+                try {
+                    chain = loadCertificateChain(certfile);
+                } catch (Exception e) {
+                    throw new SignerException("Failed to load the certificate from " + certfile, e);
+                }
+            } else if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype)) {
                 if (chain.length != 1) {
                     throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
                 }

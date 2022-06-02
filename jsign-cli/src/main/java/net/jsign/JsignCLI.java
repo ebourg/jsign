@@ -73,6 +73,7 @@ public class JsignCLI {
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if previous signatures should be replaced.").build());
         options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one).").build());
         options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused.").build());
+        options.addOption(Option.builder().longOpt(PARAM_IGNOREKEYCERT).desc("Tells if the certificate provided by the keystore should be ignored (require certfile to be set).").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
     }
 
@@ -108,6 +109,7 @@ public class JsignCLI {
         helper.replace(cmd.hasOption(PARAM_REPLACE));
         setOption(PARAM_ENCODING, helper, cmd);
         helper.detached(cmd.hasOption(PARAM_DETACHED));
+        helper.ignorekeycert(cmd.hasOption(PARAM_IGNOREKEYCERT));
 
         if (cmd.getArgList().isEmpty()) {
             throw new SignerException("No file specified");
