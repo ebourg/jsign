@@ -35,15 +35,18 @@ import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Provider;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -440,7 +443,7 @@ class SignerHelper {
                 // replace the certificate chain from the keystore with the complete chain from file
                 try {
                     Certificate[] chainFromFile = loadCertificateChain(certfile);
-                    if (chainFromFile[0].equals(chain[0])) {
+                    if (haveSamePublicKeys(chainFromFile[0], chain[0])) {
                         // replace certificate with complete chain
                         chain = chainFromFile;
                     } else {
@@ -594,6 +597,14 @@ class SignerHelper {
         }
     }
 
+    private boolean haveSamePublicKeys(Certificate thisCertificate, Certificate thatCertificate) {
+        PublicKey thisPublicKey = thisCertificate.getPublicKey();
+        PublicKey thatPublicKey = thatCertificate.getPublicKey();
+
+        return Objects.equals(thisPublicKey.getAlgorithm(), thatPublicKey.getAlgorithm())
+            && Objects.equals(thisPublicKey.getFormat(), thatPublicKey.getFormat())
+            && Arrays.equals(thisPublicKey.getEncoded(), thatPublicKey.getEncoded());
+    }
     /**
      * Initializes the proxy.
      *
