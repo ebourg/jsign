@@ -214,7 +214,7 @@ public class MSCabinetFile implements Signable {
                     }
                 }
             }
-        } catch (CMSException e) {
+        } catch (CMSException | IllegalArgumentException | IllegalStateException e) {
             throw new IOException(e);
         }
         return signatures;
