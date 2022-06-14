@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.TreeMap;
 
 import org.apache.poi.poifs.filesystem.DocumentEntry;
@@ -211,7 +212,7 @@ public class MSIFile implements Signable {
             digest.update(classId);
 
             return digest.digest();
-        } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+        } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
             throw new IOException("MSI file format error", e);
         }
     }
@@ -265,7 +266,11 @@ public class MSIFile implements Signable {
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
         byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
-        fsWrite.getRoot().createOrUpdateDocument(DIGITAL_SIGNATURE_ENTRY_NAME, new ByteArrayInputStream(signatureBytes));
+        try {
+            fsWrite.getRoot().createOrUpdateDocument(DIGITAL_SIGNATURE_ENTRY_NAME, new ByteArrayInputStream(signatureBytes));
+        } catch (IndexOutOfBoundsException e) {
+            throw new IOException("MSI file format error", e);
+        }
     }
 
     @Override
