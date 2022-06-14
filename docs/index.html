@@ -310,6 +310,8 @@ by default to the <code>package</code> phase.</p>
 <p>Here is an example showing how to use Jsign with Gradle. The parameters
 are the same as those described above for the Ant task.</p>
 
+<p>With the Groovy syntax:</p>
+
 <pre class="prettyprint lang-groovy">
     buildscript {
         dependencies {
@@ -332,6 +334,30 @@ are the same as those described above for the Ant task.</p>
     }
 </pre>
 
+<p>With the Kotlin syntax:</p>
+
+<pre class="prettyprint lang-kotlin">
+    buildscript {
+        dependencies {
+            classpath("net.jsign:jsign-gradle-plugin:4.1")
+        }
+    }
+    
+    apply(plugin = "net.jsign")
+    
+    task("sign") {
+        doLast {
+            val jsign = project.extensions.getByName("jsign") as groovy.lang.Closure<*>
+            jsign("file"      to "application.exe",
+                  "name"      to "My Application",
+                  "url"       to "http://www.example.com",
+                  "keystore"  to "keystore.p12",
+                  "alias"     to "test",
+                  "storepass" to "secret",
+                  "tsaurl"    to "http://timestamp.sectigo.com")
+        }
+    }
+</pre>
 
 <h3>Command Line Tool</h3>
 
