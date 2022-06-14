@@ -45,6 +45,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>1.7.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.gradle</groupId>
       <artifactId>gradle-core</artifactId>
       <version>${gradle.version}</version>

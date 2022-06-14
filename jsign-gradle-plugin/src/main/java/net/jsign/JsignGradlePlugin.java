@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import groovy.lang.Closure;
@@ -43,6 +44,14 @@ public class JsignGradlePlugin implements Plugin<Project> {
                     helper.param(param.getKey(), param.getValue());
                 }
                 helper.sign(new File(file));
+            }
+
+            public void doCall(kotlin.Pair<String, String>... pairs) throws SignerException {
+                Map<String, String> params = new HashMap<>();
+                for (kotlin.Pair<String, String> pair : pairs) {
+                    params.put(pair.getFirst(), pair.getSecond());
+                }
+                doCall(params);
             }
         });
     }
