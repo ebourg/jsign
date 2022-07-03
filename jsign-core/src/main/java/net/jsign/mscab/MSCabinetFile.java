@@ -26,6 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -214,7 +215,7 @@ public class MSCabinetFile implements Signable {
                     }
                 }
             }
-        } catch (CMSException | IllegalArgumentException | IllegalStateException e) {
+        } catch (CMSException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException e) {
             throw new IOException(e);
         }
         return signatures;
