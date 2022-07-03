@@ -117,7 +117,7 @@ public class MSIFile implements Signable {
         try {
             this.fsRead = new POIFSFileSystem(file, true);
             this.fsWrite = new POIFSFileSystem(file, false);
-        } catch (IndexOutOfBoundsException | IllegalStateException e) {
+        } catch (IndexOutOfBoundsException | IllegalStateException | ClassCastException e) {
             throw new IOException("MSI file format error", e);
         }
     }
@@ -278,7 +278,11 @@ public class MSIFile implements Signable {
         if (channel == null) {
             fsWrite.writeFilesystem();
             fsRead.close();
-            fsRead = new POIFSFileSystem(file, true);
+            try {
+                fsRead = new POIFSFileSystem(file, true);
+            } catch (IndexOutOfBoundsException e) {
+                throw new IOException("MSI file format error", e);
+            }
         } else {
             channel.position(0);
             fsWrite.writeFilesystem(Channels.newOutputStream(channel));
