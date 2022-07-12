@@ -37,6 +37,7 @@ footer, header, hgroup, menu, nav, section {
 
 ol, ul {
   /*list-style: none;*/
+  padding-left: 20px;
 }
 
 blockquote, q {
@@ -366,7 +367,13 @@ Full-Width Styles
   background: #212121;
 }
 
+.mobile-only {
+  display: none;
+}
 
+td.required {
+  text-align: center;
+}
 
 /*******************************************************************************
 Small Device Styles
@@ -420,4 +427,47 @@ Small Device Styles
     font-size: 11px;
   }
 
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: initial
+  }
+
+  table {
+    border-width: 0;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tr {
+    display: block;
+    margin-bottom: 0.5em;
+  }
+
+  td {
+    display: block;
+    border-width: 0;
+  }
+
+  td.attribute {
+    padding: 0;
+    font-weight: bold;
+  }
+
+  td.description {
+    padding-left: 2em;
+  }
+
+  td.required {
+    padding-left: 2em;
+    text-align: left;
+  }
+
+  td.required::before {
+    content: "Required: ";
+  }
 }
