@@ -24,8 +24,10 @@ import java.security.MessageDigest;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.mscab.MSCabinetFile;
 import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
@@ -41,6 +43,18 @@ import net.jsign.script.WindowsScript;
  * @author Emmanuel Bourg
  */
 public interface Signable extends Closeable {
+
+    /**
+     * Creates the ContentInfo structure to be signed.
+     *
+     * @param digestAlgorithm the digest algorithm to use
+     * @return the ContentInfo structure in ASN.1 format
+     * @throws IOException if an I/O error occurs
+     * @since 4.2
+     */
+    default ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) throws IOException {
+        return new ContentInfo(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
+    }
 
     /**
      * Computes the digest of the file.

@@ -36,6 +36,7 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -357,8 +358,9 @@ public class AuthenticodeSigner {
      */
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
+        ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
         AuthenticodeSignedDataGenerator generator = createSignedDataGenerator();
-        CMSSignedData sigData = generator.generate(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, file.createIndirectData(digestAlgorithm));
+        CMSSignedData sigData = generator.generate(contentInfo.getContentType(), contentInfo.getContent());
         
         // verify the signature
         DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
