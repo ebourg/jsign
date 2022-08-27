@@ -14,7 +14,7 @@ _jsign()
         return 0
     fi
 
-    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv|ps1|psm1|psd1|msi|msp|cab)"
+    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv|ps1|psm1|psd1|msi|msp|cab|cat)"
 
     case $prev in
         -s|--keystore|--keyfile|-c|--certfile)

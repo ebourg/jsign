@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)" />
+    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF)" />
     <meta name="google-site-verification" content="p912kgAnTBOzVbswrU43k3FXUbPnxLHdeW6xsVcq1uU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -36,9 +36,9 @@
 
 
 <p>Jsign is a Java implementation of Microsoft Authenticode that lets you sign
-and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB)
-and scripts (PowerShell, VBScript, JScript, WSF). Jsign is platform independent
-and provides an alternative to native tools like <em>signcode/signtool</em>
+and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB),
+Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF). Jsign is platform
+independent and provides an alternative to native tools like <em>signcode/signtool</em>
 on Windows or the Mono development tools on Unix systems.</p>
 
 <p>Jsign comes as an easy to use task/plugin for the main build systems (Maven,
@@ -56,7 +56,7 @@ programmatically or standalone as a command line tool.</p>
 <h3>Features</h3>
 
 <ul>
-  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)</li>
+  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF)</li>
   <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
@@ -132,7 +132,7 @@ programmatically or standalone as a command line tool.</p>
       <td class="attribute">file</td>
       <td class="description">
           The file to be signed. The supported files are Windows executables (EXE), DLLs, Microsoft Installers (MSI),
-          Cabinet files (CAB) and scripts (PowerShell, VBScript, JScript, WSF)</td>
+          Cabinet files (CAB), Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF)</td>
       <td class="required">Yes, unless a fileset is specified.</td>
     </tr>
     <tr>
@@ -383,7 +383,7 @@ are provided to install it easily on most Linux distributions. On these systems 
 <pre>
   usage: jsign [OPTIONS] [FILE]...
   Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
-  files or scripts (PowerShell, VBScript, JScript, WSF).
+  files (CAB), Catalog files (CAT) or scripts (PowerShell, VBScript, JScript, WSF).
   
   -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
      --storepass &lt;PASSWORD>  The password to open the keystore

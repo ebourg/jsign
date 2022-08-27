@@ -28,6 +28,7 @@ import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.cat.CatalogFile;
 import net.jsign.mscab.MSCabinetFile;
 import net.jsign.msi.MSIFile;
 import net.jsign.pe.PEFile;
@@ -128,6 +129,9 @@ public interface Signable extends Closeable {
 
         } else if (MSCabinetFile.isMSCabinetFile(file)) {
             return new MSCabinetFile(file);
+
+        } else if (CatalogFile.isCatalogFile(file)) {
+            return new CatalogFile(file);
 
         } else if (file.getName().endsWith(".ps1")
                 || file.getName().endsWith(".psd1")
