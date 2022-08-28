@@ -43,6 +43,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 4.2 (in development)
 
 * Signing of Windows catalog files has been implemented
+* Upgraded BouncyCastle to 1.71.1
 
 #### Version 4.1 (2022-05-08)
 
