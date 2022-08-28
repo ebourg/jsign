@@ -43,6 +43,12 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 4.2 (in development)
 
 * Signing of Windows catalog files has been implemented
+* The syntax to invoke the Gradle plugin with the Kotlin DSL has been simplified
+* Several OutOfMemoryError caused by invalid input files have been fixed (thanks to OSS-Fuzz)
+* API changes:
+  * The Signable interface now extends Closeable and can be used in try-with-resources blocks
+  * Files are no longer closed after signing
+  * Most parsing errors are now rethrown as IOException
 * Upgraded BouncyCastle to 1.71.1
 
 #### Version 4.1 (2022-05-08)
