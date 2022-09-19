@@ -24,17 +24,17 @@
 <span class="sourceLineNo">016</span><a name="line.16"></a>
 <span class="sourceLineNo">017</span>package net.jsign.mscab;<a name="line.17"></a>
 <span class="sourceLineNo">018</span><a name="line.18"></a>
-<span class="sourceLineNo">019</span>import java.io.Closeable;<a name="line.19"></a>
-<span class="sourceLineNo">020</span>import java.io.File;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.io.IOException;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.nio.ByteBuffer;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.nio.ByteOrder;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.nio.channels.SeekableByteChannel;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import java.nio.file.Files;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import java.nio.file.StandardOpenOption;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import java.security.MessageDigest;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import java.util.ArrayList;<a name="line.28"></a>
-<span class="sourceLineNo">029</span>import java.util.List;<a name="line.29"></a>
+<span class="sourceLineNo">019</span>import java.io.File;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.io.IOException;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import java.nio.ByteBuffer;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import java.nio.ByteOrder;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import java.nio.channels.SeekableByteChannel;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import java.nio.file.Files;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import java.nio.file.StandardOpenOption;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.security.MessageDigest;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.util.ArrayList;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import java.util.List;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import java.util.NoSuchElementException;<a name="line.29"></a>
 <span class="sourceLineNo">030</span><a name="line.30"></a>
 <span class="sourceLineNo">031</span>import org.bouncycastle.asn1.ASN1Encodable;<a name="line.31"></a>
 <span class="sourceLineNo">032</span>import org.bouncycastle.asn1.ASN1InputStream;<a name="line.32"></a>
@@ -69,7 +69,7 @@
 <span class="sourceLineNo">061</span> * @author Joseph Lee<a name="line.61"></a>
 <span class="sourceLineNo">062</span> * @since 4.0<a name="line.62"></a>
 <span class="sourceLineNo">063</span> */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>public class MSCabinetFile implements Signable, Closeable {<a name="line.64"></a>
+<span class="sourceLineNo">064</span>public class MSCabinetFile implements Signable {<a name="line.64"></a>
 <span class="sourceLineNo">065</span><a name="line.65"></a>
 <span class="sourceLineNo">066</span>    private final CFHeader header = new CFHeader();<a name="line.66"></a>
 <span class="sourceLineNo">067</span><a name="line.67"></a>
@@ -203,7 +203,7 @@
 <span class="sourceLineNo">195</span>        List&lt;CMSSignedData&gt; signatures = new ArrayList&lt;&gt;();<a name="line.195"></a>
 <span class="sourceLineNo">196</span>        try {<a name="line.196"></a>
 <span class="sourceLineNo">197</span>            CABSignature cabsig = header.getSignature();<a name="line.197"></a>
-<span class="sourceLineNo">198</span>            if (cabsig != null &amp;&amp; cabsig.offset &gt; 0) {<a name="line.198"></a>
+<span class="sourceLineNo">198</span>            if (cabsig != null &amp;&amp; cabsig.offset &gt; 0 &amp;&amp; cabsig.length &gt; 0 &amp;&amp; cabsig.length &lt; channel.size()) {<a name="line.198"></a>
 <span class="sourceLineNo">199</span>                byte[] buffer = new byte[(int) cabsig.length];<a name="line.199"></a>
 <span class="sourceLineNo">200</span>                channel.position(cabsig.offset);<a name="line.200"></a>
 <span class="sourceLineNo">201</span>                channel.read(ByteBuffer.wrap(buffer));<a name="line.201"></a>
@@ -223,7 +223,7 @@
 <span class="sourceLineNo">215</span>                    }<a name="line.215"></a>
 <span class="sourceLineNo">216</span>                }<a name="line.216"></a>
 <span class="sourceLineNo">217</span>            }<a name="line.217"></a>
-<span class="sourceLineNo">218</span>        } catch (CMSException e) {<a name="line.218"></a>
+<span class="sourceLineNo">218</span>        } catch (CMSException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException e) {<a name="line.218"></a>
 <span class="sourceLineNo">219</span>            throw new IOException(e);<a name="line.219"></a>
 <span class="sourceLineNo">220</span>        }<a name="line.220"></a>
 <span class="sourceLineNo">221</span>        return signatures;<a name="line.221"></a>
@@ -248,7 +248,7 @@
 <span class="sourceLineNo">240</span><a name="line.240"></a>
 <span class="sourceLineNo">241</span>        CABSignature cabsig = new CABSignature(header.abReserved);<a name="line.241"></a>
 <span class="sourceLineNo">242</span>        cabsig.header = CABSignature.HEADER;<a name="line.242"></a>
-<span class="sourceLineNo">243</span>        cabsig.offset = (int) header.cbCabinet;<a name="line.243"></a>
+<span class="sourceLineNo">243</span>        cabsig.offset = header.cbCabinet;<a name="line.243"></a>
 <span class="sourceLineNo">244</span>        cabsig.length = content.length;<a name="line.244"></a>
 <span class="sourceLineNo">245</span>        header.abReserved = cabsig.array();<a name="line.245"></a>
 <span class="sourceLineNo">246</span><a name="line.246"></a>
