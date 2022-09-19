@@ -40,7 +40,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 4.2 (in development)
+#### Version 4.2 (2022-09-19)
 
 * Signing of Windows catalog files has been implemented
 * The syntax to invoke the Gradle plugin with the Kotlin DSL has been simplified
