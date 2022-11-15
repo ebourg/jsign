@@ -134,7 +134,7 @@ public class PESignerTest {
             SignerId signerId = signature.getSignerInfos().iterator().next().getSID();
             X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
             String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
-            assertEquals("signer", "Jsign Code Signing Test Certificate (RSA)", commonName);
+            assertEquals("signer", "Jsign Code Signing Test Certificate 2022 (RSA)", commonName);
         }
     }
 

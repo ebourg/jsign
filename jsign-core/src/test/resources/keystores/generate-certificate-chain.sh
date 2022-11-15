@@ -32,7 +32,7 @@ CERT_OPTS="-days 7300 -text -sha256"
 YEAR=$(date +'%Y')
 
 # Generate the root certificate
-openssl req -new -newkey rsa:2048 -nodes -keyout jsign-root-ca.key -x509 -extensions v3_ca -subj "/CN=Jsign Root Certificate Authority $YEAR" -out jsign-root-ca.pem $CERT_OPTS
+openssl req -new -newkey rsa:4096 -nodes -keyout jsign-root-ca.key -x509 -extensions v3_ca -subj "/CN=Jsign Root Certificate Authority $YEAR" -out jsign-root-ca.pem $CERT_OPTS
 
 # Generate the intermediate certificate
 openssl req -new -newkey rsa:2048 -nodes -keyout jsign-code-signing-ca.key -subj "/CN=Jsign Code Signing CA $YEAR" -out jsign-code-signing-ca.csr

@@ -4,7 +4,7 @@
 #
 
 # Generate the PKCS#1 and PKCS#8 keys
-openssl genrsa -aes128 -traditional -passout pass:password -out privatekey-encrypted.pkcs1.pem 1024
+openssl genrsa -aes128 -traditional -passout pass:password -out privatekey-encrypted.pkcs1.pem 2048
 openssl pkcs8 -topk8       -in privatekey-encrypted.pkcs1.pem -out privatekey-encrypted.pkcs8.pem -passin pass:password -passout pass:password -v2 aes128
 openssl pkcs8 -topk8       -in privatekey-encrypted.pkcs1.pem -out privatekey.pkcs8.pem -passin pass:password -nocrypt
 openssl pkcs8 -traditional -in privatekey.pkcs8.pem           -out privatekey.pkcs1.pem -nocrypt
