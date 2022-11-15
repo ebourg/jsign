@@ -59,12 +59,12 @@ openssl crl2pkcs7 -nocrl -certfile jsign-test-certificate-full-chain.pem        
 openssl crl2pkcs7 -nocrl -certfile jsign-test-certificate-full-chain-reversed.pem -outform DER -out jsign-test-certificate-full-chain-reversed.spc
 
 # Generate the PKCS#12 keystores
-OPENSSL_OPTS="-export -inkey privatekey.pkcs1.pem -name test -passout env:PASSWORD"
-PASSWORD=password openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-full-chain.pem -out keystore.p12
-PASSWORD=password openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate.pem            -out keystore-no-chain.p12
+OPENSSL_OPTS="-export -inkey privatekey.pkcs1.pem -name test -passout pass:password"
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-full-chain.pem -out keystore.p12
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate.pem            -out keystore-no-chain.p12
 
-OPENSSL_OPTS="-export -inkey privatekey-ec-p384.pkcs1.pem -name test -passout env:PASSWORD"
-PASSWORD=password openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ec.pem         -out keystore-ec.p12
+OPENSSL_OPTS="-export -inkey privatekey-ec-p384.pkcs1.pem -name test -passout pass:password"
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ec.pem         -out keystore-ec.p12
 
 # Generate the Java keystores
 KEYTOOL_OPTS="-importkeystore -srcstoretype pkcs12 -srcstorepass password -srcalias test -deststoretype jks -deststorepass password -destalias test"
