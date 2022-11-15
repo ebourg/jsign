@@ -63,7 +63,7 @@ OPENSSL_OPTS="-export -inkey privatekey.pkcs1.pem -name test -passout env:PASSWO
 PASSWORD=password openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-full-chain.pem -out keystore.p12
 PASSWORD=password openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate.pem            -out keystore-no-chain.p12
 
-OPENSSL_OPTS="-export -inkey privatekey-ec.pkcs1.pem -name test -passout env:PASSWORD"
+OPENSSL_OPTS="-export -inkey privatekey-ec-p384.pkcs1.pem -name test -passout env:PASSWORD"
 PASSWORD=password openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ec.pem         -out keystore-ec.p12
 
 # Generate the Java keystores
