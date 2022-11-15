@@ -29,21 +29,22 @@ authorityKeyIdentifier=keyid,issuer
 EOF
 
 CERT_OPTS="-days 7300 -text -sha256"
+YEAR=$(date +'%Y')
 
 # Generate the root certificate
-openssl req -new -newkey rsa:2048 -nodes -keyout jsign-root-ca.key -x509 -extensions v3_ca -subj "/CN=Jsign Root Certificate Authority" -out jsign-root-ca.pem $CERT_OPTS
+openssl req -new -newkey rsa:2048 -nodes -keyout jsign-root-ca.key -x509 -extensions v3_ca -subj "/CN=Jsign Root Certificate Authority $YEAR" -out jsign-root-ca.pem $CERT_OPTS
 
 # Generate the intermediate certificate
-openssl req -new -newkey rsa:2048 -nodes -keyout jsign-code-signing-ca.key -subj "/CN=Jsign Code Signing CA" -out jsign-code-signing-ca.csr
+openssl req -new -newkey rsa:2048 -nodes -keyout jsign-code-signing-ca.key -subj "/CN=Jsign Code Signing CA $YEAR" -out jsign-code-signing-ca.csr
 openssl x509 -req -in jsign-code-signing-ca.csr -CA jsign-root-ca.pem -CAkey jsign-root-ca.key -CAcreateserial \
              -out jsign-code-signing-ca.pem $CERT_OPTS -extfile extensions.cnf -extensions intermediate
 
 # Generate the test certificates (reusing the existing keys)
-openssl req -new -key privatekey.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate (RSA)" -out jsign-test-certificate.csr
+openssl req -new -key privatekey.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (RSA)" -out jsign-test-certificate.csr
 openssl x509 -req -in jsign-test-certificate.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
              -out jsign-test-certificate.pem $CERT_OPTS -extfile extensions.cnf -extensions final
 
-openssl req -new -key privatekey-ec-p384.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate (EC)" -out jsign-test-certificate-ec.csr
+openssl req -new -key privatekey-ec-p384.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (EC)" -out jsign-test-certificate-ec.csr
 openssl x509 -req -in jsign-test-certificate-ec.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
              -out jsign-test-certificate-ec.pem $CERT_OPTS -extfile extensions.cnf -extensions final
 
