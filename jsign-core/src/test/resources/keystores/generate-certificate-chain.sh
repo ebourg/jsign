@@ -80,6 +80,10 @@ keytool -importkeystore \
         -srcstoretype  pkcs12 -srcstorepass  password -srcalias  test  -srckeystore keystore.p12 \
         -deststoretype pkcs12 -deststorepass password -destalias test2 -destkeystore keystore-two-entries.p12
 
+# Generate the empty keystore
+cp keystore.p12 keystore-empty.p12
+keytool -delete -alias test -storepass password -keystore keystore-empty.p12
+
 # Cleanup
 rm *.srl
 rm jsign-root-ca.key
