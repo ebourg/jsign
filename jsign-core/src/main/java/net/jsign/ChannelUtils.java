@@ -103,7 +103,7 @@ public class ChannelUtils {
     public static void updateDigest(SeekableByteChannel channel, MessageDigest digest, long startOffset, long endOffset) throws IOException {
         channel.position(startOffset);
 
-        ByteBuffer buffer = ByteBuffer.allocate(8192);
+        ByteBuffer buffer = ByteBuffer.allocate(65536);
 
         long position = startOffset;
         while (position < endOffset) {
