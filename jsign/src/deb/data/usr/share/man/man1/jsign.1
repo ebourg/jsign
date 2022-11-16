@@ -48,6 +48,8 @@ The type of the keystore:
 .br
 - YUBIKEY       : YubiKey security key (requires ykcs11)
 .br
+- AWS           : AWS Key Management Service
+.br
 - AZUREKEYVAULT : Azure Key Vault key management system
 .br
 - DIGICERTONE   : DigiCert ONE Secure Software Manager
@@ -175,6 +177,21 @@ from the Yubico PIV Tool must be installed on the system at the default location
 is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
 
 jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+
+
+.TP
+
+Signing with AWS Key Management Service:
+
+AWS Key Management Service stores only the private key, the certificate must be provided separately.
+The keystore parameter references the AWS region. The AWS access key, secret key, and optionally the
+session token, are concatenated and used as the storepass. The alias can specify either the key id
+or an alias.
+
+jsign --storetype AWS --keystore eu-west-3 \\
+      --storepass "<access-key>|<secret-key>|<session-token>" \\
+      --alias 12345678-abcd-1234-cdef-1234567890ab \\
+      --certfile full-chain.pem application.exe
 
 
 .TP

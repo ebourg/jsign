@@ -53,6 +53,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.jca.AmazonSigningService;
 import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
@@ -316,7 +317,17 @@ class SignerHelper {
         if (keystore != null && keyfile != null) {
             throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
         }
-        if ("AZUREKEYVAULT".equals(storetype)) {
+        if ("AWS".equals(storetype)) {
+            if (keystore == null) {
+                throw new SignerException("keystore " + parameterName + " must specify the AWS region");
+            }
+            if (storepass == null) {
+                throw new SignerException("storepass " + parameterName + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]");
+            }
+            if (certfile == null) {
+                throw new SignerException("certfile " + parameterName + " must be set");
+            }
+        } else if ("AZUREKEYVAULT".equals(storetype)) {
             if (keystore == null) {
                 throw new SignerException("keystore " + parameterName + " must specify the Azure vault name");
             }
@@ -358,6 +369,14 @@ class SignerHelper {
             }
         } else if ("YUBIKEY".equals(storetype)) {
             provider = YubiKey.getProvider();
+        } else if ("AWS".equals(storetype)) {
+            provider = new SigningServiceJcaProvider(new AmazonSigningService(keystore, storepass, alias -> {
+                try {
+                    return loadCertificateChain(certfile);
+                } catch (IOException | CertificateException e) {
+                    throw new RuntimeException("Failed to load the certificate from " + certfile, e);
+                }
+            }));
         } else if ("AZUREKEYVAULT".equals(storetype)) {
             provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore, storepass));
         } else if ("DIGICERTONE".equals(storetype)) {
@@ -433,7 +452,7 @@ class SignerHelper {
                 }
                 throw new SignerException(message);
             }
-            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype)) {
+            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype) && !"AWS".equals(storetype)) {
                 if (chain.length != 1) {
                     throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
                 }

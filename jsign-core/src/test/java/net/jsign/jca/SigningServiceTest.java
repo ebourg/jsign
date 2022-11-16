@@ -66,6 +66,25 @@ public class SigningServiceTest {
     }
 
     @Test
+    public void testAmazonProvider() throws Exception {
+        Provider provider = new SigningServiceJcaProvider(new AmazonSigningService("eu-west-3", AWS.getAccessKey() + "|" + AWS.getSecretKey(), alias -> {
+            try {
+                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                    Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
+                    return certificates.toArray(new Certificate[0]);
+                }
+            } catch (IOException | CertificateException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        KeyStore keystore = KeyStore.getInstance("AWS", provider);
+        keystore.load(null, "".toCharArray());
+
+        testCustomProvider(provider, keystore, "test", "");
+    }
+
+    @Test
     public void testAzureProvider() throws Exception {
         Provider provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService("jsigntestkeyvault", Azure.getAccessToken()));
         KeyStore keystore = KeyStore.getInstance("AZUREKEYVAULT", provider);

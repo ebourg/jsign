@@ -21,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.cedarsoftware.util.io.JsonReader;
@@ -32,34 +33,55 @@ class RESTClient {
     private final String endpoint;
 
     /** Callback setting the authentication headers for the request */
-    private final Consumer<HttpURLConnection> authenticationHandler;
+    private final BiConsumer<HttpURLConnection, byte[]> authenticationHandler;
 
-    RESTClient(String endpoint, Consumer<HttpURLConnection>  authenticationHeaderSupplier) {
+    public RESTClient(String endpoint) {
+        this.endpoint = endpoint;
+        this.authenticationHandler = null;
+    }
+
+    public RESTClient(String endpoint, Consumer<HttpURLConnection>  authenticationHeaderSupplier) {
+        this.endpoint = endpoint;
+        this.authenticationHandler = (conn, data) -> authenticationHeaderSupplier.accept(conn);
+    }
+
+    public RESTClient(String endpoint, BiConsumer<HttpURLConnection, byte[]>  authenticationHeaderSupplier) {
         this.endpoint = endpoint;
         this.authenticationHandler = authenticationHeaderSupplier;
     }
 
-    Map<String, ?> get(String resource) throws IOException {
-        return query("GET", resource, null);
+    public Map<String, ?> get(String resource) throws IOException {
+        return query("GET", resource, null, null);
     }
 
-    Map<String, ?> post(String resource, String body) throws IOException {
-        return query("POST", resource, body);
+    public Map<String, ?> post(String resource, String body) throws IOException {
+        return query("POST", resource, body, null);
     }
 
-    private Map<String, ?> query(String method, String resource, String body) throws IOException {
+    public Map<String, ?> post(String resource, String body, Map<String, String> headers) throws IOException {
+        return query("POST", resource, body, headers);
+    }
+
+    private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
         conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)");
-        if (authenticationHandler != null) {
-            authenticationHandler.accept(conn);
+        if (headers != null) {
+            for (Map.Entry<String, String> header : headers.entrySet()) {
+                conn.setRequestProperty(header.getKey(), header.getValue());
+            }
         }
 
+        byte[] data = body != null ? body.getBytes(StandardCharsets.UTF_8) : null;
+        if (authenticationHandler != null) {
+            authenticationHandler.accept(conn, data);
+        }
         if (body != null) {
-            byte[] data = body.getBytes(StandardCharsets.UTF_8);
             conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            if (!conn.getRequestProperties().containsKey("Content-Type")) {
+                conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            }
             conn.setRequestProperty("Content-Length", String.valueOf(data.length));
             conn.getOutputStream().write(data);
         }
@@ -72,7 +94,7 @@ class RESTClient {
             return JsonReader.jsonToMaps(response);
         } else {
             String error = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
-            if (contentType != null && contentType.startsWith("application/json")) {
+            if (contentType != null && (contentType.startsWith("application/json") || contentType.startsWith("application/x-amz-json-1.1"))) {
                 throw new IOException(getErrorMessage(JsonReader.jsonToMaps(error)));
             } else {
                 throw new IOException("HTTP Error " + responseCode + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : "") + " (" + url + ")");
@@ -100,6 +122,11 @@ class RESTClient {
                 }
                 message.append(error.get("message"));
             }
+        } else if (response.containsKey("__type")) {
+            // error from the AWS API
+            String error = (String) response.get("__type");
+            String description = (String) response.get("message");
+            message.append(error).append(": ").append(description);
         } else {
             // error message from the CSC API
             String error = (String) response.get("error");

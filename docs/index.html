@@ -65,7 +65,7 @@ programmatically or standalone as a command line tool.</p>
     <ul>
       <li>PKCS#12, JKS and JCEKS files</li>
       <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
-      <li>Cloud key management systems (<a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>, <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a>)</li>
+      <li>Cloud key management systems (<a href="https://aws.amazon.com/kms/">AWS KMS</a>, <a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>, <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a>)</li>
     </ul>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
@@ -169,6 +169,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
+          <li><code>AWS</code>: AWS Key Management Service</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
           <li><code>ESIGNER</code>: SSL.com eSigner</li>
@@ -392,6 +393,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
+                             - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
                              - DIGICERTONE: DigiCert ONE Secure Software Manager
                              - ESIGNER: SSL.com eSigner
@@ -443,6 +445,20 @@ be installed on the system at the default location.</p>
 
 <pre>
  jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+</pre>
+
+<h4 id="example-awskms">Example using AWS Key Management Service:</h4>
+
+<p><a href="https://aws.amazon.com/kms/">AWS Key Management Service</a> stores only the private key,
+the certificate must be provided separately. The keystore parameter references the AWS region.
+The AWS access key, secret key, and optionally the session token, are concatenated
+and used as the storepass. The alias can specify either the key id or an alias.</p>
+
+<pre>
+ jsign --storetype AWS --keystore eu-west-3 \
+       --storepass "&lt;access-key&gt;|&lt;secret-key&gt;|&lt;session-token&gt;" \
+       --alias 12345678-abcd-1234-cdef-1234567890ab \
+       --certfile full-chain.pem application.exe
 </pre>
 
 <h4 id="example-azurekeyvault">Example using Azure Key Vault:</h4>

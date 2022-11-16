@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
 import org.junit.Test;
 
+import net.jsign.jca.AWS;
 import net.jsign.jca.Azure;
 import net.jsign.jca.DigiCertONE;
 import net.jsign.jca.GoogleCloud;
@@ -187,6 +188,26 @@ public class SignerHelperTest {
         } catch (SignerException e) {
             assertEquals("message", "Failed to read the keypass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
         }
+    }
+
+    @Test
+    public void testAWS() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-aws.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("AWS")
+                .keystore("eu-west-3")
+                .storepass(AWS.getAccessKey() + "|" + AWS.getSecretKey())
+                .alias("jsign")
+                .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
 
     @Test

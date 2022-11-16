@@ -74,7 +74,7 @@ public class ESignerSigningService implements SigningService {
         request.put("username", username);
         request.put("password", password);
 
-        RESTClient client = new RESTClient(endpoint, null);
+        RESTClient client = new RESTClient(endpoint);
         Map<String, ?> response = client.post("/oauth2/token", JsonWriter.objectToJson(request));
         return (String) response.get("access_token");
     }
