@@ -313,6 +313,17 @@ by default to the <code>package</code> phase.</p>
               ...
 </pre>
 
+<p>The value of the <code>storepass</code> and <code>keypass</code> elements can be encrypted using the
+<a href="https://maven.apache.org/guides/mini/guide-encryption.html">Maven master password</a>:</p>
+
+<pre class="prettyprint lang-xml">
+              &lt;configuration>
+                &lt;file>application.exe&lt;/file>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;storepass>{COQLCE6DU6GtcS5P=}&lt;/storepass>
+              &lt;/configuration>
+</pre>
+
 <h3 id="gradle">Gradle plugin</h3>
 
 <p>Here is an example showing how to use Jsign with Gradle. The parameters
