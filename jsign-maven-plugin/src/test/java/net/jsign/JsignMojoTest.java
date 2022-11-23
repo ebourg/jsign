@@ -23,6 +23,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
@@ -272,5 +273,103 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         mojo.execute();
 
         assertFalse("Signing not skipped", new File("target/test-classes/wineyes.exe.sig").exists());
+    }
+
+    public void testPasswordFromSettings() throws Exception {
+        File detachedSignature = new File("target/test-classes/wineyes.exe.sig");
+        if (detachedSignature.exists()) {
+            assertTrue(detachedSignature.delete());
+        }
+
+        JsignMojo mojo = getMojo();
+
+        Server server = new Server();
+        server.setId("jsign");
+        server.setPassword("password");
+
+        Settings settings = new Settings();
+        settings.setServers(Collections.singletonList(server));
+
+        setVariableValueToObject(mojo, "settings", settings);
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "mvn:jsign");
+        setVariableValueToObject(mojo, "detached", Boolean.TRUE);
+
+        mojo.execute();
+
+        assertTrue("File wasn't signed", new File("target/test-classes/wineyes.exe.sig").exists());
+    }
+
+    public void testPassphraseFromSettings() throws Exception {
+        File detachedSignature = new File("target/test-classes/wineyes.exe.sig");
+        if (detachedSignature.exists()) {
+            assertTrue(detachedSignature.delete());
+        }
+
+        JsignMojo mojo = getMojo();
+
+        Server server = new Server();
+        server.setId("jsign");
+        server.setPassphrase("password");
+
+        Settings settings = new Settings();
+        settings.setServers(Collections.singletonList(server));
+
+        setVariableValueToObject(mojo, "settings", settings);
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "mvn:jsign");
+        setVariableValueToObject(mojo, "detached", Boolean.TRUE);
+
+        mojo.execute();
+
+        assertTrue("File wasn't signed", new File("target/test-classes/wineyes.exe.sig").exists());
+    }
+
+    public void testMissingServerFromSettings() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        setVariableValueToObject(mojo, "settings", new Settings());
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "mvn:jsign");
+
+        try {
+            mojo.execute();
+        } catch (MojoExecutionException e) {
+            // expected
+            assertEquals("Server 'jsign' not found in settings.xml", e.getMessage());
+        }
+    }
+
+    public void testMissingPasswordFromSettings() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        Server server = new Server();
+        server.setId("jsign");
+
+        Settings settings = new Settings();
+        settings.setServers(Collections.singletonList(server));
+
+        setVariableValueToObject(mojo, "settings", settings);
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", new File("target/test-classes/keystores/keystore.jks"));
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "mvn:jsign");
+
+        try {
+            mojo.execute();
+        } catch (MojoExecutionException e) {
+            // expected
+            assertEquals("No password or passphrase found for server 'jsign' in settings.xml", e.getMessage());
+        }
     }
 }

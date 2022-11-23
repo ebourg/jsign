@@ -43,6 +43,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 4.3 (in development)
 
 * The AWS KMS signing service has been integrated
+* The Maven plugin can now use passwords defined in the Maven settings.xml file
 
 #### Version 4.2 (2022-09-19)
 

@@ -324,6 +324,34 @@ by default to the <code>package</code> phase.</p>
               &lt;/configuration>
 </pre>
 
+<p>The <code>storepass</code> and <code>keypass</code> elements may also reference a password defined
+in the <a href="https://maven.apache.org/settings.html">Maven settings file</a>.</p>
+
+<p>In <code> ${user.home}/.m2/settings.xml</code> a server is defined with the password of the keystore:</p>
+
+<pre class="prettyprint lang-xml">
+  &lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+    ...
+    &lt;servers>
+      &lt;server>
+        &lt;id>keystore&lt;/id>
+        &lt;password>password&lt;/password>
+      &lt;/server>
+    &lt;/servers>
+    ...
+  &lt;/settings>
+</pre>
+
+<p>And in the Maven project file, the password element references the server id prefixed with <code>mvn:</code>:</p>
+
+<pre class="prettyprint lang-xml">
+              &lt;configuration>
+                &lt;file>application.exe&lt;/file>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;storepass>mvn:keystore&lt;/storepass>
+              &lt;/configuration>
+</pre>
+
 <h3 id="gradle">Gradle plugin</h3>
 
 <p>Here is an example showing how to use Jsign with Gradle. The parameters

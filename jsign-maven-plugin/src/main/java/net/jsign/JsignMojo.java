@@ -26,6 +26,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.settings.Proxy;
+import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.apache.maven.shared.model.fileset.util.FileSetManager;
@@ -208,9 +209,35 @@ public class JsignMojo extends AbstractMojo {
         return null;
     }
 
+    /**
+     * Decrypts a password using the Maven settings. The password specified can be either:
+     * <ul>
+     *   <li>unencrypted</li>
+     *   <li>encrypted with the Maven master password, Base64 encoded and enclosed in curly brackets (for example <code>{COQLCE6DU6GtcS5P=}</code>)</li>
+     *   <li>a reference to a server in the settings.xml file prefixed with <code>mvn:</code> (for example <code>mvn:keystore</code>)</li>
+     * </ul
+     *
+     * @param encoded the password to be decrypted
+     * @return The decrypted password
+     */
     private String decrypt(String encoded) throws MojoExecutionException {
         if (encoded == null) {
             return null;
+        }
+
+        if (encoded.startsWith("mvn:")) {
+            String serverId = encoded.substring(4);
+            Server server = this.settings.getServer(serverId);
+            if (server == null) {
+                throw new MojoExecutionException("Server '" + serverId + "' not found in settings.xml");
+            }
+            if (server.getPassword() != null) {
+                encoded = server.getPassword();
+            } else if (server.getPassphrase() != null) {
+                encoded = server.getPassphrase();
+            } else {
+                throw new MojoExecutionException("No password or passphrase found for server '" + serverId + "' in settings.xml");
+            }
         }
 
         try {
