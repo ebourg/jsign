@@ -54,6 +54,7 @@ import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -428,6 +429,7 @@ public class AuthenticodeSigner {
             }
         });
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
+        signerInfoGeneratorBuilder.setContentDigest(createContentDigestAlgorithmIdentifier(shaSigner.getAlgorithmIdentifier()));
         SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
         
         AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
@@ -514,5 +516,22 @@ public class AuthenticodeSigner {
         
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
+    }
+
+    /**
+     * Create the digest algorithm identifier to use as content digest.
+     * By default looks up the default identifier but also makes sure it includes
+     * the algorithm parameters and if not includes a DER NULL in order to align
+     * with what signtool currently does.
+     * @param signatureAlgorithm to get the corresponding digest algorithm identifier for
+     * @return an AlgorithmIdentifier for the digestAlgorithm and including parameters
+     */
+    protected AlgorithmIdentifier createContentDigestAlgorithmIdentifier(AlgorithmIdentifier signatureAlgorithm) {
+        AlgorithmIdentifier ai = new DefaultDigestAlgorithmIdentifierFinder().find(signatureAlgorithm);
+        if (ai.getParameters() == null) {
+            // Always include parameters to align with what signtool does
+            ai = new AlgorithmIdentifier(ai.getAlgorithm(), DERNull.INSTANCE);
+        }
+        return ai;
     }
 }
