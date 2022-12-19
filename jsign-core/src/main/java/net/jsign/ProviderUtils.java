@@ -42,6 +42,9 @@ class ProviderUtils {
                 // Java 9 and later, using the Provider.configure() method
                 Method providerConfigureMethod = Provider.class.getMethod("configure", String.class);
                 Provider provider = Security.getProvider("SunPKCS11");
+                if (provider != null) {
+                    throw new ProviderException("SunPKCS11 provider not found, check the java.security file");
+                }
                 return (Provider) providerConfigureMethod.invoke(provider, configuration);
             } catch (NoSuchMethodException e) {
                 // prior to Java 9, direct instantiation of the SunPKCS11 class
