@@ -29,9 +29,11 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
@@ -565,6 +567,32 @@ public class PESignerTest {
             List<CMSSignedData> signatures = peFile.getSignatures();
             assertNotNull(signatures);
             assertEquals(1, signatures.size());
+        }
+    }
+
+    @Test
+    public void testContentDigestAlgorithmIdentifier() throws Exception {
+        // ensure the algorithm identifier has a DER NULL optional parameters field to match the signtool output
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withTimestamping(false)
+                .withDigestAlgorithm(SHA256);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            List<CMSSignedData> signatures = peFile.getSignatures();
+            assertNotNull(signatures);
+            assertEquals(1, signatures.size());
+
+            CMSSignedData signature = signatures.get(0);
+            AlgorithmIdentifier ai = signature.getDigestAlgorithmIDs().iterator().next();
+            assertEquals("Algorithm identifier", signer.digestAlgorithm.oid, ai.getAlgorithm());
+            assertEquals("Algorithm parameters", DERNull.INSTANCE, ai.getParameters());
         }
     }
 }
