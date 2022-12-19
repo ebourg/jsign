@@ -171,8 +171,9 @@ jsign --certfile certificate.spc --keyfile key.pvk --keypass password installer.
 
 Signing with a YubiKey:
 
-When using a YubiKey the "X.509 Certificate for Digital Signature" certificate (slot 9c)
-is used by default but can be overridden by specifying another alias. The ykcs11 library
+When using a Yubikey, the alias is required only if the device contains more than one certificate.
+The certificate is specified by its name (typically "X.509 Certificate for Digital Signature" for
+the slot 9c, or "X.509 Certificate for PIV Authentication" for the slot 9a). The ykcs11 library
 from the Yubico PIV Tool must be installed on the system at the default location. The library
 is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
 

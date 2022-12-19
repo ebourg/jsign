@@ -477,8 +477,9 @@ are provided to install it easily on most Linux distributions. On these systems 
 
 <h4 id="example-yubikey">Example using a YubiKey:</h4>
 
-<p>When using a YubiKey the <i>X.509 Certificate for Digital Signature</i> certificate (slot 9c)
-is used by default but can be overridden by specifying another alias. The ykcs11 library
+<p>When using a Yubikey, the alias is required only if the device contains more than one certificate.
+The certificate is specified by its name (typically <em>X.509 Certificate for Digital Signature</em> for
+the slot 9c, or <em>X.509 Certificate for PIV Authentication</em> for the slot 9a). The ykcs11 library
 from the <a href="https://developers.yubico.com/yubico-piv-tool/">Yubico PIV Tool</a> must
 be installed on the system at the default location.</p>
 

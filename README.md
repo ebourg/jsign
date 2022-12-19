@@ -44,6 +44,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * The AWS KMS signing service has been integrated
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
+* The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
 
 #### Version 4.2 (2022-09-19)
 

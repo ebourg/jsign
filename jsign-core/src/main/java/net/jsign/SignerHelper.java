@@ -410,24 +410,24 @@ class SignerHelper {
 
             Set<String> aliases = null;
             if (alias == null) {
+                // guess the alias if there is only one in the keystore
+                try {
+                    aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
+                } catch (KeyStoreException e) {
+                    throw new SignerException(e.getMessage(), e);
+                }
+
                 if ("YUBIKEY".equals(storetype)) {
-                    alias = "X.509 Certificate for Digital Signature";
+                    // the attestation certificate is never used for signing files
+                    aliases.remove("X.509 Certificate for PIV Attestation");
+                }
 
+                if (aliases.isEmpty()) {
+                    throw new SignerException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
+                } else if (aliases.size() == 1) {
+                    alias = aliases.iterator().next();
                 } else {
-                    // guess the alias if there is only one in the keystore
-                    try {
-                        aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
-                    } catch (KeyStoreException e) {
-                        throw new SignerException(e.getMessage(), e);
-                    }
-
-                    if (aliases.isEmpty()) {
-                        throw new SignerException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
-                    } else if (aliases.size() == 1) {
-                        alias = aliases.iterator().next();
-                    } else {
-                        throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
-                    }
+                    throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
                 }
             }
 
