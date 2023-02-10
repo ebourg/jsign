@@ -9,6 +9,9 @@ env:
   global:
     - STOREPASS=password
 
+before_install:
+  - sudo apt -y install ykcs11
+
 matrix:
   fast_finish: true
   allow_failures:
