@@ -147,7 +147,10 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td class="attribute">keystore</td>
-      <td class="description">The keystore file, or the <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration file</a></td>
+      <td class="description">
+          The keystore file, the <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration file</a>
+          or the cloud keystore name.
+      </td>
       <td class="required">Yes, unless <code>certfile</code> and <code>keyfile</code> are specified.</td>
     </tr>
     <tr>
@@ -425,13 +428,15 @@ are provided to install it easily on most Linux distributions. On these systems 
   Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
   files (CAB), Catalog files (CAT) or scripts (PowerShell, VBScript, JScript, WSF).
   
-  -s,--keystore &lt;FILE>       The keystore file, or the SunPKCS11 configuration file
+  -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file or
+                             the cloud keystore name
      --storepass &lt;PASSWORD>  The password to open the keystore
      --storetype &lt;TYPE>      The type of the keystore:
                              - JKS: Java keystore (.jks files)
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
+                             - YUBIKEY: YubiKey security key
                              - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
                              - DIGICERTONE: DigiCert ONE Secure Software Manager

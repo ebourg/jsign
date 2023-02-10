@@ -23,9 +23,9 @@ systems.
 
 .TP
 .B -s, --keystore <FILE>
-The keystore file containing the certificate and the private key used for signing
-the file, or the SunPKCS11 configuration file when a PKCS#11 token is used. jsign
-supports Java keystores and PKCS#12 keystores. This option must be specified unless
+Either the keystore file containing the certificate and the private key used for
+signing, the SunPKCS11 configuration file when a PKCS#11 token is used, or the cloud
+keystore name. For file based keystores this option must be specified unless
 the keyfile and certfile options are already specified.
 
 .TP
@@ -75,7 +75,7 @@ an environment variable by using the env: prefix followed by the name of the var
 
 .TP
 .B --keyfile <FILE>
-The file containing the private key. Only PVK files are supported. This option
+The file containing the private key. PEM and PVK files are supported. This option
 is used in combination with the certfile option.
 
 .TP
