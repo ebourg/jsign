@@ -121,6 +121,9 @@
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>net.jsign.JsignCLI</mainClass>
+                  <manifestEntries>
+                    <Add-Exports>jdk.crypto.cryptoki/sun.security.pkcs11.wrapper</Add-Exports>
+                  </manifestEntries>
                 </transformer>
               </transformers>
             </configuration>
