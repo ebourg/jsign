@@ -33,7 +33,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Certificates: PKCS#7 in PEM and DER format
 * Build tools integration (Maven, Gradle, Ant)
 * Command line signing tool
-* Authenticode signing API ([Javadoc](https://ebourg.github.io/jsign/apidocs/))
+* Authenticode signing API ([Javadoc](https://javadoc.io/doc/net.jsign/jsign-core))
 
 See https://ebourg.github.io/jsign for more information.
 
