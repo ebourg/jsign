@@ -46,6 +46,8 @@ The type of the keystore:
 .br
 - PKCS11        : PKCS#11 hardware token
 .br
+- OPENSC        : Smart Card HSM
+.br
 - YUBIKEY       : YubiKey security key (requires ykcs11)
 .br
 - AWS           : AWS Key Management Service
@@ -178,6 +180,18 @@ from the Yubico PIV Tool must be installed on the system at the default location
 is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
 
 jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+
+
+.TP
+
+Signing with a smart card HSM:
+
+Signing with a smart card HSM requires the installation of the OpenSC PKCS#11 module. The module
+is provided by the opensc package on Fedora, and by the opensc-pkcs11 package on Debian/Ubuntu.
+
+jsign --storetype OPENSC --alias test --certfile full-chain.pem --storepass 123456 application.exe
+
+If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
 
 
 .TP

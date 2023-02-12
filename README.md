@@ -43,6 +43,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 4.3 (in development)
 
 * The AWS KMS signing service has been integrated
+* Smart Card HSMs are now supported with the new `OPENSC` storetype
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
 

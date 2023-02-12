@@ -311,7 +311,7 @@ class SignerHelper {
         String keypass = readPassword("keypass", this.keypass);
 
         // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
+        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"OPENSC".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && keyfile != null) {
@@ -369,6 +369,8 @@ class SignerHelper {
             }
         } else if ("YUBIKEY".equals(storetype)) {
             provider = YubiKey.getProvider();
+        } else if ("OPENSC".equals(storetype)) {
+            provider = OpenSC.getProvider(keystore);
         } else if ("AWS".equals(storetype)) {
             provider = new SigningServiceJcaProvider(new AmazonSigningService(keystore, storepass, alias -> {
                 try {
@@ -400,10 +402,10 @@ class SignerHelper {
             }
         }
 
-        if (keystore != null || "YUBIKEY".equals(storetype) || "DIGICERTONE".equals(storetype)) {
+        if (keystore != null || "YUBIKEY".equals(storetype) || "OPENSC".equals(storetype) || "DIGICERTONE".equals(storetype)) {
             KeyStore ks;
             try {
-                ks = KeyStoreUtils.load(keystore, "YUBIKEY".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
+                ks = KeyStoreUtils.load(keystore, "YUBIKEY".equals(storetype) || "OPENSC".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
             } catch (KeyStoreException e) {
                 throw new SignerException("Failed to load the keystore " + keystore, e);
             }

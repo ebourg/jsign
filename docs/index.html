@@ -171,6 +171,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+          <li><code>OPENSC</code>: Smart Card HSM</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AWS</code>: AWS Key Management Service</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
@@ -436,6 +437,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
+                             - OPENSC: Smart Card HSM
                              - YUBIKEY: YubiKey security key
                              - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
@@ -491,6 +493,17 @@ be installed on the system at the default location.</p>
 <pre>
  jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
 </pre>
+
+<h4 id="example-smart-card">Example using a smart card HSM:</h4>
+
+<p>Signing with a smart card HSM requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
+
+<pre>
+ jsign --storetype OPENSC --alias test --certfile full-chain.pem --storepass 123456 application.exe
+</pre>
+
+<p>If multiple devices are connected, the keystore parameter can be used to specify
+the name of the one to use.</p>
 
 <h4 id="example-awskms">Example using AWS Key Management Service:</h4>
 

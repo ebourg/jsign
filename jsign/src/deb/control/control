@@ -4,7 +4,7 @@ Section: utils
 Priority: optional
 Architecture: all
 Depends: default-jre-headless (>= 2:1.8) | java8-runtime-headless
-Suggests: ykcs11
+Suggests: ykcs11, opensc-pkcs11
 Recommends: bash-completion
 Maintainer: Emmanuel Bourg <ebourg@apache.org>
 Homepage: https://ebourg.github.com/jsign
