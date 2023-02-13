@@ -171,6 +171,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+          <li><code>NITROKEY</code>: Nitrokey HSM</li>
           <li><code>OPENSC</code>: Smart Card HSM</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AWS</code>: AWS Key Management Service</li>
@@ -437,6 +438,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
+                             - NITROKEY: Nitrokey HSM
                              - OPENSC: Smart Card HSM
                              - YUBIKEY: YubiKey security key
                              - AWS: AWS Key Management Service
@@ -492,6 +494,14 @@ be installed on the system at the default location.</p>
 
 <pre>
  jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+</pre>
+
+<h4 id="example-nitrokey">Example using a Nitrokey HSM:</h4>
+
+<p>Signing with a Nitrokey requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
+
+<pre>
+ jsign --storetype NITROKEY --alias test --certfile full-chain.pem --storepass 123456 application.exe
 </pre>
 
 <h4 id="example-smart-card">Example using a smart card HSM:</h4>
