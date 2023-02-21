@@ -90,6 +90,14 @@ class OpenSC {
             CK_SLOT_INFO info = pkcs11.C_GetSlotInfo(slot);
             String description = new String(info.slotDescription).trim();
             if (name == null || description.toLowerCase().contains(name.toLowerCase())) {
+                CK_TOKEN_INFO tokenInfo = pkcs11.C_GetTokenInfo(slot);
+                String label = new String(tokenInfo.label).trim();
+                if (label.equals("OpenPGP card (User PIN (sig))")) {
+                    // OpenPGP cards such as the Nitrokey 3 are exposed as two slots with the same name by OpenSC.
+                    // Only the first one contains the signing key and the certificate, so the second one is ignored.
+                    continue;
+                }
+
                 matches.add(slot);
             }
             descriptions.add(description);
