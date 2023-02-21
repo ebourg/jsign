@@ -45,6 +45,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+
+import javax.smartcardio.CardException;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -58,6 +61,7 @@ import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
+import net.jsign.jca.OpenPGPCardSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -311,7 +315,7 @@ class SignerHelper {
         String keypass = readPassword("keypass", this.keypass);
 
         // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"NITROKEY".equals(storetype) && !"OPENSC".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
+        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"NITROKEY".equals(storetype) && !"OPENPGP".equals(storetype) && !"OPENSC".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
             throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
         }
         if (keystore != null && keyfile != null) {
@@ -352,6 +356,10 @@ class SignerHelper {
             if (storepass == null || !storepass.contains("|")) {
                 throw new SignerException("storepass " + parameterName + " must specify the SSL.com username and password: <username>|<password>");
             }
+        } else if ("OPENPGP".equals(storetype)) {
+            if (storepass == null) {
+                throw new SignerException("storepass " + parameterName + " must specify the PIN");
+            }
         }
         
         Provider provider = null;
@@ -371,6 +379,19 @@ class SignerHelper {
             provider = YubiKey.getProvider();
         } else if ("NITROKEY".equals(storetype)) {
             provider = OpenSC.getProvider(keystore != null ? keystore : "Nitrokey");
+        } else if ("OPENPGP".equals(storetype)) {
+            try {
+                Function<String, Certificate[]> certificateStore = alias -> {
+                    try {
+                        return loadCertificateChain(certfile);
+                    } catch (IOException | CertificateException e) {
+                        throw new RuntimeException("Failed to load the certificate from " + certfile, e);
+                    }
+                };
+                provider = new SigningServiceJcaProvider(new OpenPGPCardSigningService(storepass, certfile != null ? certificateStore : null));
+            } catch (CardException e) {
+                throw new SignerException("Failed to initialize the OpenPGP card", e);
+            }
         } else if ("OPENSC".equals(storetype)) {
             provider = OpenSC.getProvider(keystore);
         } else if ("AWS".equals(storetype)) {
@@ -404,7 +425,7 @@ class SignerHelper {
             }
         }
 
-        if (keystore != null || "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENSC".equals(storetype) || "DIGICERTONE".equals(storetype)) {
+        if (keystore != null || "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENPGP".equals(storetype) || "OPENSC".equals(storetype) || "DIGICERTONE".equals(storetype)) {
             KeyStore ks;
             try {
                 ks = KeyStoreUtils.load(keystore, "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENSC".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
@@ -456,7 +477,7 @@ class SignerHelper {
                 }
                 throw new SignerException(message);
             }
-            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype) && !"AWS".equals(storetype)) {
+            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype) && !"AWS".equals(storetype) && !"OPENPGP".equals(storetype)) {
                 if (chain.length != 1) {
                     throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
                 }

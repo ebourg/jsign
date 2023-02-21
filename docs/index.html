@@ -172,6 +172,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>NITROKEY</code>: Nitrokey HSM</li>
+          <li><code>OPENPGP</code>: OpenPGP card</li>
           <li><code>OPENSC</code>: Smart Card HSM</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AWS</code>: AWS Key Management Service</li>
@@ -439,6 +440,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
                              - NITROKEY: Nitrokey HSM
+                             - OPENPGP: OpenPGP card
                              - OPENSC: Smart Card HSM
                              - YUBIKEY: YubiKey security key
                              - AWS: AWS Key Management Service
@@ -514,6 +516,21 @@ be installed on the system at the default location.</p>
 
 <p>If multiple devices are connected, the keystore parameter can be used to specify
 the name of the one to use.</p>
+
+<h4 id="example-openpgp">Example using an OpenPGP card:</h4>
+
+<p>OpenPGP cards contain up to 3 keys, one for signing, one for encryption, and one for authentication. All of them
+can be used for code signing (except encryption keys based on an elliptic curve). The alias to select the key is either,
+<code>SIGNATURE</code>, <code>ENCRYPTION</code> or <code>AUTHENTICATION</code>. The OPENPGP storetype can be used with
+a Nitrokey (non-HSM models) or a Yubikey.</p>
+
+<pre>
+ jsign --storetype OPENPGP --certfile full-chain.pem --storepass 123456 \
+       --alias SIGNATURE application.exe
+</pre>
+
+<p>X.509 certificates stored on the card are automatically used, and the <code>certfile</code> parameter is only
+required if the certificate chain contains an intermediate certificate.</p>
 
 <h4 id="example-awskms">Example using AWS Key Management Service:</h4>
 

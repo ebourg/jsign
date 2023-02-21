@@ -14,3 +14,6 @@ openssl pkcs8 -traditional -in privatekey.pkcs8.pem           -out privatekey.pk
 openssl rsa -in privatekey.pkcs8.pem -outform PVK -out privatekey.pvk                  -pvk-none
 openssl rsa -in privatekey.pkcs8.pem -outform PVK -out privatekey-encrypted.pvk        -pvk-weak   -passout pass:password
 openssl rsa -in privatekey.pkcs8.pem -outform PVK -out privatekey-encrypted-strong.pvk -pvk-strong -passout pass:password
+
+echo "Private key generated"
+echo "Please run PGPKeyConverter to create the GPG keys"
