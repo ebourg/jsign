@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sun.security.pkcs11.wrapper.CK_SLOT_INFO;
+import sun.security.pkcs11.wrapper.CK_TOKEN_INFO;
 import sun.security.pkcs11.wrapper.PKCS11;
 import sun.security.pkcs11.wrapper.PKCS11Exception;
 
@@ -48,7 +49,7 @@ class OpenSC {
     /**
      * Returns the SunPKCS11 configuration for OpenSC.
      *
-     * @param name the name of the token
+     * @param name the name or the slot id of the token
      * @throws ProviderException thrown if the PKCS11 modules cannot be found
      */
     static String getSunPKCS11Configuration(String name) {
@@ -58,7 +59,12 @@ class OpenSC {
         }
         String configuration = "--name=opensc\nlibrary = \"" + libpkcs11.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
         try {
-            long slot = getTokenSlot(libpkcs11, name);
+            long slot;
+            try {
+                slot = Integer.parseInt(name);
+            } catch (Exception e) {
+                slot = getTokenSlot(libpkcs11, name);
+            }
             if (slot >= 0) {
                 configuration += "slot=" + slot;
             }
