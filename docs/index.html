@@ -500,21 +500,29 @@ be installed on the system at the default location.</p>
 
 <h4 id="example-nitrokey">Example using a Nitrokey HSM:</h4>
 
-<p>Signing with a Nitrokey requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
+<p>Signing with a Nitrokey HSM requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
 <pre>
- jsign --storetype NITROKEY --alias test --certfile full-chain.pem --storepass 123456 application.exe
+ jsign --storetype NITROKEY --certfile full-chain.pem --storepass 123456 \
+       --alias test application.exe
 </pre>
+
+<p>Other Nitrokeys based on the OpenPGP card standard are also supported with this storetype, but an X.509 certificate
+must be imported into the Nitrokey (using the gnupg <a href="https://www.gnupg.org/documentation/manuals/gnupg/gpg_002dcard.html">writecert</a>
+command). Keys without certificates are ignored. Alternatively, the OPENPGP storetype can also be used, it doesn't
+require OpenSC and any key can be used by providing an external certificate.</p>
 
 <h4 id="example-smart-card">Example using a smart card HSM:</h4>
 
-<p>Signing with a smart card HSM requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
+<p>Signing with a <a href="https://www.smartcard-hsm.com">smart card HSM</a> requires the installation of
+<a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
 <pre>
- jsign --storetype OPENSC --alias test --certfile full-chain.pem --storepass 123456 application.exe
+ jsign --storetype OPENSC --certfile full-chain.pem --storepass 123456 \
+       --alias test application.exe
 </pre>
 
-<p>If multiple devices are connected, the keystore parameter can be used to specify
+<p>If multiple devices are connected, the <code>keystore</code> parameter can be used to specify
 the name of the one to use.</p>
 
 <h4 id="example-openpgp">Example using an OpenPGP card:</h4>
