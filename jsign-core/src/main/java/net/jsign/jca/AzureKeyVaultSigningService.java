@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -35,6 +34,9 @@ import java.util.Map;
 import com.cedarsoftware.util.io.JsonWriter;
 
 import net.jsign.DigestAlgorithm;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.DigestInfo;
 
 /**
  * Signing service using the Azure KeyVault API.
@@ -55,6 +57,7 @@ public class AzureKeyVaultSigningService implements SigningService {
      */
     private final Map<String, String> algorithmMapping = new HashMap<>();
     {
+        algorithmMapping.put("SHA1withRSA", "RSNULL");
         algorithmMapping.put("SHA256withRSA", "RS256");
         algorithmMapping.put("SHA384withRSA", "RS384");
         algorithmMapping.put("SHA512withRSA", "RS512");
@@ -152,8 +155,18 @@ public class AzureKeyVaultSigningService implements SigningService {
             throw new InvalidAlgorithmParameterException("Unsupported signing algorithm: " + algorithm);
         }
 
-        MessageDigest digest = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with"))).getMessageDigest();
-        data = digest.digest(data);
+        DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
+        data = digestAlgorithm.getMessageDigest().digest(data);
+
+        if (alg.equals("RSNULL")) {
+            AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+            DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, data);
+            try {
+                data = digestInfo.getEncoded("DER");
+            } catch (IOException e) {
+                throw new GeneralSecurityException(e);
+            }
+        }
 
         Map<String, String> request = new HashMap<>();
         request.put("alg", alg);
