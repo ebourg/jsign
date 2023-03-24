@@ -144,7 +144,7 @@ public class OpenPGPCardTest {
 
         Set<OpenPGPCard.Key> keys = pgpcard.getAvailableKeys();
         assertNotNull(keys);
-        assertEquals("number of keys", 3, keys.size());
+        assertEquals("number of keys", pgpcard.supportsManageSecurityEnvironment() ? 3 : 2, keys.size());
     }
 
     @Test
@@ -211,5 +211,15 @@ public class OpenPGPCardTest {
         pgpcard.putData(0x7F21, backup);
 
         assertArrayEquals("backup data", backup, pgpcard.getData(0x7F21));
+    }
+
+    @Test
+    public void testSupportsManageSecurityEnvironment() throws Exception {
+        assumeCardPresent();
+
+        OpenPGPCard pgpcard = OpenPGPCard.getCard();
+        assertNotNull("card not found", pgpcard);
+
+        assertTrue("MSE is not supported", pgpcard.supportsManageSecurityEnvironment());
     }
 }

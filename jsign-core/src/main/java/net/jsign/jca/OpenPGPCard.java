@@ -50,6 +50,9 @@ class OpenPGPCard {
     /** Data Object cache */
     private final Map<Integer, byte[]> dataObjectCache = new HashMap<>();
 
+    /** The extended capabilities flag list */
+    private byte[] extendedCapabilities;
+
     /** Information about the keys */
     private KeyInfo[] keyInfos;
 
@@ -193,13 +196,13 @@ class OpenPGPCard {
     }
 
     /**
-     * Return the available keys.
+     * Return the keys available for signing.
      */
     public Set<Key> getAvailableKeys() throws CardException {
         Set<Key> keys = new LinkedHashSet<>();
 
         for (Key key : Key.values()) {
-            if (getKeyInfo(key).isPresent()) {
+            if (getKeyInfo(key).isPresent() && (key != Key.ENCRYPTION || supportsManageSecurityEnvironment())) {
                 keys.add(key);
             }
         }
@@ -268,7 +271,28 @@ class OpenPGPCard {
             }
         }
 
+        extendedCapabilities = relatedData.find("73", "C0").value();
+
         return keyInfos;
+    }
+
+    /**
+     * Return the extended capabilities.
+     */
+    private byte[] getExtendedCapabilities() throws CardException {
+        if (extendedCapabilities == null) {
+            TLV relatedData = TLV.parse(ByteBuffer.wrap(getData(0x6E)));
+            System.out.println(relatedData);
+            extendedCapabilities = relatedData.find("73", "C0").value();
+        }
+        return extendedCapabilities;
+    }
+
+    /**
+     * Tell if the MANAGE SECURITY ENVIRONMENT command is supported.
+     */
+    protected boolean supportsManageSecurityEnvironment() throws CardException {
+        return getVersion() > 3 && (getExtendedCapabilities()[9] & 0x01) != 0;
     }
 
     /**
