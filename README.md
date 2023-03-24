@@ -48,6 +48,7 @@ See https://ebourg.github.io/jsign for more information.
 * OpenPGP cards are now supported with the new `OPENPGP` storetype
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
+* SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)
 
 #### Version 4.2 (2022-09-19)
 
