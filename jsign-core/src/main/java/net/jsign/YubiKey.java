@@ -59,7 +59,7 @@ class YubiKey {
         try {
             long slot = getTokenSlot(libykcs11);
             if (slot >= 0) {
-                configuration += "slotListIndex=" + slot;
+                configuration += "slot=" + slot;
             }
         } catch (Exception e) {
             throw new ProviderException(e);
