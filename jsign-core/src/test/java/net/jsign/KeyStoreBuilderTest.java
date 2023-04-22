@@ -268,6 +268,41 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildHashiCorpVault() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(HASHICORPVAULT);
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "keystore parameter must specify the HashiCorp Vault secrets engine URL", e.getMessage());
+        }
+
+        builder.keystore("https://vault.example.com:8200/v1/gcpkms/");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "storepass parameter must specify the HashiCorp Vault token", e.getMessage());
+        }
+
+        builder.storepass("0123456789ABCDEF");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "certfile parameter must be set", e.getMessage());
+        }
+
+        builder.certfile("keystores/jsign-test-certificate.pem");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildJKS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(JKS);
 

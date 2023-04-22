@@ -28,7 +28,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Keystores supported:
   * PKCS#12, JKS and JCEKS files
   * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), etc)
-  * Cloud key management systems ([AWS KMS](https://aws.amazon.com/kms/), [Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [DigiCert ONE](https://one.digicert.com), [Google Cloud KMS](https://cloud.google.com/security-key-management), [SSL.com eSigner](https://www.ssl.com/esigner/))
+  * Cloud key management systems ([AWS KMS](https://aws.amazon.com/kms/), [Azure Key Vault](https://azure.microsoft.com/services/key-vault/), [DigiCert ONE](https://one.digicert.com), [Google Cloud KMS](https://cloud.google.com/security-key-management), [SSL.com eSigner](https://www.ssl.com/esigner/), [HashiCorp Vault](https://www.vaultproject.io/))
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
 * Build tools integration (Maven, Gradle, Ant)
@@ -46,6 +46,7 @@ See https://ebourg.github.io/jsign for more information.
 * Nitrokey support has been improved with automatic PKCS#11 configuration using the new `NITROKEY` storetype
 * Smart cards are now supported with the new `OPENSC` storetype
 * OpenPGP cards are now supported with the new `OPENPGP` storetype
+* Google Cloud KMS via HashiCorp Vault is now supported with the new `HASHICORPVAULT` storetype (contributed by Maria Merkel)
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
 * SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)

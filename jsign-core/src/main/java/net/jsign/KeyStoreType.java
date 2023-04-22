@@ -38,6 +38,7 @@ import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
+import net.jsign.jca.HashiCorpVaultSigningService;
 import net.jsign.jca.OpenPGPCardSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 
@@ -320,6 +321,33 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return new SigningServiceJcaProvider(new GoogleCloudSigningService(params.keystore(), params.storepass(), alias -> {
+                try {
+                    return CertificateUtils.loadCertificateChain(params.certfile());
+                } catch (IOException | CertificateException e) {
+                    throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
+                }
+            }));
+        }
+    },
+
+    /** HashiCorp Vault secrets engine (GCP only) */
+    HASHICORPVAULT(false, false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.keystore() == null) {
+                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the HashiCorp Vault secrets engine URL");
+            }
+            if (params.storepass() == null) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the HashiCorp Vault token");
+            }
+            if (params.certfile() == null) {
+                throw new IllegalArgumentException("certfile " + params.parameterName() + " must be set");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            return new SigningServiceJcaProvider(new HashiCorpVaultSigningService(params.keystore(), params.storepass(), alias -> {
                 try {
                     return CertificateUtils.loadCertificateChain(params.certfile());
                 } catch (IOException | CertificateException e) {

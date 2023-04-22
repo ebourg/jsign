@@ -65,7 +65,7 @@ programmatically or standalone as a command line tool.</p>
     <ul>
       <li>PKCS#12, JKS and JCEKS files</li>
       <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
-      <li>Cloud key management systems (<a href="https://aws.amazon.com/kms/">AWS KMS</a>, <a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>, <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a>)</li>
+      <li>Cloud key management systems (<a href="https://aws.amazon.com/kms/">AWS KMS</a>, <a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>, <a href="https://one.digicert.com">DigiCert ONE</a>, <a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a>, <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a>, <a href="https://www.vaultproject.io">HashiCorp Vault</a>)</li>
     </ul>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
@@ -180,6 +180,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
           <li><code>ESIGNER</code>: SSL.com eSigner</li>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
+          <li><code>HASHICORPVAULT</code>: Google Cloud KMS via HashiCorp Vault</li>
         </ul>
       </td>
       <td class="required">No, automatically detected for file based keystores.</td>
@@ -448,6 +449,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - DIGICERTONE: DigiCert ONE Secure Software Manager
                              - ESIGNER: SSL.com eSigner
                              - GOOGLECLOUD: Google Cloud KMS
+                             - HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
@@ -600,6 +602,19 @@ the version is omitted the most recent one will be picked automatically.</p>
        --alias test --certfile full-chain.pem application.exe
 </pre>
 
+<h4 id="example-hashicorpvault">Example using Google Cloud KMS via HashiCorp Vault:</h4>
+
+<p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
+references the URL of the HashiCorp Vault secrets engine, consisting of the Vault server URL, the API version v1 and
+the secrets engine path. The alias specifies the name of the key in Vault and the key version in Google Cloud separated
+by a colon character.</p>
+
+<pre>
+ jsign --storetype HASHICORPVAULT --storepass &lt;vault-token&gt; \
+       --keystore https://vault.example.com/v1/gcpkms \
+       --alias test:1 --certfile full-chain.pem application.exe
+</pre>
+
 
 <h3>API</h3>
 
@@ -649,7 +664,7 @@ the version is omitted the most recent one will be picked automatically.</p>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
 MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
-<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler and Joseph Lee.</p>
+<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee and Maria Merkel.</p>
 
 <h3>Contact</h3>
 

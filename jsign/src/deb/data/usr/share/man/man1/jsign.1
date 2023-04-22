@@ -64,6 +64,8 @@ The type of the keystore:
 .br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
+- HASHICORPVAULT : Google Cloud KMS via HashiCorp Vault
+.br
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
 .TP
@@ -291,6 +293,17 @@ the version is omitted the most recent one will be picked automatically.
 jsign --storetype GOOGLECLOUD --storepass <api-access-token> \\
       --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \\
       --alias test --certfile full-chain.pem application.exe
+
+Signing with Google Cloud KMS via HashiCorp Vault:
+
+Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
+references the URL of the HashiCorp Vault secrets engine, consisting of the Vault server URL, the API version v1
+and the secrets engine path. The alias specifies the name of the key in Vault and the key version in Google Cloud
+separated by a colon character.
+
+jsign --storetype HASHICORPVAULT --storepass <vault-token> \\
+      --keystore https://vault.example.com/v1/gcpkms \\
+      --alias test:1 --certfile full-chain.pem application.exe
 
 
 .SH REPORTING BUGS
