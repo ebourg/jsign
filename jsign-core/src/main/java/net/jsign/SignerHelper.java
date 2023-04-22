@@ -63,6 +63,7 @@ import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.OpenPGPCardSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
+import net.jsign.jca.VaultGoogleCloudSigningService;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -360,6 +361,19 @@ class SignerHelper {
             if (storepass == null) {
                 throw new SignerException("storepass " + parameterName + " must specify the PIN");
             }
+        } else if ("VAULT_GOOGLECLOUD".equals(storetype)) {
+            if (keystore == null) {
+                throw new SignerException("keystore " + parameterName + " must specify the Vault secrets engine URL");
+            }
+            if (alias == null) {
+                throw new SignerException("alias " + parameterName + " must specify the Vault key name");
+            }
+            if (storepass == null) {
+                throw new SignerException("storepass " + parameterName + " must specify the Vault token");
+            }
+            if (certfile == null) {
+                throw new SignerException("certfile " + parameterName + " must be set");
+            }
         }
         
         Provider provider = null;
@@ -423,6 +437,14 @@ class SignerHelper {
             } catch (IOException e) {
                 throw new SignerException("Authentication failed with SSL.com", e);
             }
+        } else if ("VAULT_GOOGLECLOUD".equals(storetype)) {
+            provider = new SigningServiceJcaProvider(new VaultGoogleCloudSigningService(keystore, storepass, alias -> {
+                try {
+                    return loadCertificateChain(certfile);
+                } catch (IOException | CertificateException e) {
+                    throw new RuntimeException("Failed to load the certificate from " + certfile, e);
+                }
+            }));
         }
 
         if (keystore != null || "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENPGP".equals(storetype) || "OPENSC".equals(storetype) || "DIGICERTONE".equals(storetype)) {
@@ -477,7 +499,7 @@ class SignerHelper {
                 }
                 throw new SignerException(message);
             }
-            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype) && !"AWS".equals(storetype) && !"OPENPGP".equals(storetype)) {
+            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"VAULT_GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype) && !"AWS".equals(storetype) && !"OPENPGP".equals(storetype)) {
                 if (chain.length != 1) {
                     throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
                 }

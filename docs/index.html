@@ -180,6 +180,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
           <li><code>ESIGNER</code>: SSL.com eSigner</li>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
+          <li><code>VAULT_GOOGLECLOUD</code>: Google Cloud KMS via Hashicorp Vault</li>
         </ul>
       </td>
       <td class="required">No, automatically detected for file based keystores.</td>
@@ -448,6 +449,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - DIGICERTONE: DigiCert ONE Secure Software Manager
                              - ESIGNER: SSL.com eSigner
                              - GOOGLECLOUD: Google Cloud KMS
+                             - VAULT_GOOGLECLOUD: Google Cloud KMS via Hashicorp Vault
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
@@ -599,6 +601,17 @@ the version is omitted the most recent one will be picked automatically.</p>
  jsign --storetype GOOGLECLOUD --storepass &lt;api-access-token&gt; \
        --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \
        --alias test --certfile full-chain.pem application.exe
+</pre>
+
+<h4 id="example-googlecloud-vault">Example using Google Cloud KMS via Hashicorp Vault:</h4>
+
+<p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
+references the URL of the Vault secret engine, consisting of the Vault server URL, the API version v1 and the secrets engine path.
+The alias specifies the name of the key in Vault and the key version in Google Cloud separated by a colon character.</p>
+
+<pre>
+ jsign --storetype VAULT_GOOGLECLOUD --storepass &lt;vault-token&gt; \
+       --keystore https://vault.example.com/v1/gcpkms --alias test:1 --certfile full-chain.pem application.exe
 </pre>
 
 
