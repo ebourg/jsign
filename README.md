@@ -51,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 * SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)
 * Signing a MSI file already signed with an extended signature is no longer rejected
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
+* Upgraded BouncyCastle to 1.73
 
 #### Version 4.2 (2022-09-19)
 
