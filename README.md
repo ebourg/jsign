@@ -49,6 +49,7 @@ See https://ebourg.github.io/jsign for more information.
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
 * SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)
+* Signing a MSI file already signed with an extended signature is no longer rejected
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
 
 #### Version 4.2 (2022-09-19)

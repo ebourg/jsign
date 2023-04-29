@@ -152,6 +152,45 @@ public class MSISignerTest {
     }
 
     @Test
+    public void testReplaceExtendedSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal-signed-with-signtool.msi");
+        File targetFile = new File("target/test-classes/minimal-signed-with-signtool-re-signed.msi");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSIFile file = new MSIFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withSignaturesReplaced(true)
+                    .withDigestAlgorithm(SHA256)
+                    .withTimestamping(false)
+                    .withProgramName("Minimal Package")
+                    .withProgramURL("http://example.com");
+
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignTwiceWithExtendedSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal-signed-with-signtool.msi");
+        File targetFile = new File("target/test-classes/minimal-signed-with-signtool-signed-twice.msi");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSIFile file = new MSIFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withDigestAlgorithm(SHA256)
+                    .withTimestamping(false);
+
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA1, SHA256);
+        }
+    }
+
+    @Test
     public void testSignInMemory() throws Exception {
         File sourceFile = new File("target/test-classes/minimal.msi");
         
@@ -171,23 +210,6 @@ public class MSISignerTest {
 
         try (MSIFile file = new MSIFile(new SeekableInMemoryByteChannel(data))) {
             SignatureAssert.assertSigned(file, SHA512);
-        }
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void testAddExtendedSignature() throws Exception {
-        File sourceFile = new File("target/test-classes/minimal-signed-with-signtool.msi");
-        File targetFile = new File("target/test-classes/minimal-signed-with-signtool-re-signed.msi");
-        
-        FileUtils.copyFile(sourceFile, targetFile);
-        
-        try (MSIFile file = new MSIFile(targetFile)) {
-            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                    .withDigestAlgorithm(SHA1)
-                    .withProgramName("Minimal Package")
-                    .withProgramURL("http://example.com");
-
-            signer.sign(file);
         }
     }
 }

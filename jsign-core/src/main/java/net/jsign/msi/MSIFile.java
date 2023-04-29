@@ -36,6 +36,8 @@ import java.util.TreeMap;
 
 import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
+import org.apache.poi.poifs.filesystem.DocumentNode;
+import org.apache.poi.poifs.filesystem.Entry;
 import org.apache.poi.poifs.filesystem.POIFSDocument;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.poifs.property.DirectoryProperty;
@@ -189,6 +191,13 @@ public class MSIFile implements Signable {
     @Override
     public byte[] computeDigest(MessageDigest digest) throws IOException {
         try {
+            // hash the MsiDigitalSignatureEx entry if there is one
+            if (fsRead.getRoot().hasEntry(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
+                Entry msiDigitalSignatureExEntry = fsRead.getRoot().getEntry(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME);
+                POIFSDocument msiDigitalSignatureExDocument = new POIFSDocument((DocumentNode) msiDigitalSignatureExEntry);
+                updateDigest(digest, msiDigitalSignatureExDocument);
+            }
+
             // hash the entries
             for (Property property : getSortedProperties()) {
                 String name = new MSIStreamName(property.getName()).decode();
@@ -197,13 +206,7 @@ public class MSIFile implements Signable {
                 }
 
                 POIFSDocument document = new POIFSDocument((DocumentProperty) property, fsRead);
-                long remaining = document.getSize();
-                for (ByteBuffer buffer : document) {
-                    int size = buffer.remaining();
-                    buffer.limit(buffer.position() + (int) Math.min(remaining, size));
-                    digest.update(buffer);
-                    remaining -= size;
-                }
+                updateDigest(digest, document);
             }
 
             // hash the package ClassID, in serialized form
@@ -214,6 +217,16 @@ public class MSIFile implements Signable {
             return digest.digest();
         } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
             throw new IOException("MSI file format error", e);
+        }
+    }
+
+    private void updateDigest(MessageDigest digest, POIFSDocument document) {
+        long remaining = document.getSize();
+        for (ByteBuffer buffer : document) {
+            int size = buffer.remaining();
+            buffer.limit(buffer.position() + (int) Math.min(remaining, size));
+            digest.update(buffer);
+            remaining -= size;
         }
     }
 
