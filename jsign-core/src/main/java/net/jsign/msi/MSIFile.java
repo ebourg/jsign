@@ -24,7 +24,9 @@ import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
@@ -87,7 +89,7 @@ public class MSIFile implements Signable {
     private POIFSFileSystem fsRead;
 
     /** The POI filesystem used for writing to the file */
-    private final POIFSFileSystem fsWrite;
+    private POIFSFileSystem fsWrite;
 
     /** The channel used for in-memory signing */
     private SeekableByteChannel channel;
@@ -288,8 +290,25 @@ public class MSIFile implements Signable {
 
     @Override
     public void save() throws IOException {
+        // get the number of directory sectors to be written in the header to work around https://bz.apache.org/bugzilla/show_bug.cgi?id=66590
+        ByteBuffer directorySectorsCount = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        directorySectorsCount.putInt(fsWrite.getPropertyTable().countBlocks()).flip();
+
         if (channel == null) {
             fsWrite.writeFilesystem();
+
+            // update the number of directory sectors in the header
+            fsWrite.close();
+            try (RandomAccessFile in = new RandomAccessFile(file, "rw")) {
+                in.seek(0x28);
+                in.write(directorySectorsCount.array());
+            }
+            try {
+                fsWrite = new POIFSFileSystem(file, false);
+            } catch (IndexOutOfBoundsException e) {
+                throw new IOException("MSI file format error", e);
+            }
+
             fsRead.close();
             try {
                 fsRead = new POIFSFileSystem(file, true);
@@ -300,6 +319,10 @@ public class MSIFile implements Signable {
             channel.position(0);
             fsWrite.writeFilesystem(Channels.newOutputStream(channel));
             channel.truncate(channel.position());
+
+            // update the number of directory sectors in the header
+            channel.position(0x28);
+            channel.write(directorySectorsCount);
         }
     }
 }

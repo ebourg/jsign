@@ -50,6 +50,7 @@ See https://ebourg.github.io/jsign for more information.
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
 * SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)
 * Signing a MSI file already signed with an extended signature is no longer rejected
+* An issue causing some MSI files to become corrupted once signed has been fixed
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
 * Upgraded BouncyCastle to 1.73
 
