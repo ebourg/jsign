@@ -173,7 +173,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>NITROKEY</code>: Nitrokey HSM</li>
           <li><code>OPENPGP</code>: OpenPGP card</li>
-          <li><code>OPENSC</code>: Smart Card HSM</li>
+          <li><code>OPENSC</code>: Smart card</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AWS</code>: AWS Key Management Service</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
@@ -441,7 +441,7 @@ are provided to install it easily on most Linux distributions. On these systems 
                              - PKCS11: PKCS#11 hardware token
                              - NITROKEY: Nitrokey HSM
                              - OPENPGP: OpenPGP card
-                             - OPENSC: Smart Card HSM
+                             - OPENSC: Smart card
                              - YUBIKEY: YubiKey security key
                              - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
@@ -512,10 +512,9 @@ must be imported into the Nitrokey (using the gnupg <a href="https://www.gnupg.o
 command). Keys without certificates are ignored. Alternatively, the OPENPGP storetype can also be used, it doesn't
 require OpenSC and any key can be used by providing an external certificate.</p>
 
-<h4 id="example-smart-card">Example using a smart card HSM:</h4>
+<h4 id="example-smart-card">Example using a smart card:</h4>
 
-<p>Signing with a <a href="https://www.smartcard-hsm.com">smart card HSM</a> requires the installation of
-<a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
+<p>Signing with a smart card requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
 <pre>
  jsign --storetype OPENSC --certfile full-chain.pem --storepass 123456 \

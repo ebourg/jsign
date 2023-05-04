@@ -44,7 +44,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * The AWS KMS signing service has been integrated
 * Nitrokey support has been improved with automatic PKCS#11 configuration using the new `NITROKEY` storetype
-* Smart Card HSMs are now supported with the new `OPENSC` storetype
+* Smart cards are now supported with the new `OPENSC` storetype
 * OpenPGP cards are now supported with the new `OPENPGP` storetype
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
