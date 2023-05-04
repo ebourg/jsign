@@ -50,7 +50,7 @@ The type of the keystore:
 .br
 - OPENPGP       : OpenPGP card
 .br
-- OPENSC        : Smart Card HSM
+- OPENSC        : Smart card
 .br
 - YUBIKEY       : YubiKey security key (requires ykcs11)
 .br
@@ -203,9 +203,9 @@ it doesn't require OpenSC and any key can be used by providing an external certi
 
 .TP
 
-Signing with a smart card HSM:
+Signing with a smart card:
 
-Signing with a smart card HSM requires the installation of the OpenSC PKCS#11 module. The module
+Signing with a smart card requires the installation of the OpenSC PKCS#11 module. The module
 is provided by the opensc package on Fedora, and by the opensc-pkcs11 package on Debian/Ubuntu.
 
 jsign --storetype OPENSC --alias test --certfile full-chain.pem --storepass 123456 application.exe

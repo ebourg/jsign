@@ -62,7 +62,7 @@ public class JsignCLI {
                         + "- PKCS11: PKCS#11 hardware token\n"
                         + "- NITROKEY: Nitrokey HSM\n"
                         + "- OPENPGP: OpenPGP card\n"
-                        + "- OPENSC: Smart Card HSM\n"
+                        + "- OPENSC: Smart card\n"
                         + "- YUBIKEY: YubiKey security key\n"
                         + "- AWS: AWS Key Management Service\n"
                         + "- AZUREKEYVAULT: Azure Key Vault key management system\n"
