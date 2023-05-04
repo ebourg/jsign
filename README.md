@@ -40,7 +40,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 4.3 (in development)
+#### Version 5.0 (in development)
 
 * The AWS KMS signing service has been integrated
 * Nitrokey support has been improved with automatic PKCS#11 configuration using the new `NITROKEY` storetype

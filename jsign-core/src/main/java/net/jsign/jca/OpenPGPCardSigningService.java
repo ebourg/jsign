@@ -45,7 +45,7 @@ import net.jsign.DigestAlgorithm;
  * and encryption), but all can be used for code signing. The card may contain an X.509 certificate for each key,
  * the intermediate certificates have to be provided externally.
  *
- * @since 4.3
+ * @since 5.0
  */
 public class OpenPGPCardSigningService implements SigningService {
 

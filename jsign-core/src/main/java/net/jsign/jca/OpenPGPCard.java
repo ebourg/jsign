@@ -39,7 +39,7 @@ import org.apache.commons.io.HexDump;
  * Simple smart card interface for OpenPGP cards.
  *
  * @see <a href="https://www.gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.1.pdf">Functional Specification of the OpenPGP application on ISO Smart Card Operating Systems</a>
- * @since 4.3
+ * @since 5.0
  */
 class OpenPGPCard {
 
