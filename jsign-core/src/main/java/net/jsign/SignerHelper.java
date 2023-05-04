@@ -132,11 +132,6 @@ class SignerHelper {
         return this;
     }
 
-    public SignerHelper keystore(File keystore) {
-        this.keystore = keystore != null ? keystore.getPath() : null;
-        return this;
-    }
-
     public SignerHelper storepass(String storepass) {
         this.storepass = storepass;
         return this;

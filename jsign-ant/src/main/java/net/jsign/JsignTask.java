@@ -45,8 +45,8 @@ public class JsignTask extends Task {
     /** The digest algorithm to use for the signature. */
     private String algorithm;
 
-    /** The keystore file. */
-    private File keystore;
+    /** The keystore file, the SunPKCS11 configuration file or the cloud keystore name. */
+    private String keystore;
 
     /** The password for the keystore. */
     private String storepass;
@@ -111,7 +111,7 @@ public class JsignTask extends Task {
         this.tsmode = tsmode;
     }
 
-    public void setKeystore(File keystore) {
+    public void setKeystore(String keystore) {
         this.keystore = keystore;
     }
 

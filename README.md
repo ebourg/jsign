@@ -52,6 +52,7 @@ See https://ebourg.github.io/jsign for more information.
 * Signing a MSI file already signed with an extended signature is no longer rejected
 * An issue causing some MSI files to become corrupted once signed has been fixed
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
+* The cloud keystore name is no longer treated as a relative file by the Ant task and the Maven plugin
 * Upgraded BouncyCastle to 1.73
 
 #### Version 4.2 (2022-09-19)
