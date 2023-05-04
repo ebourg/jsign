@@ -53,7 +53,7 @@ import static java.nio.charset.StandardCharsets.*;
 /**
  * Signing service using the AWS API.
  *
- * @since 4.3
+ * @since 5.0
  * @see <a href="https://docs.aws.amazon.com/kms/latest/APIReference/">AWS Key Management Service API Reference</a>
  * @see <a href="https://docs.aws.amazon.com/general/latest/gr/signing_aws_api_requests.html">Signing AWS API Requests</a>
  */
