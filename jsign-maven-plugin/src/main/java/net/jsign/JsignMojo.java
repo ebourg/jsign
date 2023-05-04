@@ -62,9 +62,9 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.algorithm", defaultValue = "SHA-256" )
     private String algorithm;
 
-    /** The keystore file. Required, unless certfile and keyfile are specified. */
+    /** The keystore file, the SunPKCS11 configuration file or the cloud keystore name. Required, unless certfile and keyfile are specified. */
     @Parameter( property = "jsign.keystore" )
-    private File keystore;
+    private String keystore;
 
     /** The password for the keystore. */
     @Parameter( property = "jsign.storepass" )
