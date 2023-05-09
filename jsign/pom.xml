@@ -93,6 +93,7 @@
                     <exclude>**/poi/sl/draw/geom/**</exclude>
                     <exclude>font_metrics.properties</exclude>
                     <exclude>assets/org/apache/commons/math3/**</exclude>
+                    <exclude>**/bouncycastle/pqc/**</exclude>
                   </excludes>
                 </filter>
               </filters>
