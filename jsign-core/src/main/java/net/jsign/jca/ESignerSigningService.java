@@ -145,11 +145,44 @@ public class ESignerSigningService implements SigningService {
         }
     }
 
+    private void scan(SigningServicePrivateKey privateKey, String hashToSign, String hashToScan) {
+        boolean malwareScanEnabled;
+
+        Map<String, Object> args = new HashMap<>();
+        args.put(JsonWriter.TYPE, "false");
+
+        Map<String, Object>  request = new LinkedHashMap<>();
+        request.put("credential_id", privateKey.getId());
+        try {
+            Map<String, ?> response = client.post("/scan/settings", JsonWriter.objectToJson(request, args));
+            malwareScanEnabled = Boolean.TRUE.equals(response.get("malware_scan_enabled"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (malwareScanEnabled) {
+            request = new LinkedHashMap<>();
+            request.put("credential_id", privateKey.getId());
+            request.put("hash_to_scan", hashToScan);
+            request.put("hash_to_sign", hashToSign);
+
+            try {
+                client.post("/scan/hash", JsonWriter.objectToJson(request, args));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @Override
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
         MessageDigest digest = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with"))).getMessageDigest();
         data = digest.digest(data);
         String hash = Base64.getEncoder().encodeToString(data);
+
+        // Skip malware scanning. eSigner expects the SHA-256 hash of the full file, but scanning for malwares
+        // requires a little more than a mere hash controlled by the client. We just send a bogus hash instead.
+        scan(privateKey, hash, Base64.getEncoder().encodeToString(DigestAlgorithm.SHA256.getMessageDigest().digest(data)));
 
         Map<String, Object>  request = new LinkedHashMap<>();
         request.put("credentialID", privateKey.getId());
