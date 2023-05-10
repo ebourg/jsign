@@ -120,6 +120,9 @@ class SignerHelper {
     private Charset encoding;
     private boolean detached;
 
+    /** The base directory to resolve relative paths */
+    private File basedir = new File("empty").getParentFile();
+
     private AuthenticodeSigner signer;
 
     public SignerHelper(Console console, String parameterName) {
@@ -268,8 +271,20 @@ class SignerHelper {
         }
     }
 
+    public void setBaseDir(File basedir) {
+        this.basedir = basedir;
+    }
+
     private File createFile(String file) {
-        return file == null ? null : new File(file);
+        if (file == null) {
+            return null;
+        }
+
+        if (new File(file).isAbsolute()) {
+            return new File(file);
+        } else {
+            return new File(basedir, file);
+        }
     }
 
     /**
@@ -284,7 +299,7 @@ class SignerHelper {
         if (value != null) {
             if (value.startsWith("file:")) {
                 String filename = value.substring("file:".length());
-                Path path = new File(filename).toPath();
+                Path path = createFile(filename).toPath();
                 try {
                     value = String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)).trim();
                 } catch (IOException e) {
@@ -360,7 +375,7 @@ class SignerHelper {
         Provider provider = null;
         if ("PKCS11".equals(storetype)) {
             // the keystore parameter is either the provider name or the SunPKCS11 configuration file
-            if (keystore != null && new File(keystore).exists()) {
+            if (keystore != null && createFile(keystore).exists()) {
                 provider = ProviderUtils.createSunPKCS11Provider(keystore);
             } else if (keystore != null && keystore.startsWith("SunPKCS11-")) {
                 provider = Security.getProvider(keystore);
@@ -401,7 +416,7 @@ class SignerHelper {
             provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore, storepass));
         } else if ("DIGICERTONE".equals(storetype)) {
             String[] elements = storepass.split("\\|");
-            provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], new File(elements[1]), elements[2]));
+            provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], createFile(elements[1]), elements[2]));
         } else if ("GOOGLECLOUD".equals(storetype)) {
             provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, alias -> {
                 try {
@@ -423,7 +438,7 @@ class SignerHelper {
         if (keystore != null || "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENPGP".equals(storetype) || "OPENSC".equals(storetype) || "DIGICERTONE".equals(storetype)) {
             KeyStore ks;
             try {
-                ks = KeyStoreUtils.load(keystore, "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENSC".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
+                ks = KeyStoreUtils.load(createFile(keystore), "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENSC".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
             } catch (KeyStoreException e) {
                 throw new SignerException("Failed to load the keystore " + keystore, e);
             }
@@ -556,6 +571,10 @@ class SignerHelper {
                 .withTimestampingRetries(tsretries)
                 .withTimestampingRetryWait(tsretrywait)
                 .withTimestampingAuthority(tsaurl != null ? tsaurl.split(",") : null);
+    }
+
+    public void sign(String file) throws SignerException {
+        sign(createFile(file));
     }
 
     public void sign(File file) throws SignerException {

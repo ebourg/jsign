@@ -22,6 +22,7 @@ import java.util.Collections;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
@@ -38,6 +39,10 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         JsignMojo mojo = (JsignMojo) lookupMojo("sign", pom);
         assertNotNull("plugin not found", mojo);
+
+        MavenProject project = new MavenProject();
+        project.setFile(pom);
+        setVariableValueToObject(mojo, "project", project);
 
         return mojo;
     }
@@ -122,7 +127,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
         setVariableValueToObject(mojo, "tsmode", "Authenticode");
@@ -159,7 +164,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
         setVariableValueToObject(mojo, "proxyId", "proxima");
@@ -188,7 +193,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
         setVariableValueToObject(mojo, "tsmode", "Authenticode");
@@ -213,7 +218,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "securityDispatcher", (SecDispatcher) str -> { throw new SecDispatcherException(); });
         
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
 
@@ -229,7 +234,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         JsignMojo mojo = getMojo();
 
         setVariableValueToObject(mojo, "file", new File("pom.xml"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
 
@@ -245,7 +250,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         JsignMojo mojo = getMojo();
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
         setVariableValueToObject(mojo, "detached", Boolean.TRUE);
@@ -264,7 +269,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         JsignMojo mojo = getMojo();
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
         setVariableValueToObject(mojo, "detached", Boolean.TRUE);
@@ -293,7 +298,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
         setVariableValueToObject(mojo, "detached", Boolean.TRUE);
@@ -321,7 +326,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
         setVariableValueToObject(mojo, "detached", Boolean.TRUE);
@@ -337,7 +342,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", new Settings());
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
 
@@ -361,7 +366,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
 
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
-        setVariableValueToObject(mojo, "keystore", "target/test-classes/keystores/keystore.jks");
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
 

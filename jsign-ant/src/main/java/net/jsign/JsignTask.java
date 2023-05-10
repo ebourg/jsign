@@ -167,6 +167,7 @@ public class JsignTask extends Task {
     public void execute() throws BuildException {
         try {
             SignerHelper helper = new SignerHelper(new AntConsole(this), "attribute");
+            helper.setBaseDir(getProject().getBaseDir());
             
             helper.name(name);
             helper.url(url);

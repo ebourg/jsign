@@ -53,6 +53,7 @@ See https://ebourg.github.io/jsign for more information.
 * An issue causing some MSI files to become corrupted once signed has been fixed
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
 * The cloud keystore name is no longer treated as a relative file by the Ant task and the Maven plugin
+* The paths are resolved relatively to the Ant/Maven/Gradle subproject or module directory instead of the root directory
 * Upgraded BouncyCastle to 1.73
 
 #### Version 4.2 (2022-09-19)

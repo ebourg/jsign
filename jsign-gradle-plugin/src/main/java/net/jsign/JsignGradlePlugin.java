@@ -16,7 +16,6 @@
 
 package net.jsign;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,10 +39,11 @@ public class JsignGradlePlugin implements Plugin<Project> {
                 params.remove("file");
                 
                 SignerHelper helper = new SignerHelper(new GradleConsole(project.getLogger()), "property");
+                helper.setBaseDir(project.getProjectDir());
                 for (Map.Entry<String, String> param : params.entrySet()) {
                     helper.param(param.getKey(), param.getValue());
                 }
-                helper.sign(new File(file));
+                helper.sign(file);
             }
 
             public void doCall(kotlin.Pair<String, String>... pairs) throws SignerException {
