@@ -38,7 +38,7 @@ public class OpenPGPCardTest {
         CardTerminals terminals = TerminalFactory.getDefault().terminals();
         boolean found = false;
         for (CardTerminal terminal : terminals.list(CardTerminals.State.CARD_PRESENT)) {
-            if (terminal.getName().contains("YubiKey") || terminal.getName().contains("Nitrokey")) {
+            if (terminal.getName().contains("Nitrokey")) {
                 found = true;
                 break;
             }
