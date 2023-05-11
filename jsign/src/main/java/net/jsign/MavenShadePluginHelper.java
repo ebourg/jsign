@@ -29,5 +29,6 @@ class MavenShadePluginHelper {
         JsignCLI.class.getName();
         JsignTask.class.getName();
         PESignerTask.class.getName();
+        KeyStoreUtils.class.getName();
     }
 }

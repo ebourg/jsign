@@ -85,7 +85,7 @@ public class JsignCLITest {
         cli.execute("" + targetFile);
     }
 
-    @Test(expected = SignerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testUnsupportedKeyStoreType() throws Exception  {
         cli.execute("--keystore=keystore.jks", "--storetype=ABC", "" + targetFile);
     }

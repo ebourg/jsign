@@ -17,7 +17,6 @@
 package net.jsign;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.List;
@@ -36,9 +35,7 @@ public class MSCabinetSignerTest {
     private static final String ALIAS = "test";
 
     private KeyStore getKeyStore() throws Exception {
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
-        return keystore;
+        return new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
     }
 
     @Test

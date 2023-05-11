@@ -121,6 +121,9 @@
         <version>3.0.0</version>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
+          <environmentVariables>
+            <STOREPASS>password</STOREPASS>
+          </environmentVariables>
         </configuration>
       </plugin>
       <plugin>

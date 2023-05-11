@@ -38,7 +38,7 @@ public class JsignCLI {
     public static void main(String... args) {
         try {
             new JsignCLI().execute(args);
-        } catch (SignerException | ParseException e) {
+        } catch (SignerException | IllegalArgumentException | ParseException e) {
             System.err.println("jsign: " + e.getMessage());
             if (e.getCause() != null) {
                 e.getCause().printStackTrace(System.err);

@@ -49,6 +49,7 @@ import net.jsign.timestamp.TimestampingException;
 import net.jsign.timestamp.TimestampingMode;
 
 import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.KeyStoreType.*;
 import static org.junit.Assert.*;
 
 public class PESignerTest {
@@ -57,9 +58,7 @@ public class PESignerTest {
     private static final String ALIAS = "test";
 
     private KeyStore getKeyStore() throws Exception {
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
-        return keystore;
+        return new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
     }
 
     @Test
@@ -156,7 +155,7 @@ public class PESignerTest {
             chain = certificates.toArray(new Certificate[0]);
         }
 
-        KeyStore keystore = KeyStoreUtils.load((String) null, "PKCS11", "123456", YubiKey.getProvider());
+        KeyStore keystore = new KeyStoreBuilder().storetype(YUBIKEY).storepass("123456").build();
         PrivateKey privateKey = (PrivateKey) keystore.getKey("X.509 Certificate for Digital Signature", null);
         AuthenticodeSigner signer = new AuthenticodeSigner(chain, privateKey)
                 .withSignatureProvider(keystore.getProvider());
@@ -548,8 +547,7 @@ public class PESignerTest {
 
     @Test
     public void testSignWithECKey() throws Exception {
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream("target/test-classes/keystores/keystore-ec.p12"), "password".toCharArray());
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore-ec.p12").storepass("password").build();
 
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-ec.exe");

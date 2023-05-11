@@ -54,7 +54,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
             mojo.execute();
         } catch (MojoFailureException e) {
             // expected
-            assertEquals("keystore element, or keyfile and certfile elements must be set", e.getMessage());
+            assertEquals("Either keystore, or keyfile and certfile, or storetype elements must be set", e.getCause().getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
             mojo.execute();
         } catch (MojoFailureException e) {
             // expected
-            assertEquals("keystore element, or keyfile and certfile elements must be set", e.getMessage());
+            assertEquals("Either keystore, or keyfile and certfile, or storetype elements must be set", e.getCause().getMessage());
         }
     }
 

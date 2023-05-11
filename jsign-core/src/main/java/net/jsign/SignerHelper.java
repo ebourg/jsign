@@ -17,7 +17,6 @@
 package net.jsign;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -29,25 +28,15 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
-import java.security.Security;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-
-import javax.smartcardio.CardException;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -56,19 +45,12 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 
-import net.jsign.jca.AmazonSigningService;
-import net.jsign.jca.AzureKeyVaultSigningService;
-import net.jsign.jca.DigiCertOneSigningService;
-import net.jsign.jca.ESignerSigningService;
-import net.jsign.jca.GoogleCloudSigningService;
-import net.jsign.jca.OpenPGPCardSigningService;
-import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
  * Helper class to create AuthenticodeSigner instances with untyped parameters.
  * This is used internally to share the parameter validation logic
- * between the Ant task and the CLI tool.
+ * between the Ant task, the Maven/Gradle plugins and the CLI tool.
  *
  * @since 2.0
  */
@@ -99,13 +81,8 @@ class SignerHelper {
     /** The name used to refer to a configuration parameter */
     private final String parameterName;
 
-    private String keystore;
-    private String storepass;
-    private String storetype;
+    private final KeyStoreBuilder ksparams;
     private String alias;
-    private String keypass;
-    private File keyfile;
-    private File certfile;
     private String tsaurl;
     private String tsmode;
     private int tsretries = -1;
@@ -120,28 +97,26 @@ class SignerHelper {
     private Charset encoding;
     private boolean detached;
 
-    /** The base directory to resolve relative paths */
-    private File basedir = new File("empty").getParentFile();
-
     private AuthenticodeSigner signer;
 
     public SignerHelper(Console console, String parameterName) {
         this.console = console;
         this.parameterName = parameterName;
+        this.ksparams = new KeyStoreBuilder(parameterName);
     }
 
     public SignerHelper keystore(String keystore) {
-        this.keystore = keystore;
+        ksparams.keystore(keystore);
         return this;
     }
 
     public SignerHelper storepass(String storepass) {
-        this.storepass = storepass;
+        ksparams.storepass(storepass);
         return this;
     }
 
     public SignerHelper storetype(String storetype) {
-        this.storetype = storetype;
+        ksparams.storetype(storetype);
         return this;
     }
 
@@ -151,27 +126,27 @@ class SignerHelper {
     }
 
     public SignerHelper keypass(String keypass) {
-        this.keypass = keypass;
+        ksparams.keypass(keypass);
         return this;
     }
 
     public SignerHelper keyfile(String keyfile) {
-        keyfile(createFile(keyfile));
+        ksparams.keyfile(keyfile);
         return this;
     }
 
     public SignerHelper keyfile(File keyfile) {
-        this.keyfile = keyfile;
+        ksparams.keyfile(keyfile);
         return this;
     }
 
     public SignerHelper certfile(String certfile) {
-        certfile(createFile(certfile));
+        ksparams.certfile(certfile);
         return this;
     }
 
     public SignerHelper certfile(File certfile) {
-        this.certfile = certfile;
+        ksparams.certfile(certfile);
         return this;
     }
 
@@ -271,282 +246,93 @@ class SignerHelper {
         }
     }
 
-    public void setBaseDir(File basedir) {
-        this.basedir = basedir;
-    }
-
-    private File createFile(String file) {
-        if (file == null) {
-            return null;
-        }
-
-        if (new File(file).isAbsolute()) {
-            return new File(file);
-        } else {
-            return new File(basedir, file);
-        }
-    }
-
-    /**
-     * Read the password from the specified value. If the value is prefixed with <code>file:</code>
-     * the password is loaded from a file. If the value is prefixed with <code>env:</code> the password
-     * is loaded from an environment variable. Otherwise the value is returned as is.
-     *
-     * @param name  the name of the parameter
-     * @param value the value to parse
-     */
-    private String readPassword(String name, String value) throws SignerException {
-        if (value != null) {
-            if (value.startsWith("file:")) {
-                String filename = value.substring("file:".length());
-                Path path = createFile(filename).toPath();
-                try {
-                    value = String.join("\n", Files.readAllLines(path, StandardCharsets.UTF_8)).trim();
-                } catch (IOException e) {
-                    throw new SignerException("Failed to read the " + name + " " + parameterName + " from the file '" + filename + "'", e);
-                }
-            } else if (value.startsWith("env:")) {
-                String variable = value.substring("env:".length());
-                if (!System.getenv().containsKey(variable)) {
-                    throw new SignerException("Failed to read the " + name + " " + parameterName + ", the '" + variable + "' environment variable is not defined");
-                }
-                value = System.getenv(variable);
-            }
-        }
-
-        return value;
+    void setBaseDir(File basedir) {
+        ksparams.setBaseDir(basedir);
     }
 
     private AuthenticodeSigner build() throws SignerException {
-        PrivateKey privateKey;
-        Certificate[] chain;
-
-        String storepass = readPassword("storepass", this.storepass);
-        String keypass = readPassword("keypass", this.keypass);
-
-        // some exciting parameter validation...
-        if (keystore == null && keyfile == null && certfile == null && !"YUBIKEY".equals(storetype) && !"NITROKEY".equals(storetype) && !"OPENPGP".equals(storetype) && !"OPENSC".equals(storetype) && !"DIGICERTONE".equals(storetype) && !"ESIGNER".equals(storetype)) {
-            throw new SignerException("keystore " + parameterName + ", or keyfile and certfile " + parameterName + "s must be set");
+        KeyStore ks;
+        try {
+            ks = ksparams.build();
+        } catch (KeyStoreException e) {
+            throw new SignerException("Failed to load the keystore " + ksparams.keystore(), e);
         }
-        if (keystore != null && keyfile != null) {
-            throw new SignerException("keystore " + parameterName + " can't be mixed with keyfile");
-        }
-        if ("AWS".equals(storetype)) {
-            if (keystore == null) {
-                throw new SignerException("keystore " + parameterName + " must specify the AWS region");
-            }
-            if (storepass == null) {
-                throw new SignerException("storepass " + parameterName + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]");
-            }
-            if (certfile == null) {
-                throw new SignerException("certfile " + parameterName + " must be set");
-            }
-        } else if ("AZUREKEYVAULT".equals(storetype)) {
-            if (keystore == null) {
-                throw new SignerException("keystore " + parameterName + " must specify the Azure vault name");
-            }
-            if (storepass == null) {
-                throw new SignerException("storepass " + parameterName + " must specify the Azure API access token");
-            }
-        } else if ("DIGICERTONE".equals(storetype)) {
-            if (storepass == null || storepass.split("\\|").length != 3) {
-                throw new SignerException("storepass " + parameterName + " must specify the DigiCert ONE API key and the client certificate: <apikey>|<keystore>|<password>");
-            }
-        } else if ("GOOGLECLOUD".equals(storetype)) {
-            if (keystore == null) {
-                throw new SignerException("keystore " + parameterName + " must specify the Goole Cloud keyring");
-            }
-            if (storepass == null) {
-                throw new SignerException("storepass " + parameterName + " must specify the Goole Cloud API access token");
-            }
-            if (certfile == null) {
-                throw new SignerException("certfile " + parameterName + " must be set");
-            }
-        } else if ("ESIGNER".equals(storetype)) {
-            if (storepass == null || !storepass.contains("|")) {
-                throw new SignerException("storepass " + parameterName + " must specify the SSL.com username and password: <username>|<password>");
-            }
-        } else if ("OPENPGP".equals(storetype)) {
-            if (storepass == null) {
-                throw new SignerException("storepass " + parameterName + " must specify the PIN");
-            }
-        }
-        
-        Provider provider = null;
-        if ("PKCS11".equals(storetype)) {
-            // the keystore parameter is either the provider name or the SunPKCS11 configuration file
-            if (keystore != null && createFile(keystore).exists()) {
-                provider = ProviderUtils.createSunPKCS11Provider(keystore);
-            } else if (keystore != null && keystore.startsWith("SunPKCS11-")) {
-                provider = Security.getProvider(keystore);
-                if (provider == null) {
-                    throw new SignerException("Security provider " + keystore + " not found");
-                }
-            } else {
-                throw new SignerException("keystore " + parameterName + " should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security");
-            }
-        } else if ("YUBIKEY".equals(storetype)) {
-            provider = YubiKey.getProvider();
-        } else if ("NITROKEY".equals(storetype)) {
-            provider = OpenSC.getProvider(keystore != null ? keystore : "Nitrokey");
-        } else if ("OPENPGP".equals(storetype)) {
+        KeyStoreType storetype = ksparams.storetype();
+        Provider provider = ksparams.provider();
+
+        Set<String> aliases = null;
+        if (alias == null) {
+            // guess the alias if there is only one in the keystore
             try {
-                Function<String, Certificate[]> certificateStore = alias -> {
-                    try {
-                        return loadCertificateChain(certfile);
-                    } catch (IOException | CertificateException e) {
-                        throw new RuntimeException("Failed to load the certificate from " + certfile, e);
-                    }
-                };
-                provider = new SigningServiceJcaProvider(new OpenPGPCardSigningService(storepass, certfile != null ? certificateStore : null));
-            } catch (CardException e) {
-                throw new SignerException("Failed to initialize the OpenPGP card", e);
-            }
-        } else if ("OPENSC".equals(storetype)) {
-            provider = OpenSC.getProvider(keystore);
-        } else if ("AWS".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new AmazonSigningService(keystore, storepass, alias -> {
-                try {
-                    return loadCertificateChain(certfile);
-                } catch (IOException | CertificateException e) {
-                    throw new RuntimeException("Failed to load the certificate from " + certfile, e);
-                }
-            }));
-        } else if ("AZUREKEYVAULT".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(keystore, storepass));
-        } else if ("DIGICERTONE".equals(storetype)) {
-            String[] elements = storepass.split("\\|");
-            provider = new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], createFile(elements[1]), elements[2]));
-        } else if ("GOOGLECLOUD".equals(storetype)) {
-            provider = new SigningServiceJcaProvider(new GoogleCloudSigningService(keystore, storepass, alias -> {
-                try {
-                    return loadCertificateChain(certfile);
-                } catch (IOException | CertificateException e) {
-                    throw new RuntimeException("Failed to load the certificate from " + certfile, e);
-                }
-            }));
-        } else if ("ESIGNER".equals(storetype)) {
-            String[] elements = storepass.split("\\|", 2);
-            String endpoint = keystore != null ? keystore : "https://cs.ssl.com";
-            try {
-                provider = new SigningServiceJcaProvider(new ESignerSigningService(endpoint, elements[0], elements[1]));
-            } catch (IOException e) {
-                throw new SignerException("Authentication failed with SSL.com", e);
-            }
-        }
-
-        if (keystore != null || "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENPGP".equals(storetype) || "OPENSC".equals(storetype) || "DIGICERTONE".equals(storetype)) {
-            KeyStore ks;
-            try {
-                ks = KeyStoreUtils.load(createFile(keystore), "YUBIKEY".equals(storetype) || "NITROKEY".equals(storetype) || "OPENSC".equals(storetype) ? "PKCS11" : storetype, storepass, provider);
-            } catch (KeyStoreException e) {
-                throw new SignerException("Failed to load the keystore " + keystore, e);
-            }
-
-            Set<String> aliases = null;
-            if (alias == null) {
-                // guess the alias if there is only one in the keystore
-                try {
-                    aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
-                } catch (KeyStoreException e) {
-                    throw new SignerException(e.getMessage(), e);
-                }
-
-                if ("YUBIKEY".equals(storetype)) {
-                    // the attestation certificate is never used for signing files
-                    aliases.remove("X.509 Certificate for PIV Attestation");
-                }
-
-                if (aliases.isEmpty()) {
-                    throw new SignerException("No certificate found in the keystore " + (provider != null ? provider.getName() : keystore));
-                } else if (aliases.size() == 1) {
-                    alias = aliases.iterator().next();
-                } else {
-                    throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
-                }
-            }
-
-            try {
-                chain = ks.getCertificateChain(alias);
+                aliases = storetype.getAliases(ks);
             } catch (KeyStoreException e) {
                 throw new SignerException(e.getMessage(), e);
             }
-            if (chain == null) {
-                String message = "No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : keystore);
-                if (aliases == null) {
-                    try {
-                        aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
-                        if (aliases.isEmpty()) {
-                            message = "No certificate found in the keystore " + (provider != null ? provider.getName() : keystore);
-                        } else {
-                            message += " (available aliases: " + String.join(", ", aliases) + ")";
-                        }
-                    } catch (KeyStoreException e) {
-                        message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
-                    }
-                }
-                throw new SignerException(message);
+
+            if (aliases.isEmpty()) {
+                throw new SignerException("No certificate found in the keystore " + (provider != null ? provider.getName() : ksparams.keystore()));
+            } else if (aliases.size() == 1) {
+                alias = aliases.iterator().next();
+            } else {
+                throw new SignerException("alias " + parameterName + " must be set to select a certificate (available aliases: " + String.join(", ", aliases) + ")");
             }
-            if (certfile != null && !"GOOGLECLOUD".equals(storetype) && !"ESIGNER".equals(storetype) && !"AWS".equals(storetype) && !"OPENPGP".equals(storetype)) {
-                if (chain.length != 1) {
-                    throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
-                }
-                // replace the certificate chain from the keystore with the complete chain from file
+        }
+
+        Certificate[] chain;
+        try {
+            chain = ks.getCertificateChain(alias);
+        } catch (KeyStoreException e) {
+            throw new SignerException(e.getMessage(), e);
+        }
+        if (chain == null) {
+            String message = "No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
+            if (aliases == null) {
                 try {
-                    Certificate[] chainFromFile = loadCertificateChain(certfile);
-                    if (chainFromFile[0].equals(chain[0])) {
-                        // replace certificate with complete chain
-                        chain = chainFromFile;
+                    aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
+                    if (aliases.isEmpty()) {
+                        message = "No certificate found in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
                     } else {
-                        throw new SignerException("The certificate chain in " + certfile + " does not match the chain from the keystore");
+                        message += " (available aliases: " + String.join(", ", aliases) + ")";
                     }
-                } catch (SignerException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new SignerException("Failed to load the certificate from " + certfile, e);
+                } catch (KeyStoreException e) {
+                    message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
                 }
             }
-
-            char[] password = keypass != null ? keypass.toCharArray() : null;
-            if (password == null && storepass != null && !"ESIGNER".equals(storetype)) {
-                // use the storepass as the keypass
-                password = storepass.toCharArray();
+            throw new SignerException(message);
+        }
+        if (ksparams.certfile() != null && storetype.hasCertificate()) {
+            if (chain.length != 1) {
+                throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
             }
-
+            // replace the certificate chain from the keystore with the complete chain from file
             try {
-                privateKey = (PrivateKey) ks.getKey(alias, password);
+                Certificate[] chainFromFile = CertificateUtils.loadCertificateChain(ksparams.certfile());
+                if (chainFromFile[0].equals(chain[0])) {
+                    // replace certificate with complete chain
+                    chain = chainFromFile;
+                } else {
+                    throw new SignerException("The certificate chain in " + ksparams.certfile() + " does not match the chain from the keystore");
+                }
+            } catch (SignerException e) {
+                throw e;
             } catch (Exception e) {
-                throw new SignerException("Failed to retrieve the private key from the keystore", e);
+                throw new SignerException("Failed to load the certificate from " + ksparams.certfile(), e);
             }
+        }
 
-        } else {
-            // separate private key and certificate files (PVK/SPC)
-            if (keyfile == null) {
-                throw new SignerException("keyfile " + parameterName + " must be set");
-            }
-            if (!keyfile.exists()) {
-                throw new SignerException("The keyfile " + keyfile + " couldn't be found");
-            }
-            if (certfile == null) {
-                throw new SignerException("certfile " + parameterName + " must be set");
-            }
-            if (!certfile.exists()) {
-                throw new SignerException("The certfile " + certfile + " couldn't be found");
-            }
+        String storepass = ksparams.storepass();
+        String keypass = ksparams.keypass();
+        char[] password = keypass != null ? keypass.toCharArray() : null;
+        if (password == null && storepass != null && storetype.reuseKeyStorePassword()) {
+            // use the storepass as the keypass
+            password = storepass.toCharArray();
+        }
 
-            // load the certificate chain
-            try {
-                chain = loadCertificateChain(certfile);
-            } catch (Exception e) {
-                throw new SignerException("Failed to load the certificate from " + certfile, e);
-            }
-
-            // load the private key
-            try {
-                privateKey = PrivateKeyUtils.load(keyfile, keypass != null ? keypass : storepass);
-            } catch (Exception e) {
-                throw new SignerException("Failed to load the private key from " + keyfile, e);
-            }
+        PrivateKey privateKey;
+        try {
+            privateKey = (PrivateKey) ks.getKey(alias, password);
+        } catch (Exception e) {
+            throw new SignerException("Failed to retrieve the private key from the keystore", e);
         }
 
         if (alg != null && DigestAlgorithm.of(alg) == null) {
@@ -574,7 +360,7 @@ class SignerHelper {
     }
 
     public void sign(String file) throws SignerException {
-        sign(createFile(file));
+        sign(ksparams.createFile(file));
     }
 
     public void sign(File file) throws SignerException {
@@ -612,7 +398,7 @@ class SignerHelper {
                 }
             }
 
-        } catch (UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
             throw new SignerException(e.getMessage());
         } catch (SignerException e) {
             throw e;
@@ -639,17 +425,6 @@ class SignerHelper {
 
     private File getDetachedSignature(File file) {
         return new File(file.getParentFile(), file.getName() + ".sig");
-    }
-
-    /**
-     * Load the certificate chain from the specified PKCS#7 files.
-     */
-    private Certificate[] loadCertificateChain(File file) throws IOException, CertificateException {
-        try (FileInputStream in = new FileInputStream(file)) {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-            return certificates.toArray(new Certificate[0]);
-        }
     }
 
     /**

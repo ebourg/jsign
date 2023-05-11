@@ -21,17 +21,18 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import static net.jsign.KeyStoreType.*;
 import static org.junit.Assert.*;
 
-public class KeyStoreUtilsTest {
+public class KeyStoreTypeTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals("PKCS12", KeyStoreUtils.getType("keystore.p12"));
-        assertEquals("PKCS12", KeyStoreUtils.getType("keystore.pfx"));
-        assertEquals("JCEKS", KeyStoreUtils.getType("keystore.jceks"));
-        assertEquals("JKS", KeyStoreUtils.getType("keystore.jks"));
-        assertNull(KeyStoreUtils.getType("keystore.unknown"));
+        assertEquals(PKCS12, KeyStoreType.of(new File("keystore.p12")));
+        assertEquals(PKCS12, KeyStoreType.of(new File("keystore.pfx")));
+        assertEquals(JCEKS, KeyStoreType.of(new File("keystore.jceks")));
+        assertEquals(JKS, KeyStoreType.of(new File("keystore.jks")));
+        assertNull(KeyStoreType.of(new File("keystore.unknown")));
     }
 
     @Test
@@ -40,7 +41,7 @@ public class KeyStoreUtilsTest {
         File target = new File("target/test-classes/keystores/keystore.p12.ext");
         FileUtils.copyFile(source, target);
 
-        assertEquals("PKCS12", KeyStoreUtils.getType(target.getPath()));
+        assertEquals(PKCS12, KeyStoreType.of(target));
     }
 
     @Test
@@ -49,7 +50,7 @@ public class KeyStoreUtilsTest {
         File target = new File("target/test-classes/keystores/keystore.jceks.ext");
         FileUtils.copyFile(source, target);
 
-        assertEquals("JCEKS", KeyStoreUtils.getType(target.getPath()));
+        assertEquals(JCEKS, KeyStoreType.of(target));
     }
 
     @Test
@@ -58,11 +59,11 @@ public class KeyStoreUtilsTest {
         File target = new File("target/test-classes/keystores/keystore.jks.ext");
         FileUtils.copyFile(source, target);
 
-        assertEquals("JKS", KeyStoreUtils.getType(target.getPath()));
+        assertEquals(JKS, KeyStoreType.of(target));
     }
 
     @Test
     public void testGetTypeUnknown() throws Exception {
-        assertNull(KeyStoreUtils.getType("target/test-classes/keystores/jsign-root-ca.pem"));
+        assertNull(KeyStoreType.of(new File("target/test-classes/keystores/jsign-root-ca.pem")));
     }
 }

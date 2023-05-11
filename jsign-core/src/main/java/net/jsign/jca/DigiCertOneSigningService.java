@@ -42,7 +42,7 @@ import javax.net.ssl.X509KeyManager;
 import com.cedarsoftware.util.io.JsonWriter;
 
 import net.jsign.DigestAlgorithm;
-import net.jsign.KeyStoreUtils;
+import net.jsign.KeyStoreBuilder;
 
 /**
  * DigiCert ONE signing service.
@@ -206,7 +206,7 @@ public class DigiCertOneSigningService implements SigningService {
 
     private static KeyManager getKeyManager(File keystoreFile, String storepass) {
         try {
-            KeyStore keystore = KeyStoreUtils.load(keystoreFile, null, storepass, null);
+            KeyStore keystore = new KeyStoreBuilder().keystore(keystoreFile).storepass(storepass).build();
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             kmf.init(keystore, storepass.toCharArray());

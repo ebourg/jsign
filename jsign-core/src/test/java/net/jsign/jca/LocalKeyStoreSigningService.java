@@ -16,7 +16,6 @@
 
 package net.jsign.jca;
 
-import java.io.File;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -28,7 +27,7 @@ import java.security.cert.Certificate;
 import java.util.Collections;
 import java.util.List;
 
-import net.jsign.KeyStoreUtils;
+import net.jsign.KeyStoreBuilder;
 
 /**
  * Signing service using a local KeyStore (for testing only).
@@ -38,9 +37,9 @@ class LocalKeyStoreSigningService implements SigningService {
     private final String keypass;
     private final KeyStore keystore;
 
-    public LocalKeyStoreSigningService(String keystoreFile, String storepass, String keypass) throws KeyStoreException {
+    public LocalKeyStoreSigningService(String keystore, String storepass, String keypass) throws KeyStoreException {
         this.keypass = keypass;
-        this.keystore = KeyStoreUtils.load(new File(keystoreFile), null, storepass, null);
+        this.keystore = new KeyStoreBuilder().keystore(keystore).storepass(storepass).build();
     }
 
     @Override

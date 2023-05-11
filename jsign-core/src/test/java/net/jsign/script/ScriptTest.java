@@ -17,13 +17,13 @@
 package net.jsign.script;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.security.KeyStore;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
+import net.jsign.KeyStoreBuilder;
 import net.jsign.SignatureAssert;
 
 import static net.jsign.DigestAlgorithm.*;
@@ -39,9 +39,7 @@ public abstract class ScriptTest {
     protected abstract SignableScript createScript();
 
     protected KeyStore getKeyStore() throws Exception {
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream("target/test-classes/keystores/keystore.jks"), "password".toCharArray());
-        return keystore;
+        return new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
     }
 
     private AuthenticodeSigner getSigner() throws Exception {
