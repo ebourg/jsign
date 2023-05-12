@@ -1,7 +1,7 @@
 Jsign - Java implementation of Microsoft Authenticode
 =====================================================
 
-[![Build Status](https://api.travis-ci.com/ebourg/jsign.svg)](https://app.travis-ci.com/github/ebourg/jsign)
+[![Build Status](https://github.com/ebourg/jsign/actions/workflows/build.yml/badge.svg?branch=master&event=push)](https://github.com/ebourg/jsign/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/ebourg/jsign/badge.svg?branch=master)](https://coveralls.io/github/ebourg/jsign?branch=master)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
