@@ -9,7 +9,7 @@
     <version>5.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>Jsign - Authenticode implementation in Java (Maven Plugin)</name>
+  <name>Jsign - Authenticode signing in Java (Maven Plugin)</name>
   <version>5.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 

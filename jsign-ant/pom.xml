@@ -9,7 +9,7 @@
     <version>5.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <name>Jsign - Authenticode implementation in Java (Ant Task)</name>
+  <name>Jsign - Authenticode signing in Java (Ant Task)</name>
   <version>5.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
