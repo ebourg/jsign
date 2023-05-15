@@ -26,6 +26,7 @@ import java.util.List;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
@@ -141,7 +142,7 @@ public abstract class Timestamper {
             throw exception;
         }
         
-        return modifySignedData(sigData, getUnsignedAttributes(token), getExtraCertificates(token));
+        return modifySignedData(sigData, getCounterSignature(token), getExtraCertificates(token));
     }
 
     /**
@@ -170,12 +171,36 @@ public abstract class Timestamper {
      * Return the counter signature to be added as an unsigned attribute.
      * 
      * @param token the timestamp
-     * @return the unsigned attribute wrapping the timestamp
+     * @return the attribute wrapping the timestamp
+     * @since 5.0
      */
-    protected abstract AttributeTable getUnsignedAttributes(CMSSignedData token);
+    protected abstract Attribute getCounterSignature(CMSSignedData token);
 
-    protected CMSSignedData modifySignedData(CMSSignedData sigData, AttributeTable unsignedAttributes, Collection<X509CertificateHolder> extraCertificates) throws IOException, CMSException {
+    /**
+     * Return the counter signature to be added as an unsigned attribute.
+     *
+     * @param token the timestamp
+     * @return the attribute wrapping the timestamp
+     * @deprecated use {@link #getCounterSignature(CMSSignedData)} instead
+     */
+    @Deprecated
+    protected AttributeTable getUnsignedAttributes(CMSSignedData token) {
+        return new AttributeTable(getCounterSignature(token));
+    }
+
+    @Deprecated
+    protected CMSSignedData modifySignedData(CMSSignedData sigData, AttributeTable counterSignature, Collection<X509CertificateHolder> extraCertificates) throws IOException, CMSException {
+        return modifySignedData(sigData, Attribute.getInstance(counterSignature.toASN1EncodableVector().get(0)), extraCertificates);
+    }
+
+    protected CMSSignedData modifySignedData(CMSSignedData sigData, Attribute counterSignature, Collection<X509CertificateHolder> extraCertificates) throws IOException, CMSException {
         SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
+        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        if (unsignedAttributes == null) {
+            unsignedAttributes = new AttributeTable(counterSignature);
+        } else {
+            unsignedAttributes = unsignedAttributes.add(counterSignature.getAttrType(), counterSignature.getAttrValues());
+        }
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         
         Collection<X509CertificateHolder> certificates = new ArrayList<>();

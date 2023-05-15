@@ -24,7 +24,6 @@ import java.util.Collection;
 
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSSignedData;
@@ -84,11 +83,9 @@ public class AuthenticodeTimestamper extends Timestamper {
     }
 
     @Override
-    protected AttributeTable getUnsignedAttributes(CMSSignedData token) {
+    protected Attribute getCounterSignature(CMSSignedData token) {
         SignerInformation timestampSignerInformation = token.getSignerInfos().getSigners().iterator().next();
-        Attribute counterSignature = new Attribute(CMSAttributes.counterSignature, new DERSet(timestampSignerInformation.toASN1Structure()));
-        
-        return new AttributeTable(counterSignature);
+        return new Attribute(CMSAttributes.counterSignature, new DERSet(timestampSignerInformation.toASN1Structure()));
     }
 
     private byte[] toBytes(InputStream in) throws IOException {

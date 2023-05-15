@@ -22,7 +22,6 @@ import java.net.HttpURLConnection;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.tsp.TimeStampRequest;
@@ -86,8 +85,7 @@ public class RFC3161Timestamper extends Timestamper {
     }
 
     @Override
-    protected AttributeTable getUnsignedAttributes(CMSSignedData token) {
-        Attribute rfc3161CounterSignature = new Attribute(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID, new DERSet(token.toASN1Structure()));
-        return new AttributeTable(rfc3161CounterSignature);
+    protected Attribute getCounterSignature(CMSSignedData token) {
+        return new Attribute(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID, new DERSet(token.toASN1Structure()));
     }
 }
