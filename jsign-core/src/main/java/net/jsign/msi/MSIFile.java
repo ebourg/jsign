@@ -67,6 +67,8 @@ import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcSipInfo;
 import net.jsign.asn1.authenticode.SpcUuid;
 
+import static org.apache.poi.poifs.common.POIFSConstants.*;
+
 /**
  * A Microsoft Installer package.
  * 
@@ -293,20 +295,23 @@ public class MSIFile implements Signable {
         // get the number of directory sectors to be written in the header to work around https://bz.apache.org/bugzilla/show_bug.cgi?id=66590
         ByteBuffer directorySectorsCount = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
         directorySectorsCount.putInt(fsWrite.getPropertyTable().countBlocks()).flip();
+        int version = fsWrite.getBigBlockSize() == SMALLER_BIG_BLOCK_SIZE ? 3 : 4;
 
         if (channel == null) {
             fsWrite.writeFilesystem();
 
             // update the number of directory sectors in the header
-            fsWrite.close();
-            try (RandomAccessFile in = new RandomAccessFile(file, "rw")) {
-                in.seek(0x28);
-                in.write(directorySectorsCount.array());
-            }
-            try {
-                fsWrite = new POIFSFileSystem(file, false);
-            } catch (IndexOutOfBoundsException e) {
-                throw new IOException("MSI file format error", e);
+            if (version == 4) {
+                fsWrite.close();
+                try (RandomAccessFile in = new RandomAccessFile(file, "rw")) {
+                    in.seek(0x28);
+                    in.write(directorySectorsCount.array());
+                }
+                try {
+                    fsWrite = new POIFSFileSystem(file, false);
+                } catch (IndexOutOfBoundsException e) {
+                    throw new IOException("MSI file format error", e);
+                }
             }
 
             fsRead.close();
@@ -321,8 +326,10 @@ public class MSIFile implements Signable {
             channel.truncate(channel.position());
 
             // update the number of directory sectors in the header
-            channel.position(0x28);
-            channel.write(directorySectorsCount);
+            if (version == 4) {
+                channel.position(0x28);
+                channel.write(directorySectorsCount);
+            }
         }
     }
 }
