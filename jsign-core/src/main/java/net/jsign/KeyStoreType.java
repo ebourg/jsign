@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.UnknownServiceException;
 import java.nio.ByteBuffer;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -224,9 +225,6 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the AWS region");
             }
-            if (params.storepass() == null) {
-                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]");
-            }
             if (params.certfile() == null) {
                 throw new IllegalArgumentException("certfile " + params.parameterName() + " must be set");
             }
@@ -234,7 +232,21 @@ public enum KeyStoreType {
 
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            AmazonCredentials credentials = AmazonCredentials.parse(params.storepass());
+            AmazonCredentials credentials;
+            if (params.storepass() != null) {
+                credentials = AmazonCredentials.parse(params.storepass());
+            } else {
+                try {
+                    credentials = AmazonCredentials.getDefault();
+                } catch (UnknownServiceException e) {
+                    throw new IllegalArgumentException("storepass " + params.parameterName()
+                            + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]"
+                            + ", when not running from an EC2 instance (" + e.getMessage() + ")", e);
+                } catch (IOException e) {
+                    throw new RuntimeException("An error occurred while fetching temporary credentials from IMDSv2 service", e);
+                }
+            }
+
             return new SigningServiceJcaProvider(new AmazonSigningService(params.keystore(), credentials, alias -> {
                 try {
                     return CertificateUtils.loadCertificateChain(params.certfile());

@@ -42,7 +42,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 5.0 (in development)
 
-* The AWS KMS signing service has been integrated
+* The AWS KMS signing service has been integrated (with contributions from Vincent Malmedy)
 * Nitrokey support has been improved with automatic PKCS#11 configuration using the new `NITROKEY` storetype
 * Smart cards are now supported with the new `OPENSC` storetype
 * OpenPGP cards are now supported with the new `OPENPGP` storetype

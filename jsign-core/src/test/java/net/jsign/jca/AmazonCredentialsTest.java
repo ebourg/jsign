@@ -16,6 +16,8 @@
 
 package net.jsign.jca;
 
+import java.net.UnknownServiceException;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -41,5 +43,10 @@ public class AmazonCredentialsTest {
     @Test(expected = IllegalArgumentException.class)
     public void testParseIncomplete() {
         AmazonCredentials.parse("accessKey");
+    }
+
+    @Test(expected = UnknownServiceException.class)
+    public void testGetDefault() throws Exception {
+        AmazonCredentials.getDefault();
     }
 }

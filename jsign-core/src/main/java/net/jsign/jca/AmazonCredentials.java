@@ -16,6 +16,8 @@
 
 package net.jsign.jca;
 
+import java.io.IOException;
+
 /**
  * AWS credentials
  *
@@ -61,5 +63,12 @@ public class AmazonCredentials {
         String sessionToken = elements.length > 2 ? elements[2] : null;
 
         return new AmazonCredentials(accessKey, secretKey, sessionToken);   
+    }
+
+    /**
+     * Returns the default AWS credentials
+     */
+    public static AmazonCredentials getDefault() throws IOException {
+        return new AmazonIMDS2Client().getCredentials();
     }
 }

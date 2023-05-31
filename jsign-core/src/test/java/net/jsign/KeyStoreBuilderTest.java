@@ -117,19 +117,20 @@ public class KeyStoreBuilderTest {
             builder.build();
             fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]", e.getMessage());
+            assertEquals("message", "certfile parameter must be set", e.getMessage());
         }
 
-        builder.storepass("<accessKey>|<secretKey>[|<sessionToken>");
+        builder.certfile("keystores/jsign-test-certificate.pem");
 
         try {
             builder.build();
             fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
-            assertEquals("message", "certfile parameter must be set", e.getMessage());
+            assertTrue("message", e.getMessage().matches(
+                    "storepass parameter must specify the AWS credentials\\: \\<accessKey\\>\\|\\<secretKey\\>\\[\\|\\<sessionToken\\>\\], when not running from an EC2 instance \\(.*\\)"));
         }
 
-        builder.certfile("keystores/jsign-test-certificate.pem");
+        builder.storepass("<accessKey>|<secretKey>|<sessionToken>");
 
         KeyStore keystore = builder.build();
         assertNotNull("keystore", keystore);

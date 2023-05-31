@@ -236,8 +236,11 @@ Signing with AWS Key Management Service:
 
 AWS Key Management Service stores only the private key, the certificate must be provided separately.
 The keystore parameter references the AWS region. The AWS access key, secret key, and optionally the
-session token, are concatenated and used as the storepass. The alias can specify either the key id
-or an alias.
+session token, are concatenated and used as the storepass parameter; if the latter is not provided,
+the executable is assumed to be running on an AWS EC2 instance, and the IMDSv2 service is queried
+to obtain temporary credentials based on the instance profile. In any case, the credentials must
+allow the following actions: kms:ListKeys, kms:DescribeKey and kms:Sign.
+The alias parameter can specify either the key id or an alias.
 
 jsign --storetype AWS --keystore eu-west-3 \\
       --storepass "<access-key>|<secret-key>|<session-token>" \\

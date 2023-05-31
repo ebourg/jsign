@@ -549,10 +549,14 @@ required if the certificate chain contains an intermediate certificate.</p>
 
 <h4 id="example-awskms">Example using AWS Key Management Service:</h4>
 
-<p><a href="https://aws.amazon.com/kms/">AWS Key Management Service</a> stores only the private key,
-the certificate must be provided separately. The keystore parameter references the AWS region.
+<p><a href="https://aws.amazon.com/kms/">AWS Key Management Service</a> (KMS) stores only the private key,
+the certificate must be provided separately. The <code>keystore</code> parameter references the AWS region.
 The AWS access key, secret key, and optionally the session token, are concatenated
-and used as the storepass. The alias can specify either the key id or an alias.</p>
+and used as the <code>storepass</code> parameter; if the latter is not provided, the executable is assumed to be running on an AWS EC2 instance,
+and the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">IMDSv2</a> service
+is queried to obtain temporary credentials based on the instance profile. In any case, the credentials must allow the following actions:
+<code>kms:ListKeys</code>, <code>kms:DescribeKey</code> and <code>kms:Sign</code>.
+The <code>alias</code> parameter can specify either the key id or an alias.</p>
 
 <pre>
  jsign --storetype AWS --keystore eu-west-3 \
@@ -670,7 +674,7 @@ by a colon character.</p>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
 MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
-<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee and Maria Merkel.</p>
+<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel and Vincent Malmedy.</p>
 
 <h3>Contact</h3>
 
