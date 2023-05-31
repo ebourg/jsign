@@ -156,8 +156,9 @@ public class AmazonSigningService implements SigningService {
 
             String keySpec = (String) keyMetadata.get("KeySpec");
             algorithm = keySpec.substring(0, keySpec.indexOf('_'));
-            if ("ECC".equals(algorithm))
+            if ("ECC".equals(algorithm)) {
                 algorithm = "EC";
+            }
         } catch (IOException e) {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch AWS key '" + alias + "'").initCause(e);
         }
