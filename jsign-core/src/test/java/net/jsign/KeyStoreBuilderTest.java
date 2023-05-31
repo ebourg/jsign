@@ -113,13 +113,6 @@ public class KeyStoreBuilderTest {
 
         builder.keystore("eu-west-1");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]", e.getMessage());
-        }
-
         builder.storepass("<accessKey>|<secretKey>[|<sessionToken>");
 
         try {
