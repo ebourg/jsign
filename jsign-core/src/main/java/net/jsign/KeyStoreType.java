@@ -223,9 +223,6 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the AWS region");
             }
-            if (params.storepass() == null) {
-                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]");
-            }
             if (params.certfile() == null) {
                 throw new IllegalArgumentException("certfile " + params.parameterName() + " must be set");
             }

@@ -91,8 +91,8 @@ public class AmazonSigningService implements SigningService {
     public AmazonSigningService(String region, String credentials, Function<String, Certificate[]> certificateStore) {
         this.certificateStore = certificateStore;
 
-        // parse the credentials
-        String[] elements = credentials.split("\\|", 3);
+        // Obtain the credentials
+        String[] elements = credentials != null ? credentials.split("\\|", 3) : IMDS2Client.create().getCredentials();
         if (elements.length < 2) {
             throw new IllegalArgumentException("Invalid AWS credentials: " + credentials);
         }
