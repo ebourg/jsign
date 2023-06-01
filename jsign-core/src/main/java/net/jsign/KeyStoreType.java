@@ -236,7 +236,7 @@ public enum KeyStoreType {
                 } catch (IOException | CertificateException e) {
                     throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
                 }
-            }));
+            }, params.parameterName()));
         }
     },
 

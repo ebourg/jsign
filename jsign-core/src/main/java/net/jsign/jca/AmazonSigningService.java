@@ -17,7 +17,9 @@
 package net.jsign.jca;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -89,10 +91,36 @@ public class AmazonSigningService implements SigningService {
      * @param certificateStore provides the certificate chain for the keys
      */
     public AmazonSigningService(String region, String credentials, Function<String, Certificate[]> certificateStore) {
+        this(region, credentials, certificateStore, "parameter");
+    }
+
+    /**
+     * Creates a new AWS signing service.
+     *
+     * @param region           the AWS region holding the keys (for example <tt>eu-west-3</tt>)
+     * @param credentials      the AWS credentials: <tt>accessKey|secretKey|sessionToken</tt> (the session token is optional)
+     * @param certificateStore provides the certificate chain for the keys
+     * @param parameterName    the word used to qualify input parameters; only used to customize error messages
+     */
+    public AmazonSigningService(String region, String credentials, Function<String, Certificate[]> certificateStore, String parameterName) {
         this.certificateStore = certificateStore;
 
         // Obtain the credentials
-        String[] elements = credentials != null ? credentials.split("\\|", 3) : IMDS2Client.create().getCredentials();
+        String[] elements;
+        if (credentials != null) {
+            elements = credentials.split("\\|", 3);
+        } else {
+            try {
+                elements = IMDS2Client.create().getCredentials();
+            } catch (SocketException | InterruptedIOException e) {
+                throw new IllegalArgumentException("storepass " + parameterName
+                        + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]"
+                        + ", when not running from an EC2 instance (IMDSv2 service was unreachable; check the hop limit if containerized)", e);
+            } catch (IOException e) {
+                throw new RuntimeException("an error occurred while fetching temporary credentials from IMDSv2 service", e);
+            }
+        }
+
         if (elements.length < 2) {
             throw new IllegalArgumentException("Invalid AWS credentials: " + credentials);
         }

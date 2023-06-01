@@ -113,8 +113,6 @@ public class KeyStoreBuilderTest {
 
         builder.keystore("eu-west-1");
 
-        builder.storepass("<accessKey>|<secretKey>[|<sessionToken>");
-
         try {
             builder.build();
             fail("Exception not thrown");
@@ -123,6 +121,15 @@ public class KeyStoreBuilderTest {
         }
 
         builder.certfile("keystores/jsign-test-certificate.pem");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "storepass parameter must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>], when not running from an EC2 instance (IMDSv2 service was unreachable; check the hop limit if containerized)", e.getMessage());
+        }
+
+        builder.storepass("<accessKey>|<secretKey>|<sessionToken>");
 
         KeyStore keystore = builder.build();
         assertNotNull("keystore", keystore);
