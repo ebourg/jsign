@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>jsign</id>
+    <version>4.2</version>
+    <owners>ebourg</owners>
+    <title>Jsign</title>
+    <authors>Emmanuel Bourg</authors>
+    <projectUrl>https://ebourg.github.io/jsign/</projectUrl>
+    <licenseUrl>https://raw.githubusercontent.com/ebourg/jsign/master/LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectSourceUrl>https://github.com/ebourg/jsign</projectSourceUrl>
+    <docsUrl>https://ebourg.github.io/jsign/</docsUrl>
+    <bugTrackerUrl>https://github.com/ebourg/jsign/issues</bugTrackerUrl>
+    <tags>signing code-signing authenticode signtool PE EXE SYS DLL CAB MSI VBS WSF</tags>
+    <summary>Command line tool for signing Windows executable files, installers and scripts</summary>
+    <description>
+      Jsign is a Java implementation of Microsoft Authenticode that lets you sign and timestamp executable files
+      for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT) and scripts. Jsign is platform
+      independent and provides an alternative to native tools like signcode/signtool on Windows or the Mono development
+      tools on Unix systems.
+    </description>
+    <releaseNotes>https://github.com/ebourg/jsign/blob/master/README.md</releaseNotes>
+    <dependencies>
+      <dependency id="temurin11jre" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+    <file src="..\..\target\jsign-4.2.jar" target="tools\jsign.jar" />
+    <file src="..\..\..\LICENSE.txt" target="tools\" />
+  </files>
+</package>
