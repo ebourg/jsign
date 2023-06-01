@@ -17,7 +17,9 @@
 package net.jsign.jca;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -109,9 +111,18 @@ class IMDS2Client {
         conn.setConnectTimeout(3000 /* milliseconds */);
         conn.setRequestMethod("PUT");
         conn.setRequestProperty("X-aws-ec2-metadata-token-ttl-seconds", String.valueOf(TOKEN_TTL_SECONDS));
-        int responseCode = conn.getResponseCode();
-        if (responseCode >= 400) {
-            throw handleError(conn); // TODO: check meaning of the error codes
+        try {
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 404 || responseCode == 411) { // hitting Azure metadata service...
+                throw new UnreachableServiceException("IMDSv2 host did not respond as expected; are you in AWS cloud?");
+            } else if (responseCode == 403) {
+                throw new UnreachableServiceException("IMDSv2 is possibly disabled on this host");
+            } else if (responseCode >= 400) {
+                throw handleError(conn);
+            }
+        } catch (SocketException | InterruptedIOException e) {
+            throw new UnreachableServiceException("IMDSv2 host was unreachable; check the hop limit if containerized",
+                    e);
         }
         apiToken = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
         if (apiToken == null) {
@@ -158,5 +169,18 @@ class IMDS2Client {
         return new IOException("HTTP Error " + conn.getResponseCode()
                 + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : "") + " (" + conn.getURL()
                 + ")");
+    }
+
+    class UnreachableServiceException extends IOException {
+
+        private static final long serialVersionUID = 2449088321976847042L;
+
+        public UnreachableServiceException(String message) {
+            super(message);
+        }
+    
+        public UnreachableServiceException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }

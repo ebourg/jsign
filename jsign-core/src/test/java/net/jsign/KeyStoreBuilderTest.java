@@ -126,7 +126,8 @@ public class KeyStoreBuilderTest {
             builder.build();
             fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>], when not running from an EC2 instance (IMDSv2 service was unreachable; check the hop limit if containerized)", e.getMessage());
+            assertTrue("message", e.getMessage().matches(
+                    "storepass parameter must specify the AWS credentials\\: \\<accessKey\\>\\|\\<secretKey\\>\\[\\|\\<sessionToken\\>\\], when not running from an EC2 instance \\(.*\\)"));
         }
 
         builder.storepass("<accessKey>|<secretKey>|<sessionToken>");

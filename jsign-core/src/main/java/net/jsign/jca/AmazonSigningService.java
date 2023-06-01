@@ -17,9 +17,7 @@
 package net.jsign.jca;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
-import java.net.SocketException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -49,6 +47,7 @@ import com.cedarsoftware.util.io.JsonWriter;
 import org.apache.commons.codec.binary.Hex;
 
 import net.jsign.DigestAlgorithm;
+import net.jsign.jca.IMDS2Client.UnreachableServiceException;
 
 import static java.nio.charset.StandardCharsets.*;
 
@@ -112,10 +111,10 @@ public class AmazonSigningService implements SigningService {
         } else {
             try {
                 elements = IMDS2Client.create().getCredentials();
-            } catch (SocketException | InterruptedIOException e) {
+            } catch (UnreachableServiceException e) {
                 throw new IllegalArgumentException("storepass " + parameterName
                         + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]"
-                        + ", when not running from an EC2 instance (IMDSv2 service was unreachable; check the hop limit if containerized)", e);
+                        + ", when not running from an EC2 instance (" + e.getMessage() + ")", e);
             } catch (IOException e) {
                 throw new RuntimeException("an error occurred while fetching temporary credentials from IMDSv2 service", e);
             }
