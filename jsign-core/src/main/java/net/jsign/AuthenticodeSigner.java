@@ -21,7 +21,9 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.PublicKey;
 import java.security.Security;
+import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
@@ -356,9 +358,7 @@ public class AuthenticodeSigner {
         CMSSignedData sigData = generator.generate(contentInfo.getContentType(), contentInfo.getContent());
         
         // verify the signature
-        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
-        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(chain[0].getPublicKey());
-        sigData.getSignerInfos().iterator().next().verify(verifier);
+        verify(sigData);
         
         // timestamping
         if (timestamping) {
@@ -455,6 +455,27 @@ public class AuthenticodeSigner {
 
     private boolean isSelfSigned(X509Certificate certificate) {
         return certificate.getSubjectDN().equals(certificate.getIssuerDN());
+    }
+
+    private void verify(CMSSignedData signedData) throws SignatureException, OperatorCreationException {
+        PublicKey publicKey = chain[0].getPublicKey();
+        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
+        SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(publicKey);
+
+        boolean result = false;
+        Throwable cause = null;
+        try {
+            result = signedData.verifySignatures(signerId -> verifier, false);
+        } catch (Exception e) {
+            cause = e;
+            while (cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+        }
+
+        if (!result) {
+            throw new SignatureException("Signature verification failed, the private key doesn't match the certificate", cause);
+        }
     }
 
     /**

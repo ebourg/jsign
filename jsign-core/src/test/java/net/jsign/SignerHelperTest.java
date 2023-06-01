@@ -287,4 +287,70 @@ public class SignerHelperTest {
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
+
+    @Test
+    public void testSignWithMismatchedKeyAlgorithms() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-mismatched-keys.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keyfile("target/test-classes/keystores/privatekey-ec-p384.pkcs1.pem")
+                .keypass("password")
+                .certfile("target/test-classes/keystores/jsign-test-certificate-full-chain.pem");
+
+        try {
+            signer.sign(targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
+        }
+
+        SignatureAssert.assertSigned(Signable.of(targetFile));
+    }
+
+    @Test
+    public void testSignWithMismatchedKeyLengths() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-mismatched-keys.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
+                .keypass("password")
+                .certfile("target/test-classes/keystores/jsign-root-ca.pem");
+
+        try {
+            signer.sign(targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
+        }
+
+        SignatureAssert.assertSigned(Signable.of(targetFile));
+    }
+
+    @Test
+    public void testSignWithMismatchedRSAKeys() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-mismatched-keys.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
+                .keypass("password")
+                .certfile("target/test-classes/keystores/jsign-test-certificate-partial-chain.pem");
+
+        try {
+            signer.sign(targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
+        }
+
+        SignatureAssert.assertSigned(Signable.of(targetFile));
+    }
 }

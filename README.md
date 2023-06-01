@@ -52,6 +52,7 @@ See https://ebourg.github.io/jsign for more information.
 * SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)
 * Signing a MSI file already signed with an extended signature is no longer rejected
 * An issue causing some MSI files to become corrupted once signed has been fixed
+* A user friendly error message is now displayed when the private key and the certificate don't match
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
 * The cloud keystore name is no longer treated as a relative file by the Ant task and the Maven plugin
 * The paths are resolved relatively to the Ant/Maven/Gradle subproject or module directory instead of the root directory
