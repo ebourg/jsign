@@ -88,7 +88,8 @@ public class SigningServiceTest {
 
     @Test
     public void testAmazonProvider() throws Exception {
-        Provider provider = new SigningServiceJcaProvider(new AmazonSigningService("eu-west-3", AWS.getAccessKey() + "|" + AWS.getSecretKey(), alias -> {
+        AmazonCredentials credentials = new AmazonCredentials(AWS.getAccessKey(), AWS.getSecretKey(), null);
+        Provider provider = new SigningServiceJcaProvider(new AmazonSigningService("eu-west-3", credentials, alias -> {
             try {
                 try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");

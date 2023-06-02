@@ -85,22 +85,24 @@ public class AmazonSigningService implements SigningService {
      * Creates a new AWS signing service.
      *
      * @param region           the AWS region holding the keys (for example <tt>eu-west-3</tt>)
+     * @param credentials      the AWS credentials
+     * @param certificateStore provides the certificate chain for the keys
+     */
+    public AmazonSigningService(String region, AmazonCredentials credentials, Function<String, Certificate[]> certificateStore) {
+        this.certificateStore = certificateStore;
+        this.client = new RESTClient("https://kms." + region + ".amazonaws.com", (conn, data) -> sign(conn, credentials, data, null));
+    }
+
+    /**
+     * Creates a new AWS signing service.
+     *
+     * @param region           the AWS region holding the keys (for example <tt>eu-west-3</tt>)
      * @param credentials      the AWS credentials: <tt>accessKey|secretKey|sessionToken</tt> (the session token is optional)
      * @param certificateStore provides the certificate chain for the keys
      */
+    @Deprecated
     public AmazonSigningService(String region, String credentials, Function<String, Certificate[]> certificateStore) {
-        this.certificateStore = certificateStore;
-
-        // parse the credentials
-        String[] elements = credentials.split("\\|", 3);
-        if (elements.length < 2) {
-            throw new IllegalArgumentException("Invalid AWS credentials: " + credentials);
-        }
-        String accessKey = elements[0];
-        String secretKey = elements[1];
-        String sessionToken = elements.length > 2 ? elements[2] : null;
-
-        this.client = new RESTClient("https://kms." + region + ".amazonaws.com", (conn, data) -> sign(conn, accessKey, secretKey, sessionToken, data, null));
+        this(region, AmazonCredentials.parse(credentials), certificateStore);
     }
 
     @Override
@@ -225,7 +227,7 @@ public class AmazonSigningService implements SigningService {
      *
      * @see <a href="https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html">Signature Version 4 signing process</a>
      */
-    void sign(HttpURLConnection conn, String accessKey, String secretKey, String sessionToken, byte[] content, Date date) {
+    void sign(HttpURLConnection conn, AmazonCredentials credentials, byte[] content, Date date) {
         DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         DateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
@@ -265,19 +267,19 @@ public class AmazonSigningService implements SigningService {
                 + sha256(canonicalRequest.getBytes(UTF_8));
 
         // Derive the signing key (https://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html)
-        byte[] key = ("AWS4" + secretKey).getBytes(UTF_8);
+        byte[] key = ("AWS4" + credentials.getSecretKey()).getBytes(UTF_8);
         byte[] signingKey = hmac("aws4_request", hmac(serviceName, hmac(regionName, hmac(dateFormat.format(date), key))));
 
         // Compute the signature (https://docs.aws.amazon.com/general/latest/gr/sigv4-calculate-signature.html)
         byte[] signature = hmac(stringToSign, signingKey);
 
         conn.setRequestProperty("Authorization",
-                "AWS4-HMAC-SHA256 Credential=" + accessKey + "/" + credentialScope
+                "AWS4-HMAC-SHA256 Credential=" + credentials.getAccessKey() + "/" + credentialScope
                 + ", SignedHeaders=" + signedHeaders(headers)
                 + ", Signature=" + Hex.encodeHexString(signature).toLowerCase());
 
-        if (sessionToken != null) {
-            conn.setRequestProperty("X-Amz-Security-Token", sessionToken);
+        if (credentials.getSessionToken() != null) {
+            conn.setRequestProperty("X-Amz-Security-Token", credentials.getSessionToken());
         }
     }
 

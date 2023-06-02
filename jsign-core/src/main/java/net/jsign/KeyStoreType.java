@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import javax.smartcardio.CardException;
 
+import net.jsign.jca.AmazonCredentials;
 import net.jsign.jca.AmazonSigningService;
 import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
@@ -233,7 +234,8 @@ public enum KeyStoreType {
 
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            return new SigningServiceJcaProvider(new AmazonSigningService(params.keystore(), params.storepass(), alias -> {
+            AmazonCredentials credentials = AmazonCredentials.parse(params.storepass());
+            return new SigningServiceJcaProvider(new AmazonSigningService(params.keystore(), credentials, alias -> {
                 try {
                     return CertificateUtils.loadCertificateChain(params.certfile());
                 } catch (IOException | CertificateException e) {

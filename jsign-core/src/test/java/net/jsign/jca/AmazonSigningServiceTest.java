@@ -39,9 +39,8 @@ public class AmazonSigningServiceTest {
     }
 
     public void testSign(boolean useSessionToken) throws Exception {
-        String sessionToken = useSessionToken ? "sessionToken" : null;
-
-        AmazonSigningService service = new AmazonSigningService("eu-west-3", "accessKey|secretKey" + (useSessionToken ? "|sessionToken" : ""), null);
+        AmazonCredentials credentials = new AmazonCredentials("accessKey", "secretKey",useSessionToken ? "sessionToken" : null);
+        AmazonSigningService service = new AmazonSigningService("eu-west-3", credentials, null);
 
         URL url = new URL("https://kms.eu-west-3.amazonaws.com");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -49,10 +48,10 @@ public class AmazonSigningServiceTest {
         conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)");
         conn.setRequestProperty("X-Amz-Target", "TrentService.ListKeys");
         conn.setRequestProperty("Content-Type", "application/x-amz-json-1.1");
-        service.sign(conn, "accessKey", "secretKey", sessionToken, "{}".getBytes(), new Date(0));
+        service.sign(conn, credentials, "{}".getBytes(), new Date(0));
 
         assertEquals("X-Amz-Date", "19700101T000000Z", conn.getRequestProperty("X-Amz-Date"));
-        assertEquals("X-Amz-Security-Token", sessionToken, conn.getRequestProperty("X-Amz-Security-Token"));
+        assertEquals("X-Amz-Security-Token", credentials.getSessionToken(), conn.getRequestProperty("X-Amz-Security-Token"));
         assertEquals("Authorization", "AWS4-HMAC-SHA256 Credential=accessKey/19700101/eu-west-3/kms/aws4_request, SignedHeaders=content-type;host;user-agent;x-amz-date;x-amz-target, Signature=6247e3c7f2e50e806e32843924b94c860b6a3721fd12f9b99d8d8d140795e4c5", getAuthorizationHeaderValue(conn));
     }
 
