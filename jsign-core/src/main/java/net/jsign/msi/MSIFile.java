@@ -169,29 +169,6 @@ public class MSIFile implements Signable {
         }
     }
 
-    private List<Property> getSortedProperties() {
-        List<Property> entries = new ArrayList<>();
-        
-        append(fsRead.getPropertyTable().getRoot(), entries);
-        
-        return entries;
-    }
-
-    private void append(DirectoryProperty node, List<Property> entries) {
-        Map<MSIStreamName, Property> sortedEntries = new TreeMap<>();
-        for (Property entry : node) {
-            sortedEntries.put(new MSIStreamName(entry.getName()), entry);
-        }
-
-        for (Property property : sortedEntries.values()) {
-            if (!property.isDirectory()) {
-                entries.add(property);
-            } else {
-                append((DirectoryProperty) property, entries);
-            }
-        }
-    }
-
     @Override
     public byte[] computeDigest(MessageDigest digest) throws IOException {
         try {
@@ -202,8 +179,22 @@ public class MSIFile implements Signable {
                 updateDigest(digest, msiDigitalSignatureExDocument);
             }
 
-            // hash the entries
-            for (Property property : getSortedProperties()) {
+            computeDigest(digest, fsRead.getPropertyTable().getRoot());
+
+            return digest.digest();
+        } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
+            throw new IOException("MSI file format error", e);
+        }
+    }
+
+    private void computeDigest(MessageDigest digest, DirectoryProperty node) {
+        Map<MSIStreamName, Property> sortedEntries = new TreeMap<>();
+        for (Property child : node) {
+            sortedEntries.put(new MSIStreamName(child.getName()), child);
+        }
+
+        for (Property property : sortedEntries.values()) {
+            if (!property.isDirectory()) {
                 String name = new MSIStreamName(property.getName()).decode();
                 if (name.equals(DIGITAL_SIGNATURE_ENTRY_NAME) || name.equals(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
                     continue;
@@ -211,17 +202,15 @@ public class MSIFile implements Signable {
 
                 POIFSDocument document = new POIFSDocument((DocumentProperty) property, fsRead);
                 updateDigest(digest, document);
+            } else {
+                computeDigest(digest, (DirectoryProperty) property);
             }
-
-            // hash the package ClassID, in serialized form
-            byte[] classId = new byte[16];
-            fsRead.getRoot().getStorageClsid().write(classId, 0);
-            digest.update(classId);
-
-            return digest.digest();
-        } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
-            throw new IOException("MSI file format error", e);
         }
+
+        // hash the package ClassID, in serialized form
+        byte[] classId = new byte[16];
+        node.getStorageClsid().write(classId, 0);
+        digest.update(classId);
     }
 
     private void updateDigest(MessageDigest digest, POIFSDocument document) {
