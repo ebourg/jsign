@@ -550,13 +550,18 @@ required if the certificate chain contains an intermediate certificate.</p>
 <h4 id="example-awskms">Example using AWS Key Management Service:</h4>
 
 <p><a href="https://aws.amazon.com/kms/">AWS Key Management Service</a> (KMS) stores only the private key,
-the certificate must be provided separately. The <code>keystore</code> parameter references the AWS region.
-The AWS access key, secret key, and optionally the session token, are concatenated
-and used as the <code>storepass</code> parameter; if the latter is not provided, the executable is assumed to be running on an AWS EC2 instance,
-and the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">IMDSv2</a> service
-is queried to obtain temporary credentials based on the instance profile. In any case, the credentials must allow the following actions:
-<code>kms:ListKeys</code>, <code>kms:DescribeKey</code> and <code>kms:Sign</code>.
-The <code>alias</code> parameter can specify either the key id or an alias.</p>
+the certificate must be provided separately. The <code>keystore</code> parameter references the AWS region.</p>
+
+<p>The AWS access key, secret key, and optionally the session token, are concatenated
+and used as the <code>storepass</code> parameter; if the latter is not provided, Jsign attempts to fetch the credentials
+from the environment variables (<code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code> and <code>AWS_SESSION_TOKEN</code>)
+or from the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">IMDSv2</a> service
+when running on an AWS EC2 instance.</p>
+
+<p>In any case, the credentials must allow the following actions:
+<code>kms:ListKeys</code>, <code>kms:DescribeKey</code> and <code>kms:Sign</code>.</p>
+
+<p>The <code>alias</code> parameter can specify either the key id or an alias.</p>
 
 <pre>
  jsign --storetype AWS --keystore eu-west-3 \

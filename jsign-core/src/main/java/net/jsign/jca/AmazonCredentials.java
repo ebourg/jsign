@@ -66,9 +66,29 @@ public class AmazonCredentials {
     }
 
     /**
-     * Returns the default AWS credentials
+     * Returns the default AWS credentials, fetched from the following sources in order:
+     * <ul>
+     *   <li>The environment variables <tt>AWS_ACCESS_KEY_ID</tt> (or <tt>AWS_ACCESS_KEY</tt>),
+     *       <tt>AWS_SECRET_KEY</tt> (or <tt>AWS_SECRET_ACCESS_KEY</tt>) and <tt>AWS_SESSION_TOKEN</tt></li>
+     *   <li>The EC2 instance metadata service (IMDSv2)</li>
+     * </ul>
      */
     public static AmazonCredentials getDefault() throws IOException {
-        return new AmazonIMDS2Client().getCredentials();
+        if (System.getenv("AWS_ACCESS_KEY_ID") != null || System.getenv("AWS_ACCESS_KEY") != null) {
+            String accesKey = System.getenv("AWS_ACCESS_KEY_ID");
+            if (accesKey == null) {
+                accesKey = System.getenv("AWS_ACCESS_KEY");
+            }
+            String secretKey = System.getenv("AWS_SECRET_KEY");
+            if (secretKey == null) {
+                secretKey = System.getenv("AWS_SECRET_ACCESS_KEY");
+            }
+            String sessionToken = System.getenv("AWS_SESSION_TOKEN");
+
+            return new AmazonCredentials(accesKey, secretKey, sessionToken);
+
+        } else {
+            return new AmazonIMDS2Client().getCredentials();
+        }
     }
 }
