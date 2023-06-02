@@ -481,20 +481,23 @@ are the same as those described above for the Ant task.</p>
   -h,--help                  Print the help
 </pre>
 
-<h4>Example using a Java keystore:</h4>
+
+<h3>Examples</h3>
+
+<h4>Signing with a Java keystore</h4>
 
 <pre>
  jsign --keystore keystore.jks --alias test --storepass password \
        --tsaurl http://timestamp.sectigo.com application.exe
 </pre>
 
-<h4>Example using SPC/PVK files:</h4>
+<h4>Signing with a SPC certificate and a PVK key</h4>
 
 <pre>
  jsign --certfile certificate.spc --keyfile key.pvk --keypass password application.exe
 </pre>
 
-<h4 id="example-yubikey">Example using a YubiKey:</h4>
+<h4 id="example-yubikey">Signing with a YubiKey</h4>
 
 <p>When using a Yubikey, the alias is required only if the device contains more than one certificate.
 The certificate is specified by its name (typically <em>X.509 Certificate for Digital Signature</em> for
@@ -506,7 +509,7 @@ be installed on the system at the default location.</p>
  jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
 </pre>
 
-<h4 id="example-nitrokey">Example using a Nitrokey HSM:</h4>
+<h4 id="example-nitrokey">Signing with a Nitrokey HSM</h4>
 
 <p>Signing with a Nitrokey HSM requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
@@ -520,7 +523,7 @@ must be imported into the Nitrokey (using the gnupg <a href="https://www.gnupg.o
 command). Keys without certificates are ignored. Alternatively, the OPENPGP storetype can also be used, it doesn't
 require OpenSC and any key can be used by providing an external certificate.</p>
 
-<h4 id="example-smart-card">Example using a smart card:</h4>
+<h4 id="example-smart-card">Signing with a smart card</h4>
 
 <p>Signing with a smart card requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
@@ -532,7 +535,7 @@ require OpenSC and any key can be used by providing an external certificate.</p>
 <p>If multiple devices are connected, the <code>keystore</code> parameter can be used to specify
 the name of the one to use.</p>
 
-<h4 id="example-openpgp">Example using an OpenPGP card:</h4>
+<h4 id="example-openpgp">Signing with an OpenPGP card</h4>
 
 <p>OpenPGP cards contain up to 3 keys, one for signing, one for encryption, and one for authentication. All of them
 can be used for code signing (except encryption keys based on an elliptic curve). The alias to select the key is either,
@@ -547,7 +550,7 @@ a Nitrokey (non-HSM models) or a Yubikey.</p>
 <p>X.509 certificates stored on the card are automatically used, and the <code>certfile</code> parameter is only
 required if the certificate chain contains an intermediate certificate.</p>
 
-<h4 id="example-awskms">Example using AWS Key Management Service:</h4>
+<h4 id="example-awskms">Signing with AWS Key Management Service</h4>
 
 <p><a href="https://aws.amazon.com/kms/">AWS Key Management Service</a> (KMS) stores only the private key,
 the certificate must be provided separately. The <code>keystore</code> parameter references the AWS region.</p>
@@ -570,7 +573,7 @@ when running on an AWS EC2 instance.</p>
        --certfile full-chain.pem application.exe
 </pre>
 
-<h4 id="example-azurekeyvault">Example using Azure Key Vault:</h4>
+<h4 id="example-azurekeyvault">Signing with Azure Key Vault</h4>
 
 <p>Certificates and keys stored in the <a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a>
 key management system can be used with:</p>
@@ -580,7 +583,7 @@ key management system can be used with:</p>
        --storepass &lt;api-access-token&gt; application.exe
 </pre>
 
-<h4 id="example-digicertone">Example using DigiCert ONE:</h4>
+<h4 id="example-digicertone">Signing with DigiCert ONE</h4>
 
 <p>Certificates and keys stored in the <a href="https://one.digicert.com">DigiCert ONE</a> Secure Software Manager
 can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
@@ -591,7 +594,7 @@ a client certificate for the authentication.</p>
        --storepass "&lt;api-key&gt;|/path/to/Certificate_pkcs12.p12|&lt;password&gt;" application.exe
 </pre>
 
-<h4 id="example-sslcom-esigner">Example using SSL.com eSigner:</h4>
+<h4 id="example-sslcom-esigner">Signing with SSL.com eSigner</h4>
 
 <p>When signing with the <a href="https://www.ssl.com/esigner/">SSL.com eSigner</a> service, the SSL.com username and
 password are used as the keystore password, and the base64 encoded TOTP secret is used as the key password:</p>
@@ -605,7 +608,7 @@ password are used as the keystore password, and the base64 encoded TOTP secret i
 <p>SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
 <code>--keystore https://cs-try.ssl.com</code>.</p>
 
-<h4 id="example-googlecloud">Example using Google Cloud KMS:</h4>
+<h4 id="example-googlecloud">Signing with Google Cloud KMS</h4>
 
 <p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
 references the path of the keyring. The alias can specify either the full path of the key, or only the short name. If
@@ -617,7 +620,7 @@ the version is omitted the most recent one will be picked automatically.</p>
        --alias test --certfile full-chain.pem application.exe
 </pre>
 
-<h4 id="example-hashicorpvault">Example using Google Cloud KMS via HashiCorp Vault:</h4>
+<h4 id="example-hashicorpvault">Signing with Google Cloud KMS via HashiCorp Vault</h4>
 
 <p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
 references the URL of the HashiCorp Vault secrets engine, consisting of the Vault server URL, the API version v1 and
