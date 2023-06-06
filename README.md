@@ -40,7 +40,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 5.0 (in development)
+#### Version 5.0 (2023-06-06)
 
 * The AWS KMS signing service has been integrated (with contributions from Vincent Malmedy)
 * Nitrokey support has been improved with automatic PKCS#11 configuration using the new `NITROKEY` storetype
@@ -50,12 +50,15 @@ See https://ebourg.github.io/jsign for more information.
 * The Maven plugin can now use passwords defined in the Maven settings.xml file
 * The "X.509 Certificate for PIV Authentication" on a Yubikey (slot 9a) is now automatically detected
 * SHA-1 signing with Azure Key Vault is now possible (contributed by Andrij Abyzov)
-* Signing a MSI file already signed with an extended signature is no longer rejected
-* An issue causing some MSI files to become corrupted once signed has been fixed
+* MSI signing has been improved:
+  * MSI files with embedded sub storages (such as localized installers) are now supported
+  * Signing a MSI file already signed with an extended signature is no longer rejected
+  * An issue causing some MSI files to become corrupted once signed has been fixed
 * A user friendly error message is now displayed when the private key and the certificate don't match
 * Setting `-Djava.security.debug=sunpkcs11` with the `YUBIKEY` storetype no longer triggers an error
 * The cloud keystore name is no longer treated as a relative file by the Ant task and the Maven plugin
 * The paths are resolved relatively to the Ant/Maven/Gradle subproject or module directory instead of the root directory
+* Signing with SSL.com eSigner now also works when the malware scanning feature is enabled
 * API changes:
   * The `KeyStoreUtils` class has been replaced by `KeyStoreBuilder`
 * Upgraded BouncyCastle to 1.73
