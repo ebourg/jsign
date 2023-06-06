@@ -81,6 +81,10 @@ class MSIStreamName implements Comparable<MSIStreamName> {
     }
 
     public int compareTo(MSIStreamName other) {
+        if (this == other) {
+            return 0;
+        }
+
         byte[] a = this.nameUTF16;
         byte[] b = other.nameUTF16;
 
