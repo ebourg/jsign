@@ -651,7 +651,7 @@ by a colon character.</p>
 <p>and then use the <code>AuthenticodeSigner</code> class like this:</p>
 
 <pre class="prettyprint lang-java">
- KeyStore keystore = KeyStoreUtils.load(new File("keystore.p12"), "PKCS12", "password", null);
+ KeyStore keystore = new KeyStoreBuilder().keystore("keystore.p12").storepass("password").build();
 
  AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "secret");
  signer.withProgramName("My Application")
