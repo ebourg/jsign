@@ -255,7 +255,7 @@ class SignerHelper {
         try {
             ks = ksparams.build();
         } catch (KeyStoreException e) {
-            throw new SignerException("Failed to load the keystore " + ksparams.keystore(), e);
+            throw new SignerException("Failed to load the keystore " + (ksparams.keystore() != null ? ksparams.keystore() : ""), e);
         }
         KeyStoreType storetype = ksparams.storetype();
         Provider provider = ksparams.provider();
