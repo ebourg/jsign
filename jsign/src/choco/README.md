@@ -2,6 +2,9 @@ Jsign Chocolatey package
 ------------------------
 
 Deployment procedure:
+* Build Jsign with `mvn package`
 * Update the version in `jsign.nuspec`
 * Update the version and the checksum in `tools/VERIFICATION.md`
-* Run `choco push jsign.nuspec`
+* Run:
+  * `choco pack`
+  * `choco push choco push jsign.<version>.nupkg`
