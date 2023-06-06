@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("net.jsign:jsign-gradle-plugin:4.2")
+        classpath("net.jsign:jsign-gradle-plugin:5.0")
     }
 }
 

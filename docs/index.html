@@ -80,7 +80,7 @@ programmatically or standalone as a command line tool.</p>
 <p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
 
 <pre class="prettyprint lang-xml">
- &lt;taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-4.2.jar"/>
+ &lt;taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-5.0.jar"/>
 
  &lt;jsign file="application.exe"
         name="My Application"
@@ -281,7 +281,7 @@ by default to the <code>package</code> phase.</p>
         &lt;plugin>
           &lt;groupId>net.jsign&lt;/groupId>
           &lt;artifactId>jsign-maven-plugin&lt;/artifactId>
-          &lt;version>4.2&lt;/version>
+          &lt;version>5.0&lt;/version>
           &lt;executions>
             &lt;execution>
               &lt;goals>
@@ -369,7 +369,7 @@ are the same as those described above for the Ant task.</p>
 <pre class="prettyprint lang-groovy">
     buildscript {
         dependencies {
-            classpath 'net.jsign:jsign-gradle-plugin:4.2'
+            classpath 'net.jsign:jsign-gradle-plugin:5.0'
         }
     }
     
@@ -393,7 +393,7 @@ are the same as those described above for the Ant task.</p>
 <pre class="prettyprint lang-kotlin">
     buildscript {
         dependencies {
-            classpath("net.jsign:jsign-gradle-plugin:4.2")
+            classpath("net.jsign:jsign-gradle-plugin:5.0")
         }
     }
     
@@ -418,8 +418,8 @@ are the same as those described above for the Ant task.</p>
 <p>Jsign can also be used as a command line tool, packages are available for various systems:</p>
 
 <ul>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/4.2/jsign_4.2_all.deb">DEB package</a> (Debian/Ubuntu)</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/4.2/jsign-4.2-1.noarch.rpm">RPM package</a> (RedHat/Fedora)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/5.0/jsign_5.0_all.deb">DEB package</a> (Debian/Ubuntu)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/5.0/jsign-5.0-1.noarch.rpm">RPM package</a> (RedHat/Fedora)</li>
   <li><a href="https://community.chocolatey.org/packages/jsign/">Chocolatey package</a> (Windows)</li>
 </ul>
 
@@ -429,7 +429,7 @@ are the same as those described above for the Ant task.</p>
 
 <p>On other systems the command line is invoked by running the jar with:</p>
     
-<pre> java -jar jsign-4.2.jar [OPTIONS] [FILE]...</pre>
+<pre> java -jar jsign-5.0.jar [OPTIONS] [FILE]...</pre>
     
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
@@ -644,7 +644,7 @@ by a colon character.</p>
     &lt;dependency>
       &lt;groupId>net.jsign&lt;/groupId>
       &lt;artifactId>jsign-core&lt;/artifactId>
-      &lt;version>4.2&lt;/version>
+      &lt;version>5.0&lt;/version>
     &lt;/dependency>
 </pre>
 
@@ -670,9 +670,9 @@ by a colon character.</p>
 <h3 id="files">Downloads</h3>
 
 <ul>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/4.2/jsign_4.2_all.deb">jsign_4.2_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/4.2/jsign-4.2-1.noarch.rpm">jsign-4.2-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora/CentOS</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/4.2/jsign-4.2.jar">jsign-4.2.jar</a> - Jsign Ant Task</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/5.0/jsign_5.0_all.deb">jsign_5.0_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/5.0/jsign-5.0-1.noarch.rpm">jsign-5.0-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/5.0/jsign-5.0.jar">jsign-5.0.jar</a> - Jsign Ant Task</li>
 </ul>
 
 
