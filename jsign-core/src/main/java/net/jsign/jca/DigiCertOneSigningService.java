@@ -98,7 +98,7 @@ public class DigiCertOneSigningService implements SigningService {
     /**
      * Returns the certificate details
      *
-     * @param alias the id of alias of the certificate
+     * @param alias the id or alias of the certificate
      */
     private Map<String, ?> getCertificateInfo(String alias) throws IOException {
         if (!certificates.containsKey(alias)) {

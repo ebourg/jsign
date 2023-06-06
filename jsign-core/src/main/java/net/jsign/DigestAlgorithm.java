@@ -29,10 +29,20 @@ import org.bouncycastle.tsp.TSPAlgorithms;
 * @since 1.3
 */
 public enum DigestAlgorithm {
+
+    /** MD5 Message-Digest Algorithm (128 bits) */
     MD5("MD5", TSPAlgorithms.MD5),
+
+    /** Secure Hash Algorithm 1 (160 bits) */
     SHA1("SHA-1", TSPAlgorithms.SHA1),
+
+    /** Secure Hash Algorithm 2 (256 bits) */
     SHA256("SHA-256", TSPAlgorithms.SHA256),
+
+    /** Secure Hash Algorithm 2 (384 bits) */
     SHA384("SHA-384", TSPAlgorithms.SHA384),
+
+    /** Secure Hash Algorithm 2 (512 bits) */
     SHA512("SHA-512", TSPAlgorithms.SHA512);
 
     /** The JCE name of the algorithm */

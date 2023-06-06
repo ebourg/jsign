@@ -27,7 +27,7 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 /**
  * <pre>
  * TimeStampRequest ::= SEQUENCE {
- *   countersignatureType OBJECT IDENTIFIER,
+ *   countersignatureType OBJECT IDENTIFIER, // 1.3.6.1.4.1.311.3.2.1
  *   attributes Attributes OPTIONAL, 
  *   content  ContentInfo
  * }

@@ -68,10 +68,17 @@ public class KeyStoreBuilder {
         return parameterName;
     }
 
+    /**
+     * Sets the file containing the keystore.
+     */
     public KeyStoreBuilder keystore(File keystore) {
         return keystore(keystore.getPath());
     }
 
+    /**
+     * Sets the name of the resource containing the keystore. Either the path of the keystore file,
+     * the SunPKCS11 configuration file or the cloud keystore name depending on the type of keystore.
+     */
     public KeyStoreBuilder keystore(String keystore) {
         this.keystore = keystore;
         return this;
@@ -81,6 +88,11 @@ public class KeyStoreBuilder {
         return keystore;
     }
 
+    /**
+     * Sets the password to access the keystore. The password can be loaded from a file by using the <code>file:</code>
+     * prefix followed by the path of the file, or from an environment variable by using the <code>env:</code> prefix
+     * followed by the name of the variable.
+     */
     public KeyStoreBuilder storepass(String storepass) {
         this.storepass = storepass;
         return this;
@@ -91,11 +103,20 @@ public class KeyStoreBuilder {
         return storepass;
     }
 
+    /**
+     * Sets the type of the keystore.
+     */
     public KeyStoreBuilder storetype(KeyStoreType storetype) {
         this.storetype = storetype;
         return this;
     }
 
+    /**
+     * Sets the type of the keystore.
+     *
+     * @param storetype the type of the keystore
+     * @throws IllegalArgumentException if the type is not recognized
+     */
     public KeyStoreBuilder storetype(String storetype) {
         try {
             this.storetype = storetype != null ? KeyStoreType.valueOf(storetype) : null;
@@ -124,6 +145,11 @@ public class KeyStoreBuilder {
         return storetype;
     }
 
+    /**
+     * Sets the password to access the private key. The password can be loaded from a file by using the <code>file:</code>
+     * prefix followed by the path of the file, or from an environment variable by using the <code>env:</code> prefix
+     * followed by the name of the variable.
+     */
     public KeyStoreBuilder keypass(String keypass) {
         this.keypass = keypass;
         return this;
@@ -134,10 +160,16 @@ public class KeyStoreBuilder {
         return keypass;
     }
 
+    /**
+     * Sets the file containing the private key.
+     */
     public KeyStoreBuilder keyfile(String keyfile) {
         return keyfile(createFile(keyfile));
     }
 
+    /**
+     * Sets the file containing the private key.
+     */
     public KeyStoreBuilder keyfile(File keyfile) {
         this.keyfile = keyfile;
         return this;
@@ -147,10 +179,18 @@ public class KeyStoreBuilder {
         return keyfile;
     }
 
+    /**
+     * Sets the file containing the certificate chain.
+     * The certificate used for signing must be the first one.
+     */
     public KeyStoreBuilder certfile(String certfile) {
         return certfile(createFile(certfile));
     }
 
+    /**
+     * Sets the file containing the certificate chain.
+     * The certificate used for signing must be the first one.
+     */
     public KeyStoreBuilder certfile(File certfile) {
         this.certfile = certfile;
         return this;
@@ -234,6 +274,9 @@ public class KeyStoreBuilder {
 
     /**
      * Builds the keystore.
+     *
+     * @throws IllegalArgumentException if the parameters are invalid
+     * @throws KeyStoreException if the keystore can't be loaded
      */
     public KeyStore build() throws KeyStoreException {
         validate();

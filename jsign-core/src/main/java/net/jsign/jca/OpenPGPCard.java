@@ -393,7 +393,7 @@ class OpenPGPCard {
     }
 
     /**
-     * Get the OpenPGP card matching the specified name.
+     * Get the OpenPGP card.
      */
     public static OpenPGPCard getCard() throws CardException {
         killSmartCardDaemon();

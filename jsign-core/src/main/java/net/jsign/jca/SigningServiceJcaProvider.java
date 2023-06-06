@@ -26,6 +26,12 @@ import net.jsign.DigestAlgorithm;
 /**
  * JCA Provider using a signing service.
  *
+ * <p>Example:</p>
+ * <pre>
+ * Provider provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService(vault, token));
+ * KeyStore keystore = KeyStore.getInstance("AZUREKEYVAULT", provider);
+ * </pre>
+ *
  * @since 4.0
  */
 public class SigningServiceJcaProvider extends Provider {

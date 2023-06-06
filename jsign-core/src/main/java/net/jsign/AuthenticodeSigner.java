@@ -76,7 +76,22 @@ import net.jsign.timestamp.TimestampingMode;
 /**
  * Sign a file with Authenticode. Timestamping is enabled by default and relies
  * on the Sectigo server (http://timestamp.sectigo.com).
- * 
+ *
+ * <p>Example:</p>
+ * <pre>
+ * KeyStore keystore = new KeyStoreBuilder().keystore("keystore.p12").storepass("password").build();
+ *
+ * AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "alias", "secret");
+ * signer.withProgramName("My Application")
+ *       .withProgramURL("http://www.example.com")
+ *       .withTimestamping(true)
+ *       .withTimestampingAuthority("http://timestamp.sectigo.com");
+ *
+ * try (Signable file = Signable.of(new File("application.exe"))) {
+ *     signer.sign(file);
+ * }
+ * </pre>
+ *
  * @author Emmanuel Bourg
  * @since 3.0
  */
@@ -536,6 +551,7 @@ public class AuthenticodeSigner {
      * By default looks up the default identifier but also makes sure it includes
      * the algorithm parameters and if not includes a DER NULL in order to align
      * with what signtool currently does.
+     *
      * @param signatureAlgorithm to get the corresponding digest algorithm identifier for
      * @return an AlgorithmIdentifier for the digestAlgorithm and including parameters
      */

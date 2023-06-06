@@ -58,7 +58,6 @@ public class CatalogFile implements Signable {
      *
      * @param file the file to check
      * @return <code>true</code> if the file is a Windows catalog, <code>false</code> otherwise
-     * @throws IOException if an I/O error occurs
      */
     public static boolean isCatalogFile(File file) {
         if (!file.exists() || !file.isFile()) {

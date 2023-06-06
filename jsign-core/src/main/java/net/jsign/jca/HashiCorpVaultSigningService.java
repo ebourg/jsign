@@ -33,7 +33,7 @@ import com.cedarsoftware.util.io.JsonWriter;
 import net.jsign.DigestAlgorithm;
 
 /**
- * Signing service using the HashiCorp Vault API.
+ * Signing service using the HashiCorp Vault API. It supports the Google Cloud KMS secrets engine only.
  *
  * @see <a href="https://developer.hashicorp.com/vault/api-docs/secret/gcpkms">HashiCorp Vault API - Google Cloud KMS Secrets Engine</a>
  * @since 5.0
