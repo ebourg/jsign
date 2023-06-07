@@ -34,6 +34,10 @@ class TLV {
     private byte[] value;
     private List<TLV> children;
 
+    public String tag() {
+        return tag;
+    }
+
     public byte[] value() {
         return value;
     }
