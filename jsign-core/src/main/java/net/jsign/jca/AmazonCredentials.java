@@ -74,21 +74,25 @@ public class AmazonCredentials {
      * </ul>
      */
     public static AmazonCredentials getDefault() throws IOException {
-        if (System.getenv("AWS_ACCESS_KEY_ID") != null || System.getenv("AWS_ACCESS_KEY") != null) {
-            String accesKey = System.getenv("AWS_ACCESS_KEY_ID");
+        if (getenv("AWS_ACCESS_KEY_ID") != null || getenv("AWS_ACCESS_KEY") != null) {
+            String accesKey = getenv("AWS_ACCESS_KEY_ID");
             if (accesKey == null) {
-                accesKey = System.getenv("AWS_ACCESS_KEY");
+                accesKey = getenv("AWS_ACCESS_KEY");
             }
-            String secretKey = System.getenv("AWS_SECRET_KEY");
+            String secretKey = getenv("AWS_SECRET_KEY");
             if (secretKey == null) {
-                secretKey = System.getenv("AWS_SECRET_ACCESS_KEY");
+                secretKey = getenv("AWS_SECRET_ACCESS_KEY");
             }
-            String sessionToken = System.getenv("AWS_SESSION_TOKEN");
+            String sessionToken = getenv("AWS_SESSION_TOKEN");
 
             return new AmazonCredentials(accesKey, secretKey, sessionToken);
 
         } else {
             return new AmazonIMDS2Client().getCredentials();
         }
+    }
+
+    static String getenv(String name) {
+        return System.getenv(name);
     }
 }

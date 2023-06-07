@@ -19,8 +19,10 @@ package net.jsign.jca;
 import java.net.UnknownServiceException;
 
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class AmazonCredentialsTest {
 
@@ -48,5 +50,32 @@ public class AmazonCredentialsTest {
     @Test(expected = UnknownServiceException.class)
     public void testGetDefault() throws Exception {
         AmazonCredentials.getDefault();
+    }
+
+    @Test
+    public void testGetDefaultFromEnvironment() throws Exception {
+        try (MockedStatic<?> mock = mockStatic(AmazonCredentials.class, CALLS_REAL_METHODS)) {
+            when(AmazonCredentials.getenv("AWS_ACCESS_KEY_ID")).thenReturn("accessKey");
+            when(AmazonCredentials.getenv("AWS_SECRET_KEY")).thenReturn("secretKey");
+            when(AmazonCredentials.getenv("AWS_SESSION_TOKEN")).thenReturn("sessionToken");
+
+            AmazonCredentials credentials = AmazonCredentials.getDefault();
+            assertNotNull("credentials", credentials);
+            assertEquals("accessKey", credentials.getAccessKey());
+            assertEquals("secretKey", credentials.getSecretKey());
+            assertEquals("sessionToken", credentials.getSessionToken());
+        }
+
+        try (MockedStatic<?> mock = mockStatic(AmazonCredentials.class, CALLS_REAL_METHODS)) {
+            when(AmazonCredentials.getenv("AWS_ACCESS_KEY")).thenReturn("accessKey");
+            when(AmazonCredentials.getenv("AWS_SECRET_ACCESS_KEY")).thenReturn("secretKey");
+            when(AmazonCredentials.getenv("AWS_SESSION_TOKEN")).thenReturn(null);
+
+            AmazonCredentials credentials = AmazonCredentials.getDefault();
+            assertNotNull("credentials", credentials);
+            assertEquals("accessKey", credentials.getAccessKey());
+            assertEquals("secretKey", credentials.getSecretKey());
+            assertNull(credentials.getSessionToken());
+        }
     }
 }
