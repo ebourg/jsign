@@ -43,30 +43,30 @@ public class PEFileTest {
 
     @Test
     public void testLoad() throws Exception {
-        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
-        
-        assertEquals(MachineType.I386, file.getMachineType());
-        assertEquals(4, file.getNumberOfSections());
-        assertEquals(0, file.getPointerToSymbolTable());
-        assertEquals(0, file.getNumberOfSymbols());
-        assertEquals(224, file.getSizeOfOptionalHeader());
-        assertEquals(PEFormat.PE32, file.getFormat());
-        assertEquals(24576, file.getSizeOfCode());
-        assertEquals(20480, file.getSizeOfInitializedData());
-        assertEquals(0, file.getSizeOfUninitializedData());
-        assertEquals(0x400000, file.getImageBase());
-        assertEquals(4096, file.getSectionAlignment());
-        assertEquals(4096, file.getFileAlignment());
-        assertEquals(4, file.getMajorOperatingSystemVersion());
-        assertEquals(0, file.getMinorOperatingSystemVersion());
-        assertEquals(4, file.getMajorSubsystemVersion());
-        assertEquals(0, file.getMinorSubsystemVersion());
-        assertEquals(0, file.getWin32VersionValue());
-        assertEquals(49152, file.getSizeOfImage());
-        assertEquals(4096, file.getSizeOfHeaders());
-        assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
-        assertEquals(0, file.getLoaderFlags());
-        assertEquals(16, file.getNumberOfRvaAndSizes());
+        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            assertEquals(MachineType.I386, file.getMachineType());
+            assertEquals(4, file.getNumberOfSections());
+            assertEquals(0, file.getPointerToSymbolTable());
+            assertEquals(0, file.getNumberOfSymbols());
+            assertEquals(224, file.getSizeOfOptionalHeader());
+            assertEquals(PEFormat.PE32, file.getFormat());
+            assertEquals(24576, file.getSizeOfCode());
+            assertEquals(20480, file.getSizeOfInitializedData());
+            assertEquals(0, file.getSizeOfUninitializedData());
+            assertEquals(0x400000, file.getImageBase());
+            assertEquals(4096, file.getSectionAlignment());
+            assertEquals(4096, file.getFileAlignment());
+            assertEquals(4, file.getMajorOperatingSystemVersion());
+            assertEquals(0, file.getMinorOperatingSystemVersion());
+            assertEquals(4, file.getMajorSubsystemVersion());
+            assertEquals(0, file.getMinorSubsystemVersion());
+            assertEquals(0, file.getWin32VersionValue());
+            assertEquals(49152, file.getSizeOfImage());
+            assertEquals(4096, file.getSizeOfHeaders());
+            assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
+            assertEquals(0, file.getLoaderFlags());
+            assertEquals(16, file.getNumberOfRvaAndSizes());
+        }
     }
 
     @Test
@@ -96,26 +96,28 @@ public class PEFileTest {
 
     @Test
     public void testGetSections() throws Exception {
-        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
-        
-        List<Section> sections = file.getSections();
-        assertNotNull(sections);
-        assertFalse("No section found", sections.isEmpty());
-        for (Section section : file.getSections()) {
-            assertNotNull("null section found", section);
-            assertEquals(0, section.getPointerToRelocations());
-            assertEquals(0, section.getPointerToLineNumbers());
-            assertEquals(0, section.getNumberOfRelocations());
-            assertEquals(0, section.getNumberOfLineNumbers());
+        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            List<Section> sections = file.getSections();
+            assertNotNull(sections);
+            assertFalse("No section found", sections.isEmpty());
+            for (Section section : file.getSections()) {
+                assertNotNull("null section found", section);
+                assertEquals(0, section.getPointerToRelocations());
+                assertEquals(0, section.getPointerToLineNumbers());
+                assertEquals(0, section.getNumberOfRelocations());
+                assertEquals(0, section.getNumberOfLineNumbers());
+            }
         }
     }
 
     @Test
     public void testPrintInfo() throws Exception {
-        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        file.printInfo(out);
-        
+        ByteArrayOutputStream out;
+        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            out = new ByteArrayOutputStream();
+            file.printInfo(out);
+        }
+
         assertNotNull(out.toString());
         assertFalse(out.toString().isEmpty());
 
@@ -150,9 +152,9 @@ public class PEFileTest {
 
     @Test
     public void testComputeChecksum() throws Exception {
-        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
-        
-        assertEquals("checksum", 0x0000E7F5, file.computeChecksum());
+        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            assertEquals("checksum", 0x0000E7F5, file.computeChecksum());
+        }
     }
 
     @Test
@@ -172,13 +174,13 @@ public class PEFileTest {
 
     @Test
     public void testComputeDigest() throws Exception {
-        PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"));
-        
-        String sha1 = Hex.toHexString(file.computeDigest(SHA1));
-        String sha256 = Hex.toHexString(file.computeDigest(SHA256));
-        
-        assertEquals("d27ec498912807ddfc4bec2be4f62c42814836f3", sha1);
-        assertEquals("7bb369df020cea757619e1c1d678dbca06b638f2cc45b740b5eacfc21e76b160", sha256);
+        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            String sha1 = Hex.toHexString(file.computeDigest(SHA1));
+            String sha256 = Hex.toHexString(file.computeDigest(SHA256));
+
+            assertEquals("d27ec498912807ddfc4bec2be4f62c42814836f3", sha1);
+            assertEquals("7bb369df020cea757619e1c1d678dbca06b638f2cc45b740b5eacfc21e76b160", sha256);
+        }
     }
 
     @Test
@@ -192,15 +194,16 @@ public class PEFileTest {
         FileUtils.copyFile(testFile, testFilePadded);
         FileUtils.copyFile(testFile, testFileNotPadded);
 
-        PEFile file1 = new PEFile(testFilePadded);
-        PEFile file2 = new PEFile(testFileNotPadded);
-        file1.write(file1.channel.size(), new byte[8]);
-        file2.write(file2.channel.size(), new byte[3]);
+        try (PEFile file1 = new PEFile(testFilePadded);
+             PEFile file2 = new PEFile(testFileNotPadded)) {
+            file1.write(file1.channel.size(), new byte[8]);
+            file2.write(file2.channel.size(), new byte[3]);
 
-        String digestPadded = Hex.toHexString(file1.computeDigest(SHA1));
-        String digestNotPadded = Hex.toHexString(file2.computeDigest(SHA1));
+            String digestPadded = Hex.toHexString(file1.computeDigest(SHA1));
+            String digestNotPadded = Hex.toHexString(file2.computeDigest(SHA1));
 
-        assertEquals(digestPadded, digestNotPadded);
+            assertEquals(digestPadded, digestNotPadded);
+        }
     }
 
     @Test(expected = IOException.class)

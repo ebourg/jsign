@@ -36,16 +36,16 @@ public class PowerShellScriptTest extends ScriptTest {
 
     @Test
     public void testGetContent() throws Exception {
-        PowerShellScript script = new PowerShellScript(new File("target/test-classes/hello-world.ps1"));
-        
-        assertNotNull("content null", script.getContent());
-        assertEquals("content", "write-host \"Hello World!\"\r\n", script.getContent());
+        try (PowerShellScript script = new PowerShellScript(new File("target/test-classes/hello-world.ps1"))) {
+            assertNotNull("content null", script.getContent());
+            assertEquals("content", "write-host \"Hello World!\"\r\n", script.getContent());
+        }
     }
     
     @Test
     public void testGetSignature() throws Exception {
-        PowerShellScript script = new PowerShellScript(new File("target/test-classes/hello-world.ps1"));
-        
-        assertTrue("signature found", script.getSignatures().isEmpty());
+        try (PowerShellScript script = new PowerShellScript(new File("target/test-classes/hello-world.ps1"))) {
+            assertTrue("signature found", script.getSignatures().isEmpty());
+        }
     }
 }
