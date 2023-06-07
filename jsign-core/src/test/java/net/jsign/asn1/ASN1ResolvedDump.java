@@ -264,7 +264,7 @@ public class ASN1ResolvedDump
         else
         {
             System.out.println("unknown type: " + obj.getClass().getName());
-            buf.append(indent + obj.toString() + nl);
+            buf.append(indent + obj + nl);
         }
     }
     

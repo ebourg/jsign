@@ -37,6 +37,6 @@ public class AntConsoleTest {
         verify(task).log(eq("debug"), eq(Project.MSG_DEBUG));
         verify(task).log(eq("info"), eq(Project.MSG_INFO));
         verify(task).log(eq("warning"), eq(Project.MSG_WARN));
-        verify(task).log(eq("warning"), (Throwable) isNull(), eq(Project.MSG_WARN));
+        verify(task).log(eq("warning"), isNull(), eq(Project.MSG_WARN));
     }
 }

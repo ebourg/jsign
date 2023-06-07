@@ -17,8 +17,9 @@
 package net.jsign.msi;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+
+import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Decodes and orders file names in MSI packages.
@@ -73,7 +74,7 @@ class MSIStreamName implements Comparable<MSIStreamName> {
             }
         }
 
-        return new String(out.toByteArray(), Charset.forName("UTF-8"));
+        return new String(out.toByteArray(), UTF_8);
     }
 
     public String toString() {

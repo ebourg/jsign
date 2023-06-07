@@ -36,6 +36,6 @@ public class MavenConsoleTest {
         verify(log).debug(eq("debug"));
         verify(log).info(eq("info"));
         verify(log).warn(eq("warning"));
-        verify(log).warn(eq("warning"), (Throwable) isNull());
+        verify(log).warn(eq("warning"), isNull());
     }
 }

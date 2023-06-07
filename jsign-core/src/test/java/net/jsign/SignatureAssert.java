@@ -35,7 +35,7 @@ public class SignatureAssert {
         SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
         
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        assertNotNull(message + " (missing unauthenticated attributse)", unsignedAttributes);
+        assertNotNull(message + " (missing unauthenticated attributes)", unsignedAttributes);
         
         Attribute authenticodeTimestampAttribute = unsignedAttributes.get(CMSAttributes.counterSignature);
         Attribute rfc3161TimestampAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID);

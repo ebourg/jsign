@@ -59,7 +59,7 @@ class OpenPGPCard {
     private boolean debug;
 
     public enum Key {
-        SIGNATURE, ENCRYPTION, AUTHENTICATION;
+        SIGNATURE, ENCRYPTION, AUTHENTICATION
     }
 
     public static class KeyInfo {
