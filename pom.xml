@@ -217,6 +217,7 @@
                 --add-exports jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED
                 --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED
                 --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
+                ${argLine}
               </argLine>
             </configuration>
           </plugin>
