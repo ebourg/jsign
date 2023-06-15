@@ -29,6 +29,9 @@ import java.util.Collection;
  */
 class CertificateUtils {
 
+    private CertificateUtils() {
+    }
+
     /**
      * Load the certificate chain from the specified PKCS#7 files.
      */

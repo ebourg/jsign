@@ -18,9 +18,13 @@ package net.jsign;
 
 import java.io.File;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 import java.security.PrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -99,6 +103,26 @@ public class PVKTest {
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             assertEquals("exception message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testInvalidKeyFormat() throws Exception {
+        File original = new File("target/test-classes/keystores/privatekey.pvk");
+        File modified = new File("target/test-classes/keystores/privatekey-invalid.pvk");
+        FileUtils.copyFile(original, modified);
+
+        // modify the type of the RSA key
+        FileChannel channel = FileChannel.open(modified.toPath(), StandardOpenOption.WRITE);
+        channel.position(0x20);
+        channel.write(ByteBuffer.wrap("RSA3".getBytes()));
+        channel.close();
+
+        try {
+            PVK.parse(modified, null);
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            assertEquals("exception message", "Unable to parse the PVK key, unsupported key format: RSA3", e.getMessage());
         }
     }
 }
