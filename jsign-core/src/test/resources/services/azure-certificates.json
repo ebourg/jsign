@@ -1,0 +1,41 @@
+{
+  "value": [
+    {
+      "id": "https://jsigntestkeyvault.vault.azure.net/certificates/test1",
+      "x5t": "v0sWC5lKV5G4k4UdqPWBo1PhBqs",
+      "attributes": {
+        "enabled": true,
+        "nbf": 1623486429,
+        "exp": 1655023029,
+        "created": 1623487029,
+        "updated": 1623487029
+      },
+      "subject": ""
+    },
+    {
+      "id": "https://jsigntestkeyvault.vault.azure.net/certificates/test2",
+      "x5t": "u9_e8Jr50AmAGj-4TBPcxLxeFfU",
+      "attributes": {
+        "enabled": true,
+        "nbf": 1623486175,
+        "exp": 1655022775,
+        "created": 1623486775,
+        "updated": 1623486775
+      },
+      "subject": ""
+    },
+    {
+      "id": "https://jsigntestkeyvault.vault.azure.net/certificates/test3",
+      "x5t": "KDt72FfYbTV8Wi4ZPmGtUx5rrHg",
+      "attributes": {
+        "enabled": true,
+        "nbf": 1623486380,
+        "exp": 1655022980,
+        "created": 1623486981,
+        "updated": 1623486981
+      },
+      "subject": ""
+    }
+  ],
+  "nextLink": null
+}
