@@ -40,8 +40,13 @@ import static java.nio.charset.StandardCharsets.*;
 class AmazonIMDS2Client {
 
     private static final String ROLE_PATTERN = "[-\\w+=,.@]{1,64}";
-    private static final String IMDS_ENDPOINT = "http://169.254.169.254";
     private static final int TOKEN_TTL_SECONDS = 21600; // 6h (default & max value)
+
+    private String endpoint = "http://169.254.169.254";
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 
     /**
      * Get the currently associated role / instance profile for this EC2 instance.
@@ -95,7 +100,7 @@ class AmazonIMDS2Client {
      * Obtain a token to authorize queries to IMDSv2.
      */
     private String getApiToken() throws IOException {
-        URL url = new URL(IMDS_ENDPOINT + "/latest/api/token");
+        URL url = new URL(endpoint + "/latest/api/token");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(3000);
         conn.setRequestMethod("PUT");
@@ -127,7 +132,7 @@ class AmazonIMDS2Client {
      * @return The resulting metadata, or null if the HTTP request returns with code noThrowErrorCode.
      */
     private String getMetaData(String path, int noThrowErrorCode) throws IOException {
-        URL url = new URL(IMDS_ENDPOINT + "/latest/meta-data/" + path);
+        URL url = new URL(endpoint + "/latest/meta-data/" + path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(10000);
         conn.setRequestProperty("X-aws-ec2-metadata-token", getApiToken());
