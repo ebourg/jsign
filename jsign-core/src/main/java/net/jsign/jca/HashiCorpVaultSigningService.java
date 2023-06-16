@@ -21,7 +21,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -75,12 +75,14 @@ public class HashiCorpVaultSigningService implements SigningService {
      */
     @Override
     public List<String> aliases() throws KeyStoreException {
-        List<String> aliases;
+        List<String> aliases = new ArrayList<>();
 
         try {
             Map<String, ?> response = client.get("keys?list=true");
-            String[] keys = ((Map<String, String[]>) response.get("data")).get("keys");
-            aliases = Arrays.asList(keys);
+            Object[] keys = ((Map<String, Object[]>) response.get("data")).get("keys");
+            for (Object key : keys) {
+                aliases.add((String) key);
+            }
         } catch (IOException e) {
             throw new KeyStoreException(e);
         }
