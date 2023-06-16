@@ -44,6 +44,7 @@ jobs:
         run: mvn -B package -DskipTests
 
       - name: Coverage report
+        if: ${{ matrix.java == '17' }}
         run: mvn -B clean test jacoco:report-aggregate coveralls:report -DjacocoReports=jsign/target/site/jacoco-aggregate/jacoco.xml -DrepoToken=${{ secrets.COVERALLS_TOKEN }} || true
 
   experimental:
