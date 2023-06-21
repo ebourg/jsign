@@ -107,6 +107,9 @@ public class MSIFile implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public static boolean isMSIFile(File file) throws IOException {
+        if (file.length() < 8) {
+            return false;
+        }
         try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
             return in.readLong() == MSI_HEADER;
         }

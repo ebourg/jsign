@@ -18,6 +18,7 @@ package net.jsign.msi;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -28,6 +29,11 @@ public class MSIFileTest {
     public void testIsMSIFile() throws Exception {
         assertFalse(MSIFile.isMSIFile(new File("pom.xml")));
         assertTrue(MSIFile.isMSIFile(new File("target/test-classes/minimal.msi")));
+
+        // small file
+        File file = File.createTempFile("small", ".msi");
+        FileUtils.writeByteArrayToFile(file, new byte[3]);
+        assertFalse(MSIFile.isMSIFile(file));
     }
 
     @Test
