@@ -16,8 +16,10 @@
 
 package net.jsign.msi;
 
+import java.io.DataOutputStream;
 import java.io.File;
 
+import java.nio.file.Files;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -35,5 +37,14 @@ public class MSIFileTest {
         MSIFile file = new MSIFile(new File("target/test-classes/minimal.msi"));
         file.close();
         file.close();
+    }
+
+    @Test
+    public void testLessThan8BytesFiles() throws Exception {
+        File smallFile = Files.createTempFile(null, ".msi").toFile();
+        try (DataOutputStream out = new DataOutputStream(Files.newOutputStream(smallFile.toPath()))) {
+            out.writeShort(3);
+        }
+        assertFalse(MSIFile.isMSIFile(smallFile));
     }
 }
