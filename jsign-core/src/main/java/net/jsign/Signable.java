@@ -31,6 +31,7 @@ import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.cat.CatalogFile;
 import net.jsign.mscab.MSCabinetFile;
 import net.jsign.msi.MSIFile;
+import net.jsign.appx.APPXFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.JScript;
 import net.jsign.script.PowerShellScript;
@@ -44,6 +45,17 @@ import net.jsign.script.WindowsScript;
  * @author Emmanuel Bourg
  */
 public interface Signable extends Closeable {
+
+    /**
+     * Returns the digests algorithm required for the signature.
+     * Some formats such as APPX/MSIX require a specific digest algorithm defined in the file metadata.
+     *
+     * @return the digest algorithm required for the signature, or null to use the default algorithm
+     * @since 5.1
+     */
+    default DigestAlgorithm getRequiredDigestAlgorithm() throws IOException {
+        return null;
+    }
 
     /**
      * Creates the ContentInfo structure to be signed.
@@ -151,6 +163,12 @@ public interface Signable extends Closeable {
 
         } else if (file.getName().endsWith(".wsf")) {
             return new WindowsScript(file, encoding);
+
+        } else if (file.getName().endsWith(".msix")
+                || file.getName().endsWith(".msixbundle")
+                || file.getName().endsWith(".appx")
+                || file.getName().endsWith(".appxbundle")) {
+            return new APPXFile(file);
 
         } else {
             throw new UnsupportedOperationException("Unsupported file: " + file);

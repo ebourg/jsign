@@ -2,7 +2,7 @@
 .TH man 1 "25 Mar 2021" "@VERSION@" "jsign man page"
 
 .SH NAME
-jsign \- sign and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF)
+jsign \- sign and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX) and scripts (PowerShell, VBScript, JScript, WSF)
 
 .SH SYNOPSIS
 .B jsign
@@ -11,9 +11,9 @@ jsign \- sign and timestamp executable files for Windows, Microsoft Installers (
 .SH DESCRIPTION
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet
-files (CAB), Catalog files (CAT) and scripts. Jsign is platform independent and
-provides an alternative to native tools like signcode/signtool on Windows or the
-Mono development tools on Unix systems.
+files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX) and scripts.
+Jsign is platform independent and provides an alternative to native tools like
+signcode/signtool on Windows or the Mono development tools on Unix systems.
 
 Jsign can use private keys and certificates in various formats, either Java keystores,
 PKCS#12 keystores, PKCS#11 hardware tokens, SPC/PVK files or from cloud key management
@@ -90,6 +90,12 @@ is used in combination with the certfile option.
 .B -c, --certfile <FILE>
 The file containing the PKCS#7 certificate chain (.p7b or .spc files). This
 option is used in combination with the keyfile option.
+
+.TP
+.B -d, --alg <ALGORITHM>
+The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512). For some formats such
+as APPX/MSIX packages the algorithm is automatically detected and setting this
+parameter has no effect.
 
 .TP
 .B -t, --tsaurl <URL>

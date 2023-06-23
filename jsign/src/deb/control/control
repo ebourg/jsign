@@ -11,6 +11,6 @@ Homepage: https://ebourg.github.com/jsign
 Description: Code signing for Windows executables, Microsoft Installers and scripts
  Jsign is a Java implementation of Microsoft Authenticode that lets you sign
  and timestamp executable files for Windows, Microsoft Installers (MSI),
- Cabinet files and scripts (PowerShell, VBScript, JScript, WSF). Jsign is
- platform independent and provides an alternative to native tools like
- signcode/signtool on Windows or the Mono development tools on Unix systems.
+ Cabinet files, Windows packages (APPX/MSIX) and scripts (PowerShell, VBScript,
+ JScript, WSF). Jsign is platform independent and provides an alternative to native
+ tools like signcode/signtool on Windows or the Mono development tools on Unix systems.

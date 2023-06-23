@@ -49,7 +49,20 @@ public class SignatureAssert {
             assertNotNull(message + " (counter signature attribute value is null)", rfc3161TimestampAttribute.getAttributeValues());
             assertTrue(message + " (counter signature attribute value is empty)", rfc3161TimestampAttribute.getAttributeValues().length > 0);
         }
+    }
+
+    public static void assertNotTimestamped(String message, CMSSignedData signedData) {
+        SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
+
+        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        if (unsignedAttributes == null) {
+            return;
+        }
         
+        Attribute authenticodeTimestampAttribute = unsignedAttributes.get(CMSAttributes.counterSignature);
+        Attribute rfc3161TimestampAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID);
+
+        assertTrue(message + " (counter signature attribute found)", authenticodeTimestampAttribute == null && rfc3161TimestampAttribute == null);
     }
 
     public static void assertSigned(Signable signable, DigestAlgorithm... algorithms) throws IOException {

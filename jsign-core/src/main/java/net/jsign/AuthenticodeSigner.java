@@ -367,9 +367,14 @@ public class AuthenticodeSigner {
      * @throws Exception if an error occurs
      */
     protected CMSSignedData createSignedData(Signable file) throws Exception {
+        DigestAlgorithm digestAlgorithm = file.getRequiredDigestAlgorithm();
+        if (digestAlgorithm == null) {
+            digestAlgorithm = this.digestAlgorithm;
+        }
+
         // compute the signature
         ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
-        AuthenticodeSignedDataGenerator generator = createSignedDataGenerator();
+        AuthenticodeSignedDataGenerator generator = createSignedDataGenerator(digestAlgorithm);
         CMSSignedData sigData = generator.generate(contentInfo.getContentType(), contentInfo.getContent());
         
         // verify the signature
@@ -396,7 +401,7 @@ public class AuthenticodeSigner {
         return sigData;
     }
 
-    private AuthenticodeSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {
+    private AuthenticodeSignedDataGenerator createSignedDataGenerator(DigestAlgorithm digestAlgorithm) throws CMSException, OperatorCreationException, CertificateEncodingException {
         // create content signer
         final String sigAlg;
         if (signatureAlgorithm != null) {
