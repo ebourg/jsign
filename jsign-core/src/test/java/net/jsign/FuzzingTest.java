@@ -62,7 +62,7 @@ public class FuzzingTest {
                 AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
                 signer.sign(signable);
             }
-        } catch (IOException e) {
+        } catch (IOException | UnsupportedOperationException e) {
             // expected
         }
     }
