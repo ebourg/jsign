@@ -22,7 +22,12 @@ import java.io.IOException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import javax.security.auth.x500.X500Principal;
 
 /**
  * @since 5.0
@@ -39,7 +44,19 @@ class CertificateUtils {
         try (FileInputStream in = new FileInputStream(file)) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-            return certificates.toArray(new Certificate[0]);
+            List<X509Certificate> list = (List) new ArrayList<>(certificates);
+            list.sort(getChainComparator());
+            return list.toArray(new Certificate[0]);
         }
+    }
+
+    /**
+     * Returns a comparator that sorts the certificates in the chain in the order of the certification path,
+     * from the end-entity certificate to the root CA.
+     */
+    public static Comparator<X509Certificate> getChainComparator() {
+        return Comparator.comparing(X509Certificate::getBasicConstraints)
+                .thenComparing(X509Certificate::getNotBefore, Comparator.reverseOrder())
+                .thenComparing(X509Certificate::getSubjectX500Principal, Comparator.comparing(X500Principal::getName));
     }
 }

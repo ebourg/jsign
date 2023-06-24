@@ -527,10 +527,10 @@ public class JsignCLITest {
     @Test
     public void testExplicitCertificateChainOnlyOnSingleEntryWhenFirst() throws Exception {
         try {
-            cli.execute("--keystore=target/test-classes/keystores/keystore-no-chain.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.spc", "" + targetFile);
+            cli.execute("--keystore=target/test-classes/keystores/keystore-no-chain.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/keystores/jsign-test-certificate-partial-chain-reversed.pem", "" + targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
-            assertEquals("exception message", "The certificate chain in target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.spc does not match the chain from the keystore", e.getMessage().replace('\\', '/'));
+            assertEquals("exception message", "The certificate chain in target/test-classes/keystores/jsign-test-certificate-partial-chain-reversed.pem does not match the chain from the keystore", e.getMessage().replace('\\', '/'));
         }
     }
 }

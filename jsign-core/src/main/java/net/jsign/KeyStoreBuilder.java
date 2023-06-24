@@ -181,7 +181,6 @@ public class KeyStoreBuilder {
 
     /**
      * Sets the file containing the certificate chain.
-     * The certificate used for signing must be the first one.
      */
     public KeyStoreBuilder certfile(String certfile) {
         return certfile(createFile(certfile));
@@ -189,7 +188,6 @@ public class KeyStoreBuilder {
 
     /**
      * Sets the file containing the certificate chain.
-     * The certificate used for signing must be the first one.
      */
     public KeyStoreBuilder certfile(File certfile) {
         this.certfile = certfile;
