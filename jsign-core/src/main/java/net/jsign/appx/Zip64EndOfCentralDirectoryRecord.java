@@ -62,6 +62,9 @@ class Zip64EndOfCentralDirectoryRecord extends ZipRecord {
         ByteBuffer buffer = ByteBuffer.allocate(MIN_SIZE).order(LITTLE_ENDIAN);
         channel.read(buffer);
         buffer.flip();
+        if (buffer.remaining() < MIN_SIZE) {
+            throw new IOException("Invalid ZIP64 End of Central Directory Record");
+        }
 
         int signature = buffer.getInt();
         if (signature != SIGNATURE) {

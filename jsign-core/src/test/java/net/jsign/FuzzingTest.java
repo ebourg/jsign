@@ -49,7 +49,7 @@ public class FuzzingTest {
     @Test
     public void testFuzzing() throws Exception {
         try {
-            File extracted = File.createTempFile(file.getName(), ".tmp");
+            File extracted = File.createTempFile(file.getName(), "." + getExtension(file));
             extracted.deleteOnExit();
 
             try (InputStream in = new GZIPInputStream(new BufferedInputStream(new FileInputStream(file)));
@@ -64,6 +64,14 @@ public class FuzzingTest {
             }
         } catch (IOException | UnsupportedOperationException e) {
             // expected
+        }
+    }
+
+    private String getExtension(File file) {
+        if (file.getName().contains("AuthenticodeAppx")) {
+            return "appx";
+        } else {
+            return "tmp";
         }
     }
 }
