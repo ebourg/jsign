@@ -43,6 +43,8 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 5.1 (in development)
 * APPX/MSIX package signing has been implemented (thanks to Maciej Panek for the help)
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
+* API changes:
+  * The signature can be removed by setting a null signature on the `Signable` object
 
 #### Version 5.0 (2023-06-06)
 

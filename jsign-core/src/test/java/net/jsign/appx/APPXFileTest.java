@@ -17,15 +17,20 @@
 package net.jsign.appx;
 
 import java.io.File;
+import java.security.KeyStore;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import net.jsign.AuthenticodeSigner;
 import net.jsign.DigestAlgorithm;
+import net.jsign.KeyStoreBuilder;
 
 import static java.nio.charset.StandardCharsets.*;
+import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.SignatureAssert.*;
 import static org.junit.Assert.*;
 
 public class APPXFileTest {
@@ -68,6 +73,25 @@ public class APPXFileTest {
     public void testGetRequiredDigestAlgorithm() throws Exception {
         try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.msix"))) {
             assertEquals("digest algorithm", DigestAlgorithm.SHA256, file.getRequiredDigestAlgorithm());
+        }
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal.msix");
+        File targetFile = new File("target/test-classes/minimal-unsigned.msix");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (APPXFile file = new APPXFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+            file.setSignature(null);
+            assertNotSigned(file);
         }
     }
 }

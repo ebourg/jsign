@@ -742,14 +742,26 @@ public class PEFile implements Signable {
 
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
-        // pad the file before adding the certificate table
-        DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
-        if (certificateTable == null || !certificateTable.exists()) {
-            pad(8);
-        }
+        if (signature != null) {
+            // pad the file before adding the certificate table
+            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            if (certificateTable == null || !certificateTable.exists()) {
+                pad(8);
+            }
 
-        CertificateTableEntry entry = new CertificateTableEntry(signature);
-        writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
+            CertificateTableEntry entry = new CertificateTableEntry(signature);
+            writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
+
+        } else if (getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE).exists()) {
+            // erase the previous signature
+            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            if (!certificateTable.isTrailing()) {
+                certificateTable.erase();
+            } else {
+                channel.truncate(certificateTable.getVirtualAddress());
+            }
+            certificateTable.write(0, 0);
+        }
     }
 
     private synchronized List<CertificateTableEntry> getCertificateTable() {

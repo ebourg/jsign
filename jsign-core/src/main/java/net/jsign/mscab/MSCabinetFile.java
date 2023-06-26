@@ -223,7 +223,11 @@ public class MSCabinetFile implements Signable {
 
     @Override
     public synchronized void setSignature(CMSSignedData signature) throws IOException {
-        byte[] content = signature.toASN1Structure().getEncoded("DER");
+        if (signature == null && !header.hasSignature()) {
+            return;
+        }
+
+        byte[] content = signature != null ? signature.toASN1Structure().getEncoded("DER") : new byte[0];
 
         int shift = 0;
 

@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.SignatureAssert.*;
 
 public class CatalogSignerTest {
 
@@ -149,5 +150,25 @@ public class CatalogSignerTest {
         script = Signable.of(targetFile);
 
         SignatureAssert.assertSigned(script, SHA256);
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/cat/wineyes.cat");
+        File targetFile = new File("target/test-classes/cat/wineyes-unsigned.cat");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (Signable file = Signable.of(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+            file.setSignature(null);
+            file.save();
+            assertNotSigned(file);
+        }
     }
 }

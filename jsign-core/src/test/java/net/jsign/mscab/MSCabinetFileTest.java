@@ -20,10 +20,18 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.KeyStore;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import net.jsign.AuthenticodeSigner;
+import net.jsign.KeyStoreBuilder;
+import net.jsign.appx.APPXFile;
+
+import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.SignatureAssert.*;
 import static org.junit.Assert.*;
 
 public class MSCabinetFileTest {
@@ -154,6 +162,25 @@ public class MSCabinetFileTest {
             fail("No exception thrown");
         } catch (IOException e) {
             assertEquals("MSCabinet file is corrupt: signature data (offset=8192, size=1024) after the end of the file", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample1.cab");
+        File targetFile = new File("target/test-classes/mscab/sample1-unsigned.cab");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+            file.setSignature(null);
+            assertNotSigned(file);
         }
     }
 }

@@ -274,11 +274,21 @@ public class MSIFile implements Signable {
 
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
-        byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
-        try {
-            fsWrite.getRoot().createOrUpdateDocument(DIGITAL_SIGNATURE_ENTRY_NAME, new ByteArrayInputStream(signatureBytes));
-        } catch (IndexOutOfBoundsException e) {
-            throw new IOException("MSI file format error", e);
+        if (signature != null) {
+            byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
+            try {
+                fsWrite.getRoot().createOrUpdateDocument(DIGITAL_SIGNATURE_ENTRY_NAME, new ByteArrayInputStream(signatureBytes));
+            } catch (IndexOutOfBoundsException e) {
+                throw new IOException("MSI file format error", e);
+            }
+        } else {
+            // remove the signature
+            if (fsWrite.getRoot().hasEntry(DIGITAL_SIGNATURE_ENTRY_NAME)) {
+                fsWrite.getRoot().getEntry(DIGITAL_SIGNATURE_ENTRY_NAME).delete();
+            }
+            if (fsWrite.getRoot().hasEntry(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
+                fsWrite.getRoot().getEntry(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME).delete();
+            }
         }
     }
 

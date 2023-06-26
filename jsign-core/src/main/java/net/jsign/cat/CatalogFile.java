@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -36,6 +37,8 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.util.CollectionStore;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
@@ -152,6 +155,15 @@ public class CatalogFile implements Signable {
     public void setSignature(CMSSignedData signature) {
         if (signature != null) {
             signedData = signature;
+        } else {
+            // remove the signatures and the certificates
+            try {
+                signedData = CMSSignedData.replaceSigners(signedData, new SignerInformationStore(Collections.emptyList()));
+                CollectionStore<?> emptyStore = new CollectionStore<>(Collections.emptyList());
+                signedData = CMSSignedData.replaceCertificatesAndCRLs(signedData, emptyStore, emptyStore, emptyStore);
+            } catch (CMSException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

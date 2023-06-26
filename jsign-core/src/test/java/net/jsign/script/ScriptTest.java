@@ -24,9 +24,11 @@ import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
 import net.jsign.KeyStoreBuilder;
+import net.jsign.Signable;
 import net.jsign.SignatureAssert;
 
 import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.SignatureAssert.*;
 import static org.junit.Assert.*;
 
 public abstract class ScriptTest {
@@ -50,7 +52,7 @@ public abstract class ScriptTest {
     }
 
     @Test
-    public void testRemoveSignature() throws Exception {
+    public void testGetContentWithoutSignature() throws Exception {
         File sourceFile = new File("target/test-classes/hello-world." + getFileExtension());
         String content = FileUtils.readFileToString(sourceFile, "ISO-8859-1");
 
@@ -61,5 +63,25 @@ public abstract class ScriptTest {
         SignatureAssert.assertSigned(script, SHA1);
         
         assertEquals("script with the signature removed", content, script.getContentWithoutSignatureBlock());
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/hello-world." + getFileExtension());
+        File targetFile = new File("target/test-classes/hello-world-unsigned." + getFileExtension());
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (Signable script = Signable.of(targetFile)) {
+            script.setSignature(null);
+            signer.sign(script);
+            assertSigned(script, SHA256);
+            script.setSignature(null);
+            script.save();
+            assertNotSigned(script);
+        }
     }
 }

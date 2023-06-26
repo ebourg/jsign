@@ -217,11 +217,13 @@ public class APPXFile extends ZipFile implements Signable {
             removeEntry("AppxSignature.p7x");
         }
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write("PKCX".getBytes());
-        signature.toASN1Structure().encodeTo(out, "DER");
+        if (signature != null) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            out.write("PKCX".getBytes());
+            signature.toASN1Structure().encodeTo(out, "DER");
 
-        addEntry("AppxSignature.p7x", out.toByteArray(), false);
+            addEntry("AppxSignature.p7x", out.toByteArray(), false);
+        }
     }
 
     /**

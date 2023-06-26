@@ -241,9 +241,13 @@ abstract class SignableScript implements Signable {
     public void setSignature(CMSSignedData signature) throws IOException {
         // build the signed script content
         String content = getContentWithoutSignatureBlock();
-        int pos = getSignatureInsertionPoint(content);
-        
-        this.content = content.substring(0, pos) + createSignatureBlock(signature) + content.substring(pos);
+        if (signature != null) {
+            int pos = getSignatureInsertionPoint(content);
+
+            this.content = content.substring(0, pos) + createSignatureBlock(signature) + content.substring(pos);
+        } else {
+            this.content = content;
+        }
     }
 
     private String createSignatureBlock(CMSSignedData signature) throws IOException {

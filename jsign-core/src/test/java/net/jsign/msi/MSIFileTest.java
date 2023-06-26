@@ -21,6 +21,8 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.SignatureAssert.*;
 import static org.junit.Assert.*;
 
 public class MSIFileTest {
@@ -41,5 +43,20 @@ public class MSIFileTest {
         MSIFile file = new MSIFile(new File("target/test-classes/minimal.msi"));
         file.close();
         file.close();
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal-signed-with-signtool.msi");
+        File targetFile = new File("target/test-classes/minimal-unsigned.msi");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSIFile file = new MSIFile(targetFile)) {
+            assertSigned(file, SHA1);
+            file.setSignature(null);
+            file.save();
+            assertNotSigned(file);
+        }
     }
 }

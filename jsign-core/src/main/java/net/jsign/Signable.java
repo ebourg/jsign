@@ -98,7 +98,7 @@ public interface Signable extends Closeable {
     /**
      * Sets the signature of the file, overwriting the previous one.
      * 
-     * @param signature the signature to put
+     * @param signature the signature to put, or null to remove the signature
      * @throws IOException if an I/O error occurs
      */
     void setSignature(CMSSignedData signature) throws IOException;

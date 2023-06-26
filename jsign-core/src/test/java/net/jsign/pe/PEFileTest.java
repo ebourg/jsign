@@ -22,13 +22,18 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.KeyStore;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
+import net.jsign.AuthenticodeSigner;
+import net.jsign.KeyStoreBuilder;
+
 import static net.jsign.DigestAlgorithm.*;
+import static net.jsign.SignatureAssert.*;
 import static org.junit.Assert.*;
 
 public class PEFileTest {
@@ -272,6 +277,25 @@ public class PEFileTest {
             file.channel.write((ByteBuffer) ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(Integer.MAX_VALUE).flip());
 
             assertTrue("Certificate table with invalid size not ignored", file.getSignatures().isEmpty());
+        }
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-unsigned.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (PEFile file = new PEFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+            file.setSignature(null);
+            assertNotSigned(file);
         }
     }
 }
