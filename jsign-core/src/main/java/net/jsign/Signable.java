@@ -145,29 +145,29 @@ public interface Signable extends Closeable {
         } else if (CatalogFile.isCatalogFile(file)) {
             return new CatalogFile(file);
 
-        } else if (file.getName().endsWith(".ps1")
-                || file.getName().endsWith(".psd1")
-                || file.getName().endsWith(".psm1")) {
+        } else if (file.getName().toLowerCase().endsWith(".ps1")
+                || file.getName().toLowerCase().endsWith(".psd1")
+                || file.getName().toLowerCase().endsWith(".psm1")) {
             return new PowerShellScript(file, encoding);
 
-        } else if (file.getName().endsWith(".ps1xml")) {
+        } else if (file.getName().toLowerCase().endsWith(".ps1xml")) {
             return new PowerShellXMLScript(file, encoding);
 
-        } else if (file.getName().endsWith(".vbs")
-                || file.getName().endsWith(".vbe")) {
+        } else if (file.getName().toLowerCase().endsWith(".vbs")
+                || file.getName().toLowerCase().endsWith(".vbe")) {
             return new VBScript(file, encoding);
 
-        } else if (file.getName().endsWith(".js")
-                || file.getName().endsWith(".jse")) {
+        } else if (file.getName().toLowerCase().endsWith(".js")
+                || file.getName().toLowerCase().endsWith(".jse")) {
             return new JScript(file, encoding);
 
-        } else if (file.getName().endsWith(".wsf")) {
+        } else if (file.getName().toLowerCase().endsWith(".wsf")) {
             return new WindowsScript(file, encoding);
 
-        } else if (file.getName().endsWith(".msix")
-                || file.getName().endsWith(".msixbundle")
-                || file.getName().endsWith(".appx")
-                || file.getName().endsWith(".appxbundle")) {
+        } else if (file.getName().toLowerCase().endsWith(".msix")
+                || file.getName().toLowerCase().endsWith(".msixbundle")
+                || file.getName().toLowerCase().endsWith(".appx")
+                || file.getName().toLowerCase().endsWith(".appxbundle")) {
             return new APPXFile(file);
 
         } else {
