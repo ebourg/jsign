@@ -173,7 +173,9 @@ public class MSIFile implements Signable {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) throws IOException {
+    public byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
+        MessageDigest digest = digestAlgorithm.getMessageDigest();
+
         try {
             // hash the MsiDigitalSignatureEx entry if there is one
             if (fsRead.getRoot().hasEntry(MSI_DIGITAL_SIGNATURE_EX_ENTRY_NAME)) {
@@ -182,7 +184,7 @@ public class MSIFile implements Signable {
                 updateDigest(digest, msiDigitalSignatureExDocument);
             }
 
-            computeDigest(digest, fsRead.getPropertyTable().getRoot());
+            updateDigest(digest, fsRead.getPropertyTable().getRoot());
 
             return digest.digest();
         } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
@@ -190,7 +192,7 @@ public class MSIFile implements Signable {
         }
     }
 
-    private void computeDigest(MessageDigest digest, DirectoryProperty node) {
+    private void updateDigest(MessageDigest digest, DirectoryProperty node) {
         Map<MSIStreamName, Property> sortedEntries = new TreeMap<>();
         for (Property child : node) {
             sortedEntries.put(new MSIStreamName(child.getName()), child);
@@ -206,7 +208,7 @@ public class MSIFile implements Signable {
                 POIFSDocument document = new POIFSDocument((DocumentProperty) property, fsRead);
                 updateDigest(digest, document);
             } else {
-                computeDigest(digest, (DirectoryProperty) property);
+                updateDigest(digest, (DirectoryProperty) property);
             }
         }
 
@@ -229,7 +231,7 @@ public class MSIFile implements Signable {
     @Override
     public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
 
         SpcUuid uuid = new SpcUuid("F1100C00-0000-0000-C000-000000000046");
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(1, uuid));

@@ -283,7 +283,8 @@ abstract class SignableScript implements Signable {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) {
+    public byte[] computeDigest(DigestAlgorithm digestAlgorithm) {
+        MessageDigest digest = digestAlgorithm.getMessageDigest();
         digest.update(getContentWithoutSignatureBlock().getBytes(UTF_16LE));
         return digest.digest();
     }
@@ -291,7 +292,7 @@ abstract class SignableScript implements Signable {
     @Override
     public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
         
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, getSpcSipInfo());
         

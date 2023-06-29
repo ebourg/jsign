@@ -902,12 +902,14 @@ public class PEFile implements Signable {
      * directory table entry and the certificate table are excluded from
      * the digest.
      * 
-     * @param digest the message digest to update
+     * @param digestAlgorithm the digest algorithm to use
      * @return the digest of the file
      * @throws IOException if an I/O error occurs
      */
     @Override
-    public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
+    public synchronized byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
+        MessageDigest digest = digestAlgorithm.getMessageDigest();
+
         long checksumLocation = peHeaderOffset + 88;
         
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
@@ -944,17 +946,6 @@ public class PEFile implements Signable {
         }
 
         return digest.digest();
-    }
-
-    /**
-     * Compute the checksum of the file using the specified digest algorithm.
-     * 
-     * @param algorithm the digest algorithm, typically SHA1
-     * @return the checksum of the file
-     * @throws IOException if an I/O error occurs
-     */
-    public byte[] computeDigest(DigestAlgorithm algorithm) throws IOException {
-        return computeDigest(algorithm.getMessageDigest());
     }
 
     @Override

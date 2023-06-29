@@ -23,7 +23,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -115,7 +114,7 @@ public class CatalogFile implements Signable {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) {
+    public byte[] computeDigest(DigestAlgorithm digest) {
         throw new UnsupportedOperationException();
     }
 

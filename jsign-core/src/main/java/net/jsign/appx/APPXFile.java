@@ -93,7 +93,7 @@ public class APPXFile extends ZipFile implements Signable {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) throws IOException {
+    public byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
         addContentType("/AppxSignature.p7x", "application/vnd.ms-appx.signature");
 
         // digest the file records
@@ -166,7 +166,7 @@ public class APPXFile extends ZipFile implements Signable {
     @Override
     public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
 
         boolean bundle = centralDirectory.entries.containsKey("AppxBundleManifest.xml");
         SpcUuid uuid = new SpcUuid(bundle ? "B3585F0F-DEAA-9A4B-A434-95742D92ECEB" : "4BDFC50A-07CE-E24D-B76E-23C839A09FD1");

@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 
+import net.jsign.DigestAlgorithm;
+
 import static java.nio.charset.StandardCharsets.*;
 
 /**
@@ -67,7 +69,9 @@ abstract class WSHScript extends SignableScript {
     }
 
     @Override
-    public byte[] computeDigest(MessageDigest digest) {
+    public byte[] computeDigest(DigestAlgorithm digestAlgorithm) {
+        MessageDigest digest = digestAlgorithm.getMessageDigest();
+
         String content = getContentWithoutSignatureBlock();
         digest.update(content.getBytes(UTF_16LE));
 

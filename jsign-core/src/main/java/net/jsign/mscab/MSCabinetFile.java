@@ -140,7 +140,9 @@ public class MSCabinetFile implements Signable {
     }
 
     @Override
-    public synchronized byte[] computeDigest(MessageDigest digest) throws IOException {
+    public synchronized byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
+        MessageDigest digest = digestAlgorithm.getMessageDigest();
+
         CFHeader modifiedHeader = new CFHeader(header);
         if (!header.isReservePresent()) {
             modifiedHeader.cbCFHeader = CABSignature.SIZE;
@@ -184,7 +186,7 @@ public class MSCabinetFile implements Signable {
     @Override
     public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
-        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm.getMessageDigest()));
+        DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_CAB_DATA_OBJID, new SpcPeImageData());
 
         return new SpcIndirectDataContent(data, digestInfo);

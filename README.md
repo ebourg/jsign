@@ -46,6 +46,7 @@ See https://ebourg.github.io/jsign for more information.
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)
 * API changes:
   * The signature can be removed by setting a null signature on the `Signable` object
+  * `Signable.computeDigest(MessageDigest)` has been replaced by `Signable.computeDigest(DigestAlgorithm)`
 * Upgraded BouncyCastle to 1.75
 
 #### Version 5.0 (2023-06-06)

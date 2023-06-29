@@ -75,8 +75,23 @@ public interface Signable extends Closeable {
      * @param digest the message digest to update
      * @return the digest of the file
      * @throws IOException if an I/O error occurs
+     * @deprecated Use {@link #computeDigest(DigestAlgorithm)} instead
      */
-    byte[] computeDigest(MessageDigest digest) throws IOException;
+    default byte[] computeDigest(MessageDigest digest) throws IOException {
+        return computeDigest(DigestAlgorithm.of(digest.getAlgorithm()));
+    }
+
+    /**
+     * Computes the digest of the file.
+     *
+     * @param digestAlgorithm the digest algorithm to use
+     * @return the digest of the file
+     * @throws IOException if an I/O error occurs
+     * @since 5.1
+     */
+    default byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
+        return computeDigest(digestAlgorithm.getMessageDigest());
+    }
 
     /**
      * Creates the SpcIndirectDataContent structure containing the digest of the file.
