@@ -34,6 +34,9 @@ class ExtraField {
     public void read(ByteBuffer buffer) throws IOException {
         id = buffer.getShort() & 0xFFFF;
         int size = buffer.getShort() & 0xFFFF;
+        if (size > buffer.remaining()) {
+            throw new IOException("Invalid extra field size");
+        }
         if (size > 0) {
             data = new byte[size];
             buffer.get(data);
