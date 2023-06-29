@@ -63,7 +63,7 @@ public class PrivateKeyUtils {
             if (file.getName().endsWith(".pvk")) {
                 return PVK.parse(file, password);
             } else if (file.getName().endsWith(".pem")) {
-                return readPrivateKeyPEM(file, password);
+                return readPrivateKeyPEM(file, password != null ? password.toCharArray() : null);
             }
         } catch (Exception e) {
             throw new KeyException("Failed to load the private key from " + file, e);
@@ -72,7 +72,7 @@ public class PrivateKeyUtils {
         throw new IllegalArgumentException("Unsupported private key format (PEM or PVK file expected");
     }
 
-    private static PrivateKey readPrivateKeyPEM(File file, String password) throws IOException, OperatorCreationException, PKCSException {
+    private static PrivateKey readPrivateKeyPEM(File file, char[] password) throws IOException, OperatorCreationException, PKCSException {
         try (FileReader reader = new FileReader(file)) {
             PEMParser parser = new PEMParser(reader);
             Object object = parser.readObject();
@@ -90,13 +90,13 @@ public class PrivateKeyUtils {
 
             if (object instanceof PEMEncryptedKeyPair) {
                 // PKCS1 encrypted key
-                PEMDecryptorProvider decryptionProvider = new JcePEMDecryptorProviderBuilder().setProvider(provider).build(password.toCharArray());
+                PEMDecryptorProvider decryptionProvider = new JcePEMDecryptorProviderBuilder().setProvider(provider).build(password);
                 PEMKeyPair keypair = ((PEMEncryptedKeyPair) object).decryptKeyPair(decryptionProvider);
                 return converter.getPrivateKey(keypair.getPrivateKeyInfo());
 
             } else if (object instanceof PKCS8EncryptedPrivateKeyInfo) {
                 // PKCS8 encrypted key
-                InputDecryptorProvider decryptionProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().setProvider(provider).build(password.toCharArray());
+                InputDecryptorProvider decryptionProvider = new JceOpenSSLPKCS8DecryptorProviderBuilder().setProvider(provider).build(password);
                 PrivateKeyInfo info = ((PKCS8EncryptedPrivateKeyInfo) object).decryptPrivateKeyInfo(decryptionProvider);
                 return converter.getPrivateKey(info);
                 
