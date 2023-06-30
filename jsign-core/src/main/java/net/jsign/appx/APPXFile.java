@@ -101,25 +101,25 @@ public class APPXFile extends ZipFile implements Signable {
         if (centralDirectory.entries.containsKey("AppxSignature.p7x")) {
             endOfContentOffset = centralDirectory.entries.get("AppxSignature.p7x").getLocalHeaderOffset();
         }
-        MessageDigest axpc = DigestAlgorithm.SHA256.getMessageDigest();
+        MessageDigest axpc = digestAlgorithm.getMessageDigest();
         ChannelUtils.updateDigest(channel, axpc, 0, endOfContentOffset);
 
         // digest the central directory
-        MessageDigest axcd = DigestAlgorithm.SHA256.getMessageDigest();
+        MessageDigest axcd = digestAlgorithm.getMessageDigest();
         axcd.update(getUnsignedCentralDirectory());
 
         // digest the [ContentTypes].xml file
-        MessageDigest axct = DigestAlgorithm.SHA256.getMessageDigest();
+        MessageDigest axct = digestAlgorithm.getMessageDigest();
         IOUtils.copy(getInputStream("[Content_Types].xml"), new DigestOutputStream(NullOutputStream.NULL_OUTPUT_STREAM, axct));
 
         // digest the AppxBlockMap.xml file
-        MessageDigest axbm = DigestAlgorithm.SHA256.getMessageDigest();
+        MessageDigest axbm = digestAlgorithm.getMessageDigest();
         IOUtils.copy(getInputStream("AppxBlockMap.xml"), new DigestOutputStream(NullOutputStream.NULL_OUTPUT_STREAM, axbm));
 
         // digest the AppxMetadata/CodeIntegrity.cat file if present
         MessageDigest axci = null;
         if (centralDirectory.entries.containsKey("AppxMetadata/CodeIntegrity.cat")) {
-            axci = DigestAlgorithm.SHA256.getMessageDigest();
+            axci = digestAlgorithm.getMessageDigest();
             IOUtils.copy(getInputStream("AppxMetadata/CodeIntegrity.cat"), new DigestOutputStream(NullOutputStream.NULL_OUTPUT_STREAM, axci));
         }
 
