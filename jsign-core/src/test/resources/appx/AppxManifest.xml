@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+	       xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+	       xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+	       IgnorableNamespaces="uap rescap">
+  <Identity Name="minimal" Publisher="CN=Jsign Code Signing Test Certificate 2022 (RSA)" Version="1.0.0.0" ProcessorArchitecture="x64" />
+  <Properties>
+    <DisplayName>Minimal APPX package for Jsign tests</DisplayName>
+    <PublisherDisplayName>The Jsign project</PublisherDisplayName>
+    <Description>Minimal APPX package for Jsign tests</Description>
+    <Logo>1x1.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22000.1" />
+  </Dependencies>
+  <Applications>
+    <Application Id="App" Executable="MORE.EXE" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="ms-resource:AppName"
+                          Description="ms-resource:AppDescription"
+                          BackgroundColor="transparent"
+                          Square150x150Logo="1x1.png"
+                          Square44x44Logo="1x1.png">
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

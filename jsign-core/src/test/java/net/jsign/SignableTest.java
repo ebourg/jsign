@@ -44,7 +44,7 @@ public class SignableTest {
             assertTrue(signable instanceof VBScript);
         }
 
-        FileUtils.copyFile(new File("target/test-classes/minimal.msix"), new File("target/test-classes/minimal-renamed.AppxBundle"));
+        FileUtils.copyFile(new File("target/test-classes/minimal.appxbundle"), new File("target/test-classes/minimal-renamed.AppxBundle"));
         try (Signable signable = Signable.of(new File("target/test-classes/minimal-renamed.AppxBundle"))) {
             assertTrue(signable instanceof APPXFile);
         }

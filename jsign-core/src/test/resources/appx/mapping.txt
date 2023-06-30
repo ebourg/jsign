@@ -1,0 +1,4 @@
+[Files]
+"..\MORE.EXE"               "MORE.EXE"
+"1x1.png"                   "1x1.png"
+"AppxManifest.xml"          "AppxManifest.xml"

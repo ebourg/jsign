@@ -37,7 +37,7 @@ public class APPXSignerTest {
     }
 
     @Test
-    public void testSign() throws Exception {
+    public void testSignPackage() throws Exception {
         File sourceFile = new File("target/test-classes/minimal.msix");
         File targetFile = new File("target/test-classes/minimal-signed.msix");
 
@@ -49,6 +49,22 @@ public class APPXSignerTest {
             signer.sign(file);
 
             SignatureAssert.assertSigned(file, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignBundle() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal.appxbundle");
+        File targetFile = new File("target/test-classes/minimal-signed.appxbundle");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD).withTimestamping(false);
+
+        try (Signable file = Signable.of(targetFile)) {
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA512);
         }
     }
 
