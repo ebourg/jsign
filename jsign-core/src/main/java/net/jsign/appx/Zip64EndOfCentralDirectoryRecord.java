@@ -46,7 +46,6 @@ class Zip64EndOfCentralDirectoryRecord extends ZipRecord {
     public static final int SIGNATURE = 0x06064b50;
     private static final int MIN_SIZE = 56;
 
-    public long sizeOfZip64EndOfCentralDirectoryRecord;
     public int versionMadeBy = 45;
     public int versionNeededToExtract = 45;
     public int numberOfThisDisk;
@@ -70,7 +69,7 @@ class Zip64EndOfCentralDirectoryRecord extends ZipRecord {
         if (signature != SIGNATURE) {
             throw new IOException("Invalid ZIP64 End of Central Directory Record signature " + String.format("0x%04x", signature & 0xFFFFFFFFL));
         }
-        sizeOfZip64EndOfCentralDirectoryRecord = buffer.getLong();
+        long sizeOfZip64EndOfCentralDirectoryRecord = buffer.getLong();
         versionMadeBy = buffer.getShort();
         versionNeededToExtract = buffer.getShort();
         numberOfThisDisk = buffer.getInt();
@@ -92,6 +91,7 @@ class Zip64EndOfCentralDirectoryRecord extends ZipRecord {
     public ByteBuffer toBuffer() {
         ByteBuffer buffer = ByteBuffer.allocate(MIN_SIZE + extensibleDataSector.length).order(LITTLE_ENDIAN);
         buffer.putInt(SIGNATURE);
+        long sizeOfZip64EndOfCentralDirectoryRecord = extensibleDataSector.length + MIN_SIZE - 4 /* signature */ - 8 /* size */;
         buffer.putLong(sizeOfZip64EndOfCentralDirectoryRecord);
         buffer.putShort((short) versionMadeBy);
         buffer.putShort((short) versionNeededToExtract);

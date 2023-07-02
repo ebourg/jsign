@@ -38,7 +38,6 @@ public class Zip64EndOfCentralDirectoryRecordTest {
             Zip64EndOfCentralDirectoryRecord record = new Zip64EndOfCentralDirectoryRecord();
             record.read(channel);
 
-            assertEquals("size of zip64 end of central directory record", 44, record.sizeOfZip64EndOfCentralDirectoryRecord);
             assertEquals("version made by / file attributes compatibility", 0 /* DOS */, record.versionMadeBy >> 8);
             assertEquals("version made by / zip specification", 45, record.versionMadeBy & 0xFF);
             assertEquals("version needed to extract", 45, record.versionNeededToExtract);
