@@ -81,6 +81,9 @@ class Zip64EndOfCentralDirectoryRecord extends ZipRecord {
 
         long recordSize = sizeOfZip64EndOfCentralDirectoryRecord + 4 /* signature */ + 8 /* size */;
         int extensibleDataSectorSize = (int) (recordSize - MIN_SIZE);
+        if (extensibleDataSectorSize > 1024 * 1024) {
+            throw new IOException("The extensible data sector of the ZIP64 End of Central Directory Record is too large (" + extensibleDataSectorSize + " bytes)");
+        }
         if (extensibleDataSectorSize > 0) {
             extensibleDataSector = new byte[extensibleDataSectorSize];
             channel.read(ByteBuffer.wrap(extensibleDataSector));
