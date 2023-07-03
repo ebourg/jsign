@@ -47,17 +47,6 @@ import net.jsign.script.WindowsScript;
 public interface Signable extends Closeable {
 
     /**
-     * Returns the digests algorithm required for the signature.
-     * Some formats such as APPX/MSIX require a specific digest algorithm defined in the file metadata.
-     *
-     * @return the digest algorithm required for the signature, or null to use the default algorithm
-     * @since 5.1
-     */
-    default DigestAlgorithm getRequiredDigestAlgorithm() throws IOException {
-        return null;
-    }
-
-    /**
      * Creates the ContentInfo structure to be signed.
      *
      * @param digestAlgorithm the digest algorithm to use

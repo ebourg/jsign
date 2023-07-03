@@ -26,8 +26,6 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.NullOutputStream;
@@ -239,28 +237,6 @@ public class APPXFile extends ZipFile implements Signable {
             renameEntry("[Content_Types].xml", "[Content_Types].old");
             addEntry("[Content_Types].xml", contentTypes.getBytes(), true);
         }
-    }
-
-    /**
-     * Get the digest algorithm used to hash the blocks in the AppxBlockMap.xml file.
-     */
-    @Override
-    public DigestAlgorithm getRequiredDigestAlgorithm() throws IOException {
-        String appxBlockMap = new String(IOUtils.toByteArray(getInputStream("AppxBlockMap.xml", 10 * 1024 * 1024 /* 10MB */)), UTF_8);
-
-        Matcher matcher = Pattern.compile("HashMethod=\"([^\"]+)\"", Pattern.CASE_INSENSITIVE).matcher(appxBlockMap);
-        if (matcher.find()) {
-            switch (matcher.group(1)) {
-                case "http://www.w3.org/2001/04/xmlenc#sha256":
-                    return DigestAlgorithm.SHA256;
-                case "http://www.w3.org/2001/04/xmldsig-more#sha384":
-                    return DigestAlgorithm.SHA384;
-                case "http://www.w3.org/2001/04/xmlenc#sha512":
-                    return DigestAlgorithm.SHA512;
-            }
-        }
-
-        return null;
     }
 
     @Override

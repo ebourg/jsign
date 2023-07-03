@@ -367,11 +367,6 @@ public class AuthenticodeSigner {
      * @throws Exception if an error occurs
      */
     protected CMSSignedData createSignedData(Signable file) throws Exception {
-        DigestAlgorithm digestAlgorithm = file.getRequiredDigestAlgorithm();
-        if (digestAlgorithm == null) {
-            digestAlgorithm = this.digestAlgorithm;
-        }
-
         // compute the signature
         ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
         AuthenticodeSignedDataGenerator generator = createSignedDataGenerator(digestAlgorithm);

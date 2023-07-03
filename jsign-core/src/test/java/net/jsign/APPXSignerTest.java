@@ -64,24 +64,6 @@ public class APPXSignerTest {
         try (Signable file = Signable.of(targetFile)) {
             signer.sign(file);
 
-            SignatureAssert.assertSigned(file, SHA512);
-        }
-    }
-
-    @Test
-    public void testSignWithWrongAlgorithm() throws Exception {
-        File sourceFile = new File("target/test-classes/minimal.msix");
-        File targetFile = new File("target/test-classes/minimal-signed.msix");
-
-        FileUtils.copyFile(sourceFile, targetFile);
-
-        AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                .withDigestAlgorithm(SHA1)
-                .withTimestamping(false);
-
-        try (Signable file = Signable.of(targetFile)) {
-            signer.sign(file);
-
             SignatureAssert.assertSigned(file, SHA256);
         }
     }
@@ -101,9 +83,10 @@ public class APPXSignerTest {
             SignatureAssert.assertSigned(file, SHA256);
 
             // second signature
+            signer.withDigestAlgorithm(SHA512);
             signer.sign(file);
 
-            SignatureAssert.assertSigned(file, SHA256, SHA256);
+            SignatureAssert.assertSigned(file, SHA256, SHA512);
         }
     }
 
@@ -116,7 +99,7 @@ public class APPXSignerTest {
 
         try (Signable file = Signable.of(targetFile)) {
             AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                    .withDigestAlgorithm(SHA1)
+                    .withDigestAlgorithm(SHA256)
                     .withTimestamping(true);
 
             signer.sign(file);
@@ -125,11 +108,11 @@ public class APPXSignerTest {
             SignatureAssert.assertTimestamped("Invalid timestamp", file.getSignatures().get(0));
 
             // second signature
-            signer.withDigestAlgorithm(SHA256);
+            signer.withDigestAlgorithm(SHA384);
             signer.withTimestamping(false);
             signer.sign(file);
 
-            SignatureAssert.assertSigned(file, SHA256, SHA256);
+            SignatureAssert.assertSigned(file, SHA256, SHA384);
             SignatureAssert.assertTimestamped("Timestamp corrupted after adding the second signature", file.getSignatures().get(0));
 
             // third signature
@@ -137,7 +120,7 @@ public class APPXSignerTest {
             signer.withTimestamping(false);
             signer.sign(file);
 
-            SignatureAssert.assertSigned(file, SHA256, SHA256, SHA256);
+            SignatureAssert.assertSigned(file, SHA256, SHA384, SHA512);
             SignatureAssert.assertTimestamped("Timestamp corrupted after adding the third signature", file.getSignatures().get(0));
         }
     }

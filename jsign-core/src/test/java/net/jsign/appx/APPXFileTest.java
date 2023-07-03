@@ -70,13 +70,6 @@ public class APPXFileTest {
     }
 
     @Test
-    public void testGetRequiredDigestAlgorithm() throws Exception {
-        try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.msix"))) {
-            assertEquals("digest algorithm", DigestAlgorithm.SHA256, file.getRequiredDigestAlgorithm());
-        }
-    }
-
-    @Test
     public void testRemoveSignature() throws Exception {
         File sourceFile = new File("target/test-classes/minimal.msix");
         File targetFile = new File("target/test-classes/minimal-unsigned.msix");
