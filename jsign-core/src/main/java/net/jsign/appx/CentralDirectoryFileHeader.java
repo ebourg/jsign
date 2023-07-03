@@ -81,6 +81,9 @@ class CentralDirectoryFileHeader extends ZipRecord {
         ByteBuffer buffer = ByteBuffer.allocate(MIN_SIZE).order(LITTLE_ENDIAN);
         channel.read(buffer);
         buffer.flip();
+        if (buffer.remaining() < MIN_SIZE) {
+            throw new IOException("Invalid Central Directory File Header");
+        }
 
         int signature = buffer.getInt();
         if (signature != SIGNATURE) {
