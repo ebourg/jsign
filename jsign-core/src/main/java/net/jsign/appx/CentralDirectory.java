@@ -19,7 +19,10 @@ package net.jsign.appx;
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -95,9 +98,11 @@ class CentralDirectory {
      * @param offset the offset of the central directory written in the End of Central Directory Record
      */
     public void write(SeekableByteChannel channel, long offset) throws IOException {
-        // write the entries
+        // sort and write the entries
+        List<CentralDirectoryFileHeader> entries = new ArrayList<>(this.entries.values());
+        entries.sort(Comparator.comparing(CentralDirectoryFileHeader::getLocalHeaderOffset));
         long position = channel.position();
-        for (CentralDirectoryFileHeader entry : entries.values()) {
+        for (CentralDirectoryFileHeader entry : entries) {
             entry.write(channel);
         }
 
