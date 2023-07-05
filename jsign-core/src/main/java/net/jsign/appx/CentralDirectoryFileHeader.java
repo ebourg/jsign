@@ -123,6 +123,11 @@ class CentralDirectoryFileHeader extends ZipRecord {
             fileComment = new byte[fileCommentLength];
             channel.read(ByteBuffer.wrap(fileComment));
         }
+
+        // validate the offset and sizes
+        if (!extraFields.containsKey(1) && (localHeaderOffset == 0xFFFFFFFFL || compressedSize == 0xFFFFFFFFL || uncompressedSize == 0xFFFFFFFFL)) {
+            throw new IOException("Missing ZIP64 extra field in the Central Directory File Header");
+        }
     }
 
     private int getExtraFieldsLength() {
