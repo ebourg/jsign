@@ -139,7 +139,7 @@ public class JsignCLI {
     }
 
     private void printHelp() {
-        String header = "Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX) or scripts (PowerShell, VBScript, JScript, WSF).\n\n";
+        String header = "Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages or scripts (PowerShell, VBScript, JScript, WSF).\n\n";
         String footer ="\n" +
                 "Examples:\n\n" +
                 "   Signing with a PKCS#12 keystore and timestamping:\n\n" +

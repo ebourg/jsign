@@ -32,6 +32,7 @@ import net.jsign.cat.CatalogFile;
 import net.jsign.mscab.MSCabinetFile;
 import net.jsign.msi.MSIFile;
 import net.jsign.appx.APPXFile;
+import net.jsign.navx.NAVXFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.JScript;
 import net.jsign.script.PowerShellScript;
@@ -148,6 +149,9 @@ public interface Signable extends Closeable {
 
         } else if (CatalogFile.isCatalogFile(file)) {
             return new CatalogFile(file);
+
+        } else if (NAVXFile.isNAVXFile(file)) {
+            return new NAVXFile(file);
 
         } else if (file.getName().toLowerCase().endsWith(".ps1")
                 || file.getName().toLowerCase().endsWith(".psd1")
