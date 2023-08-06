@@ -19,7 +19,6 @@ package net.jsign.navx;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.channels.WritableByteChannel;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.cms.ContentInfo;
@@ -35,6 +34,7 @@ import static java.nio.ByteOrder.*;
  *  <pre>
  *  signature                       4 bytes  (NXSB)
  *  CMS Signed Data                 (variable size)
+ *  offset of the signature block   4 bytes
  *  signature                       4 bytes  (NXSB)
  *  </pre>
  *
@@ -72,16 +72,17 @@ class NAVXSignatureBlock {
         }
     }
 
-    public void write(WritableByteChannel channel) throws IOException {
+    public void write(SeekableByteChannel channel) throws IOException {
+        long offset = channel.position();
         byte[] content = signedData != null ? signedData.toASN1Structure().getEncoded("DER") : new byte[0];
         if (content.length > 0) {
-            ByteBuffer buffer = ByteBuffer.allocate(4).order(LITTLE_ENDIAN);
+            ByteBuffer buffer = ByteBuffer.allocate(content.length + 12).order(LITTLE_ENDIAN);
+            buffer.putInt(SIGNATURE);
+            buffer.put(content);
+            buffer.putInt((int) offset);
             buffer.putInt(SIGNATURE);
             buffer.flip();
 
-            channel.write(buffer);
-            channel.write(ByteBuffer.wrap(content));
-            buffer.flip();
             channel.write(buffer);
         }
     }
