@@ -126,7 +126,7 @@ public class NAVXFile implements Signable {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
 
-        SpcUuid uuid = new SpcUuid("C8EAD600-FC04-0000-5828-F30400000000");
+        SpcUuid uuid  = new SpcUuid("12341234-F804-0000-781D-123412341234");
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(1, uuid));
 
         return new SpcIndirectDataContent(data, digestInfo);
