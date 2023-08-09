@@ -1,38 +1,33 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.9.7"
-    }
+plugins {
+    id 'java'
+    id 'com.gradle.plugin-publish' version '1.2.0'
 }
 
-apply plugin: "java"
-apply plugin: "com.gradle.plugin-publish"
+group = 'net.jsign'
+version = '5.0'
 
 repositories {
-    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
-    compile gradleApi()
-    compile 'net.jsign:jsign-core:2.0'
+    implementation gradleApi()
+    implementation "net.jsign:jsign-core:$version"
 }
 
-pluginBundle {
+tasks.withType(Copy).all { duplicatesStrategy 'exclude' }
+
+gradlePlugin {
     website = 'https://ebourg.github.io/jsign/'
     vcsUrl = 'https://github.com/ebourg/jsign'
-
-    description = 'Code signing for Windows executables, Microsoft Installers, Cabinet files, Windows packages and scripts'
 
     plugins {
         jsignPlugin {
             id = 'net.jsign'
-            displayName = 'Gradle Jsign plugin'
-            tags = ['signing']
-            version = '2.0'
+            displayName = 'Jsign Gradle plugin'
+            description = 'Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX) or scripts (PowerShell, VBScript, JScript, WSF)'
+            tags.set(['signing', 'code-signing', 'authenticode', 'signtool'])
+            implementationClass = 'net.jsign.JsignGradlePlugin'
         }
     }
 }

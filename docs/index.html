@@ -370,13 +370,9 @@ are the same as those described above for the Ant task.</p>
 <p>With the Groovy syntax:</p>
 
 <pre class="prettyprint lang-groovy">
-    buildscript {
-        dependencies {
-            classpath 'net.jsign:jsign-gradle-plugin:5.0'
-        }
+    plugins {
+        id 'net.jsign' version '5.0'
     }
-    
-    apply plugin: 'net.jsign'
     
     task sign {
         doLast {
@@ -394,13 +390,9 @@ are the same as those described above for the Ant task.</p>
 <p>With the Kotlin syntax:</p>
 
 <pre class="prettyprint lang-kotlin">
-    buildscript {
-        dependencies {
-            classpath("net.jsign:jsign-gradle-plugin:5.0")
-        }
+    plugins {
+        id("net.jsign") version "5.0"
     }
-    
-    apply(plugin = "net.jsign")
     
     task("sign") {
         doLast {
