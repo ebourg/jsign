@@ -43,6 +43,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 5.1 (in development)
 * APPX/MSIX package signing has been implemented (thanks to Maciej Panek for the help)
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
+* VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)
 * API changes:
   * The signature can be removed by setting a null signature on the `Signable` object

@@ -228,7 +228,7 @@ public abstract class ScriptSignerTest {
         Charset encoding = StandardCharsets.ISO_8859_1;
         String encodingName = "latin1";
         
-        // create the test file with the bom
+        // create the test file without the bom
         String content = FileUtils.readFileToString(new File("target/test-classes/hello-world." + getFileExtension()), StandardCharsets.UTF_8);
         content = content.replace("Hello World", "Halló heimur");
         content = content.replace("utf-8", "iso-8859-1");
@@ -262,9 +262,9 @@ public abstract class ScriptSignerTest {
         Charset encoding = StandardCharsets.UTF_8;
         String encodingName = "utf8";
         
-        // create the test file with the bom
+        // create the test file without the bom
         String content = FileUtils.readFileToString(new File("target/test-classes/hello-world." + getFileExtension()), StandardCharsets.UTF_8);
-        content = content.replace("Hello World", "Halló heimur");
+        content = content.replace("Hello World", "Halló heimur ‰ẍ");
         
         File sourceFile = new File("target/test-classes/hello-world-" + encodingName + "." + getFileExtension());
         FileOutputStream out = new FileOutputStream(sourceFile);
@@ -295,7 +295,7 @@ public abstract class ScriptSignerTest {
         Charset encoding = StandardCharsets.UTF_16LE;
         String encodingName = "utf16le";
         
-        // create the test file with the bom
+        // create the test file without the bom
         String content = FileUtils.readFileToString(new File("target/test-classes/hello-world." + getFileExtension()), StandardCharsets.UTF_8);
         content = content.replace("Hello World", "Halló heimur");
         

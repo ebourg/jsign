@@ -109,8 +109,8 @@ abstract class SignableScript implements Signable {
                     bom = in.getBOM().getBytes();
                 }
             } else if (StandardCharsets.UTF_8.equals(encoding) && !isUTF8AutoDetected()) {
-                // .vbs, .js and .ps1xml files are signed as ISO-8859-1 even when encoded in UTF-8
-                this.encoding = StandardCharsets.ISO_8859_1;
+                // .vbs, .js and .ps1xml files are decoded as Windows-1252 even when encoded in UTF-8
+                this.encoding = Windows1252Extended.INSTANCE;
             }
 
             setContent(new String(IOUtils.toByteArray(in), this.encoding));
