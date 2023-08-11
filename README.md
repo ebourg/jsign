@@ -8,9 +8,10 @@ Jsign - Java implementation of Microsoft Authenticode
 
 Jsign is a Java implementation of Microsoft Authenticode that lets you sign
 and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet
-files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX) and scripts.
-Jsign is platform independent and provides an alternative to native tools like
-signcode/signtool on Windows or the Mono development tools on Unix systems.
+files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft
+Dynamics 365 extension packages and scripts. Jsign is platform independent and
+provides an alternative to native tools like signcode/signtool on Windows or
+the Mono development tools on Unix systems.
 
 Jsign comes as an easy-to-use task/plugin for the main build systems (Maven,
 Gradle, Ant). It's especially suitable for signing executable wrappers and
@@ -20,7 +21,7 @@ Jsign can also be used programmatically or standalone as a command line tool.
 Jsign is free to use and licensed under the [Apache License version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Features
-* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX) and scripts (PowerShell, VBScript, JScript, WSF)
+* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages and scripts (PowerShell, VBScript, JScript, WSF)
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
 * Supports multiple signatures per file, for all file types
 * Extracts and embeds detached signatures to support [reproducible builds](https://reproducible-builds.org/docs/embedded-signatures/)
@@ -41,7 +42,8 @@ See https://ebourg.github.io/jsign for more information.
 ## Changes
 
 #### Version 5.1 (in development)
-* APPX/MSIX package signing has been implemented (thanks to Maciej Panek for the help)
+* Signing of APPX/MSIX packages has been implemented (thanks to Maciej Panek for the help)
+* Signing of Microsoft Dynamics 365 extension packages has been implemented
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
 * VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)
