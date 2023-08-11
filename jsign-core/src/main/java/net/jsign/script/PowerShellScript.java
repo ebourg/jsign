@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Björn Kautler
+ * Copyright 2019 BjÃ¶rn Kautler
  * Copyright 2019 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,7 @@ import net.jsign.asn1.authenticode.SpcUuid;
 /**
  * A PowerShell script.
  * 
- * @author Björn Kautler
+ * @author BjÃ¶rn Kautler
  * @since 3.0
  */
 public class PowerShellScript extends SignableScript {

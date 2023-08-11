@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Björn Kautler
+ * Copyright 2019 BjÃ¶rn Kautler
  * Copyright 2019 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ import static java.nio.charset.StandardCharsets.*;
 /**
  * A script (text file) that can be signed.
  *
- * @author Björn Kautler
+ * @author BjÃ¶rn Kautler
  * @author Emmanuel Bourg
  * @since 3.0
  */
