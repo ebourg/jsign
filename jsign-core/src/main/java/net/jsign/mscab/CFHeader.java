@@ -22,6 +22,35 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
 
+/**
+ * Cabinet File Header structure (CFHEADER):
+ *
+ * <pre>
+ * signature                           4 bytes  (0x4643534d: 'MSCF')
+ * reserved1 (former header checksum)  4 bytes
+ * size of the cabinet file            4 bytes
+ * reserved2 (former folders checksum) 4 bytes
+ * offset  of the first CFFILE entry   4 bytes
+ * reserved3 (former files checksum)   4 bytes
+ * minor format version                1 byte
+ * major format version                1 byte
+ * number of CFFOLDER entries          2 bytes
+ * number of CFFILE entries            2 bytes
+ * flags                               2 bytes
+ * set identifier                      2 bytes
+ * cabinet sequential number           2 bytes
+ * size of per-cabinet reserved area   2 bytes  (optional)
+ * size of per-folder reserved area    1 byte   (optional)
+ * size of per-datablock reserved area 1 byte   (optional)
+ * reserved area                       (variable size, optional)
+ * file name of the previous cabinet   (variable size, optional)
+ * media with the previous cabinet     (variable size, optional)
+ * file name of the next cabinet       (variable size, optional)
+ * media with the next cabinet         (variable size, optional)
+ * </pre>
+ *
+ * @since 4.0
+ */
 class CFHeader {
 
     public final byte[] signature = new byte[4]; // u4
@@ -180,6 +209,7 @@ class CFHeader {
         ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
         buffer.put(this.signature);
+        // the checksum of the header is skipped
         buffer.putInt((int) this.cbCabinet);
         buffer.putInt((int) this.csumFolders);
         buffer.putInt((int) this.coffFiles);

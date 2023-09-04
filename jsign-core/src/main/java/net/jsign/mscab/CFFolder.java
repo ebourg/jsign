@@ -23,7 +23,14 @@ import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
 
 /**
- * Cabinet File Folder structure
+ * Cabinet File Folder structure (CFFOLDER):
+ *
+ * <pre>
+ * offset of the first CFDATA block    4 bytes
+ * number of CFDATA blocks             2 bytes
+ * compression method                  2 bytes
+ * reserved area                       (variable size, optional)
+ * </pre>
  *
  * @since 4.0
  */

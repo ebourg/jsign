@@ -22,6 +22,13 @@ import java.nio.ByteOrder;
 /**
  * CABSignature structure found in the per-cabinet reserved area.
  *
+ * <pre>
+ * header                              4 bytes  (0x00100000)
+ * position of the signature           4 bytes
+ * size of the signature               4 bytes
+ * unused                              8 bytes
+ * </pre>
+ *
  * @since 4.0
  */
 class CABSignature {
