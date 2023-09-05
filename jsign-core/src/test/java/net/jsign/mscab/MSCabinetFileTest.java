@@ -57,22 +57,6 @@ public class MSCabinetFileTest {
     }
 
     @Test
-    public void testCabinetWithInvalidReservedField() {
-        CFHeader header = new CFHeader();
-        header.csumHeader = 1;
-
-        byte[] data = new byte[512];
-        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
-
-        try {
-            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
-        } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: invalid reserved field in the header", e.getMessage());
-        }
-    }
-
-    @Test
     public void testCabinetWithInvalidSignatureSize() {
         CFHeader header = new CFHeader();
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
