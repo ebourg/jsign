@@ -118,7 +118,7 @@ public class MSCabinetFile implements Signable {
             throw new IOException("MSCabinet file is corrupt: invalid reserved field in the header");
         }
 
-        if (header.isReservePresent()) {
+        if (header.isReservePresent() && header.cbCFHeader > 0) {
             if (header.cbCFHeader != CABSignature.SIZE) {
                 throw new IOException("MSCabinet file is corrupt: cabinet reserved area size is " + header.cbCFHeader + " instead of " + CABSignature.SIZE);
             }
@@ -144,11 +144,17 @@ public class MSCabinetFile implements Signable {
         MessageDigest digest = digestAlgorithm.getMessageDigest();
 
         CFHeader modifiedHeader = new CFHeader(header);
+        int shift = 0;
         if (!header.isReservePresent()) {
-            modifiedHeader.cbCFHeader = CABSignature.SIZE;
-            modifiedHeader.cbCabinet += 4 + CABSignature.SIZE;
-            modifiedHeader.coffFiles += 4 + CABSignature.SIZE;
+            shift = 4;
             modifiedHeader.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        }
+
+        if (header.cbCFHeader == 0) {
+            modifiedHeader.cbCFHeader = CABSignature.SIZE;
+            shift += CABSignature.SIZE;
+            modifiedHeader.cbCabinet += shift;
+            modifiedHeader.coffFiles += shift;
 
             CABSignature cabsig = new CABSignature();
             cabsig.offset = (int) modifiedHeader.cbCabinet;
@@ -171,10 +177,9 @@ public class MSCabinetFile implements Signable {
 
         for (int i = 0; i < header.cFolders; i++) {
             CFFolder folder = CFFolder.read(channel);
-            if (!header.isReservePresent()) {
-                folder.coffCabStart += 4 + CABSignature.SIZE;
-            }
+            folder.coffCabStart += shift;
             folder.digest(digest);
+            updateDigest(channel, digest, channel.position(), channel.position() + header.cbCFFolder);
         }
 
         long endPosition = header.hasSignature() ? header.getSignature().offset : channel.size();
@@ -234,14 +239,20 @@ public class MSCabinetFile implements Signable {
         int shift = 0;
 
         if (!header.isReservePresent()) {
-            shift = 4 + CABSignature.SIZE;
-            insert(channel, CFHeader.BASE_SIZE, new byte[shift]);
+            shift = 4;
+            header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        }
 
+        if (header.cbCFHeader == 0) {
+            shift += CABSignature.SIZE;
             header.cbCFHeader = CABSignature.SIZE;
+            header.abReserved = new byte[CABSignature.SIZE];
+        }
+
+        if (shift > 0) {
+            insert(channel, CFHeader.BASE_SIZE, new byte[shift]);
             header.cbCabinet += shift;
             header.coffFiles += shift;
-            header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-            header.abReserved = new byte[CABSignature.SIZE];
         }
 
         CABSignature cabsig = new CABSignature(header.abReserved);

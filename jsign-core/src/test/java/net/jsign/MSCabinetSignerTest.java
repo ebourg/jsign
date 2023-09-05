@@ -39,7 +39,7 @@ public class MSCabinetSignerTest {
     }
 
     @Test
-    public void testSignSample1() throws Exception {
+    public void testSignSimpleCabinet() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample1.cab");
         File targetFile = new File("target/test-classes/mscab/sample1-signed.cab");
 
@@ -58,7 +58,7 @@ public class MSCabinetSignerTest {
     }
 
     @Test
-    public void testSignSample2() throws Exception {
+    public void testSignMultiDiskCabinet() throws Exception {
         List<String> disks = Arrays.asList("disk1", "disk2");
         for (String disk : disks) {
             File sourceFile = new File("target/test-classes/mscab/sample2-" + disk + ".cab");
@@ -79,6 +79,25 @@ public class MSCabinetSignerTest {
             try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
                 SignatureAssert.assertSigned(cabFile, SHA256);
             }
+        }
+    }
+
+    @Test
+    public void testSignCabinetWithPerFolderReservedAreaOnly() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample3.cab");
+        File targetFile = new File("target/test-classes/mscab/sample3-signed.cab");
+
+        targetFile.getParentFile().mkdirs();
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false);
+
+            signer.sign(cabFile);
+
+            SignatureAssert.assertSigned(cabFile, SHA256);
         }
     }
 
