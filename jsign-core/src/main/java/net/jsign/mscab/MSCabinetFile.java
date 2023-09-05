@@ -84,7 +84,7 @@ public class MSCabinetFile implements Signable {
             cabFile.close();
             return true;
         } catch (IOException e) {
-            if (e.getMessage().contains("MSCabinet header signature not found") || e.getMessage().contains("MSCabinet file too short")) {
+            if (e.getMessage().contains("Invalid MSCabinet header signature") || e.getMessage().contains("MSCabinet file too short")) {
                 return false;
             } else {
                 throw e;

@@ -59,7 +59,6 @@ public class MSCabinetFileTest {
     @Test
     public void testCabinetWithInvalidReservedField() {
         CFHeader header = new CFHeader();
-        System.arraycopy("MSCF".getBytes(), 0, header.signature, 0, 4);
         header.csumHeader = 1;
 
         byte[] data = new byte[512];
@@ -76,7 +75,6 @@ public class MSCabinetFileTest {
     @Test
     public void testCabinetWithInvalidSignatureSize() {
         CFHeader header = new CFHeader();
-        System.arraycopy("MSCF".getBytes(), 0, header.signature, 0, 4);
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = 64;
         header.abReserved = new byte[64];
@@ -95,7 +93,6 @@ public class MSCabinetFileTest {
     @Test
     public void testCabinetWithInvalidSignatureHeader() {
         CFHeader header = new CFHeader();
-        System.arraycopy("MSCF".getBytes(), 0, header.signature, 0, 4);
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = CABSignature.SIZE;
         header.abReserved = new byte[CABSignature.SIZE];
@@ -118,7 +115,6 @@ public class MSCabinetFileTest {
     @Test
     public void testCabinetWithMisplacedSignature() {
         CFHeader header = new CFHeader();
-        System.arraycopy("MSCF".getBytes(), 0, header.signature, 0, 4);
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = CABSignature.SIZE;
@@ -143,7 +139,6 @@ public class MSCabinetFileTest {
     @Test
     public void testCabinetWithSignatureAfterEOF() {
         CFHeader header = new CFHeader();
-        System.arraycopy("MSCF".getBytes(), 0, header.signature, 0, 4);
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = CABSignature.SIZE;

@@ -53,7 +53,8 @@ import java.security.MessageDigest;
  */
 class CFHeader {
 
-    public final byte[] signature = new byte[4]; // u4
+    public static final int SIGNATURE = 0x4643534d; // MSCF
+
     public long csumHeader;     // u4
     public long cbCabinet;      // u4
     public long csumFolders;    // u4
@@ -99,7 +100,6 @@ class CFHeader {
     }
 
     public CFHeader(CFHeader header) {
-        System.arraycopy(header.signature, 0, this.signature, 0, 4);
         this.csumHeader = header.csumHeader;
         this.cbCabinet = header.cbCabinet;
         this.csumFolders = header.csumFolders;
@@ -126,13 +126,9 @@ class CFHeader {
         channel.read(buffer);
         buffer.flip();
 
-        buffer.get(this.signature);
-
-        if (this.signature[0] != 'M' ||
-                this.signature[1] != 'S' ||
-                this.signature[2] != 'C' ||
-                this.signature[3] != 'F') {
-            throw new IOException("MSCabinet header signature not found");
+        int signature = buffer.getInt();
+        if (signature != SIGNATURE) {
+            throw new IOException("Invalid MSCabinet header signature " + String.format("0x%04x", signature & 0xFFFFFFFFL));
         }
 
         this.csumHeader = buffer.getInt() & 0xFFFFFFFFL;  // u4
@@ -166,7 +162,7 @@ class CFHeader {
     }
 
     public void write(ByteBuffer buffer) {
-        buffer.put(this.signature);
+        buffer.putInt(SIGNATURE);
         buffer.putInt((int) this.csumHeader);
         buffer.putInt((int) this.cbCabinet);
         buffer.putInt((int) this.csumFolders);
@@ -200,7 +196,7 @@ class CFHeader {
     public void headerDigestUpdate(MessageDigest digest) {
         ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
-        buffer.put(this.signature);
+        buffer.putInt(SIGNATURE);
         // the checksum of the header is skipped
         buffer.putInt((int) this.cbCabinet);
         buffer.putInt((int) this.csumFolders);
