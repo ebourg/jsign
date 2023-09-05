@@ -98,15 +98,24 @@ class CFHeader {
     public CFHeader() {
     }
 
-    public CFHeader(CFHeader origin) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(origin.getHeaderSize()).order(ByteOrder.LITTLE_ENDIAN);
-        origin.write(buffer);
-        buffer.flip();
-        readHeaderFirst(buffer);
-        readHeaderSecond(buffer);
-        if (this.cbCFHeader > 0) {
-            buffer.get(this.abReserved);
-        }
+    public CFHeader(CFHeader header) {
+        System.arraycopy(header.signature, 0, this.signature, 0, 4);
+        this.csumHeader = header.csumHeader;
+        this.cbCabinet = header.cbCabinet;
+        this.csumFolders = header.csumFolders;
+        this.coffFiles = header.coffFiles;
+        this.csumFiles = header.csumFiles;
+        this.versionMinor = header.versionMinor;
+        this.versionMajor = header.versionMajor;
+        this.cFolders = header.cFolders;
+        this.cFiles = header.cFiles;
+        this.flags = header.flags;
+        this.setID = header.setID;
+        this.iCabinet = header.iCabinet;
+        this.cbCFHeader = header.cbCFHeader;
+        this.cbCFFolder = header.cbCFFolder;
+        this.cbCFData = header.cbCFData;
+        this.abReserved = header.abReserved != null ? header.abReserved.clone() : null;
     }
 
     public void read(SeekableByteChannel channel) throws IOException {
@@ -116,21 +125,7 @@ class CFHeader {
         ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
         channel.read(buffer);
         buffer.flip();
-        readHeaderFirst(buffer);
-        if (isReservePresent()) {
-            buffer.clear();
-            buffer.limit(4);
-            channel.read(buffer);
-            buffer.flip();
-            readHeaderSecond(buffer);
-            if (this.cbCFHeader > 0) {
-                ByteBuffer ab = ByteBuffer.wrap(this.abReserved);
-                channel.read(ab);
-            }
-        }
-    }
 
-    private void readHeaderFirst(ByteBuffer buffer) throws IOException {
         buffer.get(this.signature);
 
         if (this.signature[0] != 'M' ||
@@ -153,23 +148,20 @@ class CFHeader {
         this.setID = buffer.getShort();                   // u2 H
         this.iCabinet = buffer.getShort() & 0xFFFF;       // u2
         this.abReserved = null;
-    }
 
-    private void readHeaderSecond(ByteBuffer buffer) {
         if (isReservePresent()) {
+            buffer.clear();
+            buffer.limit(4);
+            channel.read(buffer);
+            buffer.flip();
+
             this.cbCFHeader = buffer.getShort() & 0xFFFF;    // u2
             this.cbCFFolder = (short) (buffer.get() & 0xFF); // u1
             this.cbCFData = (short) (buffer.get() & 0xFF);   // u1
             if (this.cbCFHeader > 0) {
                 this.abReserved = new byte[this.cbCFHeader];
-            } else {
-                this.abReserved = null;
+                channel.read(ByteBuffer.wrap(this.abReserved));
             }
-        } else {
-            this.cbCFHeader = 0;
-            this.cbCFFolder = 0;
-            this.cbCFData = 0;
-            this.abReserved = null;
         }
     }
 
