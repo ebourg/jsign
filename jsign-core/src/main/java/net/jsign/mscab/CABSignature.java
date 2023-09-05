@@ -33,8 +33,6 @@ import java.nio.ByteOrder;
  */
 class CABSignature {
 
-    private final ByteBuffer buffer;
-
     /** Size of the CABSignature structure */
     public static final int SIZE = 20;
 
@@ -54,15 +52,10 @@ class CABSignature {
     private long filler;
 
     public CABSignature() {
-        buffer = ByteBuffer.allocate(SIZE).order(ByteOrder.LITTLE_ENDIAN);
     }
 
     public CABSignature(byte[] array) {
-        buffer = ByteBuffer.wrap(array).order(ByteOrder.LITTLE_ENDIAN);
-        load();
-    }
-
-    private void load() {
+        ByteBuffer buffer = ByteBuffer.wrap(array).order(ByteOrder.LITTLE_ENDIAN);
         buffer.rewind();
         header = buffer.getInt();
         offset = buffer.getInt() & 0xFFFFFFFFL;
@@ -71,17 +64,14 @@ class CABSignature {
         buffer.flip();
     }
 
-    private void save() {
-        buffer.rewind();
+    public byte[] array() {
+        ByteBuffer buffer = ByteBuffer.allocate(SIZE).order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt(header);
         buffer.putInt((int) offset);
         buffer.putInt((int) length);
         buffer.putLong(filler);
         buffer.flip();
-    }
 
-    public byte[] array() {
-        save();
         return buffer.array();
     }
 }
