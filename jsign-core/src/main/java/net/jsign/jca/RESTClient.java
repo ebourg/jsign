@@ -66,7 +66,8 @@ class RESTClient {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
-        conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)");
+        String userAgent = System.getProperty("http.agent");
+        conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
         if (headers != null) {
             for (Map.Entry<String, String> header : headers.entrySet()) {
                 conn.setRequestProperty(header.getKey(), header.getValue());
