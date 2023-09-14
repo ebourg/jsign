@@ -45,10 +45,6 @@ import net.jsign.DigestAlgorithm;
  *   <li>The path of the key relatively to the keyring without the version specified: <tt>mykey</tt></li>
  * </ul>
  *
- * <p>When the version of the key is specified, it's also possible to append the algorithm of the key, this saves
- * a round-trip and reduces the risk of hitting a read request limit when signing a large number of files:
- * <tt>mykey/cryptoKeyVersions/2:ECDSA</tt></p>
- *
  * @since 4.0
  * @see <a href="https://cloud.google.com/kms/docs/reference/rest">Cloud Key Management Service (KMS) API</a>
  */
@@ -123,13 +119,12 @@ public class GoogleCloudSigningService implements SigningService {
             if (alias.contains("cryptoKeyVersions")) {
                 // full key with version specified
                 if (alias.contains(":")) {
-                    // algorithm appended to the alias
-                    algorithm = alias.substring(alias.indexOf(':') + 1) + "_SIGN";
+                    // remove the algorithm appended to the alias (old syntax)
                     alias = alias.substring(0, alias.indexOf(':'));
-                } else {
-                    Map<String, ?> response = client.get(alias);
-                    algorithm = (String) response.get("algorithm");
                 }
+                Certificate[] chain = getCertificateChain(alias);
+                Certificate certificate = chain[0];
+                algorithm = certificate.getPublicKey().getAlgorithm() + "_SIGN";
             } else {
                 // key version not specified, find the most recent
                 Map<String, ?> response = client.get(alias + "/cryptoKeyVersions?filter=state%3DENABLED");

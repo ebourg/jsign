@@ -47,6 +47,7 @@ See https://ebourg.github.io/jsign for more information.
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
 * VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)
+* Only one call to the Google Cloud API is performed when the version of the key is specified in the alias parameter
 * JVM arguments can now be passed using the `JSIGN_OPTS` environment variable
 * API changes:
   * The signature can be removed by setting a null signature on the `Signable` object

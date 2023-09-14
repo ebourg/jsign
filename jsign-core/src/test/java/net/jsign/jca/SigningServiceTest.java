@@ -119,7 +119,7 @@ public class SigningServiceTest {
     public void testGoogleCloudProvider() throws Exception {
         Provider provider = new SigningServiceJcaProvider(new GoogleCloudSigningService("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring", GoogleCloud.getAccessToken(), alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
