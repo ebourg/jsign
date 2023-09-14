@@ -16,6 +16,7 @@
 
 package net.jsign.jca;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -30,7 +31,7 @@ public class GoogleCloud {
     public static String getAccessToken() throws IOException, InterruptedException {
         Process process = null;
         try {
-            ProcessBuilder builder = new ProcessBuilder("C:/Program Files (x86)/Google/Cloud SDK/google-cloud-sdk/bin/gcloud.cmd", "auth", "print-access-token");
+            ProcessBuilder builder = new ProcessBuilder(getSDKPath() + "/bin/gcloud.cmd", "auth", "print-access-token");
             process = builder.start();
             process.waitFor();
             Assume.assumeTrue("Couldn't get Google Cloud API token", process.exitValue() == 0);
@@ -39,5 +40,21 @@ public class GoogleCloud {
         }
 
         return IOUtils.toString(process.getInputStream(), StandardCharsets.ISO_8859_1).trim();
+    }
+
+    private static String getSDKPath() {
+        String[] paths = {
+                "C:/Program Files (x86)/Google/Cloud SDK/google-cloud-sdk/",
+                "C:/Program Files/Google/Cloud SDK/google-cloud-sdk/",
+                System.getProperty("user.home") + "/AppData/Local/Google/Cloud SDK/google-cloud-sdk/"
+        };
+
+        for (String path : paths) {
+            if (new File(path).exists()) {
+                return path;
+            }
+        }
+
+        return null;
     }
 }
