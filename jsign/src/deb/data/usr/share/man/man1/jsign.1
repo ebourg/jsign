@@ -299,12 +299,34 @@ SSL.com provides a sandbox environment, to use a test certificate simply add the
 Signing with Google Cloud KMS:
 
 Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
-references the path of the keyring. The alias can specify either the full path of the key, or only the short name. If
-the version is omitted the most recent one will be picked automatically.
+references the path of the keyring. The alias specifies the name and the version of the key:
 
 jsign --storetype GOOGLECLOUD --storepass <api-access-token> \\
       --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \\
-      --alias test --certfile full-chain.pem application.exe
+      --alias test/cryptoKeyVersions/1 \\
+      --certfile full-chain.pem application.exe
+
+The version of the key can be omitted (e.g. --alias test), in this case the most recent version
+of the key is picked automatically. This avoids modifying the parameters every time the key is updated, but the signing
+process is slightly slower due to an additional API call, and it requires an extra permission.
+
+The access token is typically provided by the gcloud tool:
+
+gcloud auth print-access-token
+
+The Google Cloud account used must have the following permissions:
+
+.br
+\- cloudkms.cryptoKeyVersions.useToSign
+.br
+\- cloudkms.cryptoKeyVersions.list (required if the version of the key isn't specified)
+.br
+\- cloudkms.cryptoKeys.list (required to list the key availables when the alias isn't found)
+
+These permissions are covered by the 'Cloud KMS CryptoKey Signer' and 'Cloud KMS Viewer' roles.
+
+
+.TP
 
 Signing with Google Cloud KMS via HashiCorp Vault:
 

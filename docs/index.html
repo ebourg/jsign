@@ -609,14 +609,35 @@ password are used as the keystore password, and the base64 encoded TOTP secret i
 <h4 id="example-googlecloud">Signing with Google Cloud KMS</h4>
 
 <p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
-references the path of the keyring. The alias can specify either the full path of the key, or only the short name. If
-the version is omitted the most recent one will be picked automatically.</p>
+references the path of the keyring. The alias specifies the name and the version of the key:</p>
 
 <pre>
  jsign --storetype GOOGLECLOUD --storepass &lt;api-access-token&gt; \
        --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \
-       --alias test --certfile full-chain.pem application.exe
+       --alias test/cryptoKeyVersions/1 \
+       --certfile full-chain.pem application.exe
 </pre>
+
+<p>The version of the key can be omitted (e.g. <code>--alias test</code>), in this case the most recent version
+of the key is picked automatically. This avoids modifying the parameters every time the key is updated, but the signing
+process is slightly slower due to an additional API call, and it requires an extra permission.</p>
+
+<p>The access token is typically provided by the <a href="https://cloud.google.com/sdk/docs/install">gcloud tool</a>:</p>
+
+<pre>
+ gcloud auth print-access-token
+</pre>
+
+<p>The Google Cloud account used must have the following permissions:</p>
+
+<ul>
+  <li><code>cloudkms.cryptoKeyVersions.useToSign</code></li>
+  <li><code>cloudkms.cryptoKeyVersions.list</code> (required if the version of the key isn't specified)</li>
+  <li><code>cloudkms.cryptoKeys.list</code> (required to list the key availables when the alias isn't found)</li>
+</ul>
+
+<p>These permissions are covered by the <em>Cloud KMS CryptoKey Signer</em> and <em>Cloud KMS Viewer</em>
+<a href="https://cloud.google.com/kms/docs/reference/permissions-and-roles#predefined">roles</a>.</p>
 
 <h4 id="example-hashicorpvault">Signing with Google Cloud KMS via HashiCorp Vault</h4>
 
