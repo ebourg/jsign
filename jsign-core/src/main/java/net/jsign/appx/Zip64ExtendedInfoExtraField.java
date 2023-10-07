@@ -17,6 +17,7 @@
 package net.jsign.appx;
 
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import static java.nio.ByteOrder.*;
@@ -62,17 +63,21 @@ class Zip64ExtendedInfoExtraField extends ExtraField {
     @Override
     protected void parse() throws IOException {
         ByteBuffer buffer = ByteBuffer.wrap(data).order(LITTLE_ENDIAN);
-        if (uncompressedSize != -1) {
-            uncompressedSize = buffer.getLong();
-        }
-        if (compressedSize != -1) {
-            compressedSize = buffer.getLong();
-        }
-        if (localHeaderOffset != -1) {
-            localHeaderOffset = buffer.getLong();
-        }
-        if (diskNumberStart != -1) {
-            diskNumberStart = buffer.getInt();
+        try {
+            if (uncompressedSize != -1) {
+                uncompressedSize = buffer.getLong();
+            }
+            if (compressedSize != -1) {
+                compressedSize = buffer.getLong();
+            }
+            if (localHeaderOffset != -1) {
+                localHeaderOffset = buffer.getLong();
+            }
+            if (diskNumberStart != -1) {
+                diskNumberStart = buffer.getInt();
+            }
+        } catch (BufferUnderflowException e) {
+            throw new IOException("Invalid ZIP64 extended information extra field", e);
         }
     }
 
