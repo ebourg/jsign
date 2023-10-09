@@ -53,7 +53,7 @@ See https://ebourg.github.io/jsign for more information.
   * The signature can be removed by setting a null signature on the `Signable` object
   * `Signable.computeDigest(MessageDigest)` has been replaced by `Signable.computeDigest(DigestAlgorithm)`
   * The value of the `http.agent` system property is now appended to the user agent string set when calling REST services
-* Upgraded BouncyCastle to 1.75
+* Upgraded BouncyCastle to 1.76
 
 #### Version 5.0 (2023-06-06)
 
