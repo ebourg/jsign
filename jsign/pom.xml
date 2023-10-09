@@ -192,6 +192,7 @@
               <exclude>net.jsign.bouncycastle.*</exclude>
               <exclude>net.jsign.poi.*</exclude>
               <exclude>net.jsign.commons.*</exclude>
+              <exclude>net.jsign.json-io.*</exclude>
               <exclude>net.jsign.log4j.*</exclude>
               <exclude>net.jsign.PESigner</exclude>
               <exclude>net.jsign.PESignerCLI</exclude>
