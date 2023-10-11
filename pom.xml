@@ -71,6 +71,20 @@
       <version>4.11.0</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <version>1.14.9</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>1.14.9</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
