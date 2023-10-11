@@ -218,7 +218,7 @@ public class KeyStoreBuilderTest {
             assertEquals("message", "storepass parameter must specify the SSL.com username and password: <username>|<password>", e.getMessage());
         }
 
-        builder.storepass("esigner_demo|esignerDemo#1");
+        builder.storepass("esigner_test|esignerTest#1");
 
         try {
             builder.build();
@@ -227,6 +227,7 @@ public class KeyStoreBuilderTest {
             assertEquals("message", "Authentication failed with SSL.com", e.getMessage());
         }
 
+        builder.storepass("esigner_demo|esignerDemo#1");
         builder.keystore("https://cs-try.ssl.com");
 
         KeyStore keystore = builder.build();
