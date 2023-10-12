@@ -35,6 +35,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Build tools integration (Maven, Gradle, Ant)
 * Command line signing tool
 * Authenticode signing API ([Javadoc](https://javadoc.io/doc/net.jsign/jsign-core))
+* JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner
 
 See https://ebourg.github.io/jsign for more information.
 
@@ -50,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 * Only one call to the Google Cloud API is performed when the version of the key is specified in the alias parameter
 * JVM arguments can now be passed using the `JSIGN_OPTS` environment variable
 * API changes:
+  * New `net.jsign.jca.JsignJcaProvider` JCA security provider to be used with other signing tools such as jarsigner
   * The signature can be removed by setting a null signature on the `Signable` object
   * `Signable.computeDigest(MessageDigest)` has been replaced by `Signable.computeDigest(DigestAlgorithm)`
   * The value of the `http.agent` system property is now appended to the user agent string set when calling REST services

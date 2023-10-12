@@ -73,6 +73,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
   <li>Command line signing tool</li>
   <li>Authenticode signing API (<a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a>)</li>
+  <li>JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner</li>
 </ul>
 
 
@@ -684,6 +685,36 @@ by a colon character.</p>
 </pre>
 
 <p>See the <a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a> for more details about the API.</p>
+
+
+<h3>JCA security provider</h3>
+
+<p>Jsign implements a JCA security provider that can be used to sign JAR files with the <code>jarsigner</code> tool.</p>
+
+<p>With Java 11 or later the syntax looks like this:</p>
+
+<pre>
+ jarsigner -J-cp -Jjsign-5.1.jar -J--add-modules -Jjava.sql \
+           -providerClass net.jsign.jca.JsignJcaProvider \
+           -providerArg &lt;keystore&gt; \
+           -keystore NONE \
+           -storetype &lt;storetype&gt; \
+           -storepass &lt;storepass&gt; \
+           -keypass &lt;keypass&gt; \
+           -certchain &lt;certfile&gt; \
+           application.jar &lt;alias&gt;
+</pre>
+
+<p>With Java 8 the classpath must reference <code>tools.jar</code> from the JDK and the <code>--add-modules</code>
+parameter is removed:</p>
+
+<pre>
+ jarsigner -J-cp -Jjsign-5.1.jar:$JAVA_HOME/lib/tools.jar \
+           ...
+</pre>
+
+<p>The <code>keystore</code> parameter must be set to <code>NONE</code>, the actual value of the keystore is specified
+with the <code>providerArg</code> parameter instead.</p>
 
 
 <h3 id="files">Downloads</h3>

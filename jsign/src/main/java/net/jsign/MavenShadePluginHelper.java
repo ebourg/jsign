@@ -16,6 +16,8 @@
 
 package net.jsign;
 
+import net.jsign.jca.JsignJcaProvider;
+
 /**
  * Bogus class holding a reference to the entry points to help the minimizing
  * process of the shade plugin. This class is removed from the final jar.
@@ -30,5 +32,6 @@ class MavenShadePluginHelper {
         JsignTask.class.getName();
         PESignerTask.class.getName();
         KeyStoreUtils.class.getName();
+        JsignJcaProvider.class.getName();
     }
 }
