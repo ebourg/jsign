@@ -81,7 +81,7 @@
         <version>0.18.1</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>verify</phase>
             <goals>
               <goal>cmp</goal>
             </goals>
