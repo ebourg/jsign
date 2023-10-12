@@ -141,7 +141,7 @@ public class OpenPGPCardSigningService implements SigningService {
             throw new UnrecoverableKeyException("Unsupported key algorithm " + keyInfo.algorithm + " for key " + alias);
         }
 
-        return new SigningServicePrivateKey(alias, algorithm);
+        return new SigningServicePrivateKey(alias, algorithm, this);
     }
 
     @Override

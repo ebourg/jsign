@@ -165,7 +165,7 @@ public class AzureKeyVaultSigningServiceTest {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
         String keyId = privateKey.getId().replace("https://jsigntestkeyvault.vault.azure.net", "http://localhost:" + port());
-        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm());
+        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm(), service);
 
         byte[] signature = service.sign(privateKey, "SHA256withRSA", data);
         assertNotNull("signature", signature);
@@ -198,7 +198,7 @@ public class AzureKeyVaultSigningServiceTest {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
         String keyId = privateKey.getId().replace("https://jsigntestkeyvault.vault.azure.net", "http://localhost:" + port());
-        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm());
+        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm(), service);
 
         byte[] signature = service.sign(privateKey, "SHA1withRSA", data);
         assertNotNull("signature", signature);
@@ -241,7 +241,7 @@ public class AzureKeyVaultSigningServiceTest {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
         String keyId = privateKey.getId().replace("https://jsigntestkeyvault.vault.azure.net", "http://localhost:" + port());
-        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm());
+        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm(), service);
 
         service.sign(privateKey, "SHA256withRSA", new byte[0]);
     }

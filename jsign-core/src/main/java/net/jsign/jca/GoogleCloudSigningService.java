@@ -143,7 +143,7 @@ public class GoogleCloudSigningService implements SigningService {
 
         algorithm = algorithm.substring(0, algorithm.indexOf("_")); // RSA_SIGN_PKCS1_2048_SHA256 -> RSA
 
-        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm);
+        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm, this);
         keys.put(alias, key);
         return key;
     }

@@ -135,7 +135,7 @@ public class ESignerSigningService implements SigningService {
         try {
             Certificate[] chain = getCertificateChain(alias);
             String algorithm = chain[0].getPublicKey().getAlgorithm();
-            SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm);
+            SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm, this);
             if (password != null) {
                 key.getProperties().put("totpsecret", new String(password));
             }

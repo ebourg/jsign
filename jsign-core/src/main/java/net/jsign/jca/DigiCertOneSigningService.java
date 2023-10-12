@@ -174,7 +174,7 @@ public class DigiCertOneSigningService implements SigningService {
             Map<String, ?> response = client.get("/keypairs/" + keyId);
             String algorithm = (String) response.get("key_alg");
 
-            SigningServicePrivateKey key = new SigningServicePrivateKey(keyId, algorithm);
+            SigningServicePrivateKey key = new SigningServicePrivateKey(keyId, algorithm, this);
             key.getProperties().put("account", response.get("account"));
             return key;
         } catch (IOException e) {

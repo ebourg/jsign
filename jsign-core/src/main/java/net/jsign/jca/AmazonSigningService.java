@@ -165,7 +165,7 @@ public class AmazonSigningService implements SigningService {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch AWS key '" + alias + "'").initCause(e);
         }
 
-        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm);
+        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm, this);
         keys.put(alias, key);
         return key;
     }

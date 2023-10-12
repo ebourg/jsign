@@ -65,7 +65,7 @@ class LocalKeyStoreSigningService implements SigningService {
         } catch (KeyStoreException | NoSuchAlgorithmException e) {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException().initCause(e);
         }
-        return new SigningServicePrivateKey(alias, privateKey.getAlgorithm());
+        return new SigningServicePrivateKey(alias, privateKey.getAlgorithm(), this);
     }
 
     @Override

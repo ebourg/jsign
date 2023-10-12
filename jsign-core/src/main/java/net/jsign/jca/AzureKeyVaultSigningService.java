@@ -142,7 +142,7 @@ public class AzureKeyVaultSigningService implements SigningService {
             Map keyprops = (Map) policy.get("key_props");
             String algorithm = ((String) keyprops.get("kty")).replace("-HSM", "");
 
-            return new SigningServicePrivateKey(kid, algorithm);
+            return new SigningServicePrivateKey(kid, algorithm, this);
         } catch (IOException e) {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch Azure Key Vault private key for the certificate '" + alias + "'").initCause(e);
         }

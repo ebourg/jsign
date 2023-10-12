@@ -27,6 +27,9 @@ import java.util.Map;
  */
 public class SigningServicePrivateKey implements PrivateKey {
 
+    /** The signing service */
+    private SigningService service;
+
     /** The identifier of the key */
     private final String id;
 
@@ -42,9 +45,22 @@ public class SigningServicePrivateKey implements PrivateKey {
      * @param id        The identifier of the key
      * @param algorithm The algorithm of the key (RSA or ECDSA)
      */
+    @Deprecated
     public SigningServicePrivateKey(String id, String algorithm) {
         this.id = id;
         this.algorithm = algorithm;
+    }
+
+    /**
+     * Creates a new reference to a privaye key.
+     *
+     * @param id        The identifier of the key
+     * @param algorithm The algorithm of the key (RSA or ECDSA)
+     * @param service   The signing service
+     */
+    SigningServicePrivateKey(String id, String algorithm, SigningService service) {
+        this(id, algorithm);
+        this.service = service;
     }
 
     public String getId() {
@@ -53,6 +69,10 @@ public class SigningServicePrivateKey implements PrivateKey {
 
     public Map<String, Object> getProperties() {
         return properties;
+    }
+
+    SigningService getService() {
+        return service;
     }
 
     @Override

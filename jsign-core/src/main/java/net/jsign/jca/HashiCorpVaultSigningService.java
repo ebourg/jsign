@@ -116,7 +116,7 @@ public class HashiCorpVaultSigningService implements SigningService {
 
         algorithm = algorithm.substring(0, algorithm.indexOf("_")).toUpperCase();
 
-        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm);
+        SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm, this);
         keys.put(alias, key);
         return key;
     }

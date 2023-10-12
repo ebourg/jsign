@@ -25,13 +25,11 @@ import java.security.SignatureSpi;
 
 class SigningServiceSignature extends SignatureSpi {
 
-    private final SigningService service;
     private final String signingAlgorithm;
     private SigningServicePrivateKey privateKey;
     private byte[] data;
 
-    public SigningServiceSignature(SigningService service, String signingAlgorithm) {
-        this.service = service;
+    public SigningServiceSignature(String signingAlgorithm) {
         this.signingAlgorithm = signingAlgorithm;
     }
 
@@ -59,7 +57,7 @@ class SigningServiceSignature extends SignatureSpi {
     @Override
     protected byte[] engineSign() throws SignatureException {
         try {
-            return service.sign(privateKey, signingAlgorithm, data);
+            return privateKey.getService().sign(privateKey, signingAlgorithm, data);
         } catch (GeneralSecurityException e) {
             throw new SignatureException(e);
         }
