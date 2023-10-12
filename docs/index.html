@@ -54,7 +54,7 @@ programmatically or standalone as a command line tool.</p>
 <p>Jsign is free to use and licensed under the Apache License version 2.0.</p>
 
 
-<h3>Features</h3>
+<h3 id="features">Features</h3>
 
 <ul>
   <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages and scripts (PowerShell, VBScript, JScript, WSF)</li>
@@ -128,7 +128,7 @@ programmatically or standalone as a command line tool.</p>
 
 <br><br>
 
-<h4 class="mobile-only">Attributes</h4>
+<h4 id="attributes" class="mobile-only">Attributes</h4>
 
 <table style="border-collapse: collapse; width: 100%">
   <thead>
@@ -419,7 +419,7 @@ are the same as those described above for the Ant task.</p>
     }
 </pre>
 
-<h3>Command Line Tool</h3>
+<h3 id="cli">Command Line Tool</h3>
 
 <p>Jsign can also be used as a command line tool, packages are available for various systems:</p>
 
@@ -490,16 +490,16 @@ are the same as those described above for the Ant task.</p>
 </pre>
 
 
-<h3>Examples</h3>
+<h3 id="examples">Examples</h3>
 
-<h4>Signing with a Java keystore</h4>
+<h4 id="example-jks">Signing with a Java keystore</h4>
 
 <pre>
  jsign --keystore keystore.jks --alias test --storepass password \
        --tsaurl http://timestamp.sectigo.com application.exe
 </pre>
 
-<h4>Signing with a SPC certificate and a PVK key</h4>
+<h4 id="example-spc-pkv">Signing with a SPC certificate and a PVK key</h4>
 
 <pre>
  jsign --certfile certificate.spc --keyfile key.pvk --keypass password application.exe
@@ -663,7 +663,7 @@ by a colon character.</p>
 </pre>
 
 
-<h3>API</h3>
+<h3 id="api">API</h3>
 
 <p>Jsign also provides a simple API for signing files and can be embedded in another application.</p>
 
@@ -696,7 +696,7 @@ by a colon character.</p>
 <p>See the <a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a> for more details about the API.</p>
 
 
-<h3>JCA security provider</h3>
+<h3 id="jca-provider">JCA security provider</h3>
 
 <p>Jsign implements a JCA security provider that can be used to sign JAR files with the <code>jarsigner</code> tool.</p>
 
@@ -735,7 +735,7 @@ with the <code>providerArg</code> parameter instead.</p>
 </ul>
 
 
-<h3>Credits</h3>
+<h3 id="credits">Credits</h3>
 
 <p>Jsign leverages the cryptography API developed by the <a href="http://www.bouncycastle.org">Bouncy Castle</a> project.<br>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
@@ -743,7 +743,7 @@ MSI signing was possible thanks to the work done by the <a href="https://github.
 
 <p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel and Vincent Malmedy.</p>
 
-<h3>Contact</h3>
+<h3 id="contacts">Contact</h3>
 
 <p>Emmanuel Bourg (<a href="mailto:ebourg@apache.org">ebourg@apache.org</a>, <a href="https://twitter.com/smanux">@smanux</a>)</p>
 
