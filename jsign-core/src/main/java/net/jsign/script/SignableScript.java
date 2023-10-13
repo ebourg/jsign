@@ -197,7 +197,7 @@ abstract class SignableScript implements Signable {
             }
         } catch (UnsupportedOperationException e) {
             // unsupported type, just skip
-        } catch (Exception e) {
+        } catch (Exception | StackOverflowError e) {
             e.printStackTrace();
         }
         
@@ -232,7 +232,7 @@ abstract class SignableScript implements Signable {
 
         try {
             return new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
-        } catch (IOException e) {
+        } catch (IOException | StackOverflowError e) {
             throw new IllegalArgumentException("Failed to construct ContentInfo from byte[]: ", e);
         }
     }

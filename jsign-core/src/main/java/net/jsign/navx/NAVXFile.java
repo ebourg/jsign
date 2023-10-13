@@ -162,7 +162,7 @@ public class NAVXFile implements Signable {
             }
         } catch (UnsupportedOperationException e) {
             // unsupported type, just skip
-        } catch (Exception e) {
+        } catch (Exception | StackOverflowError e) {
             e.printStackTrace();
         }
 

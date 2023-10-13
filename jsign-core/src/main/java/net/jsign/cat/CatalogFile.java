@@ -143,7 +143,7 @@ public class CatalogFile implements Signable {
                     }
                 }
             }
-        } catch (CMSException e) {
+        } catch (CMSException | StackOverflowError e) {
             throw new IOException(e);
         }
 
