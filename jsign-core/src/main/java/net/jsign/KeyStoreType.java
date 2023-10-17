@@ -517,6 +517,10 @@ public enum KeyStoreType {
 
     private static Function<String, Certificate[]> getCertificateStore(KeyStoreBuilder params) {
         return alias -> {
+            if (alias == null || alias.isEmpty()) {
+                return null;
+            }
+
             try {
                 return CertificateUtils.loadCertificateChain(params.certfile());
             } catch (IOException | CertificateException e) {

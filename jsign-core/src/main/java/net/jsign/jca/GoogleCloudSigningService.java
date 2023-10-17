@@ -119,12 +119,19 @@ public class GoogleCloudSigningService implements SigningService {
             if (alias.contains("cryptoKeyVersions")) {
                 // full key with version specified
                 if (alias.contains(":")) {
-                    // remove the algorithm appended to the alias (old syntax)
+                    // syntax with the algorithm appended to the alias
                     alias = alias.substring(0, alias.indexOf(':'));
+                    algorithm = alias.substring(alias.indexOf(':') + 1) + "_SIGN";
+                } else {
+                    Certificate[] chain = getCertificateChain(alias);
+                    if (chain != null && chain.length > 0) {
+                        Certificate certificate = chain[0];
+                        algorithm = certificate.getPublicKey().getAlgorithm() + "_SIGN";
+                    } else {
+                        Map<String, ?> response = client.get(alias);
+                        algorithm = (String) response.get("algorithm");
+                    }
                 }
-                Certificate[] chain = getCertificateChain(alias);
-                Certificate certificate = chain[0];
-                algorithm = certificate.getPublicKey().getAlgorithm() + "_SIGN";
             } else {
                 // key version not specified, find the most recent
                 Map<String, ?> response = client.get(alias + "/cryptoKeyVersions?filter=state%3DENABLED");
