@@ -182,14 +182,7 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             try {
-                Function<String, Certificate[]> certificateStore = alias -> {
-                    try {
-                        return CertificateUtils.loadCertificateChain(params.certfile());
-                    } catch (IOException | CertificateException e) {
-                        throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
-                    }
-                };
-                return new SigningServiceJcaProvider(new OpenPGPCardSigningService(params.storepass(), params.certfile() != null ? certificateStore : null));
+                return new SigningServiceJcaProvider(new OpenPGPCardSigningService(params.storepass(), params.certfile() != null ? getCertificateStore(params) : null));
             } catch (CardException e) {
                 throw new IllegalStateException("Failed to initialize the OpenPGP card", e);
             }
@@ -281,13 +274,7 @@ public enum KeyStoreType {
                 }
             }
 
-            return new SigningServiceJcaProvider(new AmazonSigningService(params.keystore(), credentials, alias -> {
-                try {
-                    return CertificateUtils.loadCertificateChain(params.certfile());
-                } catch (IOException | CertificateException e) {
-                    throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
-                }
-            }));
+            return new SigningServiceJcaProvider(new AmazonSigningService(params.keystore(), credentials, getCertificateStore(params)));
         }
     },
 
@@ -383,13 +370,7 @@ public enum KeyStoreType {
 
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            return new SigningServiceJcaProvider(new GoogleCloudSigningService(params.keystore(), params.storepass(), alias -> {
-                try {
-                    return CertificateUtils.loadCertificateChain(params.certfile());
-                } catch (IOException | CertificateException e) {
-                    throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
-                }
-            }));
+            return new SigningServiceJcaProvider(new GoogleCloudSigningService(params.keystore(), params.storepass(), getCertificateStore(params)));
         }
     },
 
@@ -415,13 +396,7 @@ public enum KeyStoreType {
 
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            return new SigningServiceJcaProvider(new HashiCorpVaultSigningService(params.keystore(), params.storepass(), alias -> {
-                try {
-                    return CertificateUtils.loadCertificateChain(params.certfile());
-                } catch (IOException | CertificateException e) {
-                    throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
-                }
-            }));
+            return new SigningServiceJcaProvider(new HashiCorpVaultSigningService(params.keystore(), params.storepass(), getCertificateStore(params)));
         }
     };
 
@@ -538,5 +513,15 @@ public enum KeyStoreType {
         } else {
             return null;
         }
+    }
+
+    private static Function<String, Certificate[]> getCertificateStore(KeyStoreBuilder params) {
+        return alias -> {
+            try {
+                return CertificateUtils.loadCertificateChain(params.certfile());
+            } catch (IOException | CertificateException e) {
+                throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
+            }
+        };
     }
 }
