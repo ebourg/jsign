@@ -97,8 +97,8 @@ programmatically or standalone as a command line tool.</p>
         name="My Application"
         url="http://www.example.com"
         keystore="keystore.jks"
-        alias="test"
         storepass="password"
+        alias="test"
         tsaurl="http://timestamp.sectigo.com"/>
 </pre>
 
@@ -120,8 +120,8 @@ programmatically or standalone as a command line tool.</p>
 
 <pre class="prettyprint lang-xml">
  &lt;jsign keystore="keystore.p12"
-        alias="test"
-        storepass="password">
+        storepass="password"
+        alias="test">
    &ltfileset dir="build/binaries" includes="*.exe"/>
  &lt;/jsign>
 </pre>
@@ -495,7 +495,7 @@ are the same as those described above for the Ant task.</p>
 <h4 id="example-jks">Signing with a Java keystore</h4>
 
 <pre>
- jsign --keystore keystore.jks --alias test --storepass password \
+ jsign --keystore keystore.jks --storepass password --alias test \
        --tsaurl http://timestamp.sectigo.com application.exe
 </pre>
 
@@ -514,7 +514,7 @@ from the <a href="https://developers.yubico.com/yubico-piv-tool/">Yubico PIV Too
 be installed on the system at the default location.</p>
 
 <pre>
- jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+ jsign --storetype YUBIKEY --storepass 123456 --certfile full-chain.pem application.exe
 </pre>
 
 <h4 id="example-nitrokey">Signing with a Nitrokey HSM</h4>
@@ -522,8 +522,8 @@ be installed on the system at the default location.</p>
 <p>Signing with a Nitrokey HSM requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
 <pre>
- jsign --storetype NITROKEY --certfile full-chain.pem --storepass 123456 \
-       --alias test application.exe
+ jsign --storetype NITROKEY --storepass 123456 --alias test \
+       --certfile full-chain.pem application.exe
 </pre>
 
 <p>Other Nitrokeys based on the OpenPGP card standard are also supported with this storetype, but an X.509 certificate
@@ -536,8 +536,8 @@ require OpenSC and any key can be used by providing an external certificate.</p>
 <p>Signing with a smart card requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
 
 <pre>
- jsign --storetype OPENSC --certfile full-chain.pem --storepass 123456 \
-       --alias test application.exe
+ jsign --storetype OPENSC --storepass 123456 --alias test \
+       --certfile full-chain.pem application.exe
 </pre>
 
 <p>If multiple devices are connected, the <code>keystore</code> parameter can be used to specify
@@ -551,8 +551,8 @@ can be used for code signing (except encryption keys based on an elliptic curve)
 a Nitrokey (non-HSM models) or a Yubikey.</p>
 
 <pre>
- jsign --storetype OPENPGP --certfile full-chain.pem --storepass 123456 \
-       --alias SIGNATURE application.exe
+ jsign --storetype OPENPGP --storepass 123456 --alias SIGNATURE \
+       --certfile full-chain.pem application.exe
 </pre>
 
 <p>X.509 certificates stored on the card are automatically used, and the <code>certfile</code> parameter is only
@@ -575,7 +575,8 @@ when running on an AWS EC2 instance.</p>
 <p>The <code>alias</code> parameter can specify either the key id or an alias.</p>
 
 <pre>
- jsign --storetype AWS --keystore eu-west-3 \
+ jsign --storetype AWS \
+       --keystore eu-west-3 \
        --storepass "&lt;access-key&gt;|&lt;secret-key&gt;|&lt;session-token&gt;" \
        --alias 12345678-abcd-1234-cdef-1234567890ab \
        --certfile full-chain.pem application.exe
@@ -587,8 +588,10 @@ when running on an AWS EC2 instance.</p>
 key management system can be used with:</p>
 
 <pre>
- jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test \
-       --storepass &lt;api-access-token&gt; application.exe
+ jsign --storetype AZUREKEYVAULT \
+       --keystore vaultname \
+       --storepass &lt;api-access-token&gt; \
+       --alias test application.exe
 </pre>
 
 <h4 id="example-digicertone">Signing with DigiCert ONE</h4>
@@ -598,8 +601,9 @@ can be used directly without installing the DigiCert client tools. It requires a
 a client certificate for the authentication.</p>
 
 <pre>
- jsign --storetype DIGICERTONE --alias test \
-       --storepass "&lt;api-key&gt;|/path/to/Certificate_pkcs12.p12|&lt;password&gt;" application.exe
+ jsign --storetype DIGICERTONE \
+       --storepass "&lt;api-key&gt;|/path/to/Certificate_pkcs12.p12|&lt;password&gt;" \
+       --alias test application.exe
 </pre>
 
 <h4 id="example-sslcom-esigner">Signing with SSL.com eSigner</h4>
@@ -608,7 +612,8 @@ a client certificate for the authentication.</p>
 password are used as the keystore password, and the base64 encoded TOTP secret is used as the key password:</p>
 
 <pre>
- jsign --storetype ESIGNER --storepass "&lt;username&gt;|&lt;password&gt;" \
+ jsign --storetype ESIGNER \
+       --storepass "&lt;username&gt;|&lt;password&gt;" \
        --alias 8b072e22-7685-4771-b5c6-48e46614915f \
        --keypass &lt;totp-secret&gt; application.exe
 </pre>
@@ -622,8 +627,9 @@ password are used as the keystore password, and the base64 encoded TOTP secret i
 references the path of the keyring. The alias specifies the name and the version of the key:</p>
 
 <pre>
- jsign --storetype GOOGLECLOUD --storepass &lt;api-access-token&gt; \
+ jsign --storetype GOOGLECLOUD \
        --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \
+       --storepass &lt;api-access-token&gt; \
        --alias test/cryptoKeyVersions/1 \
        --certfile full-chain.pem application.exe
 </pre>
@@ -657,9 +663,11 @@ the secrets engine path. The alias specifies the name of the key in Vault and th
 by a colon character.</p>
 
 <pre>
- jsign --storetype HASHICORPVAULT --storepass &lt;vault-token&gt; \
+ jsign --storetype HASHICORPVAULT \
        --keystore https://vault.example.com/v1/gcpkms \
-       --alias test:1 --certfile full-chain.pem application.exe
+       --storepass &lt;vault-token&gt; \
+       --alias test:1 \
+       --certfile full-chain.pem application.exe
 </pre>
 
 

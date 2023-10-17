@@ -170,7 +170,7 @@ Print the help
 .TP
 Signing with a PKCS#12 keystore and timestamping:
 
-jsign --keystore keystore.p12 --alias test --storepass password \\
+jsign --keystore keystore.p12 --storepass password --alias test \\
       --tsaurl http://timestamp.sectigo.com application.exe
 
 
@@ -190,7 +190,7 @@ the slot 9c, or "X.509 Certificate for PIV Authentication" for the slot 9a). The
 from the Yubico PIV Tool must be installed on the system at the default location. The library
 is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
 
-jsign --storetype YUBIKEY --certfile full-chain.pem --storepass 123456 application.exe
+jsign --storetype YUBIKEY --storepass 123456 --certfile full-chain.pem application.exe
 
 
 .TP
@@ -200,7 +200,7 @@ Signing with a Nitrokey HSM:
 Signing with a Nitrokey HSM requires the installation of the OpenSC PKCS#11 module. The module
 is provided by the opensc package on Fedora, and by the opensc-pkcs11 package on Debian/Ubuntu.
 
-jsign --storetype NITROKEY --alias test --certfile full-chain.pem --storepass 123456 application.exe
+jsign --storetype NITROKEY --storepass 123456 --alias test --certfile full-chain.pem application.exe
 
 Other Nitrokeys based on the OpenPGP card standard are also supported with this storetype,
 but an X.509 certificate must be imported into the Nitrokey (using the gnupg writecert command).
@@ -215,7 +215,7 @@ Signing with a smart card:
 Signing with a smart card requires the installation of the OpenSC PKCS#11 module. The module
 is provided by the opensc package on Fedora, and by the opensc-pkcs11 package on Debian/Ubuntu.
 
-jsign --storetype OPENSC --alias test --certfile full-chain.pem --storepass 123456 application.exe
+jsign --storetype OPENSC --storepass 123456 --alias test --certfile full-chain.pem application.exe
 
 If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
 
@@ -229,7 +229,7 @@ All of them can be used for code signing (except encryption keys based on an ell
 to select the key is either, SIGNATURE, ENCRYPTION or AUTHENTICATION. The OPENPGP storetype can be used
 with a Nitrokey (non-HSM models) or a Yubikey.
 
-jsign --storetype OPENPGP --certfile full-chain.pem --storepass 123456 --alias SIGNATURE application.exe
+jsign --storetype OPENPGP --storepass 123456 --alias SIGNATURE --certfile full-chain.pem application.exe
 
 X.509 certificates stored on the card are automatically used, and the certfile parameter is only required
 if the certificate chain contains an intermediate certificate.
@@ -251,7 +251,8 @@ In any case, the credentials must allow the following actions: kms:ListKeys, kms
 
 The alias parameter can specify either the key id or an alias.
 
-jsign --storetype AWS --keystore eu-west-3 \\
+jsign --storetype AWS \\
+      --keystore eu-west-3 \\
       --storepass "<access-key>|<secret-key>|<session-token>" \\
       --alias 12345678-abcd-1234-cdef-1234567890ab \\
       --certfile full-chain.pem application.exe
@@ -263,8 +264,10 @@ Signing with Azure Key Vault:
 
 Certificates and keys stored in the Azure Key Vault key management system can be used with:
 
-jsign --storetype AZUREKEYVAULT --keystore vaultname --alias test \\
-      --storepass <api-access-token> application.exe
+jsign --storetype AZUREKEYVAULT \\
+      --keystore vaultname \\
+      --storepass <api-access-token> \\
+      --alias test application.exe
 
 
 .TP
@@ -275,8 +278,9 @@ Certificates and keys stored in the DigiCert ONE Secure Software Manager can be 
 the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding a client certificate for the
 authentication.
 
-jsign --storetype DIGICERTONE --alias test \\
-      --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" application.exe
+jsign --storetype DIGICERTONE \\
+      --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
+      --alias test application.exe
 
 
 .TP
@@ -286,7 +290,8 @@ Signing with SSL.com eSigner:
 When signing with the SSL.com eSigner service, the SSL.com username and password are used as the keystore password,
 and the base64 encoded TOTP secret is used as the key password:
 
-jsign --storetype ESIGNER --storepass "<username>|<password>" \\
+jsign --storetype ESIGNER \\
+      --storepass "<username>|<password>" \\
       --alias 8b072e22-7685-4771-b5c6-48e46614915f \\
       --keypass <totp-secret> application.exe
 
@@ -301,8 +306,9 @@ Signing with Google Cloud KMS:
 Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
 references the path of the keyring. The alias specifies the name and the version of the key:
 
-jsign --storetype GOOGLECLOUD --storepass <api-access-token> \\
+jsign --storetype GOOGLECLOUD \\
       --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \\
+      --storepass <api-access-token> \\
       --alias test/cryptoKeyVersions/1 \\
       --certfile full-chain.pem application.exe
 
@@ -335,9 +341,11 @@ references the URL of the HashiCorp Vault secrets engine, consisting of the Vaul
 and the secrets engine path. The alias specifies the name of the key in Vault and the key version in Google Cloud
 separated by a colon character.
 
-jsign --storetype HASHICORPVAULT --storepass <vault-token> \\
+jsign --storetype HASHICORPVAULT \\
       --keystore https://vault.example.com/v1/gcpkms \\
-      --alias test:1 --certfile full-chain.pem application.exe
+      --storepass <vault-token> \\
+      --alias test:1 \\
+      --certfile full-chain.pem application.exe
 
 
 .SH REPORTING BUGS
