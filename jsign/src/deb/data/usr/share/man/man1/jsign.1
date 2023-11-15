@@ -47,6 +47,8 @@ The type of the keystore:
 .br
 - PKCS11        : PKCS#11 hardware token
 .br
+- ETOKEN        : SafeNet eToken
+.br
 - NITROKEY      : Nitrokey HSM
 .br
 - OPENPGP       : OpenPGP card
@@ -206,6 +208,16 @@ Other Nitrokeys based on the OpenPGP card standard are also supported with this 
 but an X.509 certificate must be imported into the Nitrokey (using the gnupg writecert command).
 Keys without certificates are ignored. Alternatively, the OPENPGP storetype can also be used,
 it doesn't require OpenSC and any key can be used by providing an external certificate.
+
+
+.TP
+
+Signing with a SafeNet eToken:
+
+Signing with a SafeNet eToken requires the installation of the SafeNet Authentication Client
+<a href="https://knowledge.digicert.com/general-information/how-to-download-safenet-authentication-client"></a>.</p>
+
+jsign --storetype ETOKEN --storepass <PIN> --certfile full-chain.pem application.exe
 
 
 .TP

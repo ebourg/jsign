@@ -60,6 +60,7 @@ public class JsignCLI {
                         + "- JCEKS: SunJCE keystore (.jceks files)\n"
                         + "- PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)\n"
                         + "- PKCS11: PKCS#11 hardware token\n"
+                        + "- ETOKEN: SafeNet eToken\n"
                         + "- NITROKEY: Nitrokey HSM\n"
                         + "- OPENPGP: OpenPGP card\n"
                         + "- OPENSC: Smart card\n"

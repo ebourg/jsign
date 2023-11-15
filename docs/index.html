@@ -65,7 +65,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Keystores supported:
     <ul>
       <li>PKCS#12, JKS and JCEKS files</li>
-      <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, etc)</li>
+      <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, <a href="https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication">SafeNet eToken</a>, etc)</li>
       <li>Cloud key management systems:
         <ul>
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
@@ -183,6 +183,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+          <li><code>ETOKEN</code>: SafeNet eToken</li>
           <li><code>NITROKEY</code>: Nitrokey HSM</li>
           <li><code>OPENPGP</code>: OpenPGP card</li>
           <li><code>OPENSC</code>: Smart card</li>
@@ -454,6 +455,7 @@ are the same as those described above for the Ant task.</p>
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
                              - PKCS11: PKCS#11 hardware token
+                             - ETOKEN: SafeNet eToken
                              - NITROKEY: Nitrokey HSM
                              - OPENPGP: OpenPGP card
                              - OPENSC: Smart card
@@ -530,6 +532,15 @@ be installed on the system at the default location.</p>
 must be imported into the Nitrokey (using the gnupg <a href="https://www.gnupg.org/documentation/manuals/gnupg/gpg_002dcard.html">writecert</a>
 command). Keys without certificates are ignored. Alternatively, the OPENPGP storetype can also be used, it doesn't
 require OpenSC and any key can be used by providing an external certificate.</p>
+
+<h4 id="example-etoken">Signing with a SafeNet eToken</h4>
+
+<p>Signing with a SafeNet eToken requires the installation of the
+<a href="https://knowledge.digicert.com/general-information/how-to-download-safenet-authentication-client">SafeNet Authentication Client</a>.</p>
+
+<pre>
+  jsign --storetype ETOKEN --storepass &ltPIN&gt; --certfile full-chain.pem application.exe
+</pre>
 
 <h4 id="example-smart-card">Signing with a smart card</h4>
 

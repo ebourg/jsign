@@ -28,7 +28,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported:
   * PKCS#12, JKS and JCEKS files
-  * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), etc)
+  * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), [SafeNet eToken](https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication), etc)
   * Cloud key management systems:
     * [AWS KMS](https://aws.amazon.com/kms/)
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
@@ -51,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 5.1 (in development)
 * Signing of APPX/MSIX packages has been implemented (thanks to Maciej Panek for the help)
 * Signing of Microsoft Dynamics 365 extension packages has been implemented
+* SafeNet eToken support has been improved with automatic PKCS#11 configuration using the new `ETOKEN` storetype
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
 * VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)

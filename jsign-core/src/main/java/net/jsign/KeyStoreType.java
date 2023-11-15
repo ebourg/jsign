@@ -398,6 +398,17 @@ public enum KeyStoreType {
         Provider getProvider(KeyStoreBuilder params) {
             return new SigningServiceJcaProvider(new HashiCorpVaultSigningService(params.keystore(), params.storepass(), getCertificateStore(params)));
         }
+    },
+
+    /**
+     * SafeNet eToken
+     * This keystore requires the installation of the SafeNet Authentication Client.
+     */
+    ETOKEN(false, true, true) {
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            return SafeNetEToken.getProvider();
+        }
     };
 
 
