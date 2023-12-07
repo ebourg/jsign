@@ -148,17 +148,9 @@ public class PESignerTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        Certificate[] chain;
-        try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.spc")) {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
-            chain = certificates.toArray(new Certificate[0]);
-        }
-
-        KeyStore keystore = new KeyStoreBuilder().storetype(YUBIKEY).storepass("123456").build();
-        PrivateKey privateKey = (PrivateKey) keystore.getKey("X.509 Certificate for Digital Signature", null);
-        AuthenticodeSigner signer = new AuthenticodeSigner(chain, privateKey)
-                .withSignatureProvider(keystore.getProvider());
+        KeyStore keystore = new KeyStoreBuilder().storetype(YUBIKEY).storepass("123456")
+                .certfile("target/test-classes/keystores/jsign-test-certificate-full-chain.spc").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "X.509 Certificate for Digital Signature", null);
 
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);

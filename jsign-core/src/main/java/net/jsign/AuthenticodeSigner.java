@@ -67,6 +67,7 @@ import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
+import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.pe.DataDirectory;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
@@ -145,6 +146,11 @@ public class AuthenticodeSigner {
         }
         this.chain = chain;
         this.privateKey = (PrivateKey) keystore.getKey(alias, password != null ? password.toCharArray() : null);
+
+        Provider provider = keystore.getProvider();
+        if (provider.getName().startsWith("SunPKCS11") || provider instanceof SigningServiceJcaProvider) {
+            this.signatureProvider = provider;
+        }
     }
 
     /**
