@@ -53,17 +53,17 @@ class OpenSC {
      * @throws ProviderException thrown if the PKCS11 modules cannot be found
      */
     static String getSunPKCS11Configuration(String name) {
-        File libpkcs11 = getOpenSCLibrary();
-        if (!libpkcs11.exists()) {
-            throw new ProviderException("OpenSC PKCS11 module is not installed (" + libpkcs11 + " is missing)");
+        File library = getOpenSCLibrary();
+        if (!library.exists()) {
+            throw new ProviderException("OpenSC PKCS11 module is not installed (" + library + " is missing)");
         }
-        String configuration = "--name=opensc\nlibrary = \"" + libpkcs11.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+        String configuration = "--name=opensc\nlibrary = \"" + library.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
         try {
             long slot;
             try {
                 slot = Integer.parseInt(name);
             } catch (Exception e) {
-                slot = getTokenSlot(libpkcs11, name);
+                slot = getTokenSlot(library, name);
             }
             if (slot >= 0) {
                 configuration += "slot=" + slot;
@@ -150,9 +150,9 @@ class OpenSC {
             }
 
             for (String path : paths) {
-                File libpkcs11 = new File(path);
-                if (libpkcs11.exists()) {
-                    return libpkcs11;
+                File library = new File(path);
+                if (library.exists()) {
+                    return library;
                 }
             }
 

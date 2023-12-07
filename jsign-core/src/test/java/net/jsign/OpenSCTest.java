@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class OpenSCTest {
 
     private void assumeOpenSC() {
-        Assume.assumeTrue("libykcs11 isn't installed",
+        Assume.assumeTrue("opensc-pkcs11 isn't installed",
                 new File(System.getenv("ProgramFiles") + "/OpenSC Project/OpenSC/pkcs11/opensc-pkcs11.dll").exists()
              || new File("/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so").exists());
     }
