@@ -278,8 +278,9 @@ public class SignerHelperTest {
 
         SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
                 .storetype("ESIGNER")
-                .storepass("esigner_demo|esignerDemo#1")
                 .keystore("https://cs-try.ssl.com")
+                .storepass("esigner_demo|esignerDemo#1")
+                .alias("8b072e22-7685-4771-b5c6-48e46614915f")
                 .keypass("RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=")
                 .alg("SHA-256");
 
