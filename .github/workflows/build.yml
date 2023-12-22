@@ -40,6 +40,23 @@ jobs:
       - name: Packaging
         run: mvn -B package -DskipTests
 
+      - name: Archive artifacts
+        if: ${{ matrix.java == '8' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: jsign-artifacts
+          path: |
+            jsign/target/jsign-*.jar
+            !jsign/target/jsign-*-javadoc.jar
+            !jsign/target/jsign-*-sources.jar
+            !jsign/target/jsign-*_proguard_base.jar
+            jsign/target/*.deb
+            jsign/target/*.rpm
+            jsign-core/target/jsign-core-*.jar
+            !jsign-core/target/jsign-core-*-javadoc.jar
+            !jsign-core/target/jsign-core-*-sources.jar
+            !jsign-core/target/jsign-core-*-tests.jar
+
       - name: Coverage report
         if: ${{ matrix.java == '17' }}
         run: mvn -B clean test jacoco:report-aggregate coveralls:report -DjacocoReports=jsign/target/site/jacoco-aggregate/jacoco.xml -DrepoToken=${{ secrets.COVERALLS_TOKEN }} || true
