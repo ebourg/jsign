@@ -37,7 +37,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.3</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -57,7 +57,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.10</version>
+        <version>0.8.11</version>
         <executions>
           <execution>
             <id>jacoco-report</id>
@@ -171,19 +171,19 @@
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-base</artifactId>
-            <version>7.4.0-beta02</version>
+            <version>7.4.1</version>
           </dependency>
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-core</artifactId>
-            <version>9.1.0</version>
+            <version>9.1.1</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>com.github.siom79.japicmp</groupId>
         <artifactId>japicmp-maven-plugin</artifactId>
-        <version>0.18.1</version>
+        <version>0.18.3</version>
         <executions>
           <execution>
             <phase>verify</phase>
