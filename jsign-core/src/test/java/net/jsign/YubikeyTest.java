@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 
 public class YubikeyTest {
 
-    private void assumeYubikey() {
+    public static void assumeYubikey() {
         Assume.assumeTrue("libykcs11 isn't installed",
                 new File(System.getenv("ProgramFiles") + "/Yubico/Yubico PIV Tool/bin/libykcs11.dll").exists()
              || new File("/usr/lib/x86_64-linux-gnu/libykcs11.so").exists());

@@ -17,35 +17,21 @@
 package net.jsign.jca;
 
 import java.security.GeneralSecurityException;
-import java.security.InvalidParameterException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.SignatureException;
-import java.security.SignatureSpi;
 
-class SigningServiceSignature extends SignatureSpi {
+class SigningServiceSignature extends AbstractSignatureSpi {
 
-    private final String signingAlgorithm;
     private SigningServicePrivateKey privateKey;
     private byte[] data;
 
     public SigningServiceSignature(String signingAlgorithm) {
-        this.signingAlgorithm = signingAlgorithm;
-    }
-
-    @Override
-    protected void engineInitVerify(PublicKey publicKey) {
-        throw new UnsupportedOperationException();
+        super(signingAlgorithm);
     }
 
     @Override
     protected void engineInitSign(PrivateKey privateKey) {
         this.privateKey = (SigningServicePrivateKey) privateKey;
-    }
-
-    @Override
-    protected void engineUpdate(byte b) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -61,20 +47,5 @@ class SigningServiceSignature extends SignatureSpi {
         } catch (GeneralSecurityException e) {
             throw new SignatureException(e);
         }
-    }
-
-    @Override
-    protected boolean engineVerify(byte[] sigBytes) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void engineSetParameter(String param, Object value) throws InvalidParameterException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected Object engineGetParameter(String param) throws InvalidParameterException {
-        throw new UnsupportedOperationException();
     }
 }

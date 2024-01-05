@@ -18,13 +18,17 @@ package net.jsign.jca;
 
 import java.io.InputStream;
 import java.security.AccessController;
+import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PrivilegedAction;
 import java.security.Provider;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.util.Enumeration;
@@ -45,6 +49,13 @@ import net.jsign.KeyStoreType;
  * provider.configure(vaultname)
  * KeyStore keystore = KeyStore.getInstance(AZUREKEYVAULT.name(), provider);
  * keystore.load(null, accessToken);
+ *
+ * PrivateKey key = (PrivateKey) keystore.getKey(alias, null);
+ *
+ * Signature signature = Signature.getInstance("SHA256withRSA", provider);
+ * signature.initSign(key);
+ * signature.update("Lorem ipsum dolor sit amet".getBytes());
+ * signature.sign();
  * </pre>
  *
  * @since 5.1
@@ -64,7 +75,7 @@ public class JsignJcaProvider extends Provider {
                 for (DigestAlgorithm digest : DigestAlgorithm.values()) {
                     if (digest != DigestAlgorithm.MD5) {
                         String algorithm = digest.name() + "with" + alg;
-                        putService(new ProviderService(this, "Signature", algorithm, SigningServiceSignature.class.getName(), () -> new SigningServiceSignature(algorithm)));
+                        putService(new ProviderService(this, "Signature", algorithm, JsignJcaSignature.class.getName(), () -> new JsignJcaSignature(algorithm)));
                     }
                 }
             }
@@ -108,7 +119,7 @@ public class JsignJcaProvider extends Provider {
                 builder.keypass(new String(password));
             }
             try {
-                return getKeyStore().getKey(alias, password);
+                return new JsignJcaPrivateKey((PrivateKey) getKeyStore().getKey(alias, password), builder.provider());
             } catch (UnrecoverableKeyException e) {
                 e.printStackTrace(); // because jarsigner swallows the root cause and hides what's going on
                 throw e;
@@ -140,6 +151,76 @@ public class JsignJcaProvider extends Provider {
             if (password != null) {
                 builder.storepass(new String(password));
             }
+        }
+    }
+
+    static class JsignJcaPrivateKey implements PrivateKey {
+
+        private final PrivateKey privateKey;
+        private final Provider provider;
+
+        public JsignJcaPrivateKey(PrivateKey key, Provider provider) {
+            this.privateKey = key;
+            this.provider = provider;
+        }
+
+        @Override
+        public String getAlgorithm() {
+            return privateKey.getAlgorithm();
+        }
+
+        @Override
+        public String getFormat() {
+            return privateKey.getFormat();
+        }
+
+        @Override
+        public byte[] getEncoded() {
+            return privateKey.getEncoded();
+        }
+
+        public PrivateKey getPrivateKey() {
+            return privateKey;
+        }
+
+        public Provider getProvider() {
+            return provider;
+        }
+    }
+
+    static class JsignJcaSignature extends AbstractSignatureSpi {
+
+        private Signature signature;
+
+        public JsignJcaSignature(String signingAlgorithm) {
+            super(signingAlgorithm);
+        }
+
+        @Override
+        protected void engineInitSign(PrivateKey privateKey) throws InvalidKeyException {
+            JsignJcaPrivateKey key = (JsignJcaPrivateKey) privateKey;
+
+            try {
+                signature = Signature.getInstance(signingAlgorithm, key.getProvider());
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
+            }
+            signature.initSign(key.getPrivateKey());
+        }
+
+        @Override
+        protected void engineUpdate(byte b) throws SignatureException {
+            signature.update(b);
+        }
+
+        @Override
+        protected void engineUpdate(byte[] b, int off, int len) throws SignatureException {
+            signature.update(b, off, len);
+        }
+
+        @Override
+        protected byte[] engineSign() throws SignatureException {
+            return signature.sign();
         }
     }
 }

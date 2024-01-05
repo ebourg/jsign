@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.KeyStoreType;
+import net.jsign.YubikeyTest;
 
 import static org.junit.Assert.*;
 
@@ -48,7 +49,7 @@ public class JsignJcaProviderTest {
     }
 
     @Test
-    public void testKeyStore() throws Exception {
+    public void testKeyStoreSigningService() throws Exception {
         JsignJcaProvider provider = new JsignJcaProvider("https://cs-try.ssl.com");
 
         KeyStore keystore = KeyStore.getInstance("ESIGNER", provider);
@@ -56,6 +57,26 @@ public class JsignJcaProviderTest {
         String alias = keystore.aliases().nextElement();
 
         PrivateKey key = (PrivateKey) keystore.getKey(alias, "RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=".toCharArray());
+        assertNotNull("key not found", key);
+
+        Signature signature = Signature.getInstance("SHA256withRSA", provider);
+        signature.initSign(key);
+        signature.update("Lorem ipsum dolor sit amet".getBytes());
+
+        assertNotNull("Signature", signature.sign());
+    }
+
+    @Test
+    public void testKeyStorePKCS11() throws Exception {
+        YubikeyTest.assumeYubikey();
+
+        JsignJcaProvider provider = new JsignJcaProvider();
+
+        KeyStore keystore = KeyStore.getInstance("YUBIKEY", provider);
+        keystore.load(null, "123456".toCharArray());
+        String alias = keystore.aliases().nextElement();
+
+        PrivateKey key = (PrivateKey) keystore.getKey(alias, null);
         assertNotNull("key not found", key);
 
         Signature signature = Signature.getInstance("SHA256withRSA", provider);
