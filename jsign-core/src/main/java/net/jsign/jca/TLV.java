@@ -30,9 +30,23 @@ import org.apache.commons.codec.binary.Hex;
  */
 class TLV {
 
+    /** Tag in hexadecimal format, or null for the container node of a list */
     private String tag;
     private byte[] value;
     private List<TLV> children;
+
+    private TLV() {
+    }
+
+    public TLV(String tag) {
+        this.tag = tag;
+        children = new ArrayList<>();
+    }
+
+    public TLV(String tag, byte[] value) {
+        this.tag = tag;
+        this.value = value;
+    }
 
     public String tag() {
         return tag;
@@ -75,7 +89,14 @@ class TLV {
      * Parse a BER-TLV structure
      */
     public static TLV parse(ByteBuffer buffer) {
-        List<TLV> map = parseList(buffer);
+        return parse(buffer, true);
+    }
+
+    /**
+     * Parse a BER-TLV structure
+     */
+    static TLV parse(ByteBuffer buffer, boolean recursive) {
+        List<TLV> map = parseList(buffer, recursive);
         if (map.size() == 1) {
             return map.get(0);
         } else {
@@ -89,7 +110,7 @@ class TLV {
     /**
      * Parse a BER-TLV structure
      */
-    private static List<TLV> parseList(ByteBuffer buffer) {
+    private static List<TLV> parseList(ByteBuffer buffer, boolean recursive) {
         List<TLV> list = new ArrayList<>();
 
         while (buffer.hasRemaining()) {
@@ -130,8 +151,8 @@ class TLV {
             TLV tlv = new TLV();
             tlv.tag = Integer.toHexString(tag).toUpperCase();
             tlv.value = value;
-            if (constructed) {
-                tlv.children = parseList(ByteBuffer.wrap(value));
+            if (constructed && recursive) {
+                tlv.children = parseList(ByteBuffer.wrap(value), recursive);
             }
 
             list.add(tlv);
@@ -161,5 +182,75 @@ class TLV {
         }
 
         return length;
+    }
+
+    /**
+     * Returns the number of bytes required to encode the specified length
+     */
+    private static int sizeOfLengthField(int length) {
+        return length < 0x80 ? 1 : 1 + numberOfBytes(length);
+    }
+
+    private static int numberOfBytes(int value) {
+        return (int) (Math.log(value) / Math.log(256)) + 1;
+    }
+
+    int getValueLength() {
+        if (children == null) {
+            return value.length;
+        } else {
+            int length = 0;
+            for (TLV child : children) {
+                length += child.getEncodedLength();
+            }
+            return length;
+        }
+    }
+
+    /**
+     * Returns the number of bytes required to encode this TLV
+     */
+    int getEncodedLength() {
+        int length = getValueLength();
+        return 1 + sizeOfLengthField(length) + length;
+    }
+
+    void write(ByteBuffer buffer) {
+        if (tag != null) {
+            buffer.put((byte) Integer.parseInt(tag, 16));
+            writeLength(buffer, getValueLength());
+        }
+
+        if (children == null) {
+            buffer.put(value);
+        } else {
+            for (TLV child : children) {
+                child.write(buffer);
+            }
+        }
+    }
+
+    static void writeLength(ByteBuffer buffer, int length) {
+        if (length < 0x80) {
+            // short form
+            buffer.put((byte) length);
+        } else {
+            // long form
+            int n = numberOfBytes(length);
+            buffer.put((byte) (0x80 | n));
+            for (int i = 0; i < n; i++) {
+                int b = 0xFF & (length >> (8 * (n - i - 1)));
+                buffer.put((byte) b);
+            }
+        }
+    }
+
+    /**
+     * Returns the encoded representation of this TLV
+     */
+    public byte[] getEncoded() {
+        ByteBuffer buffer = ByteBuffer.allocate(tag == null ? getValueLength() : getEncodedLength());
+        write(buffer);
+        return buffer.array();
     }
 }

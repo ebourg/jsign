@@ -25,6 +25,7 @@ import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.jca.OpenPGPCardTest;
+import net.jsign.jca.PIVCardTest;
 
 import static net.jsign.KeyStoreType.*;
 import static org.junit.Assert.*;
@@ -397,6 +398,25 @@ public class KeyStoreBuilderTest {
         }
 
         OpenPGPCardTest.assumeCardPresent();
+
+        builder.storepass("123456");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
+    public void testBuildPIV() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(PIV);
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "storepass parameter must specify the PIN", e.getMessage());
+        }
+
+        PIVCardTest.assumeCardPresent();
 
         builder.storepass("123456");
 

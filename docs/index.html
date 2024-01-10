@@ -187,6 +187,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>NITROKEY</code>: Nitrokey HSM</li>
           <li><code>OPENPGP</code>: OpenPGP card</li>
           <li><code>OPENSC</code>: Smart card</li>
+          <li><code>PIV</code>: PIV card</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
           <li><code>AWS</code>: AWS Key Management Service</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
@@ -459,6 +460,7 @@ are the same as those described above for the Ant task.</p>
                              - NITROKEY: Nitrokey HSM
                              - OPENPGP: OpenPGP card
                              - OPENSC: Smart card
+                             - PIV: PIV card
                              - YUBIKEY: YubiKey security key
                              - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
@@ -519,6 +521,8 @@ be installed on the system at the default location.</p>
  jsign --storetype YUBIKEY --storepass 123456 --certfile full-chain.pem application.exe
 </pre>
 
+<p>Alternatively, the PIV storetype can also be used to sign with a Yubikey and doesn't require the ykcs11 library.</p>
+
 <h4 id="example-nitrokey">Signing with a Nitrokey HSM</h4>
 
 <p>Signing with a Nitrokey HSM requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.</p>
@@ -563,6 +567,20 @@ a Nitrokey (non-HSM models) or a Yubikey.</p>
 
 <pre>
  jsign --storetype OPENPGP --storepass 123456 --alias SIGNATURE \
+       --certfile full-chain.pem application.exe
+</pre>
+
+<p>X.509 certificates stored on the card are automatically used, and the <code>certfile</code> parameter is only
+required if the certificate chain contains an intermediate certificate.</p>
+
+<h4 id="example-piv">Signing with a PIV card</h4>
+
+<p>PIV cards contain up to 24 keys and certificates. The alias to select the key is either <code>AUTHENTICATION</code>,
+<code>SIGNATURE</code>, <code>KEY_MANAGEMENT</code>, <code>CARD_AUTHENTICATION</code>, or <code>RETIRED&lt;1-20&gt;</code>.
+Slot numbers are also accepted (for example <code>9c</code> for the digital signature key).
+
+<pre>
+ jsign --storetype PIV --storepass 123456 --alias SIGNATURE \
        --certfile full-chain.pem application.exe
 </pre>
 

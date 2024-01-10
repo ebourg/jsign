@@ -30,6 +30,7 @@ import net.jsign.jca.AWS;
 import net.jsign.jca.Azure;
 import net.jsign.jca.DigiCertONE;
 import net.jsign.jca.GoogleCloud;
+import net.jsign.jca.PIVCardTest;
 import net.jsign.pe.PEFile;
 
 import static net.jsign.DigestAlgorithm.*;
@@ -282,6 +283,27 @@ public class SignerHelperTest {
                 .storepass("esigner_demo|esignerDemo#1")
                 .alias("8b072e22-7685-4771-b5c6-48e46614915f")
                 .keypass("RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testPIV() throws Exception {
+        PIVCardTest.assumeCardPresent();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-piv.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("PIV")
+                .storepass("123456")
+                .alias("SIGNATURE")
+                .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
         helper.sign(targetFile);

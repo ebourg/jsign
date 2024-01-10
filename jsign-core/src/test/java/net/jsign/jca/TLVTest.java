@@ -39,4 +39,40 @@ public class TLVTest {
         assertEquals("Value 2", "0505", Hex.encodeHexString(tlv.children().get(1).value()));
         assertEquals("Value 3", "01269a33", Hex.encodeHexString(tlv.children().get(2).value()));
     }
+
+    @Test
+    public void testWriteLength() {
+        ByteBuffer buffer = ByteBuffer.allocate(4);
+        TLV.writeLength(buffer, 0x64);
+        assertEquals(0x64, buffer.get(0) & 0xFF);
+        assertEquals(0x00, buffer.get(1) & 0xFF);
+
+        buffer = ByteBuffer.allocate(4);
+        TLV.writeLength(buffer, 0x80);
+        assertEquals(0x81, buffer.get(0) & 0xFF);
+        assertEquals(0x80, buffer.get(1) & 0xFF);
+        assertEquals(0x00, buffer.get(2) & 0xFF);
+
+        buffer = ByteBuffer.allocate(4);
+        TLV.writeLength(buffer, 0x100);
+        assertEquals(0x82, buffer.get(0) & 0xFF);
+        assertEquals(0x01, buffer.get(1) & 0xFF);
+        assertEquals(0x00, buffer.get(2) & 0xFF);
+        assertEquals(0x00, buffer.get(3) & 0xFF);
+
+        buffer = ByteBuffer.allocate(4);
+        TLV.writeLength(buffer, 0x12345);
+        assertEquals(0x83, buffer.get(0) & 0xFF);
+        assertEquals(0x01, buffer.get(1) & 0xFF);
+        assertEquals(0x23, buffer.get(2) & 0xFF);
+        assertEquals(0x45, buffer.get(3) & 0xFF);
+    }
+
+    @Test
+    public void testEncode() throws Exception {
+        byte[] data = Hex.decodeHex("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
+        TLV tlv = TLV.parse(ByteBuffer.wrap(data));
+
+        assertArrayEquals("Encoded", data, tlv.getEncoded());
+    }
 }

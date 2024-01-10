@@ -87,6 +87,27 @@ public class SigningServiceTest {
     }
 
     @Test
+    public void testPIVCardProvider() throws Exception {
+        PIVCardTest.assumeCardPresent();
+        Provider provider = new SigningServiceJcaProvider(new PIVCardSigningService("123456", alias -> {
+            try {
+                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                    Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
+                    return certificates.toArray(new Certificate[0]);
+                }
+            } catch (IOException | CertificateException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+
+        KeyStore keystore = KeyStore.getInstance("PIV", provider);
+        keystore.load(null, "123456".toCharArray());
+
+        testCustomProvider(provider, keystore, "SIGNATURE", "123456");
+    }
+
+    @Test
     public void testAmazonProvider() throws Exception {
         AmazonCredentials credentials = new AmazonCredentials(AWS.getAccessKey(), AWS.getSecretKey(), null);
         Provider provider = new SigningServiceJcaProvider(new AmazonSigningService("eu-west-3", credentials, alias -> {

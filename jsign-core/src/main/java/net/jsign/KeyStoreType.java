@@ -42,6 +42,7 @@ import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.HashiCorpVaultSigningService;
 import net.jsign.jca.OpenPGPCardSigningService;
+import net.jsign.jca.PIVCardSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 
 /**
@@ -198,6 +199,30 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return OpenSC.getProvider(params.keystore());
+        }
+    },
+
+    /**
+     * PIV card. PIV cards contain up to 24 private keys and certificates. The alias to select the key is either,
+     * <code>AUTHENTICATION</code>, <code>SIGNATURE</code>, <code>KEY_MANAGEMENT</code>, <code>CARD_AUTHENTICATION</code>,
+     * or <code>RETIRED&lt;1-20&gt;</code>. Slot numbers are also accepted (for example <code>9c</code> for the digital
+     * signature key). No external library is required.
+     */
+    PIV(false, false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() == null) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the PIN");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            try {
+                return new SigningServiceJcaProvider(new PIVCardSigningService(params.storepass(), params.certfile() != null ? getCertificateStore(params) : null));
+            } catch (CardException e) {
+                throw new IllegalStateException("Failed to initialize the PIV card", e);
+            }
         }
     },
 

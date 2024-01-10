@@ -51,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 5.1 (in development)
 * Signing of APPX/MSIX packages has been implemented (thanks to Maciej Panek for the help)
 * Signing of Microsoft Dynamics 365 extension packages has been implemented
+* PIV cards are now supported with the new `PIV` storetype
 * SafeNet eToken support has been improved with automatic PKCS#11 configuration using the new `ETOKEN` storetype
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
 * VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1

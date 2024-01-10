@@ -64,6 +64,7 @@ public class JsignCLI {
                         + "- NITROKEY: Nitrokey HSM\n"
                         + "- OPENPGP: OpenPGP card\n"
                         + "- OPENSC: Smart card\n"
+                        + "- PIV: PIV card\n"
                         + "- YUBIKEY: YubiKey security key\n"
                         + "- AWS: AWS Key Management Service\n"
                         + "- AZUREKEYVAULT: Azure Key Vault key management system\n"
