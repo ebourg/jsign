@@ -25,6 +25,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,12 @@ public class OpenPGPCardSigningService implements SigningService {
                 content = digestInfo.getEncoded(ASN1Encoding.DER);
             } else {
                 // ECDSA
-                content = digest;
+                OpenPGPCard.KeyInfo keyInfo = pgpcard.getKeyInfo(OpenPGPCard.Key.valueOf(privateKey.getId()));
+                if (digest.length > keyInfo.size / 8) {
+                    content = Arrays.copyOf(digest, keyInfo.size / 8);
+                } else {
+                    content = digest;
+                }
             }
             return  pgpcard.sign(OpenPGPCard.Key.valueOf(privateKey.getId()), content);
         } catch (CardException | IOException e) {
