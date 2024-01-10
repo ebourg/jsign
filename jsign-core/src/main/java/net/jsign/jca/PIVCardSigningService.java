@@ -51,8 +51,8 @@ public class PIVCardSigningService implements SigningService {
     /** Source for the certificates */
     private final Function<String, Certificate[]> certificateStore;
 
-    public PIVCardSigningService(String pin, Function<String, Certificate[]> certificateStore) throws CardException {
-        PIVCard card = PIVCard.getCard();
+    public PIVCardSigningService(String cardname, String pin, Function<String, Certificate[]> certificateStore) throws CardException {
+        PIVCard card = PIVCard.getCard(cardname);
         if (card == null) {
             throw new CardException("PIV card not found");
         }

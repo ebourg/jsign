@@ -137,14 +137,35 @@ abstract class SmartCard {
         }
     }
 
-    static CardChannel openChannel() throws CardException {
-        CardTerminals terminals = TerminalFactory.getDefault().terminals();
-        for (CardTerminal terminal : terminals.list(CardTerminals.State.CARD_PRESENT)) {
+    /**
+     * Opens a channel to the first available smart card matching the specified name.
+     *
+     * @param name the partial name of the terminal
+     */
+    static CardChannel openChannel(String name) throws CardException {
+        CardTerminal terminal = getTerminal(name);
+        if (terminal != null) {
             try {
                 Card card = terminal.connect("T=1");
                 return card.getBasicChannel();
             } catch (CardException e) {
                 e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the first available smart card terminal matching the specified name.
+     *
+     * @param name the partial name of the terminal
+     */
+    static CardTerminal getTerminal(String name) throws CardException {
+        CardTerminals terminals = TerminalFactory.getDefault().terminals();
+        for (CardTerminal terminal : terminals.list(CardTerminals.State.CARD_PRESENT)) {
+            if (name == null || terminal.getName().toLowerCase().contains(name.toLowerCase())) {
+                return terminal;
             }
         }
 

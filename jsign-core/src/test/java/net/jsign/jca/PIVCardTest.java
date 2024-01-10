@@ -22,9 +22,6 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Set;
 import javax.crypto.Cipher;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CardTerminals;
-import javax.smartcardio.TerminalFactory;
 
 import org.junit.Test;
 
@@ -37,16 +34,7 @@ import static org.junit.Assume.*;
 public class PIVCardTest {
 
     public static void assumeCardPresent() throws Exception {
-        CardTerminals terminals = TerminalFactory.getDefault().terminals();
-        boolean found = false;
-        for (CardTerminal terminal : terminals.list(CardTerminals.State.CARD_PRESENT)) {
-            if (terminal.getName().contains("YubiKey")) {
-                found = true;
-                break;
-            }
-        }
-
-        assumeTrue("PIV card not found", found);
+        assumeTrue("PIV card not found", SmartCard.getTerminal("Yubikey") != null);
     }
 
     @Test

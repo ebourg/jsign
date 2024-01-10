@@ -55,6 +55,7 @@ See https://ebourg.github.io/jsign for more information.
 * SafeNet eToken support has been improved with automatic PKCS#11 configuration using the new `ETOKEN` storetype
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
 * VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1
+* The 'keystore' parameter can now be specified with the 'OPENPGP' storetype to distinguish between multiple connected devices
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)
 * Only one call to the Google Cloud API is performed when the version of the key is specified in the alias parameter
 * JVM arguments can now be passed using the `JSIGN_OPTS` environment variable

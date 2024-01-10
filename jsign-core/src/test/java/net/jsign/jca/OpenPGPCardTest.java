@@ -20,9 +20,6 @@ import java.io.File;
 import java.security.PrivateKey;
 import java.util.Set;
 import javax.crypto.Cipher;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CardTerminals;
-import javax.smartcardio.TerminalFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
@@ -35,16 +32,7 @@ import static org.junit.Assume.*;
 public class OpenPGPCardTest {
 
     public static void assumeCardPresent() throws Exception {
-        CardTerminals terminals = TerminalFactory.getDefault().terminals();
-        boolean found = false;
-        for (CardTerminal terminal : terminals.list(CardTerminals.State.CARD_PRESENT)) {
-            if (terminal.getName().contains("Nitrokey")) {
-                found = true;
-                break;
-            }
-        }
-
-        assumeTrue("OpenPGP card not found", found);
+        assumeTrue("OpenPGP card not found", SmartCard.getTerminal("Nitrokey") != null);
     }
 
     @Test

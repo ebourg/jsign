@@ -169,8 +169,9 @@ public enum KeyStoreType {
      * OpenPGP card. OpenPGP cards contain up to 3 keys, one for signing, one for encryption, and one for authentication.
      * All of them can be used for code signing (except encryption keys based on an elliptic curve). The alias
      * to select the key is either, <code>SIGNATURE</code>, <code>ENCRYPTION</code> or <code>AUTHENTICATION</code>.
-     * This keystore can be used with a Nitrokey (non-HSM models) or a Yubikey. It doesn't require any external library
-     * to be installed.
+     * This keystore can be used with a Nitrokey (non-HSM models) or a Yubikey. If multiple devices are connected,
+     * the keystore parameter can be used to specify the name of the one to use. This keystore type doesn't require
+     * any external library to be installed.
      */
     OPENPGP(false, false, false) {
         @Override
@@ -183,7 +184,7 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             try {
-                return new SigningServiceJcaProvider(new OpenPGPCardSigningService(params.storepass(), params.certfile() != null ? getCertificateStore(params) : null));
+                return new SigningServiceJcaProvider(new OpenPGPCardSigningService(params.keystore(), params.storepass(), params.certfile() != null ? getCertificateStore(params) : null));
             } catch (CardException e) {
                 throw new IllegalStateException("Failed to initialize the OpenPGP card", e);
             }
@@ -206,7 +207,8 @@ public enum KeyStoreType {
      * PIV card. PIV cards contain up to 24 private keys and certificates. The alias to select the key is either,
      * <code>AUTHENTICATION</code>, <code>SIGNATURE</code>, <code>KEY_MANAGEMENT</code>, <code>CARD_AUTHENTICATION</code>,
      * or <code>RETIRED&lt;1-20&gt;</code>. Slot numbers are also accepted (for example <code>9c</code> for the digital
-     * signature key). No external library is required.
+     * signature key). If multiple devices are connected, the keystore parameter can be used to specify the name
+     * of the one to use. This keystore type doesn't require any external library to be installed.
      */
     PIV(false, false, false) {
         @Override
@@ -219,7 +221,7 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             try {
-                return new SigningServiceJcaProvider(new PIVCardSigningService(params.storepass(), params.certfile() != null ? getCertificateStore(params) : null));
+                return new SigningServiceJcaProvider(new PIVCardSigningService(params.keystore(), params.storepass(), params.certfile() != null ? getCertificateStore(params) : null));
             } catch (CardException e) {
                 throw new IllegalStateException("Failed to initialize the PIV card", e);
             }

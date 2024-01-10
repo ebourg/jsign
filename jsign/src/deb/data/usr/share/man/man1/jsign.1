@@ -25,9 +25,11 @@ systems.
 .TP
 .B -s, --keystore <FILE>
 Either the keystore file containing the certificate and the private key used for
-signing, the SunPKCS11 configuration file when a PKCS#11 token is used, or the cloud
-keystore name. For file based keystores this option must be specified unless
-the keyfile and certfile options are already specified.
+signing, the SunPKCS11 configuration file when a PKCS#11 token is used, the cloud
+keystore name, or the smart card or hardware token name. For file based keystores
+this option must be specified unless the keyfile and certfile options are already
+specified. For smart cards and hardware tokens, this option may be specified
+to distinguish between multiple connected devices.
 
 .TP
 .B --storepass <PASSWORD>
@@ -250,6 +252,8 @@ jsign --storetype OPENPGP --storepass 123456 --alias SIGNATURE --certfile full-c
 X.509 certificates stored on the card are automatically used, and the certfile parameter is only required
 if the certificate chain contains an intermediate certificate.
 
+If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
+
 
 .TP
 
@@ -263,6 +267,8 @@ jsign --storetype PIV --storepass 123456 --alias SIGNATURE --certfile full-chain
 
 X.509 certificates stored on the card are automatically used, and the certfile parameter is only required
 if the certificate chain contains an intermediate certificate.
+
+If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
 
 
 .TP

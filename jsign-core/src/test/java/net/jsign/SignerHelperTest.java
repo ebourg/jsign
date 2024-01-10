@@ -301,6 +301,7 @@ public class SignerHelperTest {
 
         SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
                 .storetype("PIV")
+                .keystore("Yubikey")
                 .storepass("123456")
                 .alias("SIGNATURE")
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")

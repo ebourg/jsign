@@ -351,7 +351,16 @@ class PIVCard extends SmartCard {
      * Get the PIV card.
      */
     public static PIVCard getCard() throws CardException {
-        CardChannel channel = openChannel();
+        return getCard(null);
+    }
+
+    /**
+     * Get the PIV card with the specified name.
+     *
+     * @param name the partial name of the card
+     */
+    public static PIVCard getCard(String name) throws CardException {
+        CardChannel channel = openChannel(name);
         return channel != null ? new PIVCard(channel) : null;
     }
 }

@@ -52,7 +52,7 @@ public class JsignCLI {
 
     JsignCLI() {
         options = new Options();
-        options.addOption(Option.builder("s").hasArg().longOpt(PARAM_KEYSTORE).argName("FILE").desc("The keystore file, the SunPKCS11 configuration file or the cloud keystore name").type(File.class).build());
+        options.addOption(Option.builder("s").hasArg().longOpt(PARAM_KEYSTORE).argName("FILE").desc("The keystore file, the SunPKCS11 configuration file, the cloud keystore name, or the card/token name").type(File.class).build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STOREPASS).argName("PASSWORD").desc("The password to open the keystore").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STORETYPE).argName("TYPE")
                 .desc("The type of the keystore:\n"

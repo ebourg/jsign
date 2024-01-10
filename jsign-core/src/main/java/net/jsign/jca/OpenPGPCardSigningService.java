@@ -56,7 +56,11 @@ public class OpenPGPCardSigningService implements SigningService {
     private final Function<String, Certificate[]> certificateStore;
 
     public OpenPGPCardSigningService(String pin, Function<String, Certificate[]> certificateStore) throws CardException {
-        OpenPGPCard pgpcard = OpenPGPCard.getCard();
+        this(null, pin, certificateStore);
+    }
+
+    public OpenPGPCardSigningService(String cardname, String pin, Function<String, Certificate[]> certificateStore) throws CardException {
+        OpenPGPCard pgpcard = OpenPGPCard.getCard(cardname);
         if (pgpcard == null) {
             throw new CardException("OpenPGP card not found");
         }

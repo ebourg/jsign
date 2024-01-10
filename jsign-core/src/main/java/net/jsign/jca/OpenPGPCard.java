@@ -311,9 +311,18 @@ class OpenPGPCard extends SmartCard {
      * Get the OpenPGP card.
      */
     public static OpenPGPCard getCard() throws CardException {
+        return getCard(null);
+    }
+
+    /**
+     * Get the OpenPGP card with the specified name.
+     *
+     * @param name the partial name of the card
+     */
+    public static OpenPGPCard getCard(String name) throws CardException {
         killSmartCardDaemon();
 
-        CardChannel channel = openChannel();
+        CardChannel channel = openChannel(name);
         return channel != null ? new OpenPGPCard(channel) : null;
     }
 

@@ -68,7 +68,7 @@ public class SigningServiceTest {
     @Test
     public void testOpenPGPCardProvider() throws Exception {
         OpenPGPCardTest.assumeCardPresent();
-        Provider provider = new SigningServiceJcaProvider(new OpenPGPCardSigningService("123456", alias -> {
+        Provider provider = new SigningServiceJcaProvider(new OpenPGPCardSigningService(null, "123456", alias -> {
             try {
                 try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
@@ -89,7 +89,7 @@ public class SigningServiceTest {
     @Test
     public void testPIVCardProvider() throws Exception {
         PIVCardTest.assumeCardPresent();
-        Provider provider = new SigningServiceJcaProvider(new PIVCardSigningService("123456", alias -> {
+        Provider provider = new SigningServiceJcaProvider(new PIVCardSigningService(null, "123456", alias -> {
             try {
                 try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
