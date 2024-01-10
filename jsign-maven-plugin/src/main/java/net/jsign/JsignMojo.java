@@ -72,44 +72,69 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.keystore" )
     private String keystore;
 
-    /** The password for the keystore. */
+    /**
+     * The password to open the keystore. The password can be loaded from a file by using the <code>file:</code> prefix
+     * followed by the path of the file, from an environment variable by using the <code>env:</code> prefix followed
+     * by the name of the variable, or from the Maven settings file by using the <code>mvn:</code> prefix followed by
+     * the server id.
+     */
     @Parameter( property = "jsign.storepass" )
     private String storepass;
 
-    /** The type of the keystore (JKS, PKCS12, PKCS11, ETOKEN, YUBIKEY, AWS, AZUREKEYVAULT, DIGICERTONE, ESIGNER or GOOGLECLOUD). */
+    /**
+     * The type of the keystore (JKS, JCEKS, PKCS12, PKCS11, ETOKEN, NITROKEY, OPENPGP, OPENSC, PIV, YUBIKEY, AWS,
+     * AZUREKEYVAULT, DIGICERTONE, ESIGNER, GOOGLECLOUD or HASHICORPVAULT).
+     */
     @Parameter( property = "jsign.storetype" )
     private String storetype;
 
-    /** The alias of the certificate in the keystore. Required if a keystore is specified. */
+    /**
+     * The alias of the certificate used for signing in the keystore. This parameter is mandatory if the keystore
+     * parameter is specified and if the keystore contains more than one alias.
+     */
     @Parameter( property = "jsign.alias" )
     private String alias;
 
-    /** The file containing the PKCS#7 certificate chain (.p7b or .spc files). */
+    /**
+     * The file containing the PKCS#7 certificate chain (.p7b or .spc files).
+     * This parameter is used in combination with the keyfile parameter.
+     */
     @Parameter( property = "jsign.certfile" )
     private File certfile;
 
-    /** The file containing the private key (PEM or PVK format) */
+    /**
+     * The file containing the private key (PEM or PVK format).
+     * This parameter is used in combination with the certfile parameter.
+     */
     @Parameter( property = "jsign.keyfile" )
     private File keyfile;
 
-    /** The password for the key in the store (if different from the keystore password) or in the keyfile. */
+    /**
+     * The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares
+     * the same password. The password can be loaded from a file by using the <code>file:</code> prefix followed by
+     * the path of the file, from an environment variable by using the <code>env:</code> prefix followed by the name
+     * of the variable, or from the Maven settings file by using the <code>mvn:</code> prefix followed by the server id.
+     */
     @Parameter( property = "jsign.keypass" )
     private String keypass;
 
-    /** The URL of the timestamping authority. */
+    /**
+     * The URL of the timestamping authority.
+     * Several URLs separated by a comma can be specified to fallback on alternative servers.
+     */
     @Parameter( property = "jsign.tsaurl" )
     private String tsaurl;
 
     /** The protocol used for the timestamping (RFC3161 or Authenticode) */
-    @Parameter( property = "jsign.tsmode" )
+    @Parameter( property = "jsign.tsmode", defaultValue = "Authenticode" )
     private String tsmode;
 
     /** The number of retries for timestamping */
-    @Parameter( property = "jsign.tsretries" )
+    @Parameter( property = "jsign.tsretries", defaultValue = "3")
     private int tsretries = -1;
 
     /** The number of seconds to wait between timestamping retries */
-    @Parameter( property = "jsign.tsretrywait" )
+    @Parameter( property = "jsign.tsretrywait", defaultValue = "10")
     private int tsretrywait = -1;
 
     /** Tells if previous signatures should be replaced */
@@ -120,7 +145,17 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.encoding", defaultValue = "UTF-8")
     private String encoding = "UTF-8";
 
-    /** Tells if a detached signature should be generated or reused. */
+    /**
+     * Tells if a detached signature should be generated or reused. The detached signature is a file in the same
+     * directory using the name of the file signed with the <code>.sig</code> suffix added
+     * (for example <code>application.exe.sig</code>).
+     *
+     * <ul>
+     *   <li>If the signature doesn't exist, the file is signed as usual and the detached signature is generated.</li>
+     *   <li>If the signature exists it is attached to the file, replacing any existing signature (in this case
+     *       the private key isn't used for signing and no timestamping is performed)</li>
+     * </ul>
+     */
     @Parameter( property = "jsign.detached", defaultValue = "false")
     private boolean detached;
 
