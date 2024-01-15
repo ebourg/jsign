@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -85,12 +86,24 @@ public class AmazonSigningService implements SigningService {
      * Creates a new AWS signing service.
      *
      * @param region           the AWS region holding the keys (for example <tt>eu-west-3</tt>)
+     * @param credentials      the AWS credentials provider
+     * @param certificateStore provides the certificate chain for the keys
+     * @since 5.1
+     */
+    public AmazonSigningService(String region, Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore) {
+        this.certificateStore = certificateStore;
+        this.client = new RESTClient("https://kms." + region + ".amazonaws.com", (conn, data) -> sign(conn, credentials.get(), data, null));
+    }
+
+    /**
+     * Creates a new AWS signing service.
+     *
+     * @param region           the AWS region holding the keys (for example <tt>eu-west-3</tt>)
      * @param credentials      the AWS credentials
      * @param certificateStore provides the certificate chain for the keys
      */
     public AmazonSigningService(String region, AmazonCredentials credentials, Function<String, Certificate[]> certificateStore) {
-        this.certificateStore = certificateStore;
-        this.client = new RESTClient("https://kms." + region + ".amazonaws.com", (conn, data) -> sign(conn, credentials, data, null));
+        this(region, () -> credentials, certificateStore);
     }
 
     /**
