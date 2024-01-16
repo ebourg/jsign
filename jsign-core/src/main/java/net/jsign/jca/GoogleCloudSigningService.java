@@ -120,8 +120,8 @@ public class GoogleCloudSigningService implements SigningService {
                 // full key with version specified
                 if (alias.contains(":")) {
                     // syntax with the algorithm appended to the alias
-                    alias = alias.substring(0, alias.indexOf(':'));
                     algorithm = alias.substring(alias.indexOf(':') + 1) + "_SIGN";
+                    alias = alias.substring(0, alias.indexOf(':'));
                 } else {
                     Certificate[] chain = getCertificateChain(alias);
                     if (chain != null && chain.length > 0) {
