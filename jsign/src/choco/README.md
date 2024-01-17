@@ -7,4 +7,4 @@ Deployment procedure:
 * Update the version and the checksum in `tools/VERIFICATION.md`
 * Run:
   * `choco pack`
-  * `choco push choco push jsign.<version>.nupkg`
+  * `choco push jsign.<version>.nupkg`
