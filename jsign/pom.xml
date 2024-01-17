@@ -335,6 +335,50 @@
         <proguard.bootclasspath>${java.home}/jmods/java.base.jmod</proguard.bootclasspath>
       </properties>
     </profile>
+
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>update-release-version</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <!-- Chocolatey package -->
+                    <checksum file="target/jsign-${project.version}.jar" algorithm="SHA-256" property="jsign.sha256"/>
+                    <replaceregexp file="src/choco/jsign.nuspec"          match="version>[\d.]+"             replace="version>${project.version}"/>
+                    <replaceregexp file="src/choco/jsign.nuspec"          match="jsign-[\d.]+.jar"           replace="jsign-${project.version}.jar"/>
+                    <replaceregexp file="src/choco/tools/VERIFICATION.md" match="/[\d\.]+/jsign-[\d.]+.jar"  replace="/${project.version}/jsign-${project.version}.jar"/>
+                    <replaceregexp file="src/choco/tools/VERIFICATION.md" match="version [\d.]+"             replace="version ${project.version}"/>
+                    <replaceregexp file="src/choco/tools/VERIFICATION.md" match="`[a-f0-9]{64}`"             replace="`${jsign.sha256}`"/>
+
+                    <!-- Documentation -->
+                    <replaceregexp file="../docs/index.html" flags="g"    match="jsign([-_])[\d.]+([-_.])"   replace="jsign\1${project.version}\2"/>
+                    <replaceregexp file="../docs/index.html" flags="g"    match="/[\d.]+/jsign"              replace="/${project.version}/jsign"/>
+                    <replaceregexp file="../docs/index.html" flags="g"    match="version>[\d.]+"             replace="version>${project.version}"/>
+                    <replaceregexp file="../docs/index.html" flags="g"    match="version '[\d.]+'"           replace="version '${project.version}'"/>
+                    <replaceregexp file="../docs/index.html" flags="g"    match="version &quot;[\d.]+&quot;" replace="version &quot;${project.version}&quot;"/>
+
+                    <!-- Gradle examples -->
+                    <replaceregexp file="../jsign-gradle-plugin/example.gradle.kts" match="net.jsign:jsign-gradle-plugin:[\d.]+(?:-SNAPSHOT)?" replace="net.jsign:jsign-gradle-plugin:${project.version}"/>
+
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
 </project>
