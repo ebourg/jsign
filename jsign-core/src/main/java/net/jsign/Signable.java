@@ -77,7 +77,7 @@ public interface Signable extends Closeable {
      * @param digestAlgorithm the digest algorithm to use
      * @return the digest of the file
      * @throws IOException if an I/O error occurs
-     * @since 5.1
+     * @since 6.0
      */
     default byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
         return computeDigest(digestAlgorithm.getMessageDigest());

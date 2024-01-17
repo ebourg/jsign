@@ -42,7 +42,7 @@ import net.jsign.DigestAlgorithm;
  * Signing service using an PIV smart card. PIV cards contain up to 24 keys usable to signing,
  * along with the X.509 certificates.
  *
- * @since 5.1
+ * @since 6.0
  */
 public class PIVCardSigningService implements SigningService {
 

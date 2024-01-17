@@ -38,7 +38,7 @@ import static java.nio.ByteOrder.*;
  *  signature                       4 bytes  (NXSB)
  *  </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class NAVXSignatureBlock {
 

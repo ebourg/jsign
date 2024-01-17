@@ -48,14 +48,15 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 5.1 (in development)
+#### Version 6.0 (2024-01-17)
+
 * Signing of APPX/MSIX packages has been implemented (thanks to Maciej Panek for the help)
 * Signing of Microsoft Dynamics 365 extension packages has been implemented
 * PIV cards are now supported with the new `PIV` storetype
 * SafeNet eToken support has been improved with automatic PKCS#11 configuration using the new `ETOKEN` storetype
 * The certificate chain in the file specified by the `certfile` parameter can now be in any order
 * VBScript, JScript and PowerShell XML files without byte order marks are now parsed as Windows-1252 instead of ISO-8859-1
-* The 'keystore' parameter can now be specified with the 'OPENPGP' storetype to distinguish between multiple connected devices
+* The `keystore` parameter can now be specified with the `OPENPGP` storetype to distinguish between multiple connected devices
 * The format detection based on the file extension is now case insensitive (contributed by Mathieu Delrocq)
 * Only one call to the Google Cloud API is performed when the version of the key is specified in the alias parameter
 * JVM arguments can now be passed using the `JSIGN_OPTS` environment variable
@@ -63,7 +64,7 @@ See https://ebourg.github.io/jsign for more information.
   * New `net.jsign.jca.JsignJcaProvider` JCA security provider to be used with other signing tools such as jarsigner
   * The signature can be removed by setting a null signature on the `Signable` object
   * `Signable.computeDigest(MessageDigest)` has been replaced by `Signable.computeDigest(DigestAlgorithm)`
-  * The value of the `http.agent` system property is now appended to the user agent string set when calling REST services
+  * The value of the `http.agent` system property is now appended to the User-Agent header when calling REST services
   * `AuthenticodeSigner` sets the security provider automatically if the keystore used is backed by a PKCS#11 token or a cloud service
   * `AmazonSigningService` now supports dynamic credentials
 * Upgraded BouncyCastle to 1.77

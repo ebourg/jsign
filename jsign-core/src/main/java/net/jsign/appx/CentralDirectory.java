@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * Central directory of a ZIP file.
  *
- * @since 5.1
+ * @since 6.0
  */
 class CentralDirectory {
 

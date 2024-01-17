@@ -32,7 +32,7 @@ import static java.nio.ByteOrder.*;
  * total number of disks                                                    4 bytes
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class Zip64EndOfCentralDirectoryLocator extends ZipRecord {
 

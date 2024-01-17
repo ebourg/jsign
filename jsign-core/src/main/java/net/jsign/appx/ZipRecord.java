@@ -25,7 +25,7 @@ import java.nio.channels.WritableByteChannel;
 /**
  * ZIP record.
  *
- * @since 5.1
+ * @since 6.0
  */
 abstract class ZipRecord {
 

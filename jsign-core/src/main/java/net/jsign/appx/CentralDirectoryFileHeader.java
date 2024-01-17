@@ -51,7 +51,7 @@ import static java.nio.ByteOrder.*;
  * file comment (variable size)
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class CentralDirectoryFileHeader extends ZipRecord {
 

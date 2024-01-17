@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 /**
  * Provider.Service implementation using a lambda expression to create the service instances.
  *
- * @since 5.1
+ * @since 6.0
  */
 class ProviderService extends Provider.Service {
 

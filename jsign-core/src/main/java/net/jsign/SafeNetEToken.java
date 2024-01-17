@@ -29,7 +29,7 @@ import sun.security.pkcs11.wrapper.PKCS11Exception;
 /**
  * Helper class for working with SafeNet eTokens.
  *
- * @since 5.1
+ * @since 6.0
  */
 class SafeNetEToken {
 

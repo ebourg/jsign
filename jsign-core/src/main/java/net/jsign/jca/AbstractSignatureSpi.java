@@ -24,7 +24,7 @@ import java.security.SignatureSpi;
 /**
  * Base class for JCA signature implementations.
  *
- * @since 5.1
+ * @since 6.0
  */
 abstract class AbstractSignatureSpi extends SignatureSpi {
 

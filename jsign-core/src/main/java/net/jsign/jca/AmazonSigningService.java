@@ -88,7 +88,7 @@ public class AmazonSigningService implements SigningService {
      * @param region           the AWS region holding the keys (for example <tt>eu-west-3</tt>)
      * @param credentials      the AWS credentials provider
      * @param certificateStore provides the certificate chain for the keys
-     * @since 5.1
+     * @since 6.0
      */
     public AmazonSigningService(String region, Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore) {
         this.certificateStore = certificateStore;

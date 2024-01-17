@@ -39,7 +39,7 @@ import static java.nio.ByteOrder.*;
  * extra field length              2 bytes
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class LocalFileHeader extends ZipRecord {
 

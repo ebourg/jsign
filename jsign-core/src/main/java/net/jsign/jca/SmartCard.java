@@ -33,7 +33,7 @@ import org.apache.commons.io.HexDump;
 /**
  * Base class for the smart card implementations.
  *
- * @since 5.1
+ * @since 6.0
  */
 abstract class SmartCard {
 

@@ -53,7 +53,7 @@ import static net.jsign.ChannelUtils.*;
  * Microsoft Dynamics 365 extension package (NAVX)
  *
  * @author Emmanuel Bourg
- * @since 5.1
+ * @since 6.0
  */
 public class NAVXFile implements Signable {
 

@@ -40,7 +40,7 @@ import static java.nio.charset.StandardCharsets.*;
 /**
  * Simplified implementation of the ZIP file format, just good enough to add an entry to an existing file.
  *
- * @since 5.1
+ * @since 6.0
  */
 class ZipFile implements Closeable {
 

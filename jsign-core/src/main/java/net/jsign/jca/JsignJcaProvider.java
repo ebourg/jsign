@@ -58,7 +58,7 @@ import net.jsign.KeyStoreType;
  * signature.sign();
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 public class JsignJcaProvider extends Provider {
 

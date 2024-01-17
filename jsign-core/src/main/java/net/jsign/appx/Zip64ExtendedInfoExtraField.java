@@ -34,7 +34,7 @@ import static java.nio.ByteOrder.*;
  * Number of the disk on which this file starts  4 bytes  (optional)
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class Zip64ExtendedInfoExtraField extends ExtraField {
 

@@ -30,7 +30,7 @@ import java.util.Arrays;
  * instead of turning them into a replacement character. This mimics the behavior of the Windows
  * MultiByteToWideChar function used by signtool to decode .vbs and .js files. 
  *
- * @since 5.1
+ * @since 6.0
  */
 class Windows1252Extended extends Charset {
 

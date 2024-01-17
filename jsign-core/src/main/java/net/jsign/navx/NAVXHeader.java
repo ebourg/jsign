@@ -33,7 +33,7 @@ import static java.nio.ByteOrder.*;
  *  signature                       4 bytes  (NAVX)
  *  </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class NAVXHeader {
 

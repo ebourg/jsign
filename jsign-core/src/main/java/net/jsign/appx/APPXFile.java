@@ -58,7 +58,7 @@ import static java.nio.charset.StandardCharsets.*;
  * APPX/MSIX package.
  *
  * @author Emmanuel Bourg
- * @since 5.1
+ * @since 6.0
  */
 public class APPXFile extends ZipFile implements Signable {
 

@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Extra field of a ZIP entry.
  *
- * @since 5.1
+ * @since 6.0
  */
 class ExtraField {
 

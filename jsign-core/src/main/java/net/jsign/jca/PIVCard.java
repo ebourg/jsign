@@ -42,7 +42,7 @@ import javax.smartcardio.ResponseAPDU;
  * @see <a href="https://csrc.nist.gov/pubs/sp/800/73/4/upd1/final">NIST SP 800-73-4 Interfaces for Personal Identity Verification</a>
  * @see <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-78-5.ipd.pdf">NIST SP 800-78-5 Cryptographic Algorithms and Key Sizes for Personal Identity Verification</a>
  * @see <a href="https://docs.yubico.com/yesdk/users-manual/application-piv/commands.html">Yubikey User's Manual - PIV commands</a>
- * @since 5.1
+ * @since 6.0
  */
 class PIVCard extends SmartCard {
 

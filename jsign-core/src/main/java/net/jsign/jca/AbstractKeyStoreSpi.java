@@ -28,7 +28,7 @@ import java.util.Enumeration;
 /**
  * Base class for JCA keystore implementations.
  *
- * @since 5.1
+ * @since 6.0
  */
 abstract class AbstractKeyStoreSpi extends KeyStoreSpi {
 

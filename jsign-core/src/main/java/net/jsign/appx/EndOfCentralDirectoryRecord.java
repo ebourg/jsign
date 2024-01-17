@@ -38,7 +38,7 @@ import static java.nio.ByteOrder.*;
  * .ZIP file comment                                                             (variable size)
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class EndOfCentralDirectoryRecord extends ZipRecord {
 

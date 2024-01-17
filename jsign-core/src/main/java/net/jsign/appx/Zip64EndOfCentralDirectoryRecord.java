@@ -39,7 +39,7 @@ import static java.nio.ByteOrder.*;
  * zip64 extensible data sector                                                   (variable size)
  * </pre>
  *
- * @since 5.1
+ * @since 6.0
  */
 class Zip64EndOfCentralDirectoryRecord extends ZipRecord {
 
