@@ -13,7 +13,7 @@
     Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI),
     Cabinet files (CAB), Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF).
   </description>
-  <url>https://ebourg.github.com/jsign</url>
+  <url>https://ebourg.github.io/jsign</url>
 
   <licenses>
     <license>
@@ -26,7 +26,7 @@
     <developer>
       <name>Emmanuel Bourg</name>
       <email>ebourg@apache.org</email>
-      <organizationUrl>https://ebourg.github.com/jsign</organizationUrl>
+      <organizationUrl>https://ebourg.github.io/jsign</organizationUrl>
     </developer>
   </developers>
 
