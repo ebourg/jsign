@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.appx;
+package net.jsign.zip;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -42,7 +42,7 @@ import static java.nio.charset.StandardCharsets.*;
  *
  * @since 6.0
  */
-class ZipFile implements Closeable {
+public class ZipFile implements Closeable {
 
     /** The channel used for in-memory signing */
     protected final SeekableByteChannel channel;

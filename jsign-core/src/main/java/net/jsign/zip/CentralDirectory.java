@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.appx;
+package net.jsign.zip;
 
 import java.io.IOException;
 import java.nio.channels.SeekableByteChannel;
@@ -30,7 +30,7 @@ import java.util.Map;
  *
  * @since 6.0
  */
-class CentralDirectory {
+public class CentralDirectory {
 
     private final EndOfCentralDirectoryRecord endOfCentralDirectoryRecord = new EndOfCentralDirectoryRecord();
     private final Zip64EndOfCentralDirectoryLocator zip64EndOfCentralDirectoryLocator = new Zip64EndOfCentralDirectoryLocator();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.appx;
+package net.jsign.zip;
 
 import java.io.File;
 import java.nio.channels.SeekableByteChannel;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.appx;
+package net.jsign.zip;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,21 +26,28 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class Zip64EndOfCentralDirectoryLocatorTest {
+public class Zip64EndOfCentralDirectoryRecordTest {
 
     @Test
     public void testRead() throws Exception {
         File file = new File("target/test-classes/minimal.msix");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            channel.position(0x2721);
+            channel.position(0x26E9);
 
-            Zip64EndOfCentralDirectoryLocator record = new Zip64EndOfCentralDirectoryLocator();
+            Zip64EndOfCentralDirectoryRecord record = new Zip64EndOfCentralDirectoryRecord();
             record.read(channel);
 
-            assertEquals("number of the disk with the start of the zip64 end of central directory", 0, record.numberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory);
-            assertEquals("relative offset of the zip64 end of central directory record", 0x26E9, record.zip64EndOfCentralDirectoryRecordOffset);
-            assertEquals("number of disks", 1, record.numberOfDisks);
+            assertEquals("version made by / file attributes compatibility", 0 /* DOS */, record.versionMadeBy >> 8);
+            assertEquals("version made by / zip specification", 45, record.versionMadeBy & 0xFF);
+            assertEquals("version needed to extract", 45, record.versionNeededToExtract);
+            assertEquals("number of this disk", 0, record.numberOfThisDisk);
+            assertEquals("number of the disk with the start of the central directory", 0, record.numberOfTheDiskWithTheStartOfTheCentralDirectory);
+            assertEquals("number of entries in the central directory on this disk", 7, record.numberOfEntriesOnThisDisk);
+            assertEquals("number of entries in the central directory", 7, record.numberOfEntries);
+            assertEquals("central directory size", 622, record.centralDirectorySize);
+            assertEquals("central directory offset", 0x247B, record.centralDirectoryOffset);
+            assertArrayEquals("extensible data sector", new byte[0], record.extensibleDataSector);
         }
     }
 
@@ -48,10 +55,10 @@ public class Zip64EndOfCentralDirectoryLocatorTest {
     public void testReadWrongRecord() {
         File file = new File("target/test-classes/minimal.msix");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            new Zip64EndOfCentralDirectoryLocator().read(channel);
+            new Zip64EndOfCentralDirectoryRecord().read(channel);
             fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("message", "Invalid ZIP64 End of Central Directory Locator signature 0x4034b50", e.getMessage());
+            assertEquals("message", "Invalid ZIP64 End of Central Directory Record signature 0x4034b50", e.getMessage());
         }
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.appx;
+package net.jsign.zip;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -53,7 +53,7 @@ import static java.nio.ByteOrder.*;
  *
  * @since 6.0
  */
-class CentralDirectoryFileHeader extends ZipRecord {
+public class CentralDirectoryFileHeader extends ZipRecord {
 
     public static final int SIGNATURE = 0x02014b50;
     private static final int MIN_SIZE = 46;

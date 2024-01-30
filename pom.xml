@@ -189,7 +189,7 @@
           </links>
           <source>8</source>
           <show>public</show>
-          <excludePackageNames>*.asn1.*</excludePackageNames>
+          <excludePackageNames>*.asn1.*,*.zip.*</excludePackageNames>
           <sourceFileExcludes>
             <exclude>**/ChannelUtils.java</exclude>
           </sourceFileExcludes>

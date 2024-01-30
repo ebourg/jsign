@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.jsign.appx;
+package net.jsign.zip;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,30 +24,23 @@ import java.nio.file.StandardOpenOption;
 
 import org.junit.Test;
 
-import static java.nio.charset.StandardCharsets.*;
 import static org.junit.Assert.*;
 
-public class LocalFileHeaderTest {
+public class Zip64EndOfCentralDirectoryLocatorTest {
 
     @Test
     public void testRead() throws Exception {
         File file = new File("target/test-classes/minimal.msix");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            LocalFileHeader localFileHeader = new LocalFileHeader();
-            localFileHeader.read(channel);
+            channel.position(0x2721);
 
-            assertEquals("version needed to extract", 45, localFileHeader.versionNeededToExtract);
-            assertEquals("general purpose bit flag", 0b0000000000001110, localFileHeader.generalPurposeBitFlag);
-            assertEquals("compression method", 8, localFileHeader.compressionMethod);
-            assertEquals("last mod file time", 29469, localFileHeader.lastModFileTime);
-            assertEquals("last mod file date", 22216, localFileHeader.lastModFileDate);
-            assertEquals("crc-32", 0, localFileHeader.crc32);
-            assertEquals("compressed size", 0, localFileHeader.compressedSize);
-            assertEquals("uncompressed size", 0, localFileHeader.uncompressedSize);
-            assertEquals("file name length", 12, localFileHeader.fileName.length);
-            assertEquals("extra field length", 0, localFileHeader.extraField.length);
-            assertEquals("file name", "Registry.dat", new String(localFileHeader.fileName, UTF_8));
+            Zip64EndOfCentralDirectoryLocator record = new Zip64EndOfCentralDirectoryLocator();
+            record.read(channel);
+
+            assertEquals("number of the disk with the start of the zip64 end of central directory", 0, record.numberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory);
+            assertEquals("relative offset of the zip64 end of central directory record", 0x26E9, record.zip64EndOfCentralDirectoryRecordOffset);
+            assertEquals("number of disks", 1, record.numberOfDisks);
         }
     }
 
@@ -55,11 +48,10 @@ public class LocalFileHeaderTest {
     public void testReadWrongRecord() {
         File file = new File("target/test-classes/minimal.msix");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            channel.position(1);
-            new LocalFileHeader().read(channel);
+            new Zip64EndOfCentralDirectoryLocator().read(channel);
             fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("message", "Invalid Local File Header signature 0x2d04034b", e.getMessage());
+            assertEquals("message", "Invalid ZIP64 End of Central Directory Locator signature 0x4034b50", e.getMessage());
         }
     }
 }

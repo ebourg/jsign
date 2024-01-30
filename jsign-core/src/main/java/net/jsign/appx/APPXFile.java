@@ -51,6 +51,9 @@ import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcSipInfo;
 import net.jsign.asn1.authenticode.SpcUuid;
+import net.jsign.zip.CentralDirectory;
+import net.jsign.zip.CentralDirectoryFileHeader;
+import net.jsign.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.*;
 
