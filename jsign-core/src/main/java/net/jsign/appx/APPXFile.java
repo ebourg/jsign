@@ -111,17 +111,17 @@ public class APPXFile extends ZipFile implements Signable {
 
         // digest the [ContentTypes].xml file
         MessageDigest axct = digestAlgorithm.getMessageDigest();
-        IOUtils.copy(getInputStream("[Content_Types].xml"), new DigestOutputStream(NullOutputStream.NULL_OUTPUT_STREAM, axct));
+        IOUtils.copy(getInputStream("[Content_Types].xml"), new DigestOutputStream(NullOutputStream.INSTANCE, axct));
 
         // digest the AppxBlockMap.xml file
         MessageDigest axbm = digestAlgorithm.getMessageDigest();
-        IOUtils.copy(getInputStream("AppxBlockMap.xml"), new DigestOutputStream(NullOutputStream.NULL_OUTPUT_STREAM, axbm));
+        IOUtils.copy(getInputStream("AppxBlockMap.xml"), new DigestOutputStream(NullOutputStream.INSTANCE, axbm));
 
         // digest the AppxMetadata/CodeIntegrity.cat file if present
         MessageDigest axci = null;
         if (centralDirectory.entries.containsKey("AppxMetadata/CodeIntegrity.cat")) {
             axci = digestAlgorithm.getMessageDigest();
-            IOUtils.copy(getInputStream("AppxMetadata/CodeIntegrity.cat"), new DigestOutputStream(NullOutputStream.NULL_OUTPUT_STREAM, axci));
+            IOUtils.copy(getInputStream("AppxMetadata/CodeIntegrity.cat"), new DigestOutputStream(NullOutputStream.INSTANCE, axci));
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
