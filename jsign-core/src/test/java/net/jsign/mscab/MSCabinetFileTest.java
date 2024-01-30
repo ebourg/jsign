@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
 import net.jsign.KeyStoreBuilder;
-import net.jsign.appx.APPXFile;
 
 import static net.jsign.DigestAlgorithm.*;
 import static net.jsign.SignatureAssert.*;

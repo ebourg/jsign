@@ -24,9 +24,8 @@ import java.net.URL;
 import java.net.UnknownServiceException;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-
 import com.cedarsoftware.util.io.JsonReader;
+import org.apache.commons.io.IOUtils;
 
 import static java.nio.charset.StandardCharsets.*;
 

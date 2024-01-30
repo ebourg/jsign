@@ -32,11 +32,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.cedarsoftware.util.io.JsonWriter;
-
-import net.jsign.DigestAlgorithm;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
+
+import net.jsign.DigestAlgorithm;
 
 /**
  * Signing service using the Azure KeyVault API.

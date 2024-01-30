@@ -27,11 +27,11 @@ import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.appx.APPXFile;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.cat.CatalogFile;
 import net.jsign.mscab.MSCabinetFile;
 import net.jsign.msi.MSIFile;
-import net.jsign.appx.APPXFile;
 import net.jsign.navx.NAVXFile;
 import net.jsign.pe.PEFile;
 import net.jsign.script.JScript;

@@ -25,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
-import net.jsign.DigestAlgorithm;
 import net.jsign.KeyStoreBuilder;
 
 import static java.nio.charset.StandardCharsets.*;
