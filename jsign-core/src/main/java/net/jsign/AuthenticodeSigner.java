@@ -47,8 +47,10 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.DefaultCMSSignatureEncryptionAlgorithmFinder;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
+import org.bouncycastle.cms.PKCS7ProcessableObject;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
@@ -60,8 +62,8 @@ import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
 import org.bouncycastle.operator.DigestCalculatorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
-import net.jsign.asn1.authenticode.AuthenticodeDigestCalculatorProvider;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
@@ -375,8 +377,8 @@ public class AuthenticodeSigner {
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
         ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
-        AuthenticodeSignedDataGenerator generator = createSignedDataGenerator(digestAlgorithm);
-        CMSSignedData sigData = generator.generate(contentInfo.getContentType(), contentInfo.getContent());
+        CMSSignedDataGenerator generator = createSignedDataGenerator(digestAlgorithm);
+        CMSSignedData sigData = generator.generate(new PKCS7ProcessableObject(contentInfo.getContentType(), contentInfo.getContent()), true);
         
         // verify the signature
         verify(sigData);
@@ -402,7 +404,7 @@ public class AuthenticodeSigner {
         return sigData;
     }
 
-    private AuthenticodeSignedDataGenerator createSignedDataGenerator(DigestAlgorithm digestAlgorithm) throws CMSException, OperatorCreationException, CertificateEncodingException {
+    private CMSSignedDataGenerator createSignedDataGenerator(DigestAlgorithm digestAlgorithm) throws CMSException, OperatorCreationException, CertificateEncodingException {
         // create content signer
         final String sigAlg;
         if (signatureAlgorithm != null) {
@@ -418,7 +420,7 @@ public class AuthenticodeSigner {
         }
         ContentSigner shaSigner = contentSignerBuilder.build(privateKey);
 
-        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
+        DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
         CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
@@ -444,8 +446,8 @@ public class AuthenticodeSigner {
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         signerInfoGeneratorBuilder.setContentDigest(createContentDigestAlgorithmIdentifier(shaSigner.getAlgorithmIdentifier()));
         SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
-        
-        AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
+
+        CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(removeRoot(chain)));
         generator.addSignerInfoGenerator(signerInfoGenerator);
         
@@ -480,7 +482,7 @@ public class AuthenticodeSigner {
 
     private void verify(CMSSignedData signedData) throws SignatureException, OperatorCreationException {
         PublicKey publicKey = chain[0].getPublicKey();
-        DigestCalculatorProvider digestCalculatorProvider = new AuthenticodeDigestCalculatorProvider();
+        DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(publicKey);
 
         boolean result = false;

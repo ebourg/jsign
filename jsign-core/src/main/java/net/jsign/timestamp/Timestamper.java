@@ -23,14 +23,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.util.CollectionStore;
@@ -189,11 +187,11 @@ public abstract class Timestamper {
     }
 
     @Deprecated
-    protected CMSSignedData modifySignedData(CMSSignedData sigData, AttributeTable counterSignature, Collection<X509CertificateHolder> extraCertificates) throws IOException, CMSException {
+    protected CMSSignedData modifySignedData(CMSSignedData sigData, AttributeTable counterSignature, Collection<X509CertificateHolder> extraCertificates) throws CMSException {
         return modifySignedData(sigData, Attribute.getInstance(counterSignature.toASN1EncodableVector().get(0)), extraCertificates);
     }
 
-    protected CMSSignedData modifySignedData(CMSSignedData sigData, Attribute counterSignature, Collection<X509CertificateHolder> extraCertificates) throws IOException, CMSException {
+    protected CMSSignedData modifySignedData(CMSSignedData sigData, Attribute counterSignature, Collection<X509CertificateHolder> extraCertificates) throws CMSException {
         SignerInformation signerInformation = sigData.getSignerInfos().getSigners().iterator().next();
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
         if (unsignedAttributes == null) {
@@ -203,21 +201,18 @@ public abstract class Timestamper {
         }
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         
-        Collection<X509CertificateHolder> certificates = new ArrayList<>();
-        certificates.addAll(sigData.getCertificates().getMatches(null));
+        // add the certificates from the timestamping authority
+        Collection<X509CertificateHolder> certificates = new ArrayList<>(sigData.getCertificates().getMatches(null));
         if (extraCertificates != null) {
             certificates.addAll(extraCertificates);
         }
         Store<X509CertificateHolder> certificateStore = new CollectionStore<>(certificates);
         
-        AuthenticodeSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
+        CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(certificateStore);
         generator.addSigners(new SignerInformationStore(signerInformation));
         
-        ASN1ObjectIdentifier contentType = new ASN1ObjectIdentifier(sigData.getSignedContentTypeOID());
-        ASN1Encodable content = ASN1Sequence.getInstance(sigData.getSignedContent().getContent());
-                
-        return generator.generate(contentType, content);
+        return generator.generate(sigData.getSignedContent(), false);
     }
 
     protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException;

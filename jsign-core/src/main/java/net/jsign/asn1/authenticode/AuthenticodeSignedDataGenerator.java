@@ -16,19 +16,15 @@
 
 package net.jsign.asn1.authenticode;
 
-import java.io.IOException;
-
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.CMSObjectIdentifiers;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.cms.SignerInfo;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.SignerInformation;
 
 /**
@@ -38,26 +34,26 @@ import org.bouncycastle.cms.SignerInformation;
  * @since 1.0
  */
 public class AuthenticodeSignedDataGenerator extends CMSSignedDataGenerator {
-    
-    public CMSSignedData generate(ASN1ObjectIdentifier contentTypeOID, ASN1Encodable content) throws CMSException, IOException {
+
+    @Override
+    public CMSSignedData generate(CMSTypedData content, boolean encapsulate) throws CMSException {
         digests.clear();
-        
-        SignerInfo signerInfo;
-        
-        if (!_signers.isEmpty()) {
-            signerInfo = ((SignerInformation) _signers.get(0)).toASN1Structure();
-        } else {
-            CMSSignedData sigData = super.generate(new CMSProcessableByteArray(contentTypeOID, content.toASN1Primitive().getEncoded("DER")));
-            signerInfo = sigData.getSignerInfos().iterator().next().toASN1Structure();
-        }
 
-        ContentInfo encInfo = new ContentInfo(contentTypeOID, content);
-        ASN1Set certificates = new DERSet((ASN1Encodable[]) certs.toArray(new ASN1Encodable[0]));
-
+        SignerInfo signerInfo = getSignerInfo(content);
+        ContentInfo encInfo = new ContentInfo(content.getContentType(), (ASN1Encodable) content.getContent());
+        DERSet certificates = new DERSet((ASN1Encodable[]) certs.toArray(new ASN1Encodable[0]));
         ASN1Encodable signedData = new AuthenticodeSignedData(signerInfo.getDigestAlgorithm(), encInfo, certificates, signerInfo);
-
         ContentInfo contentInfo = new ContentInfo(CMSObjectIdentifiers.signedData, signedData);
 
-        return new CMSSignedData(new CMSProcessableByteArray(contentTypeOID, content.toASN1Primitive().getEncoded("DER")), contentInfo);
+        return new CMSSignedData(content, contentInfo);
+    }
+
+    private SignerInfo getSignerInfo(CMSTypedData content) throws CMSException {
+        if (!_signers.isEmpty()) {
+            return ((SignerInformation) _signers.get(0)).toASN1Structure();
+        } else {
+            CMSSignedData sigData = super.generate(content, true);
+            return sigData.getSignerInfos().iterator().next().toASN1Structure();
+        }
     }
 }
