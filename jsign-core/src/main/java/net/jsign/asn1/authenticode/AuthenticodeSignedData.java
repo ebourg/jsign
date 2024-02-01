@@ -29,7 +29,9 @@ import org.bouncycastle.asn1.cms.SignerInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 
 /**
- * Simplified version of the SignedData structure as used by Authenticode.
+ * SignedData structure with the version set to 1 as expected by Authenticode.
+ * If the version is set to 3 as required by RFC 2630 (and later revisions)
+ * when the content type is not id-data, the signature is not recognized.
  */
 public class AuthenticodeSignedData extends ASN1Object {
 
@@ -48,7 +50,7 @@ public class AuthenticodeSignedData extends ASN1Object {
     public ASN1Primitive toASN1Primitive() {
         ASN1EncodableVector v = new ASN1EncodableVector();
 
-        v.add(new ASN1Integer(1));
+        v.add(new ASN1Integer(1)); // version, must be 1
         v.add(new DERSet(digestAlgorithm));
         v.add(contentInfo);
 

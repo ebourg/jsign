@@ -27,6 +27,7 @@ import org.bouncycastle.cms.SignerInformation;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 
+import static net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers.*;
 import static org.junit.Assert.*;
 
 public class SignatureAssert {
@@ -73,6 +74,11 @@ public class SignatureAssert {
         for (int i = 0, signaturesSize = signatures.size(); i < signaturesSize; i++) {
             CMSSignedData signature = signatures.get(i);
             assertNotNull("signature " + i + " is null", signatures.get(0));
+
+            // Check the version of the SignedData structure
+            if (SPC_INDIRECT_DATA_OBJID.getId().equals(signature.getSignedContentTypeOID())) {
+                assertEquals("Version of signature " + i, 1, signature.getVersion());
+            }
 
             // Check the signature algorithm
             SignerInformation si = signature.getSignerInfos().getSigners().iterator().next();

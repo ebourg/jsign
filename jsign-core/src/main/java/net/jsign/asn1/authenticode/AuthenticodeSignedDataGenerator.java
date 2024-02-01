@@ -32,7 +32,7 @@ import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.SignerInformation;
 
 /**
- * Simplified SignedDataGenerator suitable for Authenticode signing.
+ * CMSSignedDataGenerator suitable for Authenticode signing (generates SignedData v1 structures).
  * 
  * @author Emmanuel Bourg
  * @since 1.0
