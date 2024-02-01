@@ -296,6 +296,19 @@ public class AuthenticodeSigner {
     }
 
     /**
+     * Returns the signature algorithm to use.
+     */
+    private String getSignatureAlgorithm() {
+        if (signatureAlgorithm != null) {
+            return signatureAlgorithm;
+        } else if ("EC".equals(privateKey.getAlgorithm())) {
+            return digestAlgorithm + "withECDSA";
+        } else {
+            return digestAlgorithm + "with" + privateKey.getAlgorithm();
+        }
+    }
+
+    /**
      * Explicitly sets the signature algorithm and provider to use.
      * 
      * @param signatureAlgorithm the signature algorithm
@@ -377,7 +390,7 @@ public class AuthenticodeSigner {
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
         ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
-        CMSSignedDataGenerator generator = createSignedDataGenerator(digestAlgorithm);
+        CMSSignedDataGenerator generator = createSignedDataGenerator();
         CMSSignedData sigData = generator.generate(new PKCS7ProcessableObject(contentInfo.getContentType(), contentInfo.getContent()), true);
         
         // verify the signature
@@ -404,17 +417,17 @@ public class AuthenticodeSigner {
         return sigData;
     }
 
-    private CMSSignedDataGenerator createSignedDataGenerator(DigestAlgorithm digestAlgorithm) throws CMSException, OperatorCreationException, CertificateEncodingException {
+    private CMSSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {
+        CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
+        generator.addCertificates(new JcaCertStore(removeRoot(chain)));
+        generator.addSignerInfoGenerator(createSignerInfoGenerator());
+
+        return generator;
+    }
+
+    private SignerInfoGenerator createSignerInfoGenerator() throws OperatorCreationException, CertificateEncodingException {
         // create content signer
-        final String sigAlg;
-        if (signatureAlgorithm != null) {
-            sigAlg = signatureAlgorithm;
-        } else if ("EC".equals(privateKey.getAlgorithm())) {
-            sigAlg = digestAlgorithm + "withECDSA";
-        } else {
-            sigAlg = digestAlgorithm + "with" + privateKey.getAlgorithm();
-        }
-        JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(sigAlg);
+        JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(getSignatureAlgorithm());
         if (signatureProvider != null) {
             contentSignerBuilder.setProvider(signatureProvider);
         }
@@ -445,13 +458,7 @@ public class AuthenticodeSigner {
         });
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         signerInfoGeneratorBuilder.setContentDigest(createContentDigestAlgorithmIdentifier(shaSigner.getAlgorithmIdentifier()));
-        SignerInfoGenerator signerInfoGenerator = signerInfoGeneratorBuilder.build(shaSigner, certificate);
-
-        CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
-        generator.addCertificates(new JcaCertStore(removeRoot(chain)));
-        generator.addSignerInfoGenerator(signerInfoGenerator);
-        
-        return generator;
+        return signerInfoGeneratorBuilder.build(shaSigner, certificate);
     }
 
     /**
