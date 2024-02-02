@@ -22,23 +22,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
 
-import net.jsign.appx.APPXFile;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
-import net.jsign.cat.CatalogFile;
-import net.jsign.mscab.MSCabinetFile;
-import net.jsign.msi.MSIFile;
-import net.jsign.navx.NAVXFile;
-import net.jsign.pe.PEFile;
-import net.jsign.script.JScript;
-import net.jsign.script.PowerShellScript;
-import net.jsign.script.PowerShellXMLScript;
-import net.jsign.script.VBScript;
-import net.jsign.script.WindowsScript;
+import net.jsign.spi.SignableProvider;
 
 /**
  * A file that can be signed with Authenticode.
@@ -138,48 +129,12 @@ public interface Signable extends Closeable {
      * @throws UnsupportedOperationException if the file specified isn't supported
      */
     static Signable of(File file, Charset encoding) throws IOException {
-        if (PEFile.isPEFile(file)) {
-            return new PEFile(file);
-
-        } else if (MSIFile.isMSIFile(file)) {
-            return new MSIFile(file);
-
-        } else if (MSCabinetFile.isMSCabinetFile(file)) {
-            return new MSCabinetFile(file);
-
-        } else if (CatalogFile.isCatalogFile(file)) {
-            return new CatalogFile(file);
-
-        } else if (NAVXFile.isNAVXFile(file)) {
-            return new NAVXFile(file);
-
-        } else if (file.getName().toLowerCase().endsWith(".ps1")
-                || file.getName().toLowerCase().endsWith(".psd1")
-                || file.getName().toLowerCase().endsWith(".psm1")) {
-            return new PowerShellScript(file, encoding);
-
-        } else if (file.getName().toLowerCase().endsWith(".ps1xml")) {
-            return new PowerShellXMLScript(file, encoding);
-
-        } else if (file.getName().toLowerCase().endsWith(".vbs")
-                || file.getName().toLowerCase().endsWith(".vbe")) {
-            return new VBScript(file, encoding);
-
-        } else if (file.getName().toLowerCase().endsWith(".js")
-                || file.getName().toLowerCase().endsWith(".jse")) {
-            return new JScript(file, encoding);
-
-        } else if (file.getName().toLowerCase().endsWith(".wsf")) {
-            return new WindowsScript(file, encoding);
-
-        } else if (file.getName().toLowerCase().endsWith(".msix")
-                || file.getName().toLowerCase().endsWith(".msixbundle")
-                || file.getName().toLowerCase().endsWith(".appx")
-                || file.getName().toLowerCase().endsWith(".appxbundle")) {
-            return new APPXFile(file);
-
-        } else {
-            throw new UnsupportedOperationException("Unsupported file: " + file);
+        for (SignableProvider provider : ServiceLoader.load(SignableProvider.class)) {
+            if (provider.isSupported(file)) {
+                return provider.create(file, encoding);
+            }
         }
+
+        throw new UnsupportedOperationException("Unsupported file: " + file);
     }
 }

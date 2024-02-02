@@ -59,6 +59,13 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.kohsuke.metainf-services</groupId>
+      <artifactId>metainf-services</artifactId>
+      <version>1.11</version>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
@@ -192,6 +199,7 @@
           <excludePackageNames>*.asn1.*,*.zip.*</excludePackageNames>
           <sourceFileExcludes>
             <exclude>**/ChannelUtils.java</exclude>
+            <exclude>**/?*SignableProvider.java</exclude>
           </sourceFileExcludes>
           <quiet>true</quiet>
           <notimestamp>true</notimestamp>

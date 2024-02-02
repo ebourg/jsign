@@ -80,11 +80,19 @@
             </goals>
             <configuration>
               <minimizeJar>true</minimizeJar>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.kohsuke.metainf-services:metainf-services</exclude>
+                </excludes>
+              </artifactSet>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>META-INF/**</exclude>
+                    <exclude>META-INF/*</exclude>
+                    <exclude>META-INF/maven/**</exclude>
+                    <exclude>META-INF/services/*log4j*</exclude>
+                    <exclude>META-INF/services/*poi*</exclude>
                     <exclude>**/*_de.properties</exclude>
                     <exclude>**/MavenShadePluginHelper.*</exclude>
                     <exclude>**/commons/codec/language/**</exclude>
@@ -126,6 +134,7 @@
                     <Add-Exports>jdk.crypto.cryptoki/sun.security.pkcs11.wrapper</Add-Exports>
                   </manifestEntries>
                 </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
               </transformers>
             </configuration>
           </execution>
@@ -156,6 +165,7 @@
                 <option>-keep public class net.jsign.pe.* { *; }</option>
                 <option>-keep public class net.jsign.script.* { *; }</option>
                 <option>-keep public class net.jsign.timestamp.* { *; }</option>
+                <option>-keep public class * implements net.jsign.spi.SignableProvider { *; }</option>
                 <option>-keeppackagenames net.jsign</option>
                 <option>-keepclassmembers class * extends java.lang.Enum { *; }</option>
               </options>
