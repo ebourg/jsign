@@ -118,7 +118,7 @@ public interface Signable extends Closeable {
     /**
      * Returns a signable object for the file specified.
      *
-     * @param file the file that is intended to to be signed
+     * @param file the file that is intended to be signed
      * @return the signable object for the specified file
      * @throws IOException if an I/O error occurs
      * @throws UnsupportedOperationException if the file specified isn't supported
@@ -130,7 +130,7 @@ public interface Signable extends Closeable {
     /**
      * Returns a signable object for the file specified.
      *
-     * @param file     the file that is intended to to be signed
+     * @param file     the file that is intended to be signed
      * @param encoding the character encoding (for text files only).
      *                 If the file has a byte order mark this parameter is ignored.
      * @return the signable object for the specified file
