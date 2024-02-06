@@ -23,13 +23,16 @@ import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.tsp.TimeStampResp;
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
 import org.bouncycastle.tsp.TimeStampResponse;
 
 import net.jsign.DigestAlgorithm;
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+
+import static net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers.*;
+import static org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers.*;
 
 /**
  * RFC 3161 timestamping.
@@ -40,8 +43,20 @@ import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
  */
 public class RFC3161Timestamper extends Timestamper {
 
+    /**
+     * Tells if the timestamp should use the standard Signature Time-stamp attribute
+     * defined in RFC 3161 or the Authenticode specific attribute SPC_RFC3161_OBJID.
+     */
+    private boolean standardAttribute = false;
+
     public RFC3161Timestamper() {
         setURL("http://timestamp.sectigo.com");
+    }
+
+    @Override
+    public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws TimestampingException, IOException, CMSException {
+        standardAttribute = !SPC_INDIRECT_DATA_OBJID.equals(sigData.getSignedContent().getContentType());
+        return super.timestamp(algo, sigData);
     }
 
     protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
@@ -86,6 +101,6 @@ public class RFC3161Timestamper extends Timestamper {
 
     @Override
     protected Attribute getCounterSignature(CMSSignedData token) {
-        return new Attribute(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID, new DERSet(token.toASN1Structure()));
+        return new Attribute(standardAttribute ? id_aa_signatureTimeStampToken : SPC_RFC3161_OBJID, new DERSet(token.toASN1Structure()));
     }
 }
