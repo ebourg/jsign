@@ -10,6 +10,7 @@
     <licenseUrl>https://raw.githubusercontent.com/ebourg/jsign/master/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <projectSourceUrl>https://github.com/ebourg/jsign</projectSourceUrl>
+    <packageSourceUrl>https://github.com/ebourg/jsign/tree/master/jsign/src/choco</packageSourceUrl>
     <docsUrl>https://ebourg.github.io/jsign/</docsUrl>
     <bugTrackerUrl>https://github.com/ebourg/jsign/issues</bugTrackerUrl>
     <tags>signing code-signing authenticode signtool PE EXE SYS DLL CAB MSI VBS WSF APPX MSIX NAVX</tags>
@@ -22,7 +23,7 @@
     </description>
     <releaseNotes>https://github.com/ebourg/jsign/blob/master/README.md</releaseNotes>
     <dependencies>
-      <dependency id="temurin11jre" />
+      <dependency id="temurin11jre" version="11.0.0" />
     </dependencies>
   </metadata>
   <files>
