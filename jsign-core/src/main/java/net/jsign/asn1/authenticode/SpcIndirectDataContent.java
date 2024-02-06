@@ -16,10 +16,8 @@
 
 package net.jsign.asn1.authenticode;
 
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.BERSequence;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x509.DigestInfo;
 
 /**
@@ -33,22 +31,9 @@ import org.bouncycastle.asn1.x509.DigestInfo;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public class SpcIndirectDataContent extends ASN1Object {
-
-    private final SpcAttributeTypeAndOptionalValue data;
-    private final DigestInfo messageDigest;
+public class SpcIndirectDataContent extends DERSequence {
 
     public SpcIndirectDataContent(SpcAttributeTypeAndOptionalValue data, DigestInfo messageDigest) {
-        this.data = data;
-        this.messageDigest = messageDigest;
-    }
-
-    @Override
-    public ASN1Primitive toASN1Primitive() {
-        ASN1EncodableVector v = new ASN1EncodableVector();
-        v.add(data);
-        v.add(messageDigest);
-        
-        return new BERSequence(v);
+        super(new ASN1Encodable[] { data, messageDigest });
     }
 }

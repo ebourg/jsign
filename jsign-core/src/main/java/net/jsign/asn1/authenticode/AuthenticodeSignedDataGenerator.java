@@ -28,8 +28,9 @@ import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.SignerInformation;
 
 /**
- * CMSSignedDataGenerator suitable for Authenticode signing (generates SignedData v1 structures).
- * 
+ * CMSSignedDataGenerator suitable for Authenticode signing (generates SignedData v1 structures and preserves
+ * the sequence structure of the SpcIndirectDataContent object instead of turning it into an octet string).
+ *
  * @author Emmanuel Bourg
  * @since 1.0
  */
