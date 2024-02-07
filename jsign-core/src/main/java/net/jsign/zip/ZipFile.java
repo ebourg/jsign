@@ -26,7 +26,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -189,15 +188,8 @@ public class ZipFile implements Closeable {
     }
 
     public void removeEntry(String name) throws IOException {
-        CentralDirectoryFileHeader centralDirectoryFileHeader = centralDirectory.entries.get(name);
+        centralDirectory.removeEntry(name);
 
-        CentralDirectoryFileHeader lastCentralDirectoryFileHeader = new ArrayList<>(centralDirectory.entries.values()).get(centralDirectory.entries.size() - 1);
-        if (centralDirectoryFileHeader != lastCentralDirectoryFileHeader) {
-            throw new IllegalArgumentException("The entry " + name + " is not the last one and cannot be removed");
-        }
-
-        centralDirectory.entries.remove(name);
-        centralDirectory.centralDirectoryOffset = centralDirectoryFileHeader.getLocalHeaderOffset();
         channel.position(centralDirectory.centralDirectoryOffset);
         centralDirectory.write(channel);
         channel.truncate(channel.position());

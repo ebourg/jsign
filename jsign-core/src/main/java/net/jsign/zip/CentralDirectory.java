@@ -16,7 +16,9 @@
 
 package net.jsign.zip;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Central directory of a ZIP file.
@@ -132,5 +136,38 @@ public class CentralDirectory {
         endOfCentralDirectoryRecord.numberOfThisDisk = 0;
         endOfCentralDirectoryRecord.numberOfTheDiskWithTheStartOfTheCentralDirectory = 0;
         endOfCentralDirectoryRecord.write(channel);
+    }
+
+    /**
+     * Removes the entry specified if it exists. Only the last entry can be removed.
+     *
+     * @param name the name of the entry to remove
+     */
+    public void removeEntry(String name) {
+        if (entries.containsKey(name)) {
+            CentralDirectoryFileHeader centralDirectoryFileHeader = entries.get(name);
+
+            CentralDirectoryFileHeader lastCentralDirectoryFileHeader = new ArrayList<>(entries.values()).get(entries.size() - 1);
+            if (centralDirectoryFileHeader != lastCentralDirectoryFileHeader) {
+                throw new IllegalArgumentException("The entry " + name + " is not the last one and cannot be removed");
+            }
+
+            entries.remove(name);
+            centralDirectoryOffset = centralDirectoryFileHeader.getLocalHeaderOffset();
+        }
+    }
+
+    /**
+     * Returns the central directory as a byte array.
+     */
+    public byte[] toBytes() throws IOException {
+        File tmp = File.createTempFile("jsign-zip-central-directory", ".bin");
+        tmp.deleteOnExit();
+        try (RandomAccessFile raf = new RandomAccessFile(tmp, "rw")) {
+            write(raf.getChannel(), centralDirectoryOffset);
+            return FileUtils.readFileToByteArray(tmp);
+        } finally {
+            tmp.delete();
+        }
     }
 }

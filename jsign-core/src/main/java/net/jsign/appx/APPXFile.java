@@ -20,14 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.poi.util.IOUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -52,7 +50,6 @@ import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcSipInfo;
 import net.jsign.asn1.authenticode.SpcUuid;
 import net.jsign.zip.CentralDirectory;
-import net.jsign.zip.CentralDirectoryFileHeader;
 import net.jsign.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.*;
@@ -148,20 +145,8 @@ public class APPXFile extends ZipFile implements Signable {
     private byte[] getUnsignedCentralDirectory() throws IOException {
         CentralDirectory centralDirectory = new CentralDirectory();
         centralDirectory.read(channel);
-        if (centralDirectory.entries.containsKey("AppxSignature.p7x")) {
-            CentralDirectoryFileHeader signatureHeader = centralDirectory.entries.get("AppxSignature.p7x");
-            centralDirectory.entries.remove("AppxSignature.p7x");
-            centralDirectory.centralDirectoryOffset = signatureHeader.getLocalHeaderOffset();
-        }
-
-        File tmp = File.createTempFile("jsign-zip-central-directory", ".bin");
-        tmp.deleteOnExit();
-        try (RandomAccessFile raf = new RandomAccessFile(tmp, "rw")) {
-            centralDirectory.write(raf.getChannel(), centralDirectory.centralDirectoryOffset);
-            return FileUtils.readFileToByteArray(tmp);
-        } finally {
-            tmp.delete();
-        }
+        centralDirectory.removeEntry("AppxSignature.p7x");
+        return centralDirectory.toBytes();
     }
 
     @Override
