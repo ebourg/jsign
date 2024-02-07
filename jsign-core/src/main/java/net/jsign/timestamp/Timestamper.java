@@ -107,15 +107,17 @@ public abstract class Timestamper {
      * 
      * @param algo    the digest algorithm used for the timestamp
      * @param sigData the signed data to be timestamped
-     * @return        the signed data with the timestamp added
-     * @throws IOException if an I/O error occurs
-     * @throws TimestampingException if the timestamping keeps failing after the configured number of attempts
-     * @throws CMSException if the signature cannot be generated
+     * @return the signed data with the timestamp added
+     * @throws IOException           if an I/O error occurs
+     * @throws TimestampingException if the timestamping keeps failing after the
+     *                               configured number of attempts
+     * @throws CMSException          if the signature cannot be generated
      */
     public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws TimestampingException, IOException, CMSException {
         CMSSignedData token = null;
-        
-        // Retry the timestamping and failover other services if a TSA is unavailable for a short period of time
+
+        // Retry the timestamping and failover other services if a TSA is unavailable
+        // for a short period of time
         int attempts = Math.max(retries, tsaurls.size());
         TimestampingException exception = new TimestampingException("Unable to complete the timestamping after " + attempts + " attempt" + (attempts > 1 ? "s" : ""));
         int count = 0;
@@ -135,11 +137,11 @@ public abstract class Timestamper {
             } catch (InterruptedException ie) {
             }
         }
-        
+
         if (token == null) {
             throw exception;
         }
-        
+
         return modifySignedData(sigData, getCounterSignature(token), getExtraCertificates(token));
     }
 
@@ -155,8 +157,8 @@ public abstract class Timestamper {
     }
 
     /**
-     * Return the certificate chain of the timestamping authority if it isn't included
-     * with the counter signature in the unsigned attributes.
+     * Return the certificate chain of the timestamping authority if it isn't
+     * included with the counter signature in the unsigned attributes.
      * 
      * @param token the timestamp
      * @return the certificate chain of the timestamping authority
@@ -200,19 +202,19 @@ public abstract class Timestamper {
             unsignedAttributes = unsignedAttributes.add(counterSignature.getAttrType(), counterSignature.getAttrValues());
         }
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
-        
+
         // add the certificates from the timestamping authority
         Collection<X509CertificateHolder> certificates = new ArrayList<>(sigData.getCertificates().getMatches(null));
         if (extraCertificates != null) {
             certificates.addAll(extraCertificates);
         }
         Store<X509CertificateHolder> certificateStore = new CollectionStore<>(certificates);
-        
+
         CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
         generator.addCertificates(certificateStore);
         generator.addSigners(new SignerInformationStore(signerInformation));
-        
-        return generator.generate(sigData.getSignedContent(), false);
+
+        return generator.generate(sigData.getSignedContent(), true);
     }
 
     protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException;
@@ -225,12 +227,12 @@ public abstract class Timestamper {
      */
     public static Timestamper create(TimestampingMode mode) {
         switch (mode) {
-            case AUTHENTICODE:
-                return new AuthenticodeTimestamper();
-            case RFC3161:
-                return new RFC3161Timestamper();
-            default:
-                throw new IllegalArgumentException("Unsupported timestamping mode: " + mode);
+        case AUTHENTICODE:
+            return new AuthenticodeTimestamper();
+        case RFC3161:
+            return new RFC3161Timestamper();
+        default:
+            throw new IllegalArgumentException("Unsupported timestamping mode: " + mode);
         }
     }
 }

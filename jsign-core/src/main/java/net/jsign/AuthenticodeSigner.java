@@ -46,6 +46,7 @@ import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.DefaultCMSSignatureEncryptionAlgorithmFinder;
@@ -70,6 +71,7 @@ import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.jca.SigningServiceJcaProvider;
+import net.jsign.nuget.NugetFile;
 import net.jsign.pe.DataDirectory;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
@@ -80,15 +82,15 @@ import net.jsign.timestamp.TimestampingMode;
  * Sign a file with Authenticode. Timestamping is enabled by default and relies
  * on the Sectigo server (http://timestamp.sectigo.com).
  *
- * <p>Example:</p>
+ * <p>
+ * Example:
+ * </p>
+ * 
  * <pre>
  * KeyStore keystore = new KeyStoreBuilder().keystore("keystore.p12").storepass("password").build();
  *
  * AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "alias", "secret");
- * signer.withProgramName("My Application")
- *       .withProgramURL("http://www.example.com")
- *       .withTimestamping(true)
- *       .withTimestampingAuthority("http://timestamp.sectigo.com");
+ * signer.withProgramName("My Application").withProgramURL("http://www.example.com").withTimestamping(true).withTimestampingAuthority("http://timestamp.sectigo.com");
  *
  * try (Signable file = Signable.of(new File("application.exe"))) {
  *     signer.sign(file);
@@ -118,28 +120,33 @@ public class AuthenticodeSigner {
     /**
      * Create a signer with the specified certificate chain and private key.
      *
-     * @param chain       the certificate chain. The first certificate is the signing certificate
-     * @param privateKey  the private key
+     * @param chain      the certificate chain. The first certificate is the signing
+     *                   certificate
+     * @param privateKey the private key
      * @throws IllegalArgumentException if the chain is empty
      */
     public AuthenticodeSigner(Certificate[] chain, PrivateKey privateKey) {
         this.chain = chain;
         this.privateKey = privateKey;
-        
+
         if (chain == null || chain.length == 0) {
             throw new IllegalArgumentException("The certificate chain is empty");
         }
     }
 
     /**
-     * Create a signer with a certificate chain and private key from the specified keystore.
+     * Create a signer with a certificate chain and private key from the specified
+     * keystore.
      *
      * @param keystore the keystore holding the certificate and the private key
      * @param alias    the alias of the certificate in the keystore
      * @param password the password to get the private key
-     * @throws KeyStoreException if the keystore has not been initialized (loaded).
-     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
-     * @throws UnrecoverableKeyException if the key cannot be recovered (e.g., the given password is wrong).
+     * @throws KeyStoreException         if the keystore has not been initialized
+     *                                   (loaded).
+     * @throws NoSuchAlgorithmException  if the algorithm for recovering the key
+     *                                   cannot be found
+     * @throws UnrecoverableKeyException if the key cannot be recovered (e.g., the
+     *                                   given password is wrong).
      */
     public AuthenticodeSigner(KeyStore keystore, String alias, String password) throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
         Certificate[] chain = keystore.getCertificateChain(alias);
@@ -178,9 +185,11 @@ public class AuthenticodeSigner {
     }
 
     /**
-     * Enable or disable the replacement of the previous signatures (disabled by default).
+     * Enable or disable the replacement of the previous signatures (disabled by
+     * default).
      * 
-     * @param replace <code>true</code> if the new signature should replace the existing ones, <code>false</code> to append it
+     * @param replace <code>true</code> if the new signature should replace the
+     *                existing ones, <code>false</code> to append it
      * @return the current signer
      * @since 2.0
      */
@@ -192,7 +201,8 @@ public class AuthenticodeSigner {
     /**
      * Enable or disable the timestamping (enabled by default).
      * 
-     * @param timestamping <code>true</code> to enable timestamping, <code>false</code> to disable it
+     * @param timestamping <code>true</code> to enable timestamping,
+     *                     <code>false</code> to disable it
      * @return the current signer
      */
     public AuthenticodeSigner withTimestamping(boolean timestamping) {
@@ -213,8 +223,8 @@ public class AuthenticodeSigner {
     }
 
     /**
-     * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar signing)
-     * and Authenticode timestamping services are supported.
+     * Set the URL of the timestamping authority. Both RFC 3161 (as used for jar
+     * signing) and Authenticode timestamping services are supported.
      * 
      * @param url the URL of the timestamping authority
      * @return the current signer
@@ -225,8 +235,8 @@ public class AuthenticodeSigner {
     }
 
     /**
-     * Set the URLs of the timestamping authorities. Both RFC 3161 (as used for jar signing)
-     * and Authenticode timestamping services are supported.
+     * Set the URLs of the timestamping authorities. Both RFC 3161 (as used for jar
+     * signing) and Authenticode timestamping services are supported.
      * 
      * @param urls the URLs of the timestamping authorities
      * @return the current signer
@@ -312,7 +322,7 @@ public class AuthenticodeSigner {
      * Explicitly sets the signature algorithm and provider to use.
      * 
      * @param signatureAlgorithm the signature algorithm
-     * @param signatureProvider the security provider for the specified algorithm
+     * @param signatureProvider  the security provider for the specified algorithm
      * @return the current signer
      * @since 2.0
      */
@@ -324,7 +334,7 @@ public class AuthenticodeSigner {
      * Explicitly sets the signature algorithm and provider to use.
      * 
      * @param signatureAlgorithm the signature algorithm
-     * @param signatureProvider the security provider for the specified algorithm
+     * @param signatureProvider  the security provider for the specified algorithm
      * @return the current signer
      * @since 2.0
      */
@@ -365,9 +375,9 @@ public class AuthenticodeSigner {
                 }
             }
         }
-        
+
         CMSSignedData sigData = createSignedData(file);
-        
+
         if (!replace) {
             List<CMSSignedData> signatures = file.getSignatures();
             if (!signatures.isEmpty()) {
@@ -375,7 +385,7 @@ public class AuthenticodeSigner {
                 sigData = addNestedSignature(signatures.get(0), sigData);
             }
         }
-        
+
         file.setSignature(sigData);
         file.save();
     }
@@ -389,18 +399,22 @@ public class AuthenticodeSigner {
      */
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
-        ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
+        CMSSignedData sigData = null;
         CMSSignedDataGenerator generator = createSignedDataGenerator();
-        CMSSignedData sigData = generator.generate(new PKCS7ProcessableObject(contentInfo.getContentType(), contentInfo.getContent()), true);
-        
+        if (file instanceof NugetFile) {
+            sigData = generator.generate(new CMSProcessableByteArray(PKCSObjectIdentifiers.data, file.computeDigest(digestAlgorithm)), true);
+        } else {
+            ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
+            sigData = generator.generate(new PKCS7ProcessableObject(contentInfo.getContentType(), contentInfo.getContent()), true);
+        }
         // verify the signature
         verify(sigData);
-        
+
         // timestamping
         if (timestamping) {
             Timestamper ts = timestamper;
             if (ts == null) {
-                ts = Timestamper.create(tsmode);
+                ts = Timestamper.create((file instanceof NugetFile ? TimestampingMode.RFC3161 : tsmode));
             }
             if (tsaurlOverride != null) {
                 ts.setURLs(tsaurlOverride);
@@ -413,7 +427,7 @@ public class AuthenticodeSigner {
             }
             sigData = ts.timestamp(digestAlgorithm, sigData);
         }
-        
+
         return sigData;
     }
 
@@ -434,22 +448,22 @@ public class AuthenticodeSigner {
         ContentSigner shaSigner = contentSignerBuilder.build(privateKey);
 
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
-        
+
         // prepare the authenticated attributes
         CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
         attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.signingTime, CMSAttributes.cmsAlgorithmProtect);
-        
+
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
-        
+
         // prepare the signerInfo with the extra authenticated attributes
-        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider, new DefaultCMSSignatureEncryptionAlgorithmFinder(){
+        SignerInfoGeneratorBuilder signerInfoGeneratorBuilder = new SignerInfoGeneratorBuilder(digestCalculatorProvider, new DefaultCMSSignatureEncryptionAlgorithmFinder() {
             @Override
             public AlgorithmIdentifier findEncryptionAlgorithm(final AlgorithmIdentifier signatureAlgorithm) {
-                //enforce "RSA" instead of "shaXXXRSA" for digest signature to be more like signtool
-                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption) ||
-                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha384WithRSAEncryption) ||
-                    signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha512WithRSAEncryption)) {
+                // enforce "RSA" instead of "shaXXXRSA" for digest signature to be more like
+                // signtool
+                if (signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha256WithRSAEncryption) || signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha384WithRSAEncryption)
+                        || signatureAlgorithm.getAlgorithm().equals(PKCSObjectIdentifiers.sha512WithRSAEncryption)) {
                     return new AlgorithmIdentifier(PKCSObjectIdentifiers.rsaEncryption, DERNull.INSTANCE);
                 } else {
                     return super.findEncryptionAlgorithm(signatureAlgorithm);
@@ -462,14 +476,15 @@ public class AuthenticodeSigner {
     }
 
     /**
-     * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.
+     * Remove the root certificate from the chain, unless the chain consists in a
+     * single self signed certificate.
      * 
      * @param certificates the certificate chain to process
      * @return the certificate chain without the root certificate
      */
     private List<Certificate> removeRoot(Certificate[] certificates) {
         List<Certificate> list = new ArrayList<>();
-        
+
         if (certificates.length == 1) {
             list.add(certificates[0]);
         } else {
@@ -479,7 +494,7 @@ public class AuthenticodeSigner {
                 }
             }
         }
-        
+
         return list;
     }
 
@@ -509,16 +524,17 @@ public class AuthenticodeSigner {
     }
 
     /**
-     * Creates the authenticated attributes for the SignerInfo section of the signature.
+     * Creates the authenticated attributes for the SignerInfo section of the
+     * signature.
      * 
      * @return the authenticated attributes
      */
     private AttributeTable createAuthenticatedAttributes() {
         List<Attribute> attributes = new ArrayList<>();
-        
+
         SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));
-        
+
         SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
 
@@ -534,7 +550,7 @@ public class AuthenticodeSigner {
      */
     protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {
         SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();
-        
+
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
         if (unsignedAttributes == null) {
             unsignedAttributes = new AttributeTable(new DERSet());
@@ -550,25 +566,27 @@ public class AuthenticodeSigner {
                 nestedSignatures.add(nestedSignature);
             }
             nestedSignatures.add(secondary.toASN1Structure());
-            
+
             ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();
             attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));
-            
+
             unsignedAttributes = new AttributeTable(attributes);
         }
-        
+
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
     }
 
     /**
-     * Create the digest algorithm identifier to use as content digest.
-     * By default looks up the default identifier but also makes sure it includes
-     * the algorithm parameters and if not includes a DER NULL in order to align
-     * with what signtool currently does.
+     * Create the digest algorithm identifier to use as content digest. By default
+     * looks up the default identifier but also makes sure it includes the algorithm
+     * parameters and if not includes a DER NULL in order to align with what
+     * signtool currently does.
      *
-     * @param signatureAlgorithm to get the corresponding digest algorithm identifier for
-     * @return an AlgorithmIdentifier for the digestAlgorithm and including parameters
+     * @param signatureAlgorithm to get the corresponding digest algorithm
+     *                           identifier for
+     * @return an AlgorithmIdentifier for the digestAlgorithm and including
+     *         parameters
      */
     protected AlgorithmIdentifier createContentDigestAlgorithmIdentifier(AlgorithmIdentifier signatureAlgorithm) {
         AlgorithmIdentifier ai = new DefaultDigestAlgorithmIdentifierFinder().find(signatureAlgorithm);

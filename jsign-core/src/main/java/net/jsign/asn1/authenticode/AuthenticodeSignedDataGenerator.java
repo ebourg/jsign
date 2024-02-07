@@ -25,6 +25,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
 import org.bouncycastle.cms.CMSTypedData;
+import org.bouncycastle.cms.PKCS7ProcessableObject;
 import org.bouncycastle.cms.SignerInformation;
 
 /**
@@ -39,6 +40,9 @@ public class AuthenticodeSignedDataGenerator extends CMSSignedDataGenerator {
     @Override
     public CMSSignedData generate(CMSTypedData content, boolean encapsulate) throws CMSException {
         digests.clear();
+        
+        if (!(content instanceof PKCS7ProcessableObject))
+        	return super.generate(content, encapsulate);
 
         SignerInfo signerInfo = getSignerInfo(content);
         ContentInfo encInfo = new ContentInfo(content.getContentType(), (ASN1Encodable) content.getContent());

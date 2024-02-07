@@ -16,18 +16,18 @@
 
 package net.jsign.appx;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.poi.util.IOUtils;
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -51,11 +51,7 @@ import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
 import net.jsign.asn1.authenticode.SpcSipInfo;
 import net.jsign.asn1.authenticode.SpcUuid;
-import net.jsign.zip.CentralDirectory;
-import net.jsign.zip.CentralDirectoryFileHeader;
 import net.jsign.zip.ZipFile;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * APPX/MSIX package.
@@ -107,7 +103,7 @@ public class APPXFile extends ZipFile implements Signable {
 
         // digest the central directory
         MessageDigest axcd = digestAlgorithm.getMessageDigest();
-        axcd.update(getUnsignedCentralDirectory());
+        axcd.update(getUnsignedCentralDirectory("AppxSignature.p7x"));
 
         // digest the [ContentTypes].xml file
         MessageDigest axct = digestAlgorithm.getMessageDigest();
@@ -121,7 +117,8 @@ public class APPXFile extends ZipFile implements Signable {
         MessageDigest axci = null;
         if (centralDirectory.entries.containsKey("AppxMetadata/CodeIntegrity.cat")) {
             axci = digestAlgorithm.getMessageDigest();
-            IOUtils.copy(getInputStream("AppxMetadata/CodeIntegrity.cat"), new DigestOutputStream(NullOutputStream.INSTANCE, axci));
+            IOUtils.copy(getInputStream("AppxMetadata/CodeIntegrity.cat"),
+                    new DigestOutputStream(NullOutputStream.INSTANCE, axci));
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -142,36 +139,16 @@ public class APPXFile extends ZipFile implements Signable {
         return out.toByteArray();
     }
 
-    /**
-     * Returns a copy of the central directory as if the package was unsigned.
-     */
-    private byte[] getUnsignedCentralDirectory() throws IOException {
-        CentralDirectory centralDirectory = new CentralDirectory();
-        centralDirectory.read(channel);
-        if (centralDirectory.entries.containsKey("AppxSignature.p7x")) {
-            CentralDirectoryFileHeader signatureHeader = centralDirectory.entries.get("AppxSignature.p7x");
-            centralDirectory.entries.remove("AppxSignature.p7x");
-            centralDirectory.centralDirectoryOffset = signatureHeader.getLocalHeaderOffset();
-        }
-
-        File tmp = File.createTempFile("jsign-zip-central-directory", ".bin");
-        tmp.deleteOnExit();
-        try (RandomAccessFile raf = new RandomAccessFile(tmp, "rw")) {
-            centralDirectory.write(raf.getChannel(), centralDirectory.centralDirectoryOffset);
-            return FileUtils.readFileToByteArray(tmp);
-        } finally {
-            tmp.delete();
-        }
-    }
-
     @Override
     public ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
 
         boolean bundle = centralDirectory.entries.containsKey("AppxBundleManifest.xml");
-        SpcUuid uuid = new SpcUuid(bundle ? "B3585F0F-DEAA-9A4B-A434-95742D92ECEB" : "4BDFC50A-07CE-E24D-B76E-23C839A09FD1");
-        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(0x01010000, uuid));
+        SpcUuid uuid = new SpcUuid(
+                bundle ? "B3585F0F-DEAA-9A4B-A434-95742D92ECEB" : "4BDFC50A-07CE-E24D-B76E-23C839A09FD1");
+        SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(
+                AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(0x01010000, uuid));
 
         return new SpcIndirectDataContent(data, digestInfo);
     }
@@ -187,7 +164,8 @@ public class APPXFile extends ZipFile implements Signable {
             byte[] signatureBytes = IOUtils.toByteArray(in);
 
             try {
-                CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
+                CMSSignedData signedData = new CMSSignedData((CMSProcessable) null,
+                        ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
                 signatures.add(signedData);
 
                 // look for nested signatures
@@ -195,10 +173,12 @@ public class APPXFile extends ZipFile implements Signable {
                 AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
 
                 if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
+                    Attribute nestedSignatures = unsignedAttributes
+                            .get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
                     if (nestedSignatures != null) {
                         for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
+                            signatures.add(
+                                    new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
                         }
                     }
                 }
@@ -235,7 +215,8 @@ public class APPXFile extends ZipFile implements Signable {
         String contentTypes = new String(IOUtils.toByteArray(in), UTF_8);
         String override = "<Override PartName=\"" + partName + "\" ContentType=\"" + contentType + "\"/>";
         if (!contentTypes.contains(override)) {
-            contentTypes = contentTypes.replace("</Types>", "<Override PartName=\"" + partName + "\" ContentType=\"" + contentType + "\"/></Types>");
+            contentTypes = contentTypes.replace("</Types>",
+                    "<Override PartName=\"" + partName + "\" ContentType=\"" + contentType + "\"/></Types>");
 
             renameEntry("[Content_Types].xml", "[Content_Types].old");
             addEntry("[Content_Types].xml", contentTypes.getBytes(), true);

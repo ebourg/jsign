@@ -16,11 +16,14 @@
 
 package net.jsign.zip;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
@@ -33,9 +36,8 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.BoundedInputStream;
-
-import static java.nio.charset.StandardCharsets.*;
 
 /**
  * Simplified implementation of the ZIP file format, just good enough to add an entry to an existing file.
@@ -201,6 +203,28 @@ public class ZipFile implements Closeable {
         channel.position(centralDirectory.centralDirectoryOffset);
         centralDirectory.write(channel);
         channel.truncate(channel.position());
+    }
+
+    /**
+     * Returns a copy of the central directory as if the package was unsigned.
+     */
+    protected byte[] getUnsignedCentralDirectory(String skipFile) throws IOException {
+        CentralDirectory centralDirectory = new CentralDirectory();
+        centralDirectory.read(channel);
+        if (centralDirectory.entries.containsKey(skipFile)) {
+            CentralDirectoryFileHeader signatureHeader = centralDirectory.entries.get(skipFile);
+            centralDirectory.entries.remove(skipFile);
+            centralDirectory.centralDirectoryOffset = signatureHeader.getLocalHeaderOffset();
+        }
+
+        File tmp = File.createTempFile("jsign-zip-central-directory", ".bin");
+        tmp.deleteOnExit();
+        try (RandomAccessFile raf = new RandomAccessFile(tmp, "rw")) {
+            centralDirectory.write(raf.getChannel(), centralDirectory.centralDirectoryOffset);
+            return FileUtils.readFileToByteArray(tmp);
+        } finally {
+            tmp.delete();
+        }
     }
 
     @Override

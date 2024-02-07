@@ -30,6 +30,7 @@ public enum TimestampingMode {
     /** RFC 3161 timestamping */
     RFC3161;
 
+
     public static TimestampingMode of(String mode) {
         for (TimestampingMode m : values()) {
             if (m.name().equalsIgnoreCase(mode)) {
