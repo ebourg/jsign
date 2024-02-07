@@ -62,6 +62,9 @@ import static java.nio.charset.StandardCharsets.*;
  */
 public class APPXFile extends ZipFile implements Signable {
 
+    /** The name of the package signature entry in the archive */
+    private static final String SIGNATURE_ENTRY = "AppxSignature.p7x";
+
     /**
      * Create an APPXFile from the specified file.
      *
@@ -92,12 +95,12 @@ public class APPXFile extends ZipFile implements Signable {
 
     @Override
     public byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
-        addContentType("/AppxSignature.p7x", "application/vnd.ms-appx.signature");
+        addContentType("/" + SIGNATURE_ENTRY, "application/vnd.ms-appx.signature");
 
         // digest the file records
         long endOfContentOffset = centralDirectory.centralDirectoryOffset;
-        if (centralDirectory.entries.containsKey("AppxSignature.p7x")) {
-            endOfContentOffset = centralDirectory.entries.get("AppxSignature.p7x").getLocalHeaderOffset();
+        if (centralDirectory.entries.containsKey(SIGNATURE_ENTRY)) {
+            endOfContentOffset = centralDirectory.entries.get(SIGNATURE_ENTRY).getLocalHeaderOffset();
         }
         MessageDigest axpc = digestAlgorithm.getMessageDigest();
         ChannelUtils.updateDigest(channel, axpc, 0, endOfContentOffset);
@@ -145,7 +148,7 @@ public class APPXFile extends ZipFile implements Signable {
     private byte[] getUnsignedCentralDirectory() throws IOException {
         CentralDirectory centralDirectory = new CentralDirectory();
         centralDirectory.read(channel);
-        centralDirectory.removeEntry("AppxSignature.p7x");
+        centralDirectory.removeEntry(SIGNATURE_ENTRY);
         return centralDirectory.toBytes();
     }
 
@@ -165,8 +168,8 @@ public class APPXFile extends ZipFile implements Signable {
     public List<CMSSignedData> getSignatures() throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
 
-        if (centralDirectory.entries.containsKey("AppxSignature.p7x")) {
-            InputStream in = getInputStream("AppxSignature.p7x", 1024 * 1024 /* 1MB */);
+        if (centralDirectory.entries.containsKey(SIGNATURE_ENTRY)) {
+            InputStream in = getInputStream(SIGNATURE_ENTRY, 1024 * 1024 /* 1MB */);
             // skip the "PKCX" header
             in.skip(4);
             byte[] signatureBytes = IOUtils.toByteArray(in);
@@ -199,8 +202,8 @@ public class APPXFile extends ZipFile implements Signable {
 
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
-        if (centralDirectory.entries.containsKey("AppxSignature.p7x")) {
-            removeEntry("AppxSignature.p7x");
+        if (centralDirectory.entries.containsKey(SIGNATURE_ENTRY)) {
+            removeEntry(SIGNATURE_ENTRY);
         }
 
         if (signature != null) {
@@ -208,7 +211,7 @@ public class APPXFile extends ZipFile implements Signable {
             out.write("PKCX".getBytes());
             signature.toASN1Structure().encodeTo(out, "DER");
 
-            addEntry("AppxSignature.p7x", out.toByteArray(), false);
+            addEntry(SIGNATURE_ENTRY, out.toByteArray(), false);
         }
     }
 
