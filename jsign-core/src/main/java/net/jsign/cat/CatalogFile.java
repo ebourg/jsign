@@ -35,6 +35,7 @@ import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.util.CollectionStore;
@@ -109,8 +110,8 @@ public class CatalogFile implements Signable {
     }
 
     @Override
-    public ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) {
-        return new ContentInfo(signedData.getSignedContent().getContentType(), (ASN1Encodable) signedData.getSignedContent().getContent());
+    public CMSTypedData createSignedContent(DigestAlgorithm digestAlgorithm) {
+        return signedData.getSignedContent();
     }
 
     @Override

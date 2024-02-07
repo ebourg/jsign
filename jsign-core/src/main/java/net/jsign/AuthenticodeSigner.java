@@ -38,7 +38,6 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -48,9 +47,9 @@ import org.bouncycastle.cms.CMSAttributeTableGenerator;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSSignedDataGenerator;
+import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.DefaultCMSSignatureEncryptionAlgorithmFinder;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
-import org.bouncycastle.cms.PKCS7ProcessableObject;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.SignerInformation;
@@ -389,9 +388,9 @@ public class AuthenticodeSigner {
      */
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
-        ContentInfo contentInfo = file.createContentInfo(digestAlgorithm);
+        CMSTypedData contentInfo = file.createSignedContent(digestAlgorithm);
         CMSSignedDataGenerator generator = createSignedDataGenerator();
-        CMSSignedData sigData = generator.generate(new PKCS7ProcessableObject(contentInfo.getContentType(), contentInfo.getContent()), true);
+        CMSSignedData sigData = generator.generate(contentInfo, true);
         
         // verify the signature
         verify(sigData);

@@ -27,6 +27,8 @@ import java.util.ServiceLoader;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.CMSTypedData;
+import org.bouncycastle.cms.PKCS7ProcessableObject;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.spi.SignableProvider;
@@ -39,12 +41,25 @@ import net.jsign.spi.SignableProvider;
 public interface Signable extends Closeable {
 
     /**
+     * Creates the ContentInfo or EncapsulatedContentInfo structure to be signed.
+     *
+     * @param digestAlgorithm the digest algorithm to use
+     * @return the ContentInfo or EncapsulatedContentInfo structure
+     * @throws IOException if an I/O error occurs
+     * @since 6.1
+     */
+    default CMSTypedData createSignedContent(DigestAlgorithm digestAlgorithm) throws IOException {
+        return new PKCS7ProcessableObject(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
+    }
+
+    /**
      * Creates the ContentInfo structure to be signed.
      *
      * @param digestAlgorithm the digest algorithm to use
      * @return the ContentInfo structure in ASN.1 format
      * @throws IOException if an I/O error occurs
      * @since 4.2
+     * @deprecated Use {@link #createSignedContent(DigestAlgorithm)} instead
      */
     default ContentInfo createContentInfo(DigestAlgorithm digestAlgorithm) throws IOException {
         return new ContentInfo(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
