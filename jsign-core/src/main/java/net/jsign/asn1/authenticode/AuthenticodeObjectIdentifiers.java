@@ -50,4 +50,13 @@ public interface AuthenticodeObjectIdentifiers {
 
     ASN1ObjectIdentifier SPC_TIME_STAMP_REQUEST_OBJID        = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.3.2.1");
     ASN1ObjectIdentifier SPC_RFC3161_OBJID                   = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.3.3.1");
+
+    ASN1ObjectIdentifier OID_CTL                             = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.10.1");
+
+    /**
+     * Tells if the specified object identifier is used for Authenticode signatures.
+     */
+    static boolean isAuthenticode(String oid) {
+        return oid.startsWith(Authenticode.getId()) || OID_CTL.getId().equals(oid);
+    } 
 }

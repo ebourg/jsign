@@ -55,7 +55,7 @@ public class RFC3161Timestamper extends Timestamper {
 
     @Override
     public CMSSignedData timestamp(DigestAlgorithm algo, CMSSignedData sigData) throws TimestampingException, IOException, CMSException {
-        standardAttribute = !SPC_INDIRECT_DATA_OBJID.equals(sigData.getSignedContent().getContentType());
+        standardAttribute = !isAuthenticode(sigData.getSignedContentTypeOID());
         return super.timestamp(algo, sigData);
     }
 

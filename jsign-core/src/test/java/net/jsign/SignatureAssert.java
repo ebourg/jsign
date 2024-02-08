@@ -76,7 +76,7 @@ public class SignatureAssert {
             assertNotNull("signature " + i + " is null", signatures.get(0));
 
             // Check the version of the SignedData structure
-            if (SPC_INDIRECT_DATA_OBJID.getId().equals(signature.getSignedContentTypeOID())) {
+            if (isAuthenticode(signature.getSignedContentTypeOID())) {
                 assertEquals("Version of signature " + i, 1, signature.getVersion());
             }
 
