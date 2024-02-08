@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages and scripts (PowerShell, VBScript, JScript, WSF)" />
+    <meta name="description" content="Jsign : Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)" />
     <meta name="google-site-verification" content="p912kgAnTBOzVbswrU43k3FXUbPnxLHdeW6xsVcq1uU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -35,9 +35,9 @@
       <section id="main_content" class="inner">
 
 
-<p>Jsign is a Java implementation of Microsoft Authenticode that lets you sign
-and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB),
-Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages
+<p>Jsign is a Java implementation of Microsoft Authenticode that lets you sign and timestamp
+executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files
+(CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages
 and scripts (PowerShell, VBScript, JScript, WSF). Jsign is platform independent and provides
 an alternative to native tools like <em>signcode/signtool</em> on Windows or the Mono
 development tools on Unix systems.</p>
@@ -57,7 +57,7 @@ programmatically or standalone as a command line tool.</p>
 <h3 id="features">Features</h3>
 
 <ul>
-  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages and scripts (PowerShell, VBScript, JScript, WSF)</li>
+  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)</li>
   <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
@@ -144,7 +144,7 @@ programmatically or standalone as a command line tool.</p>
       <td class="description">
           The file to be signed. The supported files are Windows executables (EXE), DLLs, Microsoft Installers (MSI),
           Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension
-          packages and scripts (PowerShell, VBScript, JScript, WSF)</td>
+          packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)</td>
       <td class="required">Yes, unless a fileset is specified.</td>
     </tr>
     <tr>
@@ -447,7 +447,7 @@ are the same as those described above for the Ant task.</p>
   usage: jsign [OPTIONS] [FILE]...
   Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
   files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics
-  365 extension packages and scripts (PowerShell, VBScript, JScript, WSF).
+  365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF).
   
   -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file,
                              the cloud keystore name, or the card/token name
@@ -785,7 +785,7 @@ with the <code>providerArg</code> parameter instead.</p>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
 MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
-<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel and Vincent Malmedy.</p>
+<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy and Sebastian Stamm.</p>
 
 <h3 id="contacts">Contact</h3>
 

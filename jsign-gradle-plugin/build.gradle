@@ -25,7 +25,7 @@ gradlePlugin {
         jsignPlugin {
             id = 'net.jsign'
             displayName = 'Jsign Gradle plugin'
-            description = 'Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages and scripts (PowerShell, VBScript, JScript, WSF)'
+            description = 'Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)'
             tags.set(['signing', 'code-signing', 'authenticode', 'signtool'])
             implementationClass = 'net.jsign.JsignGradlePlugin'
         }

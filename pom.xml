@@ -11,7 +11,8 @@
 
   <description>
     Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI),
-    Cabinet files (CAB), Catalog files (CAT) and scripts (PowerShell, VBScript, JScript, WSF).
+    Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages,
+    NuGet packages and scripts (PowerShell, VBScript, JScript, WSF).
   </description>
   <url>https://ebourg.github.io/jsign</url>
 
