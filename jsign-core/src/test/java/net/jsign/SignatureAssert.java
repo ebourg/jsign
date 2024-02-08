@@ -22,10 +22,9 @@ import java.util.List;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 
 import static net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers.*;
 import static org.junit.Assert.*;
@@ -38,8 +37,9 @@ public class SignatureAssert {
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
         assertNotNull(message + " (missing unauthenticated attributes)", unsignedAttributes);
         
+        boolean authenticode = isAuthenticode(signedData.getSignedContentTypeOID());
         Attribute authenticodeTimestampAttribute = unsignedAttributes.get(CMSAttributes.counterSignature);
-        Attribute rfc3161TimestampAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID);
+        Attribute rfc3161TimestampAttribute = unsignedAttributes.get(authenticode ? SPC_RFC3161_OBJID : PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
         
         assertTrue(message + " (no counter signature attribute found)", authenticodeTimestampAttribute != null || rfc3161TimestampAttribute != null);
         
@@ -60,8 +60,9 @@ public class SignatureAssert {
             return;
         }
         
+        boolean authenticode = isAuthenticode(signedData.getSignedContentTypeOID());
         Attribute authenticodeTimestampAttribute = unsignedAttributes.get(CMSAttributes.counterSignature);
-        Attribute rfc3161TimestampAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID);
+        Attribute rfc3161TimestampAttribute = unsignedAttributes.get(authenticode ? SPC_RFC3161_OBJID : PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
 
         assertTrue(message + " (counter signature attribute found)", authenticodeTimestampAttribute == null && rfc3161TimestampAttribute == null);
     }
