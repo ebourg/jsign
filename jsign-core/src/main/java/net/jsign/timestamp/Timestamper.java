@@ -35,6 +35,7 @@ import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Store;
 
 import net.jsign.DigestAlgorithm;
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
 
 /**
@@ -207,12 +208,13 @@ public abstract class Timestamper {
             certificates.addAll(extraCertificates);
         }
         Store<X509CertificateHolder> certificateStore = new CollectionStore<>(certificates);
-        
-        CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
+
+        boolean authenticode = AuthenticodeObjectIdentifiers.isAuthenticode(sigData.getSignedContentTypeOID());
+        CMSSignedDataGenerator generator = authenticode ? new AuthenticodeSignedDataGenerator() : new CMSSignedDataGenerator();
         generator.addCertificates(certificateStore);
         generator.addSigners(new SignerInformationStore(signerInformation));
         
-        return generator.generate(sigData.getSignedContent(), false);
+        return generator.generate(sigData.getSignedContent(), true);
     }
 
     protected abstract CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException;

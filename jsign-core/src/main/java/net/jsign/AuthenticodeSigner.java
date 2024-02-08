@@ -69,6 +69,7 @@ import net.jsign.asn1.authenticode.FilteredAttributeTableGenerator;
 import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.jca.SigningServiceJcaProvider;
+import net.jsign.nuget.NugetFile;
 import net.jsign.pe.DataDirectory;
 import net.jsign.pe.DataDirectoryType;
 import net.jsign.pe.PEFile;
@@ -365,6 +366,13 @@ public class AuthenticodeSigner {
             }
         }
         
+        if (file instanceof NugetFile && !replace) {
+            List<CMSSignedData> signatures = file.getSignatures();
+            if (!signatures.isEmpty()) {
+                throw new SignerException("The file is already signed, the existing signature must be replaced explicitly");
+            }
+        }
+
         CMSSignedData sigData = createSignedData(file);
         
         if (!replace) {
@@ -389,7 +397,7 @@ public class AuthenticodeSigner {
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
         CMSTypedData contentInfo = file.createSignedContent(digestAlgorithm);
-        CMSSignedDataGenerator generator = createSignedDataGenerator();
+        CMSSignedDataGenerator generator = createSignedDataGenerator(contentInfo);
         CMSSignedData sigData = generator.generate(contentInfo, true);
         
         // verify the signature
@@ -399,7 +407,8 @@ public class AuthenticodeSigner {
         if (timestamping) {
             Timestamper ts = timestamper;
             if (ts == null) {
-                ts = Timestamper.create(tsmode);
+                boolean authenticode = AuthenticodeObjectIdentifiers.isAuthenticode(sigData.getSignedContentTypeOID());
+                ts = Timestamper.create(authenticode ? tsmode : TimestampingMode.RFC3161);
             }
             if (tsaurlOverride != null) {
                 ts.setURLs(tsaurlOverride);
@@ -416,8 +425,9 @@ public class AuthenticodeSigner {
         return sigData;
     }
 
-    private CMSSignedDataGenerator createSignedDataGenerator() throws CMSException, OperatorCreationException, CertificateEncodingException {
-        CMSSignedDataGenerator generator = new AuthenticodeSignedDataGenerator();
+    private CMSSignedDataGenerator createSignedDataGenerator(CMSTypedData contentInfo) throws CMSException, OperatorCreationException, CertificateEncodingException {
+        boolean authenticode = AuthenticodeObjectIdentifiers.isAuthenticode(contentInfo.getContentType().getId());
+        CMSSignedDataGenerator generator = authenticode ? new AuthenticodeSignedDataGenerator() : new CMSSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(removeRoot(chain)));
         generator.addSignerInfoGenerator(createSignerInfoGenerator());
 
