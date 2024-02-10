@@ -51,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 6.1 (in development)
 
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
+* The error message displayed when the password of a PKCS#12 keystore is missing has been fixed
 
 #### Version 6.0 (2024-01-17)
 

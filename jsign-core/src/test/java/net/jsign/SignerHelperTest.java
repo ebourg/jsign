@@ -377,4 +377,16 @@ public class SignerHelperTest {
 
         SignatureAssert.assertSigned(Signable.of(targetFile));
     }
+
+    @Test
+    public void testMissingPKCS12KeyStorePassword() {
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        signer.keystore("target/test-classes/keystores/keystore.p12");
+        signer.alias("test");
+        try {
+            signer.sign("target/test-classes/wineyes.exe");
+        } catch (SignerException e) {
+            assertEquals("message", "The keystore password must be specified", e.getMessage());
+        }
+    }
 }

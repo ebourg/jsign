@@ -291,6 +291,8 @@ class SignerHelper {
                     aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
                     if (aliases.isEmpty()) {
                         message = "No certificate found in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
+                    } else if (aliases.contains(alias)) {
+                        message = "The keystore password must be specified";
                     } else {
                         message += " (available aliases: " + String.join(", ", aliases) + ")";
                     }
