@@ -18,7 +18,6 @@ package net.jsign;
 
 /**
  * @author Emmanuel Bourg
- * @version $Revision$, $Date$
  */
 class SignerException extends Exception {
 

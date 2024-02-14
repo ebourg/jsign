@@ -27,7 +27,6 @@ import java.util.zip.Checksum;
  * @see <a href="http://www.codeproject.com/KB/cpp/PEChecksum.aspx">An Analysis of the Windows PE Checksum Algorithm</a>
  * 
  * @author Emmanuel Bourg
- * @version $Revision$, $Date$
  */
 class PEImageChecksum implements Checksum {
 
