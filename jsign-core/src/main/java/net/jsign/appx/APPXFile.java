@@ -23,8 +23,12 @@ import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.poi.util.IOUtils;
@@ -163,11 +167,32 @@ public class APPXFile extends ZipFile implements Signable {
         return new SpcIndirectDataContent(data, digestInfo);
     }
 
+    @Override
+    public void validate(Certificate certificate) throws IOException, IllegalArgumentException {
+        String name = ((X509Certificate) certificate).getSubjectX500Principal().getName();
+        String publisher = getPublisher();
+        if (!name.equals(publisher)) {
+            throw new IllegalArgumentException("The app manifest publisher name (" + publisher + ") must match the subject name of the signing certificate (" + name + ")");
+        }
+    }
+
     /**
      * Tells if the package is a bundle.
      */
     boolean isBundle() {
         return centralDirectory.entries.containsKey("AppxMetadata/AppxBundleManifest.xml");
+    }
+
+    /**
+     * Returns the publisher of the package.
+     */
+    String getPublisher() throws IOException {
+        InputStream in = getInputStream(isBundle() ? "AppxMetadata/AppxBundleManifest.xml" : "AppxManifest.xml", 10 * 1024 * 1024 /* 10MB */);
+        String manifest = new String(IOUtils.toByteArray(in), UTF_8);
+
+        Pattern pattern = Pattern.compile("Publisher\\s*=\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(manifest);
+        return matcher.find() ? matcher.group(1) : null;
     }
 
     @Override

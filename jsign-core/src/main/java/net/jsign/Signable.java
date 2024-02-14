@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
+import java.security.cert.Certificate;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -97,6 +98,17 @@ public interface Signable extends Closeable {
      * @throws IOException if an I/O error occurs
      */
     ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException;
+
+    /**
+     * Checks if the specified certificate is suitable for signing the file.
+     *
+     * @param certificate the certificate to validate
+     * @throws IOException if an I/O error occurs
+     * @throws IllegalArgumentException if the certificate doesn't match the publisher identity
+     * @since 6.1
+     */
+    default void validate(Certificate certificate) throws IOException, IllegalArgumentException {
+    }
 
     /**
      * Returns the Authenticode signatures on the file.

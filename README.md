@@ -51,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 6.1 (in development)
 
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
+* Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages
 * The APPX/MSIX bundles are now signed with the correct Authenticode UUID
 * The error message displayed when the password of a PKCS#12 keystore is missing has been fixed
 

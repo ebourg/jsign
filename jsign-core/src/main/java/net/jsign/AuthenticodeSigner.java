@@ -353,6 +353,8 @@ public class AuthenticodeSigner {
      * @throws Exception if signing fails
      */
     public void sign(Signable file) throws Exception {
+        file.validate(chain[0]);
+
         if (file instanceof PEFile) {
             PEFile pefile = (PEFile) file;
 

@@ -21,11 +21,14 @@ import java.security.KeyStore;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import net.jsign.appx.APPXFile;
 
 import static net.jsign.DigestAlgorithm.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class APPXSignerTest {
 
@@ -170,6 +173,29 @@ public class APPXSignerTest {
 
         try (Signable file = new APPXFile(new SeekableInMemoryByteChannel(data))) {
             SignatureAssert.assertSigned(file, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignWithMismatchedCertificate() throws Exception {
+        File sourceFile = new File("target/test-classes/minimal.msix");
+        File targetFile = new File("target/test-classes/minimal-signed-with-mismatched-certificate.msix");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().storetype("NONE")
+                .keyfile("target/test-classes/keystores/privatekey.pkcs8.pem")
+                .certfile("target/test-classes/keystores/jsign-test-certificate-partial-chain.pem")
+                .build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "jsign", "").withTimestamping(false);
+
+        try (Signable file = Signable.of(targetFile)) {
+            try {
+                signer.sign(file);
+                fail("Exception not thrown");
+            } catch (Exception e) {
+                MatcherAssert.assertThat(e.getMessage(), matchesPattern("The app manifest publisher name (.*) must match the subject name of the signing certificate (.*)"));
+            }
         }
     }
 }
