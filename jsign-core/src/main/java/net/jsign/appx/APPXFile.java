@@ -157,11 +157,17 @@ public class APPXFile extends ZipFile implements Signable {
         AlgorithmIdentifier algorithmIdentifier = new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
         DigestInfo digestInfo = new DigestInfo(algorithmIdentifier, computeDigest(digestAlgorithm));
 
-        boolean bundle = centralDirectory.entries.containsKey("AppxBundleManifest.xml");
-        SpcUuid uuid = new SpcUuid(bundle ? "B3585F0F-DEAA-9A4B-A434-95742D92ECEB" : "4BDFC50A-07CE-E24D-B76E-23C839A09FD1");
+        SpcUuid uuid = new SpcUuid(isBundle() ? "B3585F0F-DEAA-9A4B-A434-95742D92ECEB" : "4BDFC50A-07CE-E24D-B76E-23C839A09FD1");
         SpcAttributeTypeAndOptionalValue data = new SpcAttributeTypeAndOptionalValue(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID, new SpcSipInfo(0x01010000, uuid));
 
         return new SpcIndirectDataContent(data, digestInfo);
+    }
+
+    /**
+     * Tells if the package is a bundle.
+     */
+    boolean isBundle() {
+        return centralDirectory.entries.containsKey("AppxMetadata/AppxBundleManifest.xml");
     }
 
     @Override

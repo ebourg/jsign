@@ -19,6 +19,10 @@ package net.jsign;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -94,5 +98,14 @@ public class SignatureAssert {
         List<CMSSignedData> signatures = signable.getSignatures();
         assertNotNull("list of signatures null", signatures);
         assertTrue("signature found", signatures.isEmpty());
+    }
+
+    public static void assertUuidEquals(Signable signable, String expected) throws IOException {
+        ASN1Sequence spcIndirectData = (ASN1Sequence) ((ASN1Sequence) signable.getSignatures().get(0).toASN1Structure().getContent()).getObjectAt(2);
+        ASN1Sequence spcAttributeTypeAndOptionalValue = (ASN1Sequence) ((ASN1Sequence) ((ASN1TaggedObject) spcIndirectData.getObjectAt(1)).getExplicitBaseObject()).getObjectAt(0);
+        ASN1Sequence spcSipInfo = (ASN1Sequence) spcAttributeTypeAndOptionalValue.getObjectAt(1);
+        DEROctetString uuid = (DEROctetString) spcSipInfo.getObjectAt(1);
+
+        assertEquals("Authenticode UUID", expected.toUpperCase().replaceAll("-", ""), Hex.encodeHexString(uuid.getOctets()).toUpperCase());
     }
 }

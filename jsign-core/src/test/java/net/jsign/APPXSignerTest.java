@@ -49,6 +49,7 @@ public class APPXSignerTest {
             signer.sign(file);
 
             SignatureAssert.assertSigned(file, SHA256);
+            SignatureAssert.assertUuidEquals(file, "4BDFC50A-07CE-E24D-B76E-23C839A09FD1");
         }
     }
 
@@ -65,6 +66,7 @@ public class APPXSignerTest {
             signer.sign(file);
 
             SignatureAssert.assertSigned(file, SHA256);
+            SignatureAssert.assertUuidEquals(file, "B3585F0F-DEAA-9A4B-A434-95742D92ECEB");
         }
     }
 

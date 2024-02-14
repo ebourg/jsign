@@ -86,4 +86,14 @@ public class APPXFileTest {
             assertNotSigned(file);
         }
     }
+
+    @Test
+    public void testIsBundle() throws Exception {
+        try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.msix"))) {
+            assertFalse("minimal.msix is a bundle", file.isBundle());
+        }
+        try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.appxbundle"))) {
+            assertTrue("minimal.appxbundle is not a bundle", file.isBundle());
+        }
+    }
 }
