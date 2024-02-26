@@ -81,7 +81,7 @@ abstract class AbstractKeyStoreSpi extends KeyStoreSpi {
 
     @Override
     public boolean engineIsKeyEntry(String alias) {
-        throw new UnsupportedOperationException();
+        return engineContainsAlias(alias);
     }
 
     @Override
