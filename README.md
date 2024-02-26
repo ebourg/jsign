@@ -41,7 +41,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Build tools integration (Maven, Gradle, Ant)
 * Command line signing tool
 * Authenticode signing API ([Javadoc](https://javadoc.io/doc/net.jsign/jsign-core))
-* JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner
+* JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner or apksigner
 
 See https://ebourg.github.io/jsign for more information.
 

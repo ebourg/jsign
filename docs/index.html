@@ -82,7 +82,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>)</li>
   <li>Command line signing tool</li>
   <li>Authenticode signing API (<a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a>)</li>
-  <li>JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner</li>
+  <li>JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner or apksigner</li>
 </ul>
 
 
@@ -742,7 +742,12 @@ by a colon character.</p>
 
 <h3 id="jca-provider">JCA security provider</h3>
 
-<p>Jsign implements a JCA security provider that can be used to sign JAR files with the <code>jarsigner</code> tool.</p>
+<p>Jsign implements a JCA security provider that can be integrated with other Java based signing tools to extend
+their range of supported keystores.</p>
+
+<h4 id="jar-signing">JAR signing</h4>
+
+<p>The JCA provider can be used to sign JAR files with with the <code>jarsigner</code> tool.</p>
 
 <p>With Java 11 or later the syntax looks like this:</p>
 
@@ -769,6 +774,23 @@ parameter is removed:</p>
 <p>The <code>keystore</code> parameter must be set to <code>NONE</code>, the actual value of the keystore is specified
 with the <code>providerArg</code> parameter instead.</p>
 
+<h4>APK signing</h4>
+
+<p>The JCA provider can be used to sign Android applications with the <code>apksigner</code> tool.
+The syntax looks like this:</p>
+
+<pre>
+ java -cp apksigner.jar:jsign.jar com.android.apksigner.ApkSignerTool sign \
+      --provider-class net.jsign.jca.JsignJcaProvider \
+      --provider-arg &lt;keystore&gt; \
+      --ks NONE \
+      --ks-type &lt;storetype&gt; \
+      --ks-pass pass:&lt;storepass&gt; \
+      --ks-key-alias &lt;alias&gt; \
+      --key-pass pass:&lt;keypass&gt; \
+      --cert &lt;certfile&gt; \
+      --in application.apk
+</pre>
 
 <h3 id="files">Downloads</h3>
 

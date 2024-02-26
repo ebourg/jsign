@@ -38,7 +38,7 @@ import net.jsign.KeyStoreBuilder;
 import net.jsign.KeyStoreType;
 
 /**
- * JCA provider using a Jsign keystore and compatible with jarsigner.
+ * JCA provider using a Jsign keystore and compatible with jarsigner and apksigner.
  *
  * <p>The provider must be configured with the keystore parameter (the value depends on the keystore type).
  * The type of the keystore is one of the names from the {@link KeyStoreType} enum.</p>
