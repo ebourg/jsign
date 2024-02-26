@@ -457,4 +457,45 @@ public class KeyStoreBuilderTest {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype("pkcs12");
         assertEquals("storetype", PKCS12, builder.storetype());
     }
+
+    @Test
+    public void testGetType() {
+        assertEquals(PKCS12, KeyStoreBuilder.getType(new File("keystore.p12")));
+        assertEquals(PKCS12, KeyStoreBuilder.getType(new File("keystore.pfx")));
+        assertEquals(JCEKS, KeyStoreBuilder.getType(new File("keystore.jceks")));
+        assertEquals(JKS, KeyStoreBuilder.getType(new File("keystore.jks")));
+        assertNull(KeyStoreBuilder.getType(new File("keystore.unknown")));
+    }
+
+    @Test
+    public void testGetTypePKCS12FromHeader() throws Exception {
+        File source = new File("target/test-classes/keystores/keystore.p12");
+        File target = new File("target/test-classes/keystores/keystore.p12.ext");
+        FileUtils.copyFile(source, target);
+
+        assertEquals(PKCS12, KeyStoreBuilder.getType(target));
+    }
+
+    @Test
+    public void testGetTypeJCEKSFromHeader() throws Exception {
+        File source = new File("target/test-classes/keystores/keystore.jceks");
+        File target = new File("target/test-classes/keystores/keystore.jceks.ext");
+        FileUtils.copyFile(source, target);
+
+        assertEquals(JCEKS, KeyStoreBuilder.getType(target));
+    }
+
+    @Test
+    public void testGetTypeJKSFromHeader() throws Exception {
+        File source = new File("target/test-classes/keystores/keystore.jks");
+        File target = new File("target/test-classes/keystores/keystore.jks.ext");
+        FileUtils.copyFile(source, target);
+
+        assertEquals(JKS, KeyStoreBuilder.getType(target));
+    }
+
+    @Test
+    public void testGetTypeUnknown() {
+        assertNull(KeyStoreBuilder.getType(new File("target/test-classes/keystores/jsign-root-ca.pem")));
+    }
 }

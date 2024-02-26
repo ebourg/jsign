@@ -403,7 +403,7 @@ class SignerHelper {
         }
 
         // enable timestamping with Azure Trusted Signing
-        if (tsaurl == null && storetype == KeyStoreType.TRUSTEDSIGNING) {
+        if (tsaurl == null && KeyStoreType.TRUSTEDSIGNING.equals(storetype)) {
             tsaurl = "http://timestamp.acs.microsoft.com/";
             tsmode = TimestampingMode.RFC3161.name();
             tsretries = 3;

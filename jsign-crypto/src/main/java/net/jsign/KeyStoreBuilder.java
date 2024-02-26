@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.Provider;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -122,7 +123,7 @@ public class KeyStoreBuilder {
             this.storetype = storetype != null ? KeyStoreType.valueOf(storetype.toUpperCase()) : null;
         } catch (IllegalArgumentException e) {
             String expectedTypes = Stream.of(KeyStoreType.values())
-                    .filter(type -> type != NONE).map(KeyStoreType::name)
+                    .filter(type -> !NONE.equals(type)).map(KeyStoreType::name)
                     .collect(Collectors.joining(", "));
             throw new IllegalArgumentException("Unknown keystore type '" + storetype + "' (expected types: " + expectedTypes + ")");
         }
@@ -140,13 +141,28 @@ public class KeyStoreBuilder {
                 if (!file.isFile()) {
                     throw new IllegalArgumentException("Keystore file '" + keystore + "' not found");
                 }
-                storetype = KeyStoreType.of(file);
+                storetype = getType(file);
                 if (storetype == null) {
                     throw new IllegalArgumentException("Keystore type of '" + keystore + "' not recognized");
                 }
             }
         }
         return storetype;
+    }
+
+    /**
+     * Guess the type of the keystore from the header or the extension of the file.
+     *
+     * @param file the path to the keystore
+     */
+    static KeyStoreType getType(File file) {
+        for (KeyStoreType storetype : ServiceLoader.load(KeyStoreType.class)) {
+            if (storetype instanceof FileBasedKeyStoreType && ((FileBasedKeyStoreType) storetype).isSupported(file)) {
+                return storetype;
+            }
+        }
+
+        return null;
     }
 
     /**

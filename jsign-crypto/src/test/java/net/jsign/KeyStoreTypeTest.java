@@ -16,54 +16,31 @@
 
 package net.jsign;
 
-import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
-import static net.jsign.KeyStoreType.*;
 import static org.junit.Assert.*;
 
 public class KeyStoreTypeTest {
 
     @Test
-    public void testGetType() {
-        assertEquals(PKCS12, KeyStoreType.of(new File("keystore.p12")));
-        assertEquals(PKCS12, KeyStoreType.of(new File("keystore.pfx")));
-        assertEquals(JCEKS, KeyStoreType.of(new File("keystore.jceks")));
-        assertEquals(JKS, KeyStoreType.of(new File("keystore.jks")));
-        assertNull(KeyStoreType.of(new File("keystore.unknown")));
+    public void testValueOf() {
+        assertEquals(KeyStoreType.JCEKS, KeyStoreType.valueOf("JCEKS"));
+        assertEquals(KeyStoreType.OPENSC, KeyStoreType.valueOf("OPENSC"));
+        assertEquals(KeyStoreType.OPENPGP, KeyStoreType.valueOf("OPENPGP"));
+        assertEquals(KeyStoreType.DIGICERTONE, KeyStoreType.valueOf("DIGICERTONE"));
     }
 
     @Test
-    public void testGetTypePKCS12FromHeader() throws Exception {
-        File source = new File("target/test-classes/keystores/keystore.p12");
-        File target = new File("target/test-classes/keystores/keystore.p12.ext");
-        FileUtils.copyFile(source, target);
-
-        assertEquals(PKCS12, KeyStoreType.of(target));
-    }
-
-    @Test
-    public void testGetTypeJCEKSFromHeader() throws Exception {
-        File source = new File("target/test-classes/keystores/keystore.jceks");
-        File target = new File("target/test-classes/keystores/keystore.jceks.ext");
-        FileUtils.copyFile(source, target);
-
-        assertEquals(JCEKS, KeyStoreType.of(target));
-    }
-
-    @Test
-    public void testGetTypeJKSFromHeader() throws Exception {
-        File source = new File("target/test-classes/keystores/keystore.jks");
-        File target = new File("target/test-classes/keystores/keystore.jks.ext");
-        FileUtils.copyFile(source, target);
-
-        assertEquals(JKS, KeyStoreType.of(target));
-    }
-
-    @Test
-    public void testGetTypeUnknown() {
-        assertNull(KeyStoreType.of(new File("target/test-classes/keystores/jsign-root-ca.pem")));
+    public void testValues() {
+        List<KeyStoreType> values = Arrays.asList(KeyStoreType.values());
+        assertTrue(values.contains(KeyStoreType.NONE));
+        assertTrue(values.contains(KeyStoreType.PKCS12));
+        assertTrue(values.contains(KeyStoreType.JKS));
+        assertTrue(values.contains(KeyStoreType.PKCS11));
+        assertTrue(values.contains(KeyStoreType.PIV));
+        assertTrue(values.contains(KeyStoreType.AWS));
     }
 }
