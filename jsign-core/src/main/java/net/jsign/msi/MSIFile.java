@@ -187,7 +187,7 @@ public class MSIFile implements Signable {
             updateDigest(digest, fsRead.getPropertyTable().getRoot());
 
             return digest.digest();
-        } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException e) {
+        } catch (IndexOutOfBoundsException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException e) {
             throw new IOException("MSI file format error", e);
         }
     }
