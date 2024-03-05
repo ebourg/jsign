@@ -199,12 +199,14 @@ public class PEFile implements Signable {
         return valueBuffer.getLong();
     }
 
-    synchronized void write(long base, byte[] data) {
-        try {
-            channel.position(base);
-            channel.write(ByteBuffer.wrap(data));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    synchronized void write(long base, byte[] data) throws IOException {
+        write(base, ByteBuffer.wrap(data));
+    }
+
+    synchronized void write(long base, ByteBuffer data) throws IOException {
+        channel.position(base);
+        while (data.hasRemaining()) {
+            channel.write(data);
         }
     }
 
@@ -527,8 +529,7 @@ public class PEFile implements Signable {
         buffer.flip();
 
         try {
-            channel.position(peHeaderOffset + 88);
-            channel.write(buffer);
+            write(peHeaderOffset + 88, buffer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -658,8 +659,7 @@ public class PEFile implements Signable {
             // append the data directory at the end of the file
             long offset = channel.size();
             
-            channel.position(offset);
-            channel.write(ByteBuffer.wrap(data));
+            write(offset, data);
             
             // update the entry in the data directory table
             directory.write(offset, data.length);
@@ -667,23 +667,20 @@ public class PEFile implements Signable {
         } else {
             if (data.length == directory.getSize()) {
                 // same size as before, just overwrite
-                channel.position(directory.getVirtualAddress());
-                channel.write(ByteBuffer.wrap(data));
+                write(directory.getVirtualAddress(), data);
 
             } else if (data.length < directory.getSize() && type != DataDirectoryType.CERTIFICATE_TABLE) {
                 // the new data is smaller, erase and rewrite in-place
                 // this doesn't work with the certificate table since it changes the file digest
                 directory.erase();
-                channel.position(directory.getVirtualAddress());
-                channel.write(ByteBuffer.wrap(data));
+                write(directory.getVirtualAddress(), data);
                 
                 // update the size in the data directory table
                 directory.write(directory.getVirtualAddress(), data.length);
 
             } else if (directory.isTrailing()) {
                 // the data is at the end of the file, overwrite it
-                channel.position(directory.getVirtualAddress());
-                channel.write(ByteBuffer.wrap(data));
+                write(directory.getVirtualAddress(), data);
                 channel.truncate(directory.getVirtualAddress() + data.length); // trim the file if the data shrunk
                 
                 // update the size in the data directory table
@@ -699,8 +696,7 @@ public class PEFile implements Signable {
                 
                 long offset = channel.size();
                 
-                channel.position(offset);
-                channel.write(ByteBuffer.wrap(data));
+                write(offset, data);
                 
                 // update the entry in the data directory table
                 directory.write(offset, data.length);
@@ -965,7 +961,6 @@ public class PEFile implements Signable {
      */
     public synchronized void pad(int multiple) throws IOException {
         long padding = (multiple - channel.size() % multiple) % multiple;
-        channel.position(channel.size());
-        channel.write(ByteBuffer.allocate((int) padding));
+        write(channel.size(), ByteBuffer.allocate((int) padding));
     }
 }

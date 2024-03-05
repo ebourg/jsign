@@ -68,7 +68,7 @@ public class DataDirectory {
      * 
      * @since 2.0
      */
-    public void erase() {
+    public void erase() throws IOException {
         peFile.write(getVirtualAddress(), new byte[getSize()]);
     }
 
@@ -83,11 +83,12 @@ public class DataDirectory {
         return getVirtualAddress() + getSize() == peFile.channel.size();
     }
 
-    public void write(long virtualAddress, int size) {
+    public void write(long virtualAddress, int size) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) virtualAddress);
         buffer.putInt(size);
-        peFile.write(peFile.getDataDirectoryOffset() + index * 8, buffer.array());
+        buffer.flip();
+        peFile.write(peFile.getDataDirectoryOffset() + index * 8, buffer);
     }
 }
