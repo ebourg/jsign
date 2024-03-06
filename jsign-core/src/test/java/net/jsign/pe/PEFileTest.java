@@ -16,14 +16,12 @@
 
 package net.jsign.pe;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.KeyStore;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.util.encoders.Hex;
@@ -49,27 +47,7 @@ public class PEFileTest {
     @Test
     public void testLoad() throws Exception {
         try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
-            assertEquals(MachineType.I386, file.getMachineType());
-            assertEquals(4, file.getNumberOfSections());
-            assertEquals(0, file.getPointerToSymbolTable());
-            assertEquals(0, file.getNumberOfSymbols());
-            assertEquals(224, file.getSizeOfOptionalHeader());
             assertEquals(PEFormat.PE32, file.getFormat());
-            assertEquals(24576, file.getSizeOfCode());
-            assertEquals(20480, file.getSizeOfInitializedData());
-            assertEquals(0, file.getSizeOfUninitializedData());
-            assertEquals(0x400000, file.getImageBase());
-            assertEquals(4096, file.getSectionAlignment());
-            assertEquals(4096, file.getFileAlignment());
-            assertEquals(4, file.getMajorOperatingSystemVersion());
-            assertEquals(0, file.getMinorOperatingSystemVersion());
-            assertEquals(4, file.getMajorSubsystemVersion());
-            assertEquals(0, file.getMinorSubsystemVersion());
-            assertEquals(0, file.getWin32VersionValue());
-            assertEquals(49152, file.getSizeOfImage());
-            assertEquals(4096, file.getSizeOfHeaders());
-            assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
-            assertEquals(0, file.getLoaderFlags());
             assertEquals(16, file.getNumberOfRvaAndSizes());
         }
     }
@@ -97,62 +75,6 @@ public class PEFileTest {
                 throw e;
             }
         }
-    }
-
-    @Test
-    public void testGetSections() throws Exception {
-        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
-            List<Section> sections = file.getSections();
-            assertNotNull(sections);
-            assertFalse("No section found", sections.isEmpty());
-            for (Section section : file.getSections()) {
-                assertNotNull("null section found", section);
-                assertEquals(0, section.getPointerToRelocations());
-                assertEquals(0, section.getPointerToLineNumbers());
-                assertEquals(0, section.getNumberOfRelocations());
-                assertEquals(0, section.getNumberOfLineNumbers());
-            }
-        }
-    }
-
-    @Test
-    public void testPrintInfo() throws Exception {
-        ByteArrayOutputStream out;
-        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
-            out = new ByteArrayOutputStream();
-            file.printInfo(out);
-        }
-
-        assertNotNull(out.toString());
-        assertFalse(out.toString().isEmpty());
-
-        System.out.println(out);
-    }
-
-    @Test
-    public void testPadNoOp() throws Exception {
-        File testFile = new File("target/test-classes/wineyes.exe");
-        File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
-        FileUtils.copyFile(testFile, testFilePadded);
-        
-        PEFile file = new PEFile(testFilePadded);
-        file.pad(8);
-        file.close();
-        
-        assertEquals("Padded file size", testFile.length(), testFilePadded.length());
-    }
-
-    @Test
-    public void testPad() throws Exception {
-        File testFile = new File("target/test-classes/wineyes.exe");
-        File testFilePadded = new File("target/test-classes/wineyes-padded.exe");
-        FileUtils.copyFile(testFile, testFilePadded);
-
-        PEFile file = new PEFile(testFilePadded);
-        file.pad(7);
-        file.close();
-
-        assertEquals("Padded file size", testFile.length() + 4, testFilePadded.length());
     }
 
     @Test

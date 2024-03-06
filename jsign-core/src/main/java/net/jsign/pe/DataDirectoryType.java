@@ -22,7 +22,7 @@ package net.jsign.pe;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public enum DataDirectoryType {
+enum DataDirectoryType {
 
     /** The export table */
     EXPORT_TABLE,               

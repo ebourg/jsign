@@ -32,7 +32,7 @@ import org.bouncycastle.cms.CMSSignedData;
  * @author Emmanuel Bourg
  * @since 1.3
  */
-public class CertificateTableEntry {
+class CertificateTableEntry {
 
     private int size;
     private int revision;

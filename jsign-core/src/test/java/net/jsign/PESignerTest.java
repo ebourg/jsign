@@ -84,8 +84,6 @@ public class PESignerTest {
 
             assertNotNull(signature);
             assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
-
-            peFile.printInfo(System.out);
         }
     }
 
@@ -226,8 +224,6 @@ public class PESignerTest {
 
             SignatureAssert.assertSigned(peFile, alg);
             SignatureAssert.assertTimestamped("Invalid timestamp", peFile.getSignatures().get(0));
-
-            peFile.printInfo(System.out);
         }
     }
 

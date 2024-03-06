@@ -26,7 +26,7 @@ import java.nio.ByteOrder;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public class DataDirectory {
+class DataDirectory {
 
     private final PEFile peFile;
     private final int index;

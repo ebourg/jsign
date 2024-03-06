@@ -22,7 +22,7 @@ package net.jsign.pe;
  * @author Emmanuel Bourg
  * @since 1.3
  */
-public enum CertificateType {
+enum CertificateType {
 
     /** X.509 Certificate (not supported) */
     X509(0x0001),

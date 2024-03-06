@@ -22,7 +22,7 @@ package net.jsign.pe;
  * @author Emmanuel Bourg
  * @since 1.0
  */
-public enum PEFormat {
+enum PEFormat {
     
     PE32(0x10b, "PE32"),
     PE32plus(0x20b, "PE32+"),
