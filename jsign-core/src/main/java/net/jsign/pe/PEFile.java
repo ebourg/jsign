@@ -745,11 +745,7 @@ public class PEFile implements Signable {
         } else if (getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE).exists()) {
             // erase the previous signature
             DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
-            if (!certificateTable.isTrailing()) {
-                certificateTable.erase();
-            } else {
-                channel.truncate(certificateTable.getVirtualAddress());
-            }
+            channel.truncate(certificateTable.getVirtualAddress());
             certificateTable.write(0, 0);
         }
     }

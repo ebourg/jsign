@@ -70,9 +70,6 @@ import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.asn1.authenticode.SpcStatementType;
 import net.jsign.jca.SigningServiceJcaProvider;
 import net.jsign.nuget.NugetFile;
-import net.jsign.pe.DataDirectory;
-import net.jsign.pe.DataDirectoryType;
-import net.jsign.pe.PEFile;
 import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -355,19 +352,6 @@ public class AuthenticodeSigner {
     public void sign(Signable file) throws Exception {
         file.validate(chain[0]);
 
-        if (file instanceof PEFile) {
-            PEFile pefile = (PEFile) file;
-
-            if (replace) {
-                DataDirectory certificateTable = pefile.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
-                if (certificateTable != null && !certificateTable.isTrailing()) {
-                    // erase the previous signature
-                    certificateTable.erase();
-                    certificateTable.write(0, 0);
-                }
-            }
-        }
-        
         if (file instanceof NugetFile && !replace) {
             List<CMSSignedData> signatures = file.getSignatures();
             if (!signatures.isEmpty()) {
