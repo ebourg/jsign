@@ -29,6 +29,9 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Set up dependencies
+        run: sudo apt-get install -y ykcs11 opensc-pkcs11
+
       - name: Compile
         run: |
           mvn -version
