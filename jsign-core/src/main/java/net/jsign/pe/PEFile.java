@@ -656,8 +656,8 @@ public class PEFile implements Signable {
         }
         
         if (!directory.exists()) {
-            // append the data directory at the end of the file
-            long offset = channel.size();
+            // append the data directory at the end of the file on a 8-byte boundary
+            long offset = channel.size() + (8 - channel.size() % 8) % 8;
             
             write(offset, data);
             
@@ -739,12 +739,6 @@ public class PEFile implements Signable {
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
         if (signature != null) {
-            // pad the file before adding the certificate table
-            DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
-            if (certificateTable == null || !certificateTable.exists()) {
-                pad(8);
-            }
-
             CertificateTableEntry entry = new CertificateTableEntry(signature);
             writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
 
