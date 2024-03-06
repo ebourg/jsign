@@ -118,6 +118,11 @@ public class PEFile implements Signable {
         this.channel = channel;
         
         try {
+            // check if the PE file is too big
+            if (channel.size() >= 1L << 32) {
+                throw new IOException("Invalid PE file: the size exceeds 4GB");
+            }
+
             // DOS Header
             read(0, 0, 2);
             if (valueBuffer.get() != 'M' || valueBuffer.get() != 'Z') {
