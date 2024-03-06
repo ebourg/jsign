@@ -64,15 +64,6 @@ public class DataDirectory {
     }
 
     /**
-     * Fill the data directory with zeros.
-     * 
-     * @since 2.0
-     */
-    public void erase() throws IOException {
-        peFile.write(getVirtualAddress(), new byte[getSize()]);
-    }
-
-    /**
      * Tells if the data directory is at the end of the file.
      * 
      * @return <code>true</code> if the data directory is at the end of the file, <code>false</code> otherwise

@@ -641,18 +641,16 @@ public class PEFile implements Signable {
     }
 
     /**
-     * Writes the data directory of the specified type. The data is either appended
-     * at the end of the file or written over the previous data of the same type if
-     * there is enough space.
+     * Writes the certificate table. The data is either appended at the end of the file
+     * or written over the previous certificate table.
      * 
-     * @param type the type of the data directory
-     * @param data the content of the data directory
+     * @param data the content of the certificate table
      * @throws IOException if an I/O error occurs
      */
-    public synchronized void writeDataDirectory(DataDirectoryType type, byte[] data) throws IOException {
-        DataDirectory directory = getDataDirectory(type);
+    synchronized void writeCertificateTable(byte[] data) throws IOException {
+        DataDirectory directory = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         if (directory == null) {
-            throw new IOException("No space allocated in the data directories index for the " + type + " directory");
+            throw new IOException("No space allocated in the data directories index for the certificate table");
         }
         
         if (!directory.exists()) {
@@ -664,43 +662,16 @@ public class PEFile implements Signable {
             // update the entry in the data directory table
             directory.write(offset, data.length);
             
+        } else if (directory.isTrailing()) {
+            // the data is at the end of the file, overwrite it
+            write(directory.getVirtualAddress(), data);
+            channel.truncate(directory.getVirtualAddress() + data.length); // trim the file if the data shrunk
+
+            // update the size in the data directory table
+            directory.write(directory.getVirtualAddress(), data.length);
+
         } else {
-            if (data.length == directory.getSize()) {
-                // same size as before, just overwrite
-                write(directory.getVirtualAddress(), data);
-
-            } else if (data.length < directory.getSize() && type != DataDirectoryType.CERTIFICATE_TABLE) {
-                // the new data is smaller, erase and rewrite in-place
-                // this doesn't work with the certificate table since it changes the file digest
-                directory.erase();
-                write(directory.getVirtualAddress(), data);
-                
-                // update the size in the data directory table
-                directory.write(directory.getVirtualAddress(), data.length);
-
-            } else if (directory.isTrailing()) {
-                // the data is at the end of the file, overwrite it
-                write(directory.getVirtualAddress(), data);
-                channel.truncate(directory.getVirtualAddress() + data.length); // trim the file if the data shrunk
-                
-                // update the size in the data directory table
-                directory.write(directory.getVirtualAddress(), data.length);
-
-            } else {
-                if (type == DataDirectoryType.CERTIFICATE_TABLE) {
-                    throw new IOException("The certificate table isn't at the end of the file and can't be moved without invalidating the signature");
-                }
-                
-                // the new data is larger, erase and relocate it at the end
-                directory.erase();
-                
-                long offset = channel.size();
-                
-                write(offset, data);
-                
-                // update the entry in the data directory table
-                directory.write(offset, data.length);
-            }
+            throw new IOException("The certificate table isn't at the end of the file");
         }
         
         updateChecksum();
@@ -740,7 +711,7 @@ public class PEFile implements Signable {
     public void setSignature(CMSSignedData signature) throws IOException {
         if (signature != null) {
             CertificateTableEntry entry = new CertificateTableEntry(signature);
-            writeDataDirectory(DataDirectoryType.CERTIFICATE_TABLE, entry.toBytes());
+            writeCertificateTable(entry.toBytes());
 
         } else if (getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE).exists()) {
             // erase the previous signature
