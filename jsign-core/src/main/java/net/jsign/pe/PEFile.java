@@ -150,33 +150,25 @@ public class PEFile implements Signable {
         channel.close();
     }
 
-    synchronized int read(byte[] buffer, long base, int offset) {
-        try {
-            channel.position(base + offset);
-            return channel.read(ByteBuffer.wrap(buffer));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    synchronized int read(byte[] buffer, long base, int offset) throws IOException {
+        channel.position(base + offset);
+        return channel.read(ByteBuffer.wrap(buffer));
     }
 
-    private void read(long base, int offset, int length) {
-        try {
-            valueBuffer.limit(length);
-            valueBuffer.clear();
-            channel.position(base + offset);
-            channel.read(valueBuffer);
-            valueBuffer.rewind();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private void read(long base, int offset, int length) throws IOException {
+        valueBuffer.limit(length);
+        valueBuffer.clear();
+        channel.position(base + offset);
+        channel.read(valueBuffer);
+        valueBuffer.rewind();
     }
 
-    synchronized int readWord(long base, int offset) {
+    synchronized int readWord(long base, int offset) throws IOException {
         read(base, offset, 2);
         return valueBuffer.getShort() & 0xFFFF;
     }
 
-    synchronized long readDWord(long base, int offset) {
+    synchronized long readDWord(long base, int offset) throws IOException {
         read(base, offset, 4);
         return valueBuffer.getInt() & 0xFFFFFFFFL;
     }
@@ -192,7 +184,7 @@ public class PEFile implements Signable {
         }
     }
 
-    PEFormat getFormat() {
+    PEFormat getFormat() throws IOException {
         return PEFormat.valueOf(readWord(peHeaderOffset, 24));
     }
 
@@ -201,7 +193,7 @@ public class PEFile implements Signable {
      * 
      * @return the checksum of the image
      */
-    long getCheckSum() {
+    long getCheckSum() throws IOException {
         return readDWord(peHeaderOffset, 88);
     }
 
@@ -211,36 +203,28 @@ public class PEFile implements Signable {
      * 
      * @return the checksum of the image
      */
-    synchronized long computeChecksum() {
+    synchronized long computeChecksum() throws IOException {
         PEImageChecksum checksum = new PEImageChecksum(peHeaderOffset + 88);
         
         ByteBuffer b = ByteBuffer.allocate(64 * 1024);
-        
-        try {
-            channel.position(0);
-            
-            int len;
-            while ((len = channel.read(b)) > 0) {
-                b.flip();
-                checksum.update(b.array(), 0, len);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        channel.position(0);
+
+        int len;
+        while ((len = channel.read(b)) > 0) {
+            b.flip();
+            checksum.update(b.array(), 0, len);
         }
         
         return checksum.getValue();
     }
 
-    synchronized void updateChecksum() {
+    synchronized void updateChecksum() throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) computeChecksum());
         buffer.flip();
 
-        try {
-            write(peHeaderOffset + 88, buffer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        write(peHeaderOffset + 88, buffer);
     }
 
     /**
@@ -249,11 +233,11 @@ public class PEFile implements Signable {
      * 
      * @return the number of data-directory entries
      */
-    int getNumberOfRvaAndSizes() {
+    int getNumberOfRvaAndSizes() throws IOException {
         return (int) readDWord(peHeaderOffset, PEFormat.PE32.equals(getFormat()) ? 116 : 132);
     }
 
-    int getDataDirectoryOffset() {
+    int getDataDirectoryOffset() throws IOException {
         return (int) peHeaderOffset + (PEFormat.PE32.equals(getFormat()) ? 120 : 136);
     }
 
@@ -263,7 +247,7 @@ public class PEFile implements Signable {
      * @param type the type of data directory
      * @return the data directory of the specified type
      */
-    DataDirectory getDataDirectory(DataDirectoryType type) {
+    DataDirectory getDataDirectory(DataDirectoryType type) throws IOException {
         if (type.ordinal() >= getNumberOfRvaAndSizes()) {
             return null;
         } else {
@@ -309,7 +293,7 @@ public class PEFile implements Signable {
     }
 
     @Override
-    public synchronized List<CMSSignedData> getSignatures() {
+    public synchronized List<CMSSignedData> getSignatures() throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
         
         for (CertificateTableEntry entry : getCertificateTable()) {
@@ -352,7 +336,7 @@ public class PEFile implements Signable {
         }
     }
 
-    private synchronized List<CertificateTableEntry> getCertificateTable() {
+    private synchronized List<CertificateTableEntry> getCertificateTable() throws IOException {
         List<CertificateTableEntry> entries = new ArrayList<>();
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         

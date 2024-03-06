@@ -36,15 +36,15 @@ class DataDirectory {
         this.index = index;
     }
 
-    public long getVirtualAddress() {
+    public long getVirtualAddress() throws IOException {
         return peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8);
     }
     
-    public int getSize() {
+    public int getSize() throws IOException {
         return (int) peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8 + 4);
     }
 
-    public boolean exists() {
+    public boolean exists() throws IOException {
         return getVirtualAddress() != 0 && getSize() != 0;
     }
 
