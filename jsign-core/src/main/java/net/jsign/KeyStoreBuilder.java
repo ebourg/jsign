@@ -119,7 +119,7 @@ public class KeyStoreBuilder {
      */
     public KeyStoreBuilder storetype(String storetype) {
         try {
-            this.storetype = storetype != null ? KeyStoreType.valueOf(storetype) : null;
+            this.storetype = storetype != null ? KeyStoreType.valueOf(storetype.toUpperCase()) : null;
         } catch (IllegalArgumentException e) {
             String expectedTypes = Stream.of(KeyStoreType.values())
                     .filter(type -> type != NONE).map(KeyStoreType::name)

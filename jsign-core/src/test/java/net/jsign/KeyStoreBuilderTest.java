@@ -423,4 +423,10 @@ public class KeyStoreBuilderTest {
         KeyStore keystore = builder.build();
         assertNotNull("keystore", keystore);
     }
+
+    @Test
+    public void testLowerCaseStoreType() {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype("pkcs12");
+        assertEquals("storetype", PKCS12, builder.storetype());
+    }
 }

@@ -56,6 +56,7 @@ See https://ebourg.github.io/jsign for more information.
 * The APPX/MSIX bundles are now signed with the correct Authenticode UUID
 * The error message displayed when the password of a PKCS#12 keystore is missing has been fixed
 * The log4j configuration warning displayed when signing a MSI file has been fixed (contributed by Pascal Davoust)
+* The value of the `storetype` parameter is now case insensitive
 * API changes:
   * The PEFile class has been refactored to keep only the methods related to signing
 
