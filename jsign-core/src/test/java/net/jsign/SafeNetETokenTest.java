@@ -29,8 +29,8 @@ public class SafeNetETokenTest {
 
     private void assumeSafeNetEToken() {
         Assume.assumeTrue("SafeNet Authentication Client isn't installed",
-                new File(System.getenv("ProgramFiles") + "/OpenSC Project/OpenSC/pkcs11/opensc-pkcs11.dll").exists()
-             || new File("/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so").exists());
+                new File(System.getenv("windir") + "/system32/eTPKCS11.dll").exists()
+             || new File("/usr/lib/pkcs11/libeToken.so").exists());
     }
 
     @Test
