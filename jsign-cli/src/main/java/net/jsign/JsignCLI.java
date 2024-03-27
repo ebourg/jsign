@@ -71,7 +71,8 @@ public class JsignCLI {
                         + "- DIGICERTONE: DigiCert ONE Secure Software Manager\n"
                         + "- ESIGNER: SSL.com eSigner\n"
                         + "- GOOGLECLOUD: Google Cloud KMS\n"
-                        + "- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault\n").build());
+                        + "- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault\n"
+                        + "- ORACLECLOUD: Oracle Cloud Key Management Service\n").build());
         options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore.").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS).argName("PASSWORD").desc("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password.").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYFILE).argName("FILE").desc("The file containing the private key. PEM and PVK files are supported. ").type(File.class).build());

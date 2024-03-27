@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.ProviderException;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
 import org.junit.Test;
 
@@ -300,6 +301,29 @@ public class KeyStoreBuilderTest {
         }
 
         builder.certfile("keystores/jsign-test-certificate.pem");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
+    public void testBuildOracleCloud() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(ORACLECLOUD);
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "certfile parameter must be set", e.getMessage());
+        }
+
+        builder.certfile("keystores/jsign-test-certificate.pem");
+
+        File config = File.createTempFile("ociconfig", null);
+        config.deleteOnExit();
+        FileUtils.writeStringToFile(config, "[DEFAULT]\n", "UTF-8");
+
+        builder.storepass(config.getAbsolutePath());
 
         KeyStore keystore = builder.build();
         assertNotNull("keystore", keystore);

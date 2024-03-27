@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -92,7 +93,14 @@ class RESTClient {
         if (responseCode < 400) {
             String response = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
 
-            return JsonReader.jsonToMaps(response);
+            Object value = JsonReader.jsonToJava(response);
+            if (value instanceof Map) {
+                return (Map) value;
+            } else {
+                Map<String, Object> map = new HashMap<>();
+                map.put("result", value);
+                return map;
+            }
         } else {
             String error = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
             if (contentType != null && (contentType.startsWith("application/json") || contentType.startsWith("application/x-amz-json-1.1"))) {
@@ -128,6 +136,9 @@ class RESTClient {
             String error = (String) response.get("__type");
             String description = (String) response.get("message");
             message.append(error).append(": ").append(description);
+        } else if (response.containsKey("code") && response.containsKey("message")) {
+            // error from OCI API
+            message.append(response.get("code")).append(": ").append(response.get("message"));
         } else {
             // error message from the CSC API
             String error = (String) response.get("error");
