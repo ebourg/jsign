@@ -73,6 +73,8 @@ The type of the keystore:
 .br
 - HASHICORPVAULT : Google Cloud KMS via HashiCorp Vault
 .br
+- ORACLECLOUD   : Oracle Cloud Key Management Service
+.br
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
 .TP
@@ -385,6 +387,49 @@ jsign --storetype HASHICORPVAULT \\
       --storepass <vault-token> \\
       --alias test:1 \\
       --certfile full-chain.pem application.exe
+
+
+.TP
+
+Signing with Oracle Cloud Key Management Service
+
+Signing with the Oracle Cloud Infrastructure Key Management Service requires the configuration file or
+the environment variables used by the OCI CLI. The OCI CLI isn't required for signing, but it may be used
+to initialize the configuration file with 'oci setup bootstrap'.
+
+The keystore parameter specifies the profile used in the configuration file (the default value is DEFAULT),
+and the storepass parameter specifies the path to the configuration file (~/.oci/config by default).
+
+The certificate must be provided separately using the certfile parameter. The alias specifies the OCID of the key.
+
+The general syntax looks like this:
+
+jsign --storetype ORACLECLOUD \\
+      --keystore <profile> \\
+      --storepass <oci-config-file> \\
+      --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
+      --certfile full-chain.pem application.exe
+
+When using the default configuration file and profile, the command is simplified to:
+
+jsign --storetype ORACLECLOUD \\
+      --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
+      --certfile full-chain.pem application.exe
+
+The configuration file can be replaced (or overridden) by environment variables. Here are the variables expected:
+
+.br
+\- OCI_CLI_USER        : OCID of the user (e.g. ocid1.user.oc1..<unique_ID>)
+.br
+\- OCI_CLI_TENANCY     : The OCID of the tenancy (e.g. ocid1.tenancy.oc1..<unique_ID>)
+.br
+\- OCI_CLI_REGION      : The OCI region (e.g. eu-paris-1)
+.br
+\- OCI_CLI_KEY_FILE    : The path to the private key signing the API requests in PEM format
+.br
+\- OCI_CLI_PASS_PHRASE : The pass phrase of the private key
+.br
+\- OCI_CLI_FINGERPRINT : The fingerprint of the private key
 
 
 .SH REPORTING BUGS

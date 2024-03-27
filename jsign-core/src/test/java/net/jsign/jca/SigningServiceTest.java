@@ -27,6 +27,7 @@ import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
@@ -176,5 +177,27 @@ public class SigningServiceTest {
         String alias = keystore.aliases().nextElement();
 
         testCustomProvider(provider, keystore, alias, "RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=");
+    }
+
+    @Test
+    public void testOracleCloudProvider() throws Exception {
+        Assume.assumeTrue("OCI configuration not found", OracleCloudCredentials.getConfigFile().exists());
+
+        OracleCloudCredentials credentials = OracleCloudCredentials.getDefault();
+        Provider provider = new SigningServiceJcaProvider(new OracleCloudSigningService(credentials, alias -> {
+            try {
+                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")) {
+                    CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                    Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
+                    return certificates.toArray(new Certificate[0]);
+                }
+            } catch (IOException | CertificateException e) {
+                throw new RuntimeException(e);
+            }
+        }));
+        KeyStore keystore = KeyStore.getInstance("ORACLECLOUD", provider);
+        keystore.load(null, "".toCharArray());
+
+        testCustomProvider(provider, keystore, "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", "");
     }
 }

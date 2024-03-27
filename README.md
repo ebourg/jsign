@@ -35,6 +35,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [DigiCert ONE](https://one.digicert.com)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)
+    * [Oracle Cloud KMS](https://www.oracle.com/security/cloud-security/key-management/)
     * [SSL.com eSigner](https://www.ssl.com/esigner/)
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
@@ -50,6 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 6.1 (in development)
 
+* The Oracle Cloud signing service has been integrated
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages
 * The JCA provider now works with [apksigner](https://developer.android.com/tools/apksigner) for signing Android applications

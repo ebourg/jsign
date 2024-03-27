@@ -30,6 +30,7 @@ import net.jsign.jca.AWS;
 import net.jsign.jca.Azure;
 import net.jsign.jca.DigiCertONE;
 import net.jsign.jca.GoogleCloud;
+import net.jsign.jca.OracleCloudCredentials;
 import net.jsign.jca.PIVCardTest;
 import net.jsign.pe.PEFile;
 
@@ -283,6 +284,26 @@ public class SignerHelperTest {
                 .storepass("esigner_demo|esignerDemo#1")
                 .alias("8b072e22-7685-4771-b5c6-48e46614915f")
                 .keypass("RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testOracleCloud() throws Exception {
+        Assume.assumeTrue("OCI configuration not found", OracleCloudCredentials.getConfigFile().exists());
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-oci.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("ORACLECLOUD")
+                .alias("ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza")
+                .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
         helper.sign(targetFile);

@@ -42,6 +42,8 @@ import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.HashiCorpVaultSigningService;
 import net.jsign.jca.OpenPGPCardSigningService;
+import net.jsign.jca.OracleCloudCredentials;
+import net.jsign.jca.OracleCloudSigningService;
 import net.jsign.jca.PIVCardSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 
@@ -435,6 +437,37 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return SafeNetEToken.getProvider();
+        }
+    },
+
+    /**
+     * Oracle Cloud Infrastructure Key Management Service. This keystore requires the <a href="https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm">configuration file</a>
+     * or the <a href="https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clienvironmentvariables.htm">environment
+     * variables</a> used by the OCI CLI. The keystore parameter specifies the profile used in the configuration file
+     * (the default value is <code>DEFAULT</code>), and the storepass parameter specifies the path to the configuration
+     * file (<code>~/.oci/config</code> by default).
+     *
+     * <p>The certificate must be provided separately using the certfile parameter. The alias specifies the OCID
+     * of the key.</p>
+     */
+    ORACLECLOUD(false, false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.certfile() == null) {
+                throw new IllegalArgumentException("certfile " + params.parameterName() + " must be set");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            OracleCloudCredentials credentials = new OracleCloudCredentials();
+            try {
+                credentials.load(params.storepass() != null ? new File(params.storepass()) : null, params.keystore());
+                credentials.loadFromEnvironment();
+            } catch (IOException e) {
+                throw new RuntimeException("An error occurred while fetching the Oracle Cloud credentials", e);
+            }
+            return new SigningServiceJcaProvider(new OracleCloudSigningService(credentials, getCertificateStore(params)));
         }
     };
 
