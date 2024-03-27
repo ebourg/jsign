@@ -680,6 +680,9 @@ process is slightly slower due to an additional API call, and it requires an ext
  gcloud auth print-access-token
 </pre>
 
+<p>When creating the key the purpose must be set to "Asymmetric sign", and the algorithm must be either Elliptic Curve
+or RSA with PKCS#1 v1.5 padding and SHA digest. Keys with PSS padding or raw RSA mode are not supported.</p>
+
 <p>The Google Cloud account used must have the following permissions:</p>
 
 <ul>

@@ -356,6 +356,9 @@ The access token is typically provided by the gcloud tool:
 
 gcloud auth print-access-token
 
+When creating the key the purpose must be set to "Asymmetric sign", and the algorithm must be either Elliptic Curve
+or RSA with PKCS#1 v1.5 padding and SHA digest. Keys with PSS padding or raw RSA mode are not supported.
+
 The Google Cloud account used must have the following permissions:
 
 .br
