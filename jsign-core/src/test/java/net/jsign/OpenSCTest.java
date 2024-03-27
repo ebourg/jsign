@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.security.Provider;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Assume;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class OpenSCTest {
             Provider provider = OpenSC.getProvider(null);
             assertNotNull(provider);
         } catch (RuntimeException e) {
-            assertEquals("No PKCS11 token found", e.getCause().getMessage());
+            assertEquals("Message", "No PKCS11 token found", ExceptionUtils.getRootCause(e).getMessage());
         }
     }
 
