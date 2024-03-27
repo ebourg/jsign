@@ -312,7 +312,7 @@ public class JsignCLITest {
 
     @Test
     public void testSigningWithYubikey() throws Exception {
-        Assume.assumeTrue("ykcs11 is not installed", YubiKey.getYkcs11Library().exists());
+        Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
 
         cli.execute("--storetype=YUBIKEY", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--storepass=123456", "" + targetFile);
     }

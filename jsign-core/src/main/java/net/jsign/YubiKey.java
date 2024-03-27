@@ -79,6 +79,17 @@ class YubiKey {
     }
 
     /**
+     * Tells if a YubiKey is present on the system.
+     */
+    static boolean isPresent() {
+        try {
+            return getTokenSlot(getYkcs11Library()) >= 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
      * Attempts to locate the ykcs11 library on the system.
      *
      * @since 4.0

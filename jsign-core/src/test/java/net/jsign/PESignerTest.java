@@ -139,7 +139,7 @@ public class PESignerTest {
 
     @Test
     public void testSigningWithYubikey() throws Exception {
-        Assume.assumeTrue("ykcs11 is not installed", YubiKey.getYkcs11Library().exists());
+        Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
 
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-yubikey.exe");

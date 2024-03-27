@@ -30,6 +30,7 @@ public class YubikeyTest {
         Assume.assumeTrue("libykcs11 isn't installed",
                 new File(System.getenv("ProgramFiles") + "/Yubico/Yubico PIV Tool/bin/libykcs11.dll").exists()
              || new File("/usr/lib/x86_64-linux-gnu/libykcs11.so").exists());
+        Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
     }
 
     @Test
