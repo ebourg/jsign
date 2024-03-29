@@ -94,7 +94,6 @@
                     <exclude>META-INF/services/*log4j*</exclude>
                     <exclude>META-INF/services/*poi*</exclude>
                     <exclude>**/*_de.properties</exclude>
-                    <exclude>**/MavenShadePluginHelper.*</exclude>
                     <exclude>**/commons/codec/language/**</exclude>
                     <exclude>**/commons/math3/random/**</exclude>
                     <exclude>**/poi/ss/formula/**</exclude>
@@ -103,6 +102,17 @@
                     <exclude>assets/org/apache/commons/math3/**</exclude>
                     <exclude>**/bouncycastle/pqc/**</exclude>
                   </excludes>
+                </filter>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludeDefaults>false</excludeDefaults>
+                  <includes>
+                    <include>**/JsignCLI</include>
+                    <include>**/JsignTask</include>
+                    <include>**/PESigner</include>
+                    <include>**/KeyStoreUtils</include>
+                    <include>**/JsignJcaProvider</include>
+                  </includes>
                 </filter>
               </filters>
               <relocations>
