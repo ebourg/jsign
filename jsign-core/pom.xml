@@ -16,14 +16,14 @@
   <dependencies>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk18on</artifactId>
-      <version>1.77</version>
+      <artifactId>bcprov-lts8on</artifactId>
+      <version>2.73.5</version>
     </dependency>
 
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-jdk18on</artifactId>
-      <version>1.77</version>
+      <artifactId>bcpkix-lts8on</artifactId>
+      <version>2.73.5</version>
     </dependency>
 
     <dependency>
@@ -60,8 +60,8 @@
 
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpg-jdk18on</artifactId>
-      <version>1.77</version>
+      <artifactId>bcpg-lts8on</artifactId>
+      <version>2.73.5</version>
       <scope>test</scope>
     </dependency>
 

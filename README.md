@@ -61,6 +61,7 @@ See https://ebourg.github.io/jsign for more information.
 * The value of the `storetype` parameter is now case insensitive
 * API changes:
   * The PEFile class has been refactored to keep only the methods related to signing
+* Switched to BouncyCastle LTS 2.73.5
 
 #### Version 6.0 (2024-01-17)
 
