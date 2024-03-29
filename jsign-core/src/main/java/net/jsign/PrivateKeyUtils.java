@@ -19,8 +19,11 @@ package net.jsign;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.security.KeyException;
 import java.security.PrivateKey;
+import java.util.HashMap;
+import java.util.function.Function;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -36,6 +39,7 @@ import org.bouncycastle.operator.InputDecryptorProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.bouncycastle.pkcs.PKCSException;
+import sun.misc.Unsafe;
 
 /**
  * Helper class for loading private keys (PVK or PEM, encrypted or not).
@@ -72,6 +76,36 @@ public class PrivateKeyUtils {
         throw new IllegalArgumentException("Unsupported private key format (PEM or PVK file expected");
     }
 
+    /**
+     * Disables the signature verification of the jar containing the BouncyCastle provider.
+     */
+    private static void disableJceSecurity() {
+        try {
+            Class<?> jceSecurityClass = Class.forName("javax.crypto.JceSecurity");
+            Field field = jceSecurityClass.getDeclaredField("verificationResults");
+            field.setAccessible(true);
+
+            Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            Unsafe unsafe = (Unsafe) unsafeField.get(null);
+
+            unsafe.putObject(unsafe.staticFieldBase(field), unsafe.staticFieldOffset(field), new HashMap<Object, Boolean>() {
+                @Override
+                public Boolean get(Object key) {
+                    // This is not the provider you are looking for, you don't need to see its identification, move along
+                    return Boolean.TRUE;
+                }
+
+                @Override
+                public Boolean computeIfAbsent(Object key, Function<? super Object, ? extends Boolean> mappingFunction) {
+                    return super.computeIfAbsent(key, object -> Boolean.TRUE);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static PrivateKey readPrivateKeyPEM(File file, char[] password) throws IOException, OperatorCreationException, PKCSException {
         try (FileReader reader = new FileReader(file)) {
             PEMParser parser = new PEMParser(reader);
@@ -84,7 +118,11 @@ public class PrivateKeyUtils {
             if (object == null) {
                 throw new IllegalArgumentException("No key found in " + file);
             }
-            
+
+            if (BouncyCastleProvider.class.getName().startsWith("net.jsign")) {
+                // disable JceSecurity to allow the use of the repackaged BouncyCastle provider
+                disableJceSecurity();
+            }
             BouncyCastleProvider provider = new BouncyCastleProvider();
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter().setProvider(provider);
 

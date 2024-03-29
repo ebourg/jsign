@@ -255,6 +255,7 @@
                 --add-exports java.base/sun.net.www.protocol.http=ALL-UNNAMED
                 --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
                 --add-exports jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED
+                --add-opens java.base/javax.crypto=ALL-UNNAMED
                 --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED
                 --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
                 -Djava.security.manager=allow
