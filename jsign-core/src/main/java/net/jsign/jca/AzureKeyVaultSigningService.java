@@ -129,7 +129,11 @@ public class AzureKeyVaultSigningService implements SigningService {
             Certificate certificate = CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(pem)));
             return new Certificate[]{certificate};
         } catch (IOException | CertificateException e) {
-            throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate '" + alias + "'", e);
+            if (e.getMessage() != null && e.getMessage().contains("was not found in this key vault")) {
+                return null;
+            } else {
+                throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate '" + alias + "'", e);
+            }
         }
     }
 
