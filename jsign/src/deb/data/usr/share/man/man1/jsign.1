@@ -307,6 +307,11 @@ jsign --storetype AZUREKEYVAULT \\
       --storepass <api-access-token> \\
       --alias test application.exe
 
+The access token can be obtained with the Azure CLI:
+
+az account get-access-token --resource "https://vault.azure.net"
+
+The Azure account used must have the "Key Vault Crypto User" and "Key Vault Certificate User" roles.
 
 .TP
 

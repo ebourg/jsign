@@ -633,6 +633,14 @@ key management system can be used with:</p>
        --alias test application.exe
 </pre>
 
+<p>The access token can be obtained with the <a href="https://learn.microsoft.com/en-us/cli/azure/">Azure CLI</a>:</p>
+
+<pre>
+ az account get-access-token --resource "https://vault.azure.net"
+</pre>
+
+<p>The Azure account used must have the <em>"Key Vault Crypto User"</em> and <em>"Key Vault Certificate User"</em> roles.</p>
+
 <h4 id="example-digicertone">Signing with DigiCert ONE</h4>
 
 <p>Certificates and keys stored in the <a href="https://one.digicert.com">DigiCert ONE</a> Secure Software Manager
