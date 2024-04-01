@@ -371,7 +371,7 @@ public class SignerHelperTest {
             signer.sign(targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
-            assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
+            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2022)", e.getCause().getMessage());
         }
 
         SignatureAssert.assertSigned(Signable.of(targetFile));
@@ -393,7 +393,7 @@ public class SignerHelperTest {
             signer.sign(targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
-            assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
+            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2022)", e.getCause().getMessage());
         }
 
         SignatureAssert.assertSigned(Signable.of(targetFile));

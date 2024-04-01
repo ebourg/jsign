@@ -483,7 +483,8 @@ public class AuthenticodeSigner {
     }
 
     private void verify(CMSSignedData signedData) throws SignatureException, OperatorCreationException {
-        PublicKey publicKey = chain[0].getPublicKey();
+        X509Certificate certificate = (X509Certificate) chain[0];
+        PublicKey publicKey = certificate.getPublicKey();
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         SignerInformationVerifier verifier = new JcaSignerInfoVerifierBuilder(digestCalculatorProvider).build(publicKey);
 
@@ -499,7 +500,14 @@ public class AuthenticodeSigner {
         }
 
         if (!result) {
-            throw new SignatureException("Signature verification failed, the private key doesn't match the certificate", cause);
+            boolean ca = certificate.getBasicConstraints() != -1;
+            String message = "Signature verification failed, ";
+            if (ca) {
+                message += "the certificate is a root or intermediate CA certificate (" + certificate.getSubjectX500Principal() + ")";
+            } else {
+                message += "the private key doesn't match the certificate";
+            }
+            throw new SignatureException(message, cause);
         }
     }
 
