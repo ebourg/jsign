@@ -1,0 +1,30 @@
+[
+  {
+    "compartmentId": "ocid1.tenancy.oc1..abcdefghijk",
+    "definedTags": {},
+    "displayName": "jsign-rsa-2048",
+    "freeformTags": {},
+    "id": "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza",
+    "lifecycleState": "ENABLED",
+    "timeCreated": "2024-03-26T15:49:25.868Z",
+    "vaultId": "ocid1.vault.oc1.eu-paris-1.h5tafwboaahxq.abrwiljr4qztopmd3icfsehbfzegglkbihuk7gcc7a7epanvxmoghtmqyzqq",
+    "protectionMode": "SOFTWARE",
+    "algorithm": "RSA",
+    "externalKeyReferenceDetails": null,
+    "isAutoRotationEnabled": false
+  },
+  {
+    "compartmentId": "ocid1.tenancy.oc1..abcdefghijk",
+    "definedTags": {},
+    "displayName": "jsign-rsa-2048-hsm",
+    "freeformTags": {},
+    "id": "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljr7tub2mmyv5x2w6hwdlbpa3l567vih67yypquqkm4pjgk4cx7rkpa",
+    "lifecycleState": "ENABLED",
+    "timeCreated": "2024-03-26T14:16:16.099Z",
+    "vaultId": "ocid1.vault.oc1.eu-paris-1.h5tafwboaahxq.abrwiljr4qztopmd3icfsehbfzegglkbihuk7gcc7a7epanvxmoghtmqyzqq",
+    "protectionMode": "HSM",
+    "algorithm": "RSA",
+    "externalKeyReferenceDetails": null,
+    "isAutoRotationEnabled": false
+  }
+]

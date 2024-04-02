@@ -1,0 +1,48 @@
+[
+  {
+    "compartmentId": "ocid1.tenancy.oc1..abcdefghijk",
+    "cryptoEndpoint": "https://h5tafwboaahxq-crypto.kms.eu-paris-1.oci.oraclecloud.com",
+    "definedTags": {
+      "Oracle-Tags": {
+        "CreatedBy": "default/ebourg@apache.org",
+        "CreatedOn": "2024-03-26T14:14:06.394Z"
+      }
+    },
+    "displayName": "jsign",
+    "freeformTags": {},
+    "id": "ocid1.vault.oc1.eu-paris-1.h5tafwboaahxq.abrwiljr4qztopmd3icfsehbfzegglkbihuk7gcc7a7epanvxmoghtmqyzqq",
+    "lifecycleState": "ACTIVE",
+    "managementEndpoint": "http://localhost:18080",
+    "timeCreated": "2024-03-26T14:14:09.366Z",
+    "timeOfDeletion": null,
+    "vaultType": "DEFAULT",
+    "restoredFromVaultId": null,
+    "wrappingkeyId": "",
+    "replicaDetails": null,
+    "isPrimary": true,
+    "externalKeyManagerMetadataSummary": null
+  },
+  {
+    "compartmentId": "ocid1.tenancy.oc1..abcdefghijk",
+    "cryptoEndpoint": "https://h5s765syaagfm-crypto.kms.eu-paris-1.oci.oraclecloud.com",
+    "definedTags": {
+      "Oracle-Tags": {
+        "CreatedBy": "default/ebourg@apache.org",
+        "CreatedOn": "2024-03-24T00:39:52.255Z"
+      }
+    },
+    "displayName": "test",
+    "freeformTags": {},
+    "id": "ocid1.vault.oc1.eu-paris-1.h5s765syaagfm.abrwiljridvzkq3wh47e6tk5xw2ma65q2pz34idhfeo54n5nmqw7cquntn5a",
+    "lifecycleState": "PENDING_DELETION",
+    "managementEndpoint": "http://localhost:18080",
+    "timeCreated": "2024-03-24T00:39:53.764Z",
+    "timeOfDeletion": "2024-04-25T13:00:00.000Z",
+    "vaultType": "DEFAULT",
+    "restoredFromVaultId": null,
+    "wrappingkeyId": "",
+    "replicaDetails": null,
+    "isPrimary": true,
+    "externalKeyManagerMetadataSummary": null
+  }
+]

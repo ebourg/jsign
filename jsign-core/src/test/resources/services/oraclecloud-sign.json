@@ -1,0 +1,6 @@
+{
+  "keyId": "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza",
+  "keyVersionId": "ocid1.keyversion.oc1.eu-paris-1.h5tafwboaahxq.pcevmybo5aqaa.abrwiljrbymibdobzkfsgobbzwzezvw57bgq3qg3y5dn733iqyjenergjfpa",
+  "signature": "MiZ/YXfluqyuMfR3cnChG7+K7JmU2b8SzBAc6+WOpWQwIV4GfkLcRe0A68H45Lf+XPiMPPLrs7EqOv1EAnkYDFx5AqZBTWBfoaBeqKpy30OBvNbxIsaTLsaJYGypwmHOUTP+Djz7FxQUyM0uWVfUnHUDT564gQLz0cta6PKE/oMUo9fZhpv5VQcgfrbdUlPaD/cSAOb833ZSRzPWbnqztWO6py5sUugvqGFHKhsEXesx5yrPvJTKu5HVF3QM3E8YrgnVfFK14W8oyTJmXIWQxfYpwm/CW037UmolDMqwc3mjx1758kR+9lOcf8c/LSmD/SVD18SDSK4FyLQWOmn16A==",
+  "signingAlgorithm": "SHA_256_RSA_PKCS1_V1_5"
+}

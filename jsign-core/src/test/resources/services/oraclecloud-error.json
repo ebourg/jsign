@@ -1,0 +1,4 @@
+{
+  "code": "NotAuthorizedOrNotFound",
+  "message": "resource does not exist or you are not authorized to access it."
+}
