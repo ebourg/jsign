@@ -130,7 +130,7 @@ public class SigningServiceTest {
 
     @Test
     public void testAzureProvider() throws Exception {
-        Provider provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService("jsigntestkeyvault", Azure.getAccessToken()));
+        Provider provider = new SigningServiceJcaProvider(new AzureKeyVaultSigningService("jsignvault", Azure.getAccessToken()));
         KeyStore keystore = KeyStore.getInstance("AZUREKEYVAULT", provider);
         keystore.load(null, "".toCharArray());
 

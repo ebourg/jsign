@@ -221,7 +221,7 @@ public class SignerHelperTest {
 
         SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
                 .storetype("AZUREKEYVAULT")
-                .keystore("jsigntestkeyvault")
+                .keystore("jsignvault")
                 .storepass(Azure.getAccessToken())
                 .alias("jsign")
                 .alg("SHA-256");
