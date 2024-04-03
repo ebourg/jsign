@@ -78,12 +78,18 @@ public class DigiCertOneSigningService implements SigningService {
      * @param keyManager the key manager to authenticate the client with the server
      */
     public DigiCertOneSigningService(String apiKey, X509KeyManager keyManager) {
-        this.client = new RESTClient("https://one.digicert.com/signingmanager/api/v1/", conn -> {
+        this("https://clientauth.one.digicert.com", apiKey, keyManager);
+    }
+
+    DigiCertOneSigningService(String endpoint, String apiKey, X509KeyManager keyManager) {
+        this.client = new RESTClient(endpoint + "/signingmanager/api/v1/", conn -> {
             conn.setRequestProperty("x-api-key", apiKey);
             try {
                 SSLContext context = SSLContext.getInstance("TLS");
                 context.init(new KeyManager[]{keyManager}, null, new SecureRandom());
-                ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
+                if (conn instanceof HttpsURLConnection) {
+                    ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
+                }
             } catch (GeneralSecurityException e) {
                 throw new RuntimeException("Unable to load the DigiCert ONE client certificate", e);
             }
@@ -195,7 +201,7 @@ public class DigiCertOneSigningService implements SigningService {
         try {
             Map<String, Object> args = new HashMap<>();
             args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post("https://clientauth.one.digicert.com/signingmanager/api/v1/keypairs/" + privateKey.getId() + "/sign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("keypairs/" + privateKey.getId() + "/sign", JsonWriter.objectToJson(request, args));
             String value = (String) response.get("signature");
 
             return Base64.getDecoder().decode(value);
@@ -204,7 +210,7 @@ public class DigiCertOneSigningService implements SigningService {
         }
     }
 
-    private static KeyManager getKeyManager(File keystoreFile, String storepass) {
+    static KeyManager getKeyManager(File keystoreFile, String storepass) {
         try {
             KeyStore keystore = new KeyStoreBuilder().keystore(keystoreFile).storepass(storepass).build();
 

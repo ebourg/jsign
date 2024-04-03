@@ -1,0 +1,136 @@
+{
+  "id": "ea936a8f-446d-8bab-b782-c01e8612bf1e",
+  "alias": "jsign-2022-key",
+  "key_size": 3072,
+  "key_alg": "RSA",
+  "key_type": "PRODUCTION",
+  "key_storage": "HSM",
+  "public_key": "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA1RKdI9K+L6Ha986yoqnivAfXD5t6CSA5jDxjibx72hRK/QrCPKbvL0t9sZAhAOzGU5jdDsHsXBHOfHri9c6kRGitFh4ZnYecKrOkNB1F4/H7J+oArkThtRAdUttCSxwL8r1oMPL8T+U7Vhz7EcGd+u9j6p38v4BB4Mpuaq8SRTyzPi2Q7vVkuH0EoOGkIc7cM0JPkdaB1vSeKKZhe+rNnK3zqhj1v6f4s46P/Vw1D2e1NNWWkNYyZ8r6BEPSsiF8uuBW6Maidrty17hGBow6aK1aYybjWGC7vmdsMxBJziAmDHabmMNq3q5ST5aR6Wi/ZIV5QZIn2wcyguXtqU1ORwez3BbMNHviALegQsHoNHNBebpwUeuDPhf4+0FR9LeT4VI99YizbxiIQXxBkiat5XqVlo3MGxFNEIIZ+Pq8G0+ax/jyI53yYoEQWmha7HKYdBD1tefhFZtPMDzAk9pO+DYO1RT2Ut9d0uQ76yOsLp5FEPGpBcSMbYn8PYM1wHczAgMBAAE=",
+  "certificates": [
+    {
+      "id": "353d4f18-4b78-b17c-5325-f92375cf40ec",
+      "alias": "jsign-2022-cert",
+      "cert": "MIIDUDCCAjigAwIBAgIJAKQICQFhO1zTMA0GCSqGSIb3DQEBCwUAMCUxIzAhBgNVBAMMGkpzaWduIENvZGUgU2lnbmluZyBDQSAyMDIyMB4XDTIyMTExNTE4MTUzM1oXDTQyMTExMDE4MTUzM1owOTE3MDUGA1UEAwwuSnNpZ24gQ29kZSBTaWduaW5nIFRlc3QgQ2VydGlmaWNhdGUgMjAyMiAoUlNBKTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKaQUuWQrHnHyjkdhwWdqT+W0g9t6vTnQmU4y/Xpg5wsF1NRMh2ujLj7PQx++l7fZJx3vC1JJ1/RM6CVFBYuazLwfDjl4/Nj4nglit+ijOJtXnBxSGIpKZTaORw9aYcMIvHRixZFqpVIfA0I7gjEB/WkI6Hq+ePu0ZGANorggJx/QP5IhBPzKSmv+83cQA954JN8EjdyuMzVs2SqOygUbKNai4jlmitEUyKB/29k9po+99pJ3KUQe+BHli3fyEFNzUdP9nB6FUw+9ko48/C0q7qKerKknYW3ysZwD70WMd40a/4U1cABSFbVvyIVAa4dxRoco52Gkt+x1GhOCztLtQ8CAwEAAaNvMG0wCQYDVR0TBAIwADALBgNVHQ8EBAMCB4AwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0OBBYEFBLEig5vFkfxsh/Oey8w5icoMTSTMB8GA1UdIwQYMBaAFJ9pNp0nqBx5bIhLCZF6EHl/ZnfaMA0GCSqGSIb3DQEBCwUAA4IBAQCFfbg7sXiWli9DyVz9LfrTzZOIwqilOSroemZ+W2YuKJEUs+NBBnmmmb2MQXZcm00fDKa0bSWJqGMfPeqsHZdMdlw4cZIhQ2wl67sdn/qtO8TpLcIZj2UlIgou8/afE6fN8w0mQPU9DOOPwDMzYQVJI3opuwVsAXj+82opBkx08yno2TIX7nt6PF51SMrqNVglzh8N31BAQ3CkjgPvnjDdgOxKsOubqFYzsMEtkmlF0EFS3BMJMvAHFGe1VRkhv1ejiBbaJXf50UGtJzgfnKYHR9HEaHoy4ka7FTHWKkEzjhsyjByGyVG8/jaelSJzqo3UbPXReg3yMPwWPqRpiCwh",
+      "certificate_fingerprint": "G4YB0Qe/pYeWzOokZraf0WomWrud8f7j1Okj8Ah4H7M=",
+      "certificate_status": "ACTIVE",
+      "account": {
+        "id": "02d7ea41-4b83-b19a-83b4-3f9c1b748e22",
+        "name": "The Jsign Project",
+        "cert_central_integration_allowed": true,
+        "dynamic_test_keypair_allowed": false,
+        "gpg_enabled": false,
+        "is_csr_gen_enabled": false
+      },
+      "keypair": {
+        "id": "ea936a8f-446d-8bab-b782-c01e8612bf1e",
+        "alias": "jsign-2022-key",
+        "limit_by_users": true
+      },
+      "default_cert": true,
+      "created_on": "2023-11-08T18:02:21Z",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_by_user": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "name": "Automated",
+        "auth_type": "BASIC"
+      },
+      "modified_on": "2023-11-08T18:03:00Z",
+      "modified_by": "9d16b0a6-485b-a647-56c2-44b9aa1d2d47",
+      "modified_by_user": {
+        "id": "9d16b0a6-485b-a647-56c2-44b9aa1d2d47",
+        "name": "John Doe",
+        "auth_type": "BASIC"
+      },
+      "enrollment_method": "CC_GENERATE",
+      "hierarchy": "PUBLIC",
+      "certificate_type": "EV",
+      "certificate_profile": {
+        "id": "38c25d61-428d-8a81-fc62-ad5a077c00ff"
+      },
+      "organization": {
+        "id": "123456"
+      },
+      "ca_certificate": {
+        "id": "987654321"
+      },
+      "chain": [
+        {
+          "cert_type": "intermediate",
+          "blob": "MIIETTCCAjWgAwIBAgIJAMkyYFBPzGLZMA0GCSqGSIb3DQEBCwUAMDAxLjAsBgNVBAMMJUpzaWduIFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IDIwMjIwHhcNMjIxMTE1MTgxNTMzWhcNNDIxMTEwMTgxNTMzWjAlMSMwIQYDVQQDDBpKc2lnbiBDb2RlIFNpZ25pbmcgQ0EgMjAyMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALpixZGfxZalF9pemY88A0E9HpOnxZNOPHeG054vm0SQNvr865ygHkXYcWZA/yRZ2SFQ/Y98Ne2buO5gXz7a7OOrF1qzsIGIo7b1p6ueFYthb1EDKArA6tEieiDzHI1PbNGbsGBwDZfVMDeIL003mMugFk0tIADmBEhDbxgRa+tMJ1CiN6ZZwUhSdX46WGPah0L+q+Iw0b6nbMl/r30R20utKIp8SPCg5JutOqBMGXuNg9CELIHTskdZkcA1BcKtW1Vbc9vloWlfvfWq8Xba2pqJ7pyV/UiJIjOBzdGZT2+cjsjcfJT20i8t/0o/sONS06WwKbz90OGWMc8W9z0dqBkCAwEAAaN1MHMwDwYDVR0TBAgwBgEB/wIBADALBgNVHQ8EBAMCAQYwEwYDVR0lBAwwCgYIKwYBBQUHAwMwHQYDVR0OBBYEFJ9pNp0nqBx5bIhLCZF6EHl/ZnfaMB8GA1UdIwQYMBaAFNsIlZmOYVuVCwdDzsLTMOIDKQM+MA0GCSqGSIb3DQEBCwUAA4ICAQAThD8CGA+/T/fdw4jFWs4yFCnkpDFOYnCAs0zvzY3GnN9dQ1RjwJ2UtCHg8KIid9tR89vMnYgyk4Jst948FaWr17qzVRL5AwuKeE8xW2a5i18Lw2SwszAafcywSZEeuGtE58zl23gymfH1ADWwh8C+VVDLMCX1pFQXNdC+3MAMs75/QYe625YaDodw6MjkTDHIr9yY+UTbjePEJhMXOE00pwKHe/5khKrgaEGCINcIFcU2CtbwGKm7cbI1cjoecGGO+bMdrzFc86kTgG1bTULYUxm/E0Dj3UBLs0s3WjX3pcxpucyQ3Q5tlWA45vXMqOfP4QJ8m0QOimp8Br8eOyAgx37EtXhqN1hZ16pjMYYzgnigZK2M6/+IJbHCf1x+opub9fsXbZ8jdBwDLSBqzgHFhSS6NjFSO6CBJoDJ9wdXLkCZL6MB27jFij8o5QtJul5LuBCeFbk8moGwN3E5/U6fb/lewb8+pPTlvsQnnSVFe13XFF9MWWw6G3m48cpWbD4Gut7BbjemrWqcs/954GmYNfHUkAbg5sSVw/eT/bYCwXvFj/Z8cXG9p0vRWWbeXBAounp5lHEVSRBxOxM/oiJsXTRXLTdDrY6gixRB+qVczrS5US0GSU9hOPWj4YJ5NDPaNfIdphEWOK2yUABAaYZV+sAI0/9AU5FYoofSuf2AuA=="
+        },
+        {
+          "cert_type": "root",
+          "blob": "MIIFNjCCAx6gAwIBAgIJAJCKzj9nrGsjMA0GCSqGSIb3DQEBCwUAMDAxLjAsBgNVBAMMJUpzaWduIFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IDIwMjIwHhcNMjIxMTE1MTgxNTMzWhcNNDIxMTEwMTgxNTMzWjAwMS4wLAYDVQQDDCVKc2lnbiBSb290IENlcnRpZmljYXRlIEF1dGhvcml0eSAyMDIyMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqZRI3F6Sy1CvX0TzXQ+UgiEHdolh9e+L7+TuqrSiHC3L35EQxo7DUc7mHLwXT8p2WUZcy1k47rYUytaZ7clXREMjGAyDJ1mGp0MLeHWUp5IMZEl00j8dRrftawfGADj2IOmm9jZsPQnzJ4rl/MsB51h/z12Qh7Mtn1VHGM7+yVdUr0XVDaJkxL+jPhhAWR3rzZSOI5w5abgV2c0xqJJbsT/L342vBQq6Kg1QvGJiWfALj/spA39G94P92xoLAbV68BDWBnsIE6jRIf+ju7SEX7xBVFBN6nVx6bav/G5aktAnoF5B0bREkC2tKHFVntciyAaCPlff0Q6SM749gKvFi+m+tmupFQ55U9JjEEzlifSSunlNvqCxkR8dBCfTgi9WZ/8b6nR96GKH28xy+zn7xZSyuBpICmFY2aYQfs9gguz0EDhXxoy7mD2sf+fne40Np0kWiFHV46PZ32oRmWExVFDjXl6AVYpTc+FFDgLcm9wqq3jiCS1Qx+MbfoLqJ5DSabdpkjMsqgbWSdTCF8oMzaAn30EsZwgTPw8z2Oyhz4kAxeXeE50hn+SnEsdZ7HlPn2ANhq36qI61VVY4Yw0MQBHMXw6mOVC8TESY2A/iWf3iHh2CEkltTdyASYW70eJ3T0zBcmoDT28i+xD46HL9rWJ7O1Lc0HEwDx8w2ktrM4ECAwEAAaNTMFEwHQYDVR0OBBYEFNsIlZmOYVuVCwdDzsLTMOIDKQM+MB8GA1UdIwQYMBaAFNsIlZmOYVuVCwdDzsLTMOIDKQM+MA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggIBADfPJGlZAGSVQRGOaVhOyokP/wCSQ/DKxAXUx/KQ7vGH19ATIyaWeKl3x3Py/Cd7+2v2yxq7PQqsk6n+M6N7TzRSfIIqxhBkJsAooCUAJFDNQU4bMvnbhcIAn/w0i5ba7A5SQ2r5Dp2+n4ilVMf1mYnkeEMO+asJhkhqNVMQL3G70C1+yIDQaBV9L4lZAS+50wS+x/ZS5HK/aOG5RZWwn7UP71xawDV7v3Vr+H95mPj8De78SAqkCcXlJtvXjDdoBE8rynMDS0EatXnRjxZgb7rOfOeJGXn/AF1PM4rQy7fJrcWtZHsG5ScXJaJu1jWKPGXEJa3BTw4BJRK/8fffN5XW7RfFLNYVvD+JGEJF4pkS2WXkgafFN7wkYbj9AyjHT4AhJykZeIWBMllV7kAg73uQSkNw18VjpqIWXzVLIcdgi1O+8EAglYUEwUIAl2Cn3f9MACwg12J+8OUEc57OLfqeIZ/JPbIIvSw25RY/D9KqP/OtEXOF+9FSqYZ9xadHyUaGf/OopUMz2MTQ8hrmBBMRrq4SE/xk4UNtPgMGqMeBKKnGXQXgl1393DQg6EvjpdpFy2ZnzU6XUgZSzsC1clNz6COFIxv7kTM/L3QBJR9F+w5UgVofdK6J2zzobAjnJ35y40DNNIlXlL+buINL0mKLwcEkz6dGgAWiNsUGyNQG"
+        }
+      ],
+      "valid_from": "2022-11-15T00:00:00Z",
+      "valid_to": "2042-11-10T23:59:59Z",
+      "custom_fields": [],
+      "auto_renewal": true
+    }
+  ],
+  "account": {
+    "id": "02d7ea41-4b83-b19a-83b4-3f9c1b748e22",
+    "name": "The Jsign Project",
+    "cert_central_integration_allowed": true,
+    "dynamic_test_keypair_allowed": false,
+    "gpg_enabled": false,
+    "is_csr_gen_enabled": false
+  },
+  "limit_by_users": true,
+  "users": [
+    {
+      "id": "9d16b0a6-485b-a647-56c2-44b9aa1d2d47",
+      "name": "John Doe",
+      "auth_type": "BASIC"
+    }
+  ],
+  "created_on": "2021-11-05T13:41:06Z",
+  "created_by_user": {
+    "id": "9d16b0a6-485b-a647-56c2-44b9aa1d2d47",
+    "name": "John Doe",
+    "auth_type": "BASIC"
+  },
+  "modified_on": "2023-11-08T18:02:21Z",
+  "modified_by_user": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "name": "Automated",
+    "auth_type": "BASIC"
+  },
+  "key_status": "ONLINE",
+  "groups": [
+    {
+      "id": "66310754-41cb-8707-a39c-ab20d1016be5",
+      "name": "The Jsign Project",
+      "status": "ACTIVE",
+      "created_on": "2021-01-13T13:31:43Z",
+      "created_by": "9d16b0a6-485b-a647-56c2-44b9aa1d2d47",
+      "modified_on": "2021-06-24T07:05:00Z",
+      "modified_by": "9d16b0a6-485b-a647-56c2-44b9aa1d2d47"
+    }
+  ],
+  "number_of_active_certificates": 1,
+  "key_modal_type": "STATIC",
+  "is_signable_by_me": true,
+  "hsm_partition_details": {
+    "id": "CD4E31F42A4910397A3193843225C2B0",
+    "name": "DigiCertOneEscrowCluster",
+    "escrow_default": false,
+    "enabled": true,
+    "provider_partition_id": "11452578890705",
+    "hsm_provider": {
+      "name": "SafeNet"
+    },
+    "account_assignments": null,
+    "display_name": "KeyEscrow",
+    "partition_name": "DigiCertOneEscrowCluster",
+    "allowed_uses": [
+      "key_escrow"
+    ],
+    "access_to_all": false,
+    "security_level": "level_3",
+    "created_date": "2020-10-08T15:09:27",
+    "active_escrow_key_present": false,
+    "default": false
+  }
+}
