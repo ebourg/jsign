@@ -102,7 +102,7 @@ class RESTClient {
                 return map;
             }
         } else {
-            String error = IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8);
+            String error = conn.getErrorStream() != null ? IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8) : "";
             if (contentType != null && (contentType.startsWith("application/json") || contentType.startsWith("application/x-amz-json-1.1"))) {
                 throw new IOException(getErrorMessage(JsonReader.jsonToMaps(error)));
             } else {
