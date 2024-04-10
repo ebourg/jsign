@@ -102,7 +102,12 @@ public class JsignJcaProvider extends Provider {
         public JsignJcaKeyStore(KeyStoreType type, String keystore) {
             builder.storetype(type);
             builder.keystore(keystore);
-            builder.certfile("");
+            String certfile = System.getProperty("jsign.certfile");
+            if (certfile == null) {
+                builder.certfile("");
+            } else {
+                builder.certfile(certfile);
+            }
         }
 
         private KeyStore getKeyStore() throws KeyStoreException {
