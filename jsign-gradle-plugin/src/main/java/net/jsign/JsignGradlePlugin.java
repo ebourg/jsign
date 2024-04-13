@@ -43,7 +43,7 @@ public class JsignGradlePlugin implements Plugin<Project> {
                 for (Map.Entry<String, String> param : params.entrySet()) {
                     helper.param(param.getKey(), param.getValue());
                 }
-                helper.sign(file);
+                helper.execute(file);
             }
 
             public void doCall(kotlin.Pair<String, String>... pairs) throws SignerException {

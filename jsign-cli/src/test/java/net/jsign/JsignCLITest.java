@@ -82,7 +82,7 @@ public class JsignCLITest {
 
     @Test(expected = SignerException.class)
     public void testMissingKeyStore() throws Exception {
-        cli.execute("" + targetFile);
+        cli.execute("sign", "" + targetFile);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -531,6 +531,16 @@ public class JsignCLITest {
             fail("No exception thrown");
         } catch (SignerException e) {
             assertEquals("exception message", "The certificate chain in target/test-classes/keystores/jsign-test-certificate-partial-chain-reversed.pem does not match the chain from the keystore", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testUnknownCommand() throws Exception  {
+        try {
+            cli.execute("unsign", "" + targetFile);
+            fail("No exception thrown");
+        } catch (ParseException e) {
+            assertEquals("exception message", "Unknown command 'unsign'", e.getMessage());
         }
     }
 }

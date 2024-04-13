@@ -55,6 +55,7 @@ import net.jsign.timestamp.TimestampingMode;
  * @since 2.0
  */
 class SignerHelper {
+    public static final String PARAM_COMMAND = "command";
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
@@ -81,6 +82,7 @@ class SignerHelper {
     /** The name used to refer to a configuration parameter */
     private final String parameterName;
 
+    private String command = "sign";
     private final KeyStoreBuilder ksparams;
     private String alias;
     private String tsaurl;
@@ -103,6 +105,11 @@ class SignerHelper {
         this.console = console;
         this.parameterName = parameterName;
         this.ksparams = new KeyStoreBuilder(parameterName);
+    }
+
+    public SignerHelper command(String command) {
+        this.command = command;
+        return this;
     }
 
     public SignerHelper keystore(String keystore) {
@@ -221,6 +228,7 @@ class SignerHelper {
         }
         
         switch (key) {
+            case PARAM_COMMAND:    return command(value);
             case PARAM_KEYSTORE:   return keystore(value);
             case PARAM_STOREPASS:  return storepass(value);
             case PARAM_STORETYPE:  return storetype(value);
@@ -248,6 +256,20 @@ class SignerHelper {
 
     void setBaseDir(File basedir) {
         ksparams.setBaseDir(basedir);
+    }
+
+    public void execute(String file) throws SignerException {
+        execute(ksparams.createFile(file));
+    }
+
+    public void execute(File file) throws SignerException {
+        switch (command) {
+            case "sign":
+                sign(file);
+                break;
+            default:
+                throw new SignerException("Unknown command '" + command + "'");
+        }
     }
 
     private AuthenticodeSigner build() throws SignerException {

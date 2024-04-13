@@ -54,12 +54,12 @@ public class SignerHelperTest {
                 .keypass("password");
 
         // sign and detach
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         assertFalse("Signature was detached", detachedSignatureFile.exists());
 
         signer.alg("SHA-512").detached(true);
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         assertTrue("Signature wasn't detached", detachedSignatureFile.exists());
 
@@ -71,7 +71,7 @@ public class SignerHelperTest {
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
         signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
-        signer.sign(targetFile2);
+        signer.execute(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
     }
@@ -101,7 +101,7 @@ public class SignerHelperTest {
                 .detached(true);
 
         // sign and detach
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         assertTrue("Signature wasn't detached", detachedSignatureFile.exists());
 
@@ -113,7 +113,7 @@ public class SignerHelperTest {
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
         signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
-        signer.sign(targetFile2);
+        signer.execute(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
     }
@@ -131,7 +131,7 @@ public class SignerHelperTest {
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("file:target/test-classes/storepass.txt");
 
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -148,7 +148,7 @@ public class SignerHelperTest {
                 .keypass("file:/path/to/missing/file");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
         } catch (SignerException e) {
             assertEquals("message", "Failed to read the keypass parameter from the file '/path/to/missing/file'", e.getMessage());
         }
@@ -167,7 +167,7 @@ public class SignerHelperTest {
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("env:STOREPASS");
 
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -186,7 +186,7 @@ public class SignerHelperTest {
                 .keypass("env:MISSING_VAR");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
         } catch (SignerException e) {
             assertEquals("message", "Failed to read the keypass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
         }
@@ -207,7 +207,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -226,7 +226,7 @@ public class SignerHelperTest {
                 .alias("jsign")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -246,7 +246,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -266,7 +266,7 @@ public class SignerHelperTest {
                 .alias("Tomcat-PMC-cert-2021-11")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -286,7 +286,7 @@ public class SignerHelperTest {
                 .keypass("RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -306,7 +306,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -328,7 +328,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -346,7 +346,7 @@ public class SignerHelperTest {
                 .certfile("target/test-classes/keystores/jsign-test-certificate-full-chain.pem");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
@@ -368,7 +368,7 @@ public class SignerHelperTest {
                 .certfile("target/test-classes/keystores/jsign-root-ca.pem");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2022)", e.getCause().getMessage());
@@ -390,7 +390,7 @@ public class SignerHelperTest {
                 .certfile("target/test-classes/keystores/jsign-test-certificate-partial-chain.pem");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
             fail("No exception thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2022)", e.getCause().getMessage());
@@ -408,6 +408,17 @@ public class SignerHelperTest {
             signer.sign("target/test-classes/wineyes.exe");
         } catch (SignerException e) {
             assertEquals("message", "The keystore password must be specified", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUnknownCommand() {
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        signer.command("unsign");
+        try {
+            signer.execute("target/test-classes/wineyes.exe");
+        } catch (SignerException e) {
+            assertEquals("message", "Unknown command 'unsign'", e.getMessage());
         }
     }
 }

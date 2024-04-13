@@ -51,6 +51,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter
     private FileSet fileset;
 
+    /** The operation to execute */
+    @Parameter( property = "jsign.command", defaultValue = "sign" )
+    private String command = "sign";
+
     /** The program name embedded in the signature. */
     @Parameter( property = "jsign.name" )
     private String name;
@@ -189,6 +193,7 @@ public class JsignMojo extends AbstractMojo {
         SignerHelper helper = new SignerHelper(new MavenConsole(getLog()), "element");
         helper.setBaseDir(project.getBasedir());
         
+        helper.command(command);
         helper.name(name);
         helper.url(url);
         helper.alg(algorithm);
@@ -216,13 +221,13 @@ public class JsignMojo extends AbstractMojo {
 
         try {
             if (file != null) {
-                helper.sign(file);
+                helper.execute(file);
             }
 
             if (fileset != null) {
                 for (String filename : new FileSetManager().getIncludedFiles(fileset)) {
                     File file = new File(fileset.getDirectory(), filename);
-                    helper.sign(file);
+                    helper.execute(file);
                 }
             }
         } catch (SignerException e) {

@@ -17,6 +17,11 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -48,10 +53,11 @@ public class JsignCLI {
         }
     }
 
-    private final Options options;
+    /** The options for each operation */
+    private final Map<String, Options> options = new LinkedHashMap<>();
 
     JsignCLI() {
-        options = new Options();
+        Options options = new Options();
         options.addOption(Option.builder("s").hasArg().longOpt(PARAM_KEYSTORE).argName("FILE").desc("The keystore file, the SunPKCS11 configuration file, the cloud keystore name, or the card/token name").type(File.class).build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STOREPASS).argName("PASSWORD").desc("The password to open the keystore").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STORETYPE).argName("TYPE")
@@ -92,11 +98,24 @@ public class JsignCLI {
         options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one).").build());
         options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused.").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
+
+        this.options.put("sign", options);
     }
 
     void execute(String... args) throws SignerException, ParseException {
         DefaultParser parser = new DefaultParser();
         
+        String command = "sign";
+        if (args.length >= 1 && !args[0].startsWith("-")) {
+            command = args[0];
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
+
+        Options options = this.options.get(command);
+        if (options == null) {
+            throw new ParseException("Unknown command '" + command + "'");
+        }
+
         CommandLine cmd = parser.parse(options, args);
 
         if (cmd.hasOption("help") || args.length == 0) {
@@ -105,6 +124,7 @@ public class JsignCLI {
         }
         
         SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option");
+        helper.command(command);
         
         setOption(PARAM_KEYSTORE, helper, cmd);
         setOption(PARAM_STOREPASS, helper, cmd);
@@ -132,7 +152,7 @@ public class JsignCLI {
         }
 
         for (String filename : cmd.getArgList()) {
-            helper.sign(new File(filename));
+            helper.execute(new File(filename));
         }
     }
 
@@ -156,7 +176,23 @@ public class JsignCLI {
         formatter.setOptionComparator(null);
         formatter.setWidth(85);
         formatter.setDescPadding(1);
-        formatter.printHelp(getProgramName() + " [OPTIONS] [FILE]...", header, options, footer);
+
+        PrintWriter out = new PrintWriter(System.out);
+        formatter.printUsage(out, formatter.getWidth(), getProgramName() + " [COMMAND] [OPTIONS] [FILE]...");
+        out.println();
+        formatter.printWrapped(out, formatter.getWidth(), header);
+
+        out.println("commands: " + options.keySet().stream().map(s -> "sign".equals(s) ? s + " (default)" : s).collect(Collectors.joining(", ")));
+
+        for (String command : options.keySet()) {
+            if (!options.get(command).getOptions().isEmpty()) {
+                out.println();
+                out.println(command + ":");
+                formatter.printOptions(out, formatter.getWidth(), options.get(command), formatter.getLeftPadding(), formatter.getDescPadding());
+            }
+        }
+        formatter.printWrapped(out, formatter.getWidth(), footer);
+        out.flush();
     }
 
     private static String getProgramName() {

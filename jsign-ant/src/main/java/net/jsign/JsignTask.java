@@ -36,6 +36,9 @@ public class JsignTask extends Task {
     /** The set of files to be signed. */
     private FileSet fileset;
 
+    /** The operation to execute */
+    private String command = "sign";
+
     /** The program name embedded in the signature. */
     private String name;
 
@@ -169,6 +172,7 @@ public class JsignTask extends Task {
             SignerHelper helper = new SignerHelper(new AntConsole(this), "attribute");
             helper.setBaseDir(getProject().getBaseDir());
             
+            helper.command(command);
             helper.name(name);
             helper.url(url);
             helper.alg(algorithm);
@@ -189,10 +193,10 @@ public class JsignTask extends Task {
 
             if (fileset != null) {
                 for(String fileElement : fileset.getDirectoryScanner().getIncludedFiles()) {
-                    helper.sign(new File(fileset.getDir(), fileElement));
+                    helper.execute(new File(fileset.getDir(), fileElement));
                 }
             } else {
-                helper.sign(file);
+                helper.execute(file);
             }
         } catch (Exception e) {
             throw new BuildException(e.getMessage(), e, getLocation());
