@@ -553,4 +553,14 @@ public class JsignCLITest {
             assertEquals("exception message", "No signature found in " + targetFile.getPath(), e.getMessage());
         }
     }
+
+    @Test
+    public void testRemove() throws Exception {
+        try {
+            cli.execute("remove", "xeyes.exe");
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("exception message", "Couldn't find xeyes.exe", e.getMessage());
+        }
+    }
 }

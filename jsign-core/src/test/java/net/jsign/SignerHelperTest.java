@@ -516,4 +516,54 @@ public class SignerHelperTest {
             assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
         }
     }
+
+    @Test
+    public void testRemove() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+
+        signer.command("remove");
+        signer.execute(targetFile);
+
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
+    }
+
+    @Test
+    public void testRemoveFromUnsignedFile() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        signer.command("remove");
+        signer.execute(targetFile);
+
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
+    }
+
+    @Test
+    public void testRemoveFromMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        signer.command("remove");
+
+        try {
+            signer.execute(file);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
 }

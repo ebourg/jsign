@@ -105,6 +105,10 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_FORMAT).argName("FORMAT").desc("      The output format of the signature (DER or PEM)").build());
 
         this.options.put("extract", options);
+
+        options = new Options();
+
+        this.options.put("remove", options);
     }
 
     void execute(String... args) throws SignerException, ParseException {

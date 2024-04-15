@@ -280,6 +280,9 @@ class SignerHelper {
             case "extract":
                 extract(file);
                 break;
+            case "remove":
+                remove(file);
+                break;
             default:
                 throw new SignerException("Unknown command '" + command + "'");
         }
@@ -500,6 +503,28 @@ class SignerHelper {
             throw e;
         } catch (Exception e) {
             throw new SignerException("Couldn't extract the signature from " + file, e);
+        }
+    }
+
+    private void remove(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                console.warn("No signature found in " + file);
+                return;
+            }
+
+            console.info("Removing signature from " + file);
+            signable.setSignature(null);
+            signable.save();
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            throw new SignerException(e.getMessage());
+        } catch (Exception e) {
+            throw new SignerException("Couldn't remove the signature from " + file, e);
         }
     }
 
