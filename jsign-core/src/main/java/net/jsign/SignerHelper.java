@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -33,6 +34,7 @@ import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.cert.Certificate;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -76,6 +78,7 @@ class SignerHelper {
     public static final String PARAM_REPLACE = "replace";
     public static final String PARAM_ENCODING = "encoding";
     public static final String PARAM_DETACHED = "detached";
+    public static final String PARAM_FORMAT = "format";
 
     private final Console console;
 
@@ -98,6 +101,7 @@ class SignerHelper {
     private boolean replace;
     private Charset encoding;
     private boolean detached;
+    private String format;
 
     private AuthenticodeSigner signer;
 
@@ -222,6 +226,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper format(String format) {
+        this.format = format;
+        return this;
+    }
+
     public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
@@ -249,6 +258,7 @@ class SignerHelper {
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
             case PARAM_ENCODING:   return encoding(value);
             case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
+            case PARAM_FORMAT:     return format(value);
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -266,6 +276,9 @@ class SignerHelper {
         switch (command) {
             case "sign":
                 sign(file);
+                break;
+            case "extract":
+                extract(file);
                 break;
             default:
                 throw new SignerException("Unknown command '" + command + "'");
@@ -443,12 +456,51 @@ class SignerHelper {
     private void detach(Signable signable, File detachedSignature) throws IOException {
         CMSSignedData signedData = signable.getSignatures().get(0);
         byte[] content = signedData.toASN1Structure().getEncoded("DER");
-
-        FileUtils.writeByteArrayToFile(detachedSignature, content);
+        if (format == null || "DER".equalsIgnoreCase(format)) {
+            FileUtils.writeByteArrayToFile(detachedSignature, content);
+        } else if ("PEM".equalsIgnoreCase(format)) {
+            try (FileWriter out = new FileWriter(detachedSignature)) {
+                String encoded = Base64.getEncoder().encodeToString(content);
+                out.write("-----BEGIN PKCS7-----\n");
+                for (int i = 0; i < encoded.length(); i += 64) {
+                    out.write(encoded.substring(i, Math.min(i + 64, encoded.length())));
+                    out.write('\n');
+                }
+                out.write("-----END PKCS7-----\n");
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown output format '" + format + "'");
+        }
     }
 
     private File getDetachedSignature(File file) {
         return new File(file.getParentFile(), file.getName() + ".sig");
+    }
+
+    private void extract(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                throw new SignerException("No signature found in " + file);
+            }
+
+            File detachedSignature = getDetachedSignature(file);
+            if ("PEM".equalsIgnoreCase(format)) {
+                detachedSignature = new File(detachedSignature.getParentFile(), detachedSignature.getName() + ".pem");
+            }
+            console.info("Extracting signature to " + detachedSignature);
+            detach(signable, detachedSignature);
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            throw new SignerException(e.getMessage());
+        } catch (SignerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SignerException("Couldn't extract the signature from " + file, e);
+        }
     }
 
     /**

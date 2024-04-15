@@ -543,4 +543,14 @@ public class JsignCLITest {
             assertEquals("exception message", "Unknown command 'unsign'", e.getMessage());
         }
     }
+
+    @Test
+    public void testExtract() throws Exception {
+        try {
+            cli.execute("extract", "" + targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("exception message", "No signature found in " + targetFile.getPath(), e.getMessage());
+        }
+    }
 }

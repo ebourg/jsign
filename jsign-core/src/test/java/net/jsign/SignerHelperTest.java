@@ -421,4 +421,99 @@ public class SignerHelperTest {
             assertEquals("message", "Unknown command 'unsign'", e.getMessage());
         }
     }
+
+    @Test
+    public void testExtractDER() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("extract");
+        signer.execute(targetFile);
+
+        File signatureFile = new File("target/test-classes/wineyes-signed.exe.sig");
+        assertTrue("Signature not extracted", signatureFile.exists());
+    }
+
+    @Test
+    public void testExtractPEM() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("extract");
+        signer.format("PEM");
+        signer.execute(targetFile);
+
+        File signatureFile = new File("target/test-classes/wineyes-signed.exe.sig.pem");
+        assertTrue("Signature not extracted", signatureFile.exists());
+    }
+
+    @Test
+    public void testExtractWithInvalidFormat() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("extract");
+        signer.format("TXT");
+
+        try {
+            signer.execute(targetFile);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Unknown output format 'TXT'", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testExtractFromUnsignedFile() {
+        File file = new File("target/test-classes/wineyes.exe");
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        signer.command("extract");
+
+        try {
+            signer.execute(file);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testExtractFromMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        signer.command("extract");
+
+        try {
+            signer.execute(file);
+            fail("No exception thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
 }

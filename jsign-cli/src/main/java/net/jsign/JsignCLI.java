@@ -100,6 +100,11 @@ public class JsignCLI {
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
 
         this.options.put("sign", options);
+
+        options = new Options();
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_FORMAT).argName("FORMAT").desc("      The output format of the signature (DER or PEM)").build());
+
+        this.options.put("extract", options);
     }
 
     void execute(String... args) throws SignerException, ParseException {
@@ -146,6 +151,7 @@ public class JsignCLI {
         helper.replace(cmd.hasOption(PARAM_REPLACE));
         setOption(PARAM_ENCODING, helper, cmd);
         helper.detached(cmd.hasOption(PARAM_DETACHED));
+        setOption(PARAM_FORMAT, helper, cmd);
 
         if (cmd.getArgList().isEmpty()) {
             throw new SignerException("No file specified");
