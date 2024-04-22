@@ -384,6 +384,13 @@ class SignerHelper {
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
+
+        // enable timestamping with Azure Trusted Signing
+        if (tsaurl == null && storetype == KeyStoreType.TRUSTEDSIGNING) {
+            tsaurl = "http://timestamp.acs.microsoft.com/";
+            tsmode = TimestampingMode.RFC3161.name();
+            tsretries = 3;
+        }
         
         // configure the signer
         return new AuthenticodeSigner(chain, privateKey)

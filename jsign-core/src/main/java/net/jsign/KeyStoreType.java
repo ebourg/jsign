@@ -37,6 +37,7 @@ import javax.smartcardio.CardException;
 import net.jsign.jca.AmazonCredentials;
 import net.jsign.jca.AmazonSigningService;
 import net.jsign.jca.AzureKeyVaultSigningService;
+import net.jsign.jca.AzureTrustedSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
@@ -468,6 +469,30 @@ public enum KeyStoreType {
                 throw new RuntimeException("An error occurred while fetching the Oracle Cloud credentials", e);
             }
             return new SigningServiceJcaProvider(new OracleCloudSigningService(credentials, getCertificateStore(params)));
+        }
+    },
+
+    /**
+     * Azure Trusted Signing Service. The keystore parameter specifies the API endpoint (for example
+     * <code>weu.codesigning.azure.net</code>). The Azure API access token is used as the keystore password,
+     * it can be obtained using the Azure CLI with:
+     *
+     * <pre>  az account get-access-token --resource https://codesigning.azure.net</pre>
+     */
+    TRUSTEDSIGNING(false, false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.keystore() == null) {
+                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the Azure endpoint (<region>.codesigning.azure.net)");
+            }
+            if (params.storepass() == null) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Azure API access token");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            return new SigningServiceJcaProvider(new AzureTrustedSigningService(params.keystore(), params.storepass()));
         }
     };
 

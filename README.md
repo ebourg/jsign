@@ -32,6 +32,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
   * Cloud key management systems:
     * [AWS KMS](https://aws.amazon.com/kms/)
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
+    * [Azure Trusted Signing](https://learn.microsoft.com/en-us/azure/trusted-signing/)
     * [DigiCert ONE](https://one.digicert.com)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)
@@ -51,6 +52,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 6.1 (in development)
 
+* The Azure Trusted Signing service has been integrated
 * The Oracle Cloud signing service has been integrated
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages

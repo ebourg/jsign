@@ -312,6 +312,27 @@ public class SignerHelperTest {
     }
 
     @Test
+    public void testTrustedSigning() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-azure-trusted-signing.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+                .storetype("TRUSTEDSIGNING")
+                .keystore("weu.codesigning.azure.net")
+                .storepass(Azure.getAccessToken("https://codesigning.azure.net"))
+                .alias("MyAccount/MyProfile")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        Signable signable = Signable.of(targetFile);
+        SignatureAssert.assertSigned(signable, SHA256);
+        SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+    }
+
+    @Test
     public void testPIV() throws Exception {
         PIVCardTest.assumeCardPresent();
 

@@ -29,9 +29,16 @@ public class Azure {
      * Generates an Azure access token using the CLI: az account get-access-token --resource "https://vault.azure.net"
      */
     public static String getAccessToken() throws IOException, InterruptedException {
+        return getAccessToken("https://vault.azure.net");
+    }
+
+    /**
+     * Generates an Azure access token using the CLI: az account get-access-token --resource &lt;resource&gt;
+     */
+    public static String getAccessToken(String resource) throws IOException, InterruptedException {
         Process process = null;
         try {
-            ProcessBuilder builder = new ProcessBuilder("az.cmd", "account", "get-access-token", "--resource", "https://vault.azure.net");
+            ProcessBuilder builder = new ProcessBuilder("az.cmd", "account", "get-access-token", "--resource", resource);
             process = builder.start();
             process.waitFor();
             Assume.assumeTrue("Couldn't get Azure API token", process.exitValue() == 0);

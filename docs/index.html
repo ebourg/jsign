@@ -70,6 +70,7 @@ programmatically or standalone as a command line tool.</p>
         <ul>
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
           <li><a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a></li>
+          <li><a href="https://learn.microsoft.com/en-us/azure/trusted-signing/">Azure Trusted Signing</a></li>
           <li><a href="https://one.digicert.com">DigiCert ONE</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
@@ -198,6 +199,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
           <li><code>HASHICORPVAULT</code>: Google Cloud KMS via HashiCorp Vault</li>
           <li><code>ORACLECLOUD</code>: Oracle Cloud Key Management Service</li>
+          <li><code>TRUSTEDSIGNING</code>: Azure Trusted Signing</li>
         </ul>
       </td>
       <td class="required">No, automatically detected for file based keystores.</td>
@@ -472,6 +474,7 @@ are the same as those described above for the Ant task.</p>
                              - GOOGLECLOUD: Google Cloud KMS
                              - HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
                              - ORACLECLOUD: Oracle Cloud Key Management Service
+                             - TRUSTEDSIGNING: Azure Trusted Signing
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
@@ -640,6 +643,35 @@ key management system can be used with:</p>
 </pre>
 
 <p>The Azure account used must have the <em>"Key Vault Crypto User"</em> and <em>"Key Vault Certificate User"</em> roles.</p>
+
+<h4 id="example-trustedsigning">Signing with Azure Trusted Signing</h4>
+
+<p>With the Azure <a href="https://learn.microsoft.com/en-us/azure/trusted-signing/overview">Trusted Signing</a> service
+the <code>keystore</code> parameter specifies the endpoint URI, and the <code>alias</code> combines the account name and
+the certificate profile. The Azure API access token is used as the keystore password.</p>
+
+<pre>
+ jsign --storetype TRUSTEDSIGNING \
+       --keystore weu.codesigning.azure.net \
+       --storepass &lt;api-access-token&gt; \
+       --alias &lt;account&gt;/&lt;profile&gt; application.exe
+</pre>
+
+<p>The access token can be obtained with the <a href="https://learn.microsoft.com/en-us/cli/azure/">Azure CLI</a>:</p>
+
+<pre>
+ az account get-access-token --resource https://codesigning.azure.net
+</pre>
+
+<p>The Azure account used must have the <em>"Code Signing Certificate Profile Signer"</em> role.</p>
+
+<p>The certificates issued by Azure Trusted Signing have a lifetime of 3 days only, and timestamping is necessary to
+ensure the long term validity of the signature. For this reason timestamping is automatically enabled when signing
+with this service.</p>
+
+<p>Implementation note: Jsign performs an extra call to the signing API to retrieve the current certificate chain before
+signing. When signing multiple files it's recommended to invoke Jsign only once with the list of files to avoid doubling
+the quota usage.</p>
 
 <h4 id="example-digicertone">Signing with DigiCert ONE</h4>
 

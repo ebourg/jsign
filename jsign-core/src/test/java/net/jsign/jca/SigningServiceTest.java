@@ -200,4 +200,14 @@ public class SigningServiceTest {
 
         testCustomProvider(provider, keystore, "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", "");
     }
+
+    @Test
+    public void testTrustedSigningProvider() throws Exception {
+        String token = Azure.getAccessToken("https://codesigning.azure.net");
+        Provider provider = new SigningServiceJcaProvider(new AzureTrustedSigningService("https://weu.codesigning.azure.net", token));
+        KeyStore keystore = KeyStore.getInstance("TRUSTEDSIGNING", provider);
+        keystore.load(null, "".toCharArray());
+
+        testCustomProvider(provider, keystore, "MyAccount/MyProfile", "");
+    }
 }

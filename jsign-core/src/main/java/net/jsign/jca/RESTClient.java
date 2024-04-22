@@ -26,6 +26,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
 import org.apache.commons.io.IOUtils;
 
 class RESTClient {
@@ -136,6 +137,10 @@ class RESTClient {
             String error = (String) response.get("__type");
             String description = (String) response.get("message");
             message.append(error).append(": ").append(description);
+        } else if (response.containsKey("title") && response.containsKey("errors")) {
+            // error from Azure Code Signing API
+            String errors = JsonWriter.objectToJson(response.get("errors"));
+            message.append(response.get("status")).append(" - ").append(response.get("title")).append(": ").append(errors);
         } else if (response.containsKey("code") && response.containsKey("message")) {
             // error from OCI API
             message.append(response.get("code")).append(": ").append(response.get("message"));

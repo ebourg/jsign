@@ -330,6 +330,32 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildTrustedSigning() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(TRUSTEDSIGNING);
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "keystore parameter must specify the Azure endpoint (<region>.codesigning.azure.net)", e.getMessage());
+        }
+
+        builder.keystore("https://weu.codesigning.azure.net");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
+        }
+
+        builder.storepass("0123456789ABCDEF");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildJKS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(JKS);
 
