@@ -38,19 +38,27 @@ class SigningServiceKeyStore extends AbstractKeyStoreSpi {
 
     @Override
     public Certificate[] engineGetCertificateChain(String alias) {
+        Certificate[] chain = null;
         try {
-            return service.getCertificateChain(alias);
+            chain = service.getCertificateChain(alias);
         } catch (KeyStoreException e) {
-            return null;
+            rethrow(e);
         }
+        return chain;
     }
 
     @Override
     public Enumeration<String> engineAliases() {
+        Enumeration<String> aliases = null;
         try {
-            return new Vector<>(service.aliases()).elements();
+            aliases = new Vector<>(service.aliases()).elements();
         } catch (KeyStoreException e) {
-            throw new RuntimeException(e);
+            rethrow(e);
         }
+        return aliases;
+    }
+
+    private static <T extends Throwable> void rethrow(Throwable t) throws T {
+        throw (T) t;
     }
 }
