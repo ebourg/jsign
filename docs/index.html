@@ -760,11 +760,10 @@ by a colon character.</p>
 used by the OCI CLI. The OCI CLI isn't required for signing, but it may be used to initialize the configuration file
 with <code>oci setup bootstrap</code>.</p>
 
-<p>The <code>keystore</code> parameter specifies the profile used in the configuration file
-(the default value is <code>DEFAULT</code>), and the <code>storepass</code> parameter specifies the path
-to the configuration file (<code>~/.oci/config</code> by default). The <code>keypass</code> parameter may
-be used to specify the passphrase of the key file used for signing the requests to the OCI API if it isn't
-set in the configuration file.</p>
+<p>The storepass parameter specifies the path to the configuration file (<code>~/.oci/config</code> by default). If the
+configuration file contains multiple profiles, the name of the non-default profile to use is appended to the storepass
+(for example <code>~/.oci/config|PROFILE</code>). The <code>keypass</code> parameter may be used to specify the
+passphrase of the key file used for signing the requests to the OCI API if it isn't set in the configuration file.</p>
 
 <p>The certificate must be provided separately using the <code>certfile</code> parameter. The alias specifies the OCID
 of the key.</p>
@@ -773,8 +772,7 @@ of the key.</p>
 
 <pre>
  jsign --storetype ORACLECLOUD \
-       --keystore &lt;profile&gt; \
-       --storepass &lt;oci-config-file&gt; \
+       --storepass "&lt;oci-config-file&gt;|&lt;profile&gt;" \
        --keypass &lt;passphrase&gt; \
        --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \
        --certfile full-chain.pem application.exe

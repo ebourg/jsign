@@ -323,7 +323,7 @@ public class KeyStoreBuilderTest {
         config.deleteOnExit();
         FileUtils.writeStringToFile(config, "[DEFAULT]\n", "UTF-8");
 
-        builder.storepass(config.getAbsolutePath());
+        builder.storepass(config.getAbsolutePath() + "|DEFAULT");
 
         KeyStore keystore = builder.build();
         assertNotNull("keystore", keystore);

@@ -430,8 +430,9 @@ Signing with the Oracle Cloud Infrastructure Key Management Service requires the
 the environment variables used by the OCI CLI. The OCI CLI isn't required for signing, but it may be used
 to initialize the configuration file with 'oci setup bootstrap'.
 
-The keystore parameter specifies the profile used in the configuration file (the default value is DEFAULT),
-and the storepass parameter specifies the path to the configuration file (~/.oci/config by default).
+The storepass parameter specifies the path to the configuration file (~/.oci/config by default). If the
+configuration file contains multiple profiles, the name of the non-default profile to use is appended
+to the storepass (for example ~/.oci/config|PROFILE).
 The keypass parameter may be used to specify the passphrase of the key file used for signing the requests
 to the OCI API if it isn't set in the configuration file.
 
@@ -440,8 +441,7 @@ The certificate must be provided separately using the certfile parameter. The al
 The general syntax looks like this:
 
 jsign --storetype ORACLECLOUD \\
-      --keystore <profile> \\
-      --storepass <oci-config-file> \\
+      --storepass "<oci-config-file>|<profile>" \\
       --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
       --certfile full-chain.pem application.exe
 

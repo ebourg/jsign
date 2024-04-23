@@ -444,10 +444,11 @@ public enum KeyStoreType {
     /**
      * Oracle Cloud Infrastructure Key Management Service. This keystore requires the <a href="https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm">configuration file</a>
      * or the <a href="https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/clienvironmentvariables.htm">environment
-     * variables</a> used by the OCI CLI. The keystore parameter specifies the profile used in the configuration file
-     * (the default value is <code>DEFAULT</code>), and the storepass parameter specifies the path to the configuration
-     * file (<code>~/.oci/config</code> by default). The keypass parameter may be used to specify the passphrase of the
-     * key file used for signing the requests to the OCI API if it isn't set in the configuration file.
+     * variables</a> used by the OCI CLI. The storepass parameter specifies the path to the configuration file
+     * (<code>~/.oci/config</code> by default). If the configuration file contains multiple profiles, the name of the
+     * non-default profile to use is appended to the storepass (for example <code>~/.oci/config|PROFILE</code>).
+     * The keypass parameter may be used to specify the passphrase of the key file used for signing the requests to
+     * the OCI API if it isn't set in the configuration file.
      *
      * <p>The certificate must be provided separately using the certfile parameter. The alias specifies the OCID
      * of the key.</p>
@@ -464,7 +465,16 @@ public enum KeyStoreType {
         Provider getProvider(KeyStoreBuilder params) {
             OracleCloudCredentials credentials = new OracleCloudCredentials();
             try {
-                credentials.load(params.storepass() != null ? new File(params.storepass()) : null, params.keystore());
+                File config = null;
+                String profile = null;
+                if (params.storepass() != null) {
+                    String[] elements = params.storepass().split("\\|", 2);
+                    config = new File(elements[0]);
+                    if (elements.length > 1) {
+                        profile = elements[1];
+                    }
+                }
+                credentials.load(config, profile);
                 credentials.loadFromEnvironment();
                 if (params.keypass() != null) {
                     credentials.setPassphrase(params.keypass());
