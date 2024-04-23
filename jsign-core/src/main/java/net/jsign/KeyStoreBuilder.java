@@ -155,7 +155,7 @@ public class KeyStoreBuilder {
         return this;
     }
 
-    String keypass() throws SignerException {
+    String keypass() {
         keypass = readPassword("keypass", keypass);
         return keypass;
     }

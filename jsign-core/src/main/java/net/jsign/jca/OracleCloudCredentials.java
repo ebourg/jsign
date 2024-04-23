@@ -64,6 +64,10 @@ public class OracleCloudCredentials {
         return passphrase;
     }
 
+    public void setPassphrase(String passphrase) {
+        this.passphrase = passphrase;
+    }
+
     public String getKeyId() {
         return getTenancy() + "/" + getUser() + "/" + getFingerprint();
     }
