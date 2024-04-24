@@ -19,10 +19,18 @@ package net.jsign.jca;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.GeneralSecurityException;
 import java.security.KeyException;
+import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import net.jsign.DigestAlgorithm;
 import net.jsign.PrivateKeyUtils;
 
 /**
@@ -57,7 +65,26 @@ public class OracleCloudCredentials {
     }
 
     public String getFingerprint() {
+        if (fingerprint == null) {
+            try {
+                fingerprint = getFingerprint(getPrivateKey());
+            } catch (GeneralSecurityException e) {
+                throw new RuntimeException("Unable to compute the OCI API key fingerprint", e);
+            }
+        }
         return fingerprint;
+    }
+
+    /**
+     * Compute the fingerprint of the specified key (i.e. the MD5 hash of the public key in DER format)
+     * @see <a href="https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#four">How to Get the Key's Fingerprint</a>
+     */
+    String getFingerprint(PrivateKey privateKey) throws GeneralSecurityException {
+        RSAPrivateCrtKey key = (RSAPrivateCrtKey) privateKey;
+        RSAPublicKeySpec publicKeySpec = new java.security.spec.RSAPublicKeySpec(key.getModulus(), key.getPublicExponent());
+        PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(publicKeySpec);
+        byte[] digest = DigestAlgorithm.MD5.getMessageDigest().digest(publicKey.getEncoded());
+        return IntStream.range(0, digest.length).mapToObj(i -> String.format("%02x", digest[i])).collect(Collectors.joining(":"));
     }
 
     public String getPassphrase() {

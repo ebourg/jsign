@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 
 public class OracleCloudCredentialsTest {
 
-    private File getSingleProgileConfiguration() throws Exception  {
+    private File getSingleProfileConfiguration() throws Exception  {
         String configuration = "[DEFAULT]\n" +
                 "user=ocid1.user.oc1..abcdefghijk\n" +
                 "tenancy=ocid1.tenancy.oc1..abcdefghijk\n" +
@@ -125,7 +125,7 @@ public class OracleCloudCredentialsTest {
             when(OracleCloudCredentials.getenv("OCI_CLI_USER")).thenReturn("ocid1.user.oc1..mnopqrstuvw");
 
             OracleCloudCredentials credentials = new OracleCloudCredentials();
-            credentials.load(getSingleProgileConfiguration(), null);
+            credentials.load(getSingleProfileConfiguration(), null);
             credentials.loadFromEnvironment();
 
             assertEquals("user", "ocid1.user.oc1..mnopqrstuvw", credentials.getUser());
@@ -167,11 +167,30 @@ public class OracleCloudCredentialsTest {
 
     @Test
     public void testGetPrivateKey() throws Exception {
-        File config = getSingleProgileConfiguration();
+        File config = getSingleProfileConfiguration();
 
         OracleCloudCredentials credentials = new OracleCloudCredentials();
         credentials.load(config, null);
 
         assertNotNull("private key", credentials.getPrivateKey());
+    }
+
+    @Test
+    public void testGetFingerprint() throws Exception {
+        String configuration = "[DEFAULT]\n" +
+                "user=ocid1.user.oc1..abcdefghijk\n" +
+                "tenancy=ocid1.tenancy.oc1..abcdefghijk\n" +
+                "region=eu-paris-1\n" +
+                "key_file=src/test/resources/keystores/privatekey.pkcs1.pem\n" +
+                "pass_phrase=password\n";
+
+        File config = File.createTempFile("ociconfig", null);
+        config.deleteOnExit();
+        FileUtils.writeStringToFile(config, configuration, "UTF-8");
+
+        OracleCloudCredentials credentials = new OracleCloudCredentials();
+        credentials.load(config, null);
+
+        assertEquals("fingerprint", "35:fb:e5:0c:da:16:99:c3:aa:89:f1:0b:a0:27:67:49", credentials.getFingerprint());
     }
 }
