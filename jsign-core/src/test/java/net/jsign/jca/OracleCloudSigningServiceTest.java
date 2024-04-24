@@ -77,7 +77,7 @@ public class OracleCloudSigningServiceTest {
             }
         }) {
             @Override
-            String getManagementEndpoint() {
+            String getVaultEndpoint() {
                 return "http://localhost:" + port();
             }
 
@@ -89,10 +89,10 @@ public class OracleCloudSigningServiceTest {
     }
 
     @Test
-    public void testGetManagementEndpoint() throws Exception {
+    public void testGetVaultEndpoint() throws Exception {
         OracleCloudCredentials credentials = getCredentials();
         OracleCloudSigningService service = new OracleCloudSigningService(credentials, alias -> null);
-        assertEquals("endpoint", "https://kms.eu-paris-1.oraclecloud.com", service.getManagementEndpoint());
+        assertEquals("endpoint", "https://kms.eu-paris-1.oraclecloud.com", service.getVaultEndpoint());
     }
 
     @Test

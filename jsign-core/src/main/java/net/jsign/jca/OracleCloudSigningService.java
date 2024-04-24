@@ -87,7 +87,7 @@ public class OracleCloudSigningService implements SigningService {
         return "OracleCloud";
     }
 
-    String getManagementEndpoint() {
+    String getVaultEndpoint() {
         return "https://kms." + credentials.getRegion() + ".oraclecloud.com";
     }
 
@@ -97,7 +97,7 @@ public class OracleCloudSigningService implements SigningService {
 
         try {
             // VaultSummary/ListVaults (https://docs.oracle.com/en-us/iaas/api/#/en/key/release/VaultSummary/ListVaults)
-            RESTClient kmsClient = new RESTClient(getManagementEndpoint(), this::sign);
+            RESTClient kmsClient = new RESTClient(getVaultEndpoint(), this::sign);
             Map<String, ?> result = kmsClient.get("/20180608/vaults?compartmentId=" + credentials.getTenancy());
             Object[] vaults = (Object[]) result.get("result");
             for (Object v : vaults) {
