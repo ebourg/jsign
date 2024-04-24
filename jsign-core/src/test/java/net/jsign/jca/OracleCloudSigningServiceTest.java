@@ -117,6 +117,15 @@ public class OracleCloudSigningServiceTest {
     }
 
     @Test
+    public void testIsUnknownHost() throws Exception {
+        OracleCloudCredentials credentials = getCredentials();
+        OracleCloudSigningService service = new OracleCloudSigningService(credentials, alias -> null);
+
+        assertFalse(service.isUnknownHost("google.com"));
+        assertTrue(service.isUnknownHost("google.jsign"));
+    }
+
+    @Test
     public void testGetAliases() throws Exception {
         onRequest()
                 .havingMethodEqualTo("GET")

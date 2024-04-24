@@ -18,6 +18,8 @@ package net.jsign.jca;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -174,7 +176,21 @@ public class OracleCloudSigningService implements SigningService {
         String region = matcher.group(1);
         String vaultId = matcher.group(2);
 
-        return "https://" + vaultId + "-crypto.kms." + region + ".oci.oraclecloud.com";
+        String hostname = vaultId + "-crypto.kms." + region + ".oci.oraclecloud.com";
+        if (isUnknownHost(hostname)) {
+            hostname = vaultId + "-crypto.kms." + region + ".oraclecloud.com";
+        }
+
+        return "https://" + hostname;
+    }
+
+    boolean isUnknownHost(String hostname) {
+        try {
+            InetAddress.getByName(hostname);
+            return false;
+        } catch (UnknownHostException uhe) {
+            return true;
+        }
     }
 
     /**
