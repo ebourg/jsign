@@ -368,7 +368,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(targetFile);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
         }
@@ -390,7 +390,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(targetFile);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2022)", e.getCause().getMessage());
         }
@@ -412,7 +412,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(targetFile);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2022)", e.getCause().getMessage());
         }
@@ -502,7 +502,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(targetFile);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Unknown output format 'TXT'", e.getMessage());
         }
@@ -517,7 +517,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(file);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "No signature found in target/test-classes/wineyes.exe", e.getMessage().replace('\\', '/'));
         }
@@ -532,7 +532,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(file);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
         }
@@ -582,7 +582,7 @@ public class SignerHelperTest {
 
         try {
             signer.execute(file);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
         }

@@ -66,7 +66,7 @@ public class PVKTest {
 
     private void testParse(String filename) throws Exception {
         PrivateKey key = PVK.parse(new File(filename), "password");
-        assertNotNull(key);
+        assertNotNull("private key", key);
         
         RSAPrivateKey rsakey = (RSAPrivateKey) key;
         assertEquals("private exponent", PRIVATE_EXPONENT, rsakey.getPrivateExponent());
@@ -78,7 +78,7 @@ public class PVKTest {
         PrivateKey key1 = PVK.parse(new File("src/test/resources/keystores/privatekey.pvk"), "password");
         PrivateKey key2 = PVK.parse(new File("src/test/resources/keystores/privatekey-encrypted.pvk"), "password");
         
-        assertEquals(key1, key2);
+        assertEquals("private key", key1, key2);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -92,7 +92,7 @@ public class PVKTest {
             PVK.parse(new File("src/test/resources/keystores/privatekey-encrypted.pvk"), "secret");
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-            assertEquals("exception message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
+            assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
         }
     }
 
@@ -102,7 +102,7 @@ public class PVKTest {
             PVK.parse(new File("src/test/resources/keystores/privatekey-encrypted.pvk"), null);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-            assertEquals("exception message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
+            assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class PVKTest {
             PVK.parse(modified, null);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-            assertEquals("exception message", "Unable to parse the PVK key, unsupported key format: RSA3", e.getMessage());
+            assertEquals("message", "Unable to parse the PVK key, unsupported key format: RSA3", e.getMessage());
         }
     }
 }

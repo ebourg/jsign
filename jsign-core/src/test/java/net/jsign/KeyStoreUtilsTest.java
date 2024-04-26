@@ -28,12 +28,12 @@ public class KeyStoreUtilsTest {
     @Test
     public void testLoadPKCS12() throws Exception {
         KeyStore keystore = KeyStoreUtils.load(new File("target/test-classes/keystores/keystore.p12"), "PKCS12", "password", null);
-        assertNotNull(keystore);
+        assertNotNull("keystore", keystore);
     }
 
     @Test
     public void testLoadJKS() throws Exception {
         KeyStore keystore = KeyStoreUtils.load("target/test-classes/keystores/keystore.jks", null, "password", null);
-        assertNotNull(keystore);
+        assertNotNull("keystore", keystore);
     }
 }

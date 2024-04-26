@@ -80,7 +80,7 @@ public class DigiCertOneSigningServiceTest {
         SigningService service = getTestService();
         try {
             service.aliases();
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (KeyStoreException e) {
             assertEquals("message", "Unable to retrieve DigiCert ONE certificate aliases", e.getMessage());
         }
@@ -119,7 +119,7 @@ public class DigiCertOneSigningServiceTest {
         SigningService service = getTestService();
         try {
             service.getCertificateChain("jsign-1977-cert");
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (KeyStoreException e) {
             assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1977-cert'", e.getMessage());
         }
@@ -136,7 +136,7 @@ public class DigiCertOneSigningServiceTest {
         SigningService service = getTestService();
         try {
             service.getCertificateChain("jsign-1995-cert");
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (KeyStoreException e) {
             assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
         }
@@ -188,7 +188,7 @@ public class DigiCertOneSigningServiceTest {
         SigningService service = getTestService();
         try {
             service.getPrivateKey("jsign-2022-cert", null);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (UnrecoverableKeyException e) {
             assertEquals("message", "Unable to fetch DigiCert ONE private key for the certificate 'jsign-2022-cert'", e.getMessage());
             assertEquals("root cause", "invalid_input_field: Keypair not present for given keypairId ea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.", e.getCause().getMessage());
@@ -227,7 +227,7 @@ public class DigiCertOneSigningServiceTest {
         SigningServicePrivateKey privateKey = new SigningServicePrivateKey("ea936a8f-446d-8bab-b782-c01e8612bf1e", "RSA", service);
         try {
             service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (GeneralSecurityException e) {
             assertEquals("message", "java.io.IOException: invalid_input_field: Keypair not present for given keypairId aea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.", e.getMessage());
         }

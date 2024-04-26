@@ -37,14 +37,14 @@ public class YubikeyTest {
     public void testGetProvider() {
         assumeYubikey();
         Provider provider = YubiKey.getProvider();
-        assertNotNull(provider);
+        assertNotNull("provider", provider);
     }
 
     @Test
     public void testGetLibrary() {
         assumeYubikey();
         File library = YubiKey.getYkcs11Library();
-        assertNotNull(library);
-        assertTrue(library.exists());
+        assertNotNull("native library", library);
+        assertTrue("native library not found", library.exists());
     }
 }

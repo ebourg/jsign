@@ -67,12 +67,12 @@ public class OpenPGPCardTest {
         pgpcard.verify("123456");
 
         if (key == OpenPGPCard.Key.ENCRYPTION) {
-            assumeTrue(pgpcard.getVersion() > 3);
+            assumeTrue("OpenPGP card version 3+ required", pgpcard.getVersion() > 3);
         }
 
         byte[] result = pgpcard.sign(key, message.getBytes());
 
-        assertNotNull(result);
+        assertNotNull("result", result);
         assertEquals("result length (bits)", 2048, result.length * 8);
 
         File privateKeyFile = new File("src/test/resources/keystores/privatekey.pkcs1.pem");
@@ -95,7 +95,7 @@ public class OpenPGPCardTest {
         assertNotNull("card not found", pgpcard);
 
         byte[] result = pgpcard.getData(0x004F);
-        assertNotNull(result);
+        assertNotNull("result", result);
         assertEquals("result length", 16, result.length);
     }
 
@@ -107,7 +107,7 @@ public class OpenPGPCardTest {
         assertNotNull("card not found", pgpcard);
 
         byte[] result = pgpcard.getAID();
-        assertNotNull(result);
+        assertNotNull("result", result);
         assertEquals("result length", 16, result.length);
         assertEquals("AID", "D27600012401", Hex.encodeHexString(result).substring(0, 12).toUpperCase());
     }
@@ -120,7 +120,7 @@ public class OpenPGPCardTest {
         assertNotNull("card not found", pgpcard);
 
         float version = pgpcard.getVersion();
-        assertTrue(version > 2);
+        assertTrue("version < 2", version > 2);
     }
 
     @Test
@@ -131,7 +131,7 @@ public class OpenPGPCardTest {
         assertNotNull("card not found", pgpcard);
 
         Set<OpenPGPCard.Key> keys = pgpcard.getAvailableKeys();
-        assertNotNull(keys);
+        assertNotNull("keys", keys);
         assertEquals("number of keys", pgpcard.supportsManageSecurityEnvironment() ? 3 : 2, keys.size());
     }
 
@@ -143,7 +143,7 @@ public class OpenPGPCardTest {
         assertNotNull("card not found", pgpcard);
 
         OpenPGPCard.KeyInfo keyInfo = pgpcard.getKeyInfo(OpenPGPCard.Key.SIGNATURE);
-        assertNotNull(keyInfo);
+        assertNotNull("key info", keyInfo);
 
         String fingerprint = Hex.encodeHexString(keyInfo.fingerprint).toUpperCase();
         assertEquals("Fingerprint", "97147A24770EFC11A41979BA5D37E9FA3D904376", fingerprint);
@@ -156,7 +156,7 @@ public class OpenPGPCardTest {
         OpenPGPCard pgpcard = OpenPGPCard.getCard();
         assertNotNull("card not found", pgpcard);
 
-        assumeTrue(pgpcard.getVersion() > 3);
+        assumeTrue("OpenPGP card version 3+ required", pgpcard.getVersion() > 3);
 
         pgpcard.selectData(0x7F21, 0);
         byte[] result = pgpcard.getData(0x7F21);
@@ -179,7 +179,7 @@ public class OpenPGPCardTest {
         assertNotNull("card not found", pgpcard);
 
         byte[] result = pgpcard.getCertificate(OpenPGPCard.Key.AUTHENTICATION);
-        assertNotNull(result);
+        assertNotNull("certificate", result);
     }
 
     @Test

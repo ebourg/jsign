@@ -77,13 +77,13 @@ public class PESignerTest {
             signer.sign(peFile);
 
             List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            assertNotNull("signatures", signatures);
+            assertEquals("number of signatures", 1, signatures.size());
 
             CMSSignedData signature = signatures.get(0);
 
-            assertNotNull(signature);
-            assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+            assertNotNull("signature", signature);
+            assertNull("signingTime attribute found", signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
         }
     }
 
@@ -91,7 +91,7 @@ public class PESignerTest {
     public void testSignWithUnknownKeyStoreEntry() throws Exception {
         try {
             new PESigner(getKeyStore(), "unknown", PRIVATE_KEY_PASSWORD);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
             assertEquals("message", "No certificate found in the keystore with the alias 'unknown'", e.getMessage());
         }
@@ -122,12 +122,12 @@ public class PESignerTest {
             signer.sign(peFile);
 
             List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            assertNotNull("signatures", signatures);
+            assertEquals("number of signatures", 1, signatures.size());
 
             CMSSignedData signature = signatures.get(0);
 
-            assertNotNull(signature);
+            assertNotNull("signature", signature);
 
             // check the signer id
             SignerId signerId = signature.getSignerInfos().iterator().next().getSID();
@@ -192,7 +192,7 @@ public class PESignerTest {
 
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
-            fail("No exception thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
+            fail("Exception not thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
         } catch (Exception e) {
             // expected
         }
@@ -380,7 +380,7 @@ public class PESignerTest {
         
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
-            fail("IOException not thrown");
+            fail("TimestampingException not thrown");
         } catch (TimestampingException e) {
             assertTrue("Missing suppressed IOException", e.getSuppressed() != null && e.getSuppressed().length > 0 && e.getSuppressed()[0].getClass().equals(IOException.class));
             // expected
@@ -520,11 +520,11 @@ public class PESignerTest {
             signer.sign(peFile);
 
             List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            assertNotNull("signatures", signatures);
+            assertEquals("number of signatures", 1, signatures.size());
 
             CMSSignedData signedData = signatures.get(0);
-            assertNotNull(signedData);
+            assertNotNull("signature", signedData);
 
             // Check the signature algorithm
             SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
@@ -551,8 +551,8 @@ public class PESignerTest {
             signer.sign(peFile);
 
             List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            assertNotNull("signatures", signatures);
+            assertEquals("number of signatures", 1, signatures.size());
         }
     }
 
@@ -572,8 +572,8 @@ public class PESignerTest {
             signer.sign(peFile);
 
             List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            assertNotNull("signatures", signatures);
+            assertEquals("number of signatures", 1, signatures.size());
 
             CMSSignedData signature = signatures.get(0);
             AlgorithmIdentifier ai = signature.getDigestAlgorithmIDs().iterator().next();

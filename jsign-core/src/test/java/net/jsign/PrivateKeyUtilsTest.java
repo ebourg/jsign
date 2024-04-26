@@ -72,10 +72,10 @@ public class PrivateKeyUtilsTest {
     public void testLoadWrongPEMObject() {
         try {
             PrivateKeyUtils.load(new File("target/test-classes/keystores/jsign-test-certificate.pem"), null);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (KeyException e) {
             Throwable cause = e.getCause();
-            assertEquals("exception message", "Unsupported PEM object: X509CertificateHolder", cause.getMessage());
+            assertEquals("message", "Unsupported PEM object: X509CertificateHolder", cause.getMessage());
         }
     }
 
@@ -88,7 +88,7 @@ public class PrivateKeyUtilsTest {
 
         try {
             PrivateKeyUtils.load(file, null);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (KeyException e) {
             Throwable cause = e.getCause();
             assertTrue(cause.getMessage().startsWith("No key found in"));
@@ -101,6 +101,6 @@ public class PrivateKeyUtilsTest {
         assertNotNull("null key", key);
         assertEquals("algorithm", "ECDSA", key.getAlgorithm());
         ECPrivateKey eckey = (ECPrivateKey) key;
-        assertEquals(new BigInteger("20257491648229957920568032976799761096297361118969955946704763806669063295695225962636427229581436831963662222302926"), eckey.getS());
+        assertEquals("S value", new BigInteger("20257491648229957920568032976799761096297361118969955946704763806669063295695225962636427229581436831963662222302926"), eckey.getS());
     }
 }

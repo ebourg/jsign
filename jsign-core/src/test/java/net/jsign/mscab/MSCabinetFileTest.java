@@ -49,9 +49,9 @@ public class MSCabinetFileTest {
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file too short", e.getMessage());
+            assertEquals("message", "MSCabinet file too short", e.getMessage());
         }
     }
 
@@ -67,9 +67,9 @@ public class MSCabinetFileTest {
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: cabinet reserved area size is 64 instead of 20", e.getMessage());
+            assertEquals("message", "MSCabinet file is corrupt: cabinet reserved area size is 64 instead of 20", e.getMessage());
         }
     }
 
@@ -89,9 +89,9 @@ public class MSCabinetFileTest {
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: signature header is 1162232131", e.getMessage());
+            assertEquals("message", "MSCabinet file is corrupt: signature header is 1162232131", e.getMessage());
         }
     }
 
@@ -113,9 +113,9 @@ public class MSCabinetFileTest {
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: signature data (offset=3584, size=1024) after the end of the file", e.getMessage());
+            assertEquals("message", "MSCabinet file is corrupt: signature data (offset=3584, size=1024) after the end of the file", e.getMessage());
         }
     }
 
@@ -137,9 +137,9 @@ public class MSCabinetFileTest {
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: signature data (offset=8192, size=1024) after the end of the file", e.getMessage());
+            assertEquals("message", "MSCabinet file is corrupt: signature data (offset=8192, size=1024) after the end of the file", e.getMessage());
         }
     }
 

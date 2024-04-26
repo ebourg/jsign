@@ -216,8 +216,8 @@ public class AmazonIMDS2ClientTest {
 
         AmazonCredentials credentials = client.getCredentials();
         assertNotNull("credentials", credentials);
-        assertEquals("accessKey", credentials.getAccessKey());
-        assertEquals("secretKey", credentials.getSecretKey());
-        assertEquals("sessionToken", credentials.getSessionToken());
+        assertEquals("access key", "accessKey", credentials.getAccessKey());
+        assertEquals("secret key", "secretKey", credentials.getSecretKey());
+        assertEquals("session token", "sessionToken", credentials.getSessionToken());
     }
 }

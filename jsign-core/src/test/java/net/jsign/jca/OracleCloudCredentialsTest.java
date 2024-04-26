@@ -91,7 +91,7 @@ public class OracleCloudCredentialsTest {
         OracleCloudCredentials credentials = new OracleCloudCredentials();
         try {
             credentials.load(config, "JSIGN");
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
             assertTrue("message", e.getMessage().contains("Profile 'JSIGN' not found"));
         }
@@ -140,7 +140,7 @@ public class OracleCloudCredentialsTest {
     @Test
     public void testGetDefault() throws Exception {
         OracleCloudCredentials credentials = OracleCloudCredentials.getDefault();
-        assertNotNull(credentials);
+        assertNotNull("credentials", credentials);
     }
 
     @Test

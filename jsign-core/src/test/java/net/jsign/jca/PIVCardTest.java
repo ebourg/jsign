@@ -58,7 +58,7 @@ public class PIVCardTest {
         byte[] message = "Hello PIV card".getBytes();
         byte[] result = card.sign(key, message);
 
-        assertNotNull(result);
+        assertNotNull("result", result);
 
         assertEquals("result length (bits)", keyLength, result.length * 8);
 
@@ -111,7 +111,7 @@ public class PIVCardTest {
 
         byte[] result = card.sign(key, digest);
 
-        assertNotNull(result);
+        assertNotNull("result", result);
 
         // verify the signature
         Signature signature = Signature.getInstance(digestAlgorithm.name() + "withECDSA");
@@ -128,7 +128,7 @@ public class PIVCardTest {
         assertNotNull("card not found", card);
 
         byte[] result = card.getData(0x005FC102); // Cardholder UUID
-        assertNotNull(result);
+        assertNotNull("result", result);
         assertTrue("result length", result.length >= 61);
     }
 
@@ -140,7 +140,7 @@ public class PIVCardTest {
         assertNotNull("card not found", pivcard);
 
         String version = pivcard.getVersion();
-        assertNotNull(version);
+        assertNotNull("version", version);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class PIVCardTest {
 
         Set<PIVCard.Key> keys = card.getAvailableKeys();
 
-        assertNotNull(keys);
+        assertNotNull("keys", keys);
         assertEquals("number of keys", 2, keys.size());
     }
 

@@ -38,9 +38,9 @@ public class SafeNetETokenTest {
         assumeSafeNetEToken();
         try {
             Provider provider = SafeNetEToken.getProvider();
-            assertNotNull(provider);
+            assertNotNull("provider", provider);
         } catch (RuntimeException e) {
-            assertEquals("Message", "No PKCS11 token found", ExceptionUtils.getRootCause(e).getMessage());
+            assertEquals("message", "No PKCS11 token found", ExceptionUtils.getRootCause(e).getMessage());
         }
     }
 
@@ -48,7 +48,7 @@ public class SafeNetETokenTest {
     public void testGetLibrary() {
         assumeSafeNetEToken();
         File library = SafeNetEToken.getPKCS11Library();
-        assertNotNull(library);
-        assertTrue(library.exists());
+        assertNotNull("native library", library);
+        assertTrue("native library not found", library.exists());
     }
 }

@@ -29,17 +29,17 @@ public class AmazonCredentialsTest {
     @Test
     public void testParseFull() {
         AmazonCredentials credentials = AmazonCredentials.parse("accessKey|secretKey|sessionToken");
-        assertEquals("accessKey", credentials.getAccessKey());
-        assertEquals("secretKey", credentials.getSecretKey());
-        assertEquals("sessionToken", credentials.getSessionToken());
+        assertEquals("access key", "accessKey", credentials.getAccessKey());
+        assertEquals("secret key", "secretKey", credentials.getSecretKey());
+        assertEquals("session token", "sessionToken", credentials.getSessionToken());
     }
 
     @Test
     public void testParsePartial() {
         AmazonCredentials credentials = AmazonCredentials.parse("accessKey|secretKey");
-        assertEquals("accessKey", credentials.getAccessKey());
-        assertEquals("secretKey", credentials.getSecretKey());
-        assertNull(credentials.getSessionToken());
+        assertEquals("access key", "accessKey", credentials.getAccessKey());
+        assertEquals("secret key", "secretKey", credentials.getSecretKey());
+        assertNull("session token", credentials.getSessionToken());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -61,9 +61,9 @@ public class AmazonCredentialsTest {
 
             AmazonCredentials credentials = AmazonCredentials.getDefault();
             assertNotNull("credentials", credentials);
-            assertEquals("accessKey", credentials.getAccessKey());
-            assertEquals("secretKey", credentials.getSecretKey());
-            assertEquals("sessionToken", credentials.getSessionToken());
+            assertEquals("access key", "accessKey", credentials.getAccessKey());
+            assertEquals("secret key", "secretKey", credentials.getSecretKey());
+            assertEquals("session token", "sessionToken", credentials.getSessionToken());
         }
 
         try (MockedStatic<?> mock = mockStatic(AmazonCredentials.class, CALLS_REAL_METHODS)) {
@@ -73,9 +73,9 @@ public class AmazonCredentialsTest {
 
             AmazonCredentials credentials = AmazonCredentials.getDefault();
             assertNotNull("credentials", credentials);
-            assertEquals("accessKey", credentials.getAccessKey());
-            assertEquals("secretKey", credentials.getSecretKey());
-            assertNull(credentials.getSessionToken());
+            assertEquals("access key", "accessKey", credentials.getAccessKey());
+            assertEquals("secret key", "secretKey", credentials.getSecretKey());
+            assertNull("session token", credentials.getSessionToken());
         }
     }
 }

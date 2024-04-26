@@ -110,7 +110,7 @@ public class OracleCloudSigningServiceTest {
         String keyId = "ocid1.tenancy.oc1..abcdefghijk";
         try {
             service.getKeyEndpoint(keyId);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
             assertEquals("message", "Invalid key id: ocid1.tenancy.oc1..abcdefghijk", e.getMessage());
         }
@@ -194,7 +194,7 @@ public class OracleCloudSigningServiceTest {
         SigningServicePrivateKey privateKey = service.getPrivateKey("ocid1.key.oc1.eu-paris-2.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", null);
         try {
             service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (GeneralSecurityException e) {
             assertEquals("message", "NotAuthorizedOrNotFound: resource does not exist or you are not authorized to access it.", e.getCause().getMessage());
         }
@@ -206,7 +206,7 @@ public class OracleCloudSigningServiceTest {
         SigningServicePrivateKey privateKey = service.getPrivateKey("ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", null);
         try {
             service.sign(privateKey, "SHA1withRSA", "Hello".getBytes());
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (GeneralSecurityException e) {
             assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
         }

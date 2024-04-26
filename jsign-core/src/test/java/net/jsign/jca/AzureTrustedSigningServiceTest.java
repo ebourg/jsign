@@ -96,7 +96,7 @@ public class AzureTrustedSigningServiceTest {
         SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         try {
             service.getCertificateChain("MyAccount/MyProfile");
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (KeyStoreException e) {
             assertEquals("message", "Unable to retrieve the certificate chain 'MyAccount/MyProfile'", e.getMessage());
         }
@@ -165,7 +165,7 @@ public class AzureTrustedSigningServiceTest {
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
         try {
             service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (GeneralSecurityException e) {
             assertEquals("message", "java.io.IOException: Signing operation 1f234bd9-16cf-4283-9ee6-a460d31207bb timed out", e.getMessage());
         }
@@ -192,7 +192,7 @@ public class AzureTrustedSigningServiceTest {
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
         try {
             service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (GeneralSecurityException e) {
             assertEquals("message", "java.io.IOException: Signing operation 1f234bd9-16cf-4283-9ee6-a460d31207bb failed: Failed", e.getMessage());
         }
@@ -204,7 +204,7 @@ public class AzureTrustedSigningServiceTest {
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
         try {
             service.sign(privateKey, "SHA1withRSA", "Hello".getBytes());
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (GeneralSecurityException e) {
             assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
         }

@@ -56,9 +56,9 @@ public class PEFileTest {
     public void testLoadNonExecutable() {
         try {
             new PEFile(new File("pom.xml"));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("Exception message", "DOS header signature not found", e.getMessage());
+            assertEquals("message", "DOS header signature not found", e.getMessage());
         }
     }
 
@@ -69,7 +69,7 @@ public class PEFileTest {
     public void testDosExecutable() throws Exception {
         try {
             new PEFile(new File("target/test-classes/MORE.EXE")); // MORE.EXE comes from FreeDOS and is GPL licensed
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
             if (!e.getMessage().contains("PE signature not found as expected")) {
                 throw e;
@@ -105,8 +105,8 @@ public class PEFileTest {
             String sha1 = Hex.toHexString(file.computeDigest(SHA1));
             String sha256 = Hex.toHexString(file.computeDigest(SHA256.getMessageDigest()));
 
-            assertEquals("d27ec498912807ddfc4bec2be4f62c42814836f3", sha1);
-            assertEquals("7bb369df020cea757619e1c1d678dbca06b638f2cc45b740b5eacfc21e76b160", sha256);
+            assertEquals("sha1", "d27ec498912807ddfc4bec2be4f62c42814836f3", sha1);
+            assertEquals("sha2", "7bb369df020cea757619e1c1d678dbca06b638f2cc45b740b5eacfc21e76b160", sha256);
         }
     }
 
@@ -129,7 +129,7 @@ public class PEFileTest {
             String digestPadded = Hex.toHexString(file1.computeDigest(SHA1));
             String digestNotPadded = Hex.toHexString(file2.computeDigest(SHA1));
 
-            assertEquals(digestPadded, digestNotPadded);
+            assertEquals("digest", digestPadded, digestNotPadded);
         }
     }
 
