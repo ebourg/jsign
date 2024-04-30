@@ -156,6 +156,8 @@ public class GoogleCloudSigningService implements SigningService {
 
         SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm, this);
         keys.put(alias, key);
+        keys.put(alias.substring(0, alias.indexOf("/cryptoKeyVersions")), key); // cache without the version
+        keys.put(alias + ":" + algorithm, key); // cache with the algorithm appended
         return key;
     }
 

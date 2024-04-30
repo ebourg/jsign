@@ -158,6 +158,10 @@ public class GoogleCloudSigningServiceTest {
         assertNotNull("null key", key);
         assertEquals("id", "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-2048/cryptoKeyVersions/2", key.getId());
         assertEquals("algorithm", "RSA", key.getAlgorithm());
+
+        // check if the key is cached
+        SigningServicePrivateKey key2 = service.getPrivateKey(alias, null);
+        assertSame("private key not cached", key, key2);
     }
 
     @Test
