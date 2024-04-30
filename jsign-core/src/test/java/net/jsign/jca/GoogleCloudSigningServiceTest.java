@@ -17,6 +17,7 @@
 package net.jsign.jca;
 
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
@@ -75,7 +76,7 @@ public class GoogleCloudSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/googlecloud-cryptokeys.json"));
+                .withBody(new FileReader("target/test-classes/services/googlecloud-cryptokeys.json"));
 
         SigningService service = getTestService();
         List<String> aliases = service.aliases();
@@ -142,14 +143,14 @@ public class GoogleCloudSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/googlecloud-cryptokey-versions.json"));
+                .withBody(new FileReader("target/test-classes/services/googlecloud-cryptokey-versions.json"));
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-2048/cryptoKeyVersions/2")
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/googlecloud-cryptokey-version.json"));
+                .withBody(new FileReader("target/test-classes/services/googlecloud-cryptokey-version.json"));
 
         SigningService service = getTestService(certificate);
 
@@ -206,7 +207,7 @@ public class GoogleCloudSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/googlecloud-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/googlecloud-sign.json"));
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("jsign-rsa-2048/cryptoKeyVersions/2:RSA", null);
@@ -222,7 +223,7 @@ public class GoogleCloudSigningServiceTest {
                 .respond()
                 .withStatus(400)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/googlecloud-sign-error.json"));
+                .withBody(new FileReader("target/test-classes/services/googlecloud-sign-error.json"));
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("jsign-rsa-2048/cryptoKeyVersions/2:RSA", null);

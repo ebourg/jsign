@@ -16,7 +16,7 @@
 
 package net.jsign.jca;
 
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
@@ -72,7 +72,7 @@ public class AzureTrustedSigningServiceTest {
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}")
                 .thenRespond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/trustedsigning-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/trustedsigning-sign.json"));
 
         SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         Certificate[] chain = service.getCertificateChain("MyAccount/MyProfile");
@@ -132,7 +132,7 @@ public class AzureTrustedSigningServiceTest {
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}")
                 .thenRespond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/trustedsigning-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/trustedsigning-sign.json"));
 
         AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);

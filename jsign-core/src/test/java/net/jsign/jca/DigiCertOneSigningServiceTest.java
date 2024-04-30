@@ -17,7 +17,7 @@
 package net.jsign.jca;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.UnrecoverableKeyException;
@@ -61,7 +61,7 @@ public class DigiCertOneSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/digicertone-certificates.json"));
+                .withBody(new FileReader("target/test-classes/services/digicertone-certificates.json"));
 
         SigningService service = getTestService();
         List<String> aliases = service.aliases();
@@ -94,7 +94,7 @@ public class DigiCertOneSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/digicertone-certificates.json"));
+                .withBody(new FileReader("target/test-classes/services/digicertone-certificates.json"));
 
         SigningService service = getTestService();
         Certificate[] chain = service.getCertificateChain("jsign-2022-cert");
@@ -150,14 +150,14 @@ public class DigiCertOneSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/digicertone-certificates.json"));
+                .withBody(new FileReader("target/test-classes/services/digicertone-certificates.json"));
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/signingmanager/api/v1//keypairs/ea936a8f-446d-8bab-b782-c01e8612bf1e")
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/digicertone-keypairs.json"));
+                .withBody(new FileReader("target/test-classes/services/digicertone-keypairs.json"));
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("jsign-2022-cert");
@@ -176,7 +176,7 @@ public class DigiCertOneSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/digicertone-certificates.json"));
+                .withBody(new FileReader("target/test-classes/services/digicertone-certificates.json"));
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/signingmanager/api/v1//keypairs/ea936a8f-446d-8bab-b782-c01e8612bf1e")
@@ -203,7 +203,7 @@ public class DigiCertOneSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/digicertone-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/digicertone-sign.json"));
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = new SigningServicePrivateKey("ea936a8f-446d-8bab-b782-c01e8612bf1e", "RSA", service);

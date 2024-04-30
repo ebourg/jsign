@@ -16,7 +16,7 @@
 
 package net.jsign.jca;
 
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStoreException;
@@ -57,7 +57,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificates.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificates.json"));
 
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         List<String> aliases = service.aliases();
@@ -85,7 +85,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificate.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificate.json"));
 
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         Certificate[] chain = service.getCertificateChain("test1");
@@ -118,7 +118,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificate.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificate.json"));
 
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
@@ -150,7 +150,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificate.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificate.json"));
 
         onRequest()
                 .havingMethodEqualTo("POST")
@@ -183,7 +183,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificate.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificate.json"));
 
         onRequest()
                 .havingMethodEqualTo("POST")
@@ -214,7 +214,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificate.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificate.json"));
 
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
@@ -236,7 +236,7 @@ public class AzureKeyVaultSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer token")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileInputStream("target/test-classes/services/azure-certificate.json"));
+                .withBody(new FileReader("target/test-classes/services/azure-certificate.json"));
 
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);

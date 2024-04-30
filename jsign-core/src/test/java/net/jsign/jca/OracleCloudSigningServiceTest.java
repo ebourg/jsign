@@ -18,6 +18,7 @@ package net.jsign.jca;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
@@ -134,7 +135,7 @@ public class OracleCloudSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/oraclecloud-listvaults.json"));
+                .withBody(new FileReader("target/test-classes/services/oraclecloud-listvaults.json"));
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/20180608/keys")
@@ -142,7 +143,7 @@ public class OracleCloudSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/oraclecloud-listkeys.json"));
+                .withBody(new FileReader("target/test-classes/services/oraclecloud-listkeys.json"));
 
         SigningService service = getTestService();
         List<String> aliases = service.aliases();
@@ -174,7 +175,7 @@ public class OracleCloudSigningServiceTest {
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/oraclecloud-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/oraclecloud-sign.json"));
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", null);
         String signature = Base64.getEncoder().encodeToString(service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
@@ -189,7 +190,7 @@ public class OracleCloudSigningServiceTest {
                 .respond()
                 .withStatus(404)
                 .withContentType("application/json")
-                .withBody(new FileInputStream("target/test-classes/services/oraclecloud-error.json"));
+                .withBody(new FileReader("target/test-classes/services/oraclecloud-error.json"));
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("ocid1.key.oc1.eu-paris-2.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", null);
         try {
