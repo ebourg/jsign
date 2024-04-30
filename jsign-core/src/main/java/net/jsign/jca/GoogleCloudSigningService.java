@@ -69,9 +69,13 @@ public class GoogleCloudSigningService implements SigningService {
      * @param certificateStore provides the certificate chain for the keys
      */
     public GoogleCloudSigningService(String keyring, String token, Function<String, Certificate[]> certificateStore) {
+        this("https://cloudkms.googleapis.com/v1/", keyring, token, certificateStore);
+    }
+
+    GoogleCloudSigningService(String endpoint, String keyring, String token, Function<String, Certificate[]> certificateStore) {
         this.keyring = keyring;
         this.certificateStore = certificateStore;
-        this.client = new RESTClient("https://cloudkms.googleapis.com/v1/", conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        this.client = new RESTClient(endpoint, conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     @Override

@@ -1,0 +1,67 @@
+{
+  "cryptoKeys": [
+    {
+      "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/hsmkey",
+      "primary": {
+        "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/hsmkey/cryptoKeyVersions/10",
+        "state": "DESTROY_SCHEDULED",
+        "createTime": "2023-09-02T22:00:00.921090098Z",
+        "destroyTime": "2023-09-14T15:57:06.903358Z",
+        "protectionLevel": "HSM",
+        "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION",
+        "generateTime": "2023-09-02T22:00:00.921090098Z"
+      },
+      "purpose": "ENCRYPT_DECRYPT",
+      "createTime": "2021-06-15T06:19:16.035854945Z",
+      "nextRotationTime": "2023-12-01T22:00:00.921090Z",
+      "rotationPeriod": "7776000s",
+      "versionTemplate": {
+        "protectionLevel": "HSM",
+        "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION"
+      },
+      "destroyScheduledDuration": "86400s"
+    },
+    {
+      "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-encrypt",
+      "purpose": "ENCRYPT_DECRYPT",
+      "createTime": "2021-06-15T06:47:57.851654566Z",
+      "versionTemplate": {
+        "protectionLevel": "HSM",
+        "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION"
+      },
+      "destroyScheduledDuration": "86400s"
+    },
+    {
+      "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-4096-raw",
+      "purpose": "ASYMMETRIC_SIGN",
+      "createTime": "2023-09-13T16:23:06.669798657Z",
+      "versionTemplate": {
+        "protectionLevel": "SOFTWARE",
+        "algorithm": "RSA_SIGN_RAW_PKCS1_4096"
+      },
+      "importOnly": true,
+      "destroyScheduledDuration": "86400s"
+    },
+    {
+      "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-2048",
+      "purpose": "ASYMMETRIC_SIGN",
+      "createTime": "2021-06-14T09:45:19.245830310Z",
+      "versionTemplate": {
+        "protectionLevel": "SOFTWARE",
+        "algorithm": "RSA_SIGN_PKCS1_2048_SHA256"
+      },
+      "destroyScheduledDuration": "86400s"
+    },
+    {
+      "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-4096",
+      "purpose": "ASYMMETRIC_SIGN",
+      "createTime": "2021-06-14T17:38:18.658347032Z",
+      "versionTemplate": {
+        "protectionLevel": "SOFTWARE",
+        "algorithm": "RSA_SIGN_PKCS1_4096_SHA256"
+      },
+      "destroyScheduledDuration": "86400s"
+    }
+  ],
+  "totalSize": 5
+}
