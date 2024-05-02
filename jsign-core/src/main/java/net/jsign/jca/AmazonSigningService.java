@@ -203,10 +203,12 @@ public class AmazonSigningService implements SigningService {
         request.put("MessageType", "DIGEST");
         request.put("Message", Base64.getEncoder().encodeToString(data));
         request.put("SigningAlgorithm", alg);
-        request.put(JsonWriter.TYPE, "false");
+
+        Map<String, Object> args = new HashMap<>();
+        args.put(JsonWriter.TYPE, "false");
 
         try {
-            Map<String, ?> response = query("TrentService.Sign", JsonWriter.objectToJson(request));
+            Map<String, ?> response = query("TrentService.Sign", JsonWriter.objectToJson(request, args));
             String signature = (String) response.get("Signature");
             return Base64.getDecoder().decode(signature);
         } catch (IOException e) {

@@ -74,8 +74,11 @@ public class ESignerSigningService implements SigningService {
         request.put("username", username);
         request.put("password", password);
 
+        Map<String, Object> args = new HashMap<>();
+        args.put(JsonWriter.TYPE, "false");
+
         RESTClient client = new RESTClient(endpoint);
-        Map<String, ?> response = client.post("/oauth2/token", JsonWriter.objectToJson(request));
+        Map<String, ?> response = client.post("/oauth2/token", JsonWriter.objectToJson(request, args));
         return (String) response.get("access_token");
     }
 
@@ -89,7 +92,9 @@ public class ESignerSigningService implements SigningService {
         try {
             Map<String, String> request = new HashMap<>();
             request.put("clientData", "EVCS");
-            Map<String, ?> response = client.post("/csc/v0/credentials/list", JsonWriter.objectToJson(request));
+            Map<String, Object> args = new HashMap<>();
+            args.put(JsonWriter.TYPE, "false");
+            Map<String, ?> response = client.post("/csc/v0/credentials/list", JsonWriter.objectToJson(request, args));
             Object[] credentials = (Object[]) response.get("credentialIDs");
             return Stream.of(credentials).map(Object::toString).collect(Collectors.toList());
         } catch (IOException e) {
@@ -107,7 +112,11 @@ public class ESignerSigningService implements SigningService {
             Map<String, String> request = new HashMap<>();
             request.put("credentialID", alias);
             request.put("certificates", "chain");
-            Map<String, ?> response = client.post("/csc/v0/credentials/info", JsonWriter.objectToJson(request));
+
+            Map<String, Object> args = new HashMap<>();
+            args.put(JsonWriter.TYPE, "false");
+
+            Map<String, ?> response = client.post("/csc/v0/credentials/info", JsonWriter.objectToJson(request, args));
             certificates.put(alias, (Map) response.get("cert"));
         }
 
