@@ -1,0 +1,25 @@
+{
+  "KeyMetadata": {
+    "AWSAccountId": "829022948260",
+    "Arn": "arn:aws:kms:eu-west-3:829022948260:key/2d9ca5b0-6d51-4727-9dfc-186e62e4c5e2",
+    "CreationDate": 1.714585216605E9,
+    "CustomerMasterKeySpec": "RSA_2048",
+    "Description": "",
+    "Enabled": true,
+    "KeyId": "2d9ca5b0-6d51-4727-9dfc-186e62e4c5e2",
+    "KeyManager": "CUSTOMER",
+    "KeySpec": "RSA_2048",
+    "KeyState": "Enabled",
+    "KeyUsage": "ENCRYPT_DECRYPT",
+    "MultiRegion": false,
+    "Origin": "AWS_KMS",
+    "SigningAlgorithms": [
+      "RSASSA_PKCS1_V1_5_SHA_256",
+      "RSASSA_PKCS1_V1_5_SHA_384",
+      "RSASSA_PKCS1_V1_5_SHA_512",
+      "RSASSA_PSS_SHA_256",
+      "RSASSA_PSS_SHA_384",
+      "RSASSA_PSS_SHA_512"
+    ]
+  }
+}

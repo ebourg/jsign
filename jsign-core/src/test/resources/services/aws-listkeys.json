@@ -1,0 +1,14 @@
+{
+  "KeyCount": 2,
+  "Keys": [
+    {
+      "KeyArn": "arn:aws:kms:eu-west-3:829022948260:key/2d9ca5b0-6d51-4727-9dfc-186e62e4c5e2",
+      "KeyId": "2d9ca5b0-6d51-4727-9dfc-186e62e4c5e2"
+    },
+    {
+      "KeyArn": "arn:aws:kms:eu-west-3:829022948260:key/935ecb66-5c06-495b-babe-5798b1c0e1a8",
+      "KeyId": "935ecb66-5c06-495b-babe-5798b1c0e1a8"
+    }
+  ],
+  "Truncated": false
+}

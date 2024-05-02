@@ -91,8 +91,7 @@ public class AmazonSigningService implements SigningService {
      * @since 6.0
      */
     public AmazonSigningService(String region, Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore) {
-        this.certificateStore = certificateStore;
-        this.client = new RESTClient("https://kms." + region + ".amazonaws.com", (conn, data) -> sign(conn, credentials.get(), data, null));
+        this(credentials, certificateStore, "https://kms." + region + ".amazonaws.com");
     }
 
     /**
@@ -104,6 +103,11 @@ public class AmazonSigningService implements SigningService {
      */
     public AmazonSigningService(String region, AmazonCredentials credentials, Function<String, Certificate[]> certificateStore) {
         this(region, () -> credentials, certificateStore);
+    }
+
+    AmazonSigningService(Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore, String endpoint) {
+        this.certificateStore = certificateStore;
+        this.client = new RESTClient(endpoint, (conn, data) -> sign(conn, credentials.get(), data, null));
     }
 
     /**
@@ -255,7 +259,7 @@ public class AmazonSigningService implements SigningService {
         String host = endpoint.getHost();
         Matcher matcher = hostnamePattern.matcher(host);
         String regionName = matcher.matches() ? matcher.group(2) : "us-east-1";
-        String serviceName = matcher.matches() ? matcher.group(1) : host.substring(0, host.indexOf('.'));
+        String serviceName = matcher.matches() ? matcher.group(1) : "kms";
 
         String credentialScope = dateFormat.format(date) + "/" + regionName + "/" + serviceName + "/" + "aws4_request";
 
