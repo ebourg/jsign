@@ -390,6 +390,9 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the Goole Cloud keyring");
             }
+            if (!params.keystore().matches("projects/[^/]+/locations/[^/]+/keyRings/[^/]+")) {
+                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the path of the keyring (projects/{projectName}/locations/{location}/keyRings/{keyringName})");
+            }
             if (params.storepass() == null) {
                 throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Goole Cloud API access token");
             }

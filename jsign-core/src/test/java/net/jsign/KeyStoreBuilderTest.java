@@ -247,6 +247,15 @@ public class KeyStoreBuilderTest {
             assertEquals("message", "keystore parameter must specify the Goole Cloud keyring", e.getMessage());
         }
 
+        builder.keystore("projects/first-rain-123/locations/global/keyRings/mykeyring/cryptoKeys/jsign");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "keystore parameter must specify the path of the keyring (projects/{projectName}/locations/{location}/keyRings/{keyringName})", e.getMessage());
+        }
+
         builder.keystore("projects/first-rain-123/locations/global/keyRings/mykeyring");
 
         try {
