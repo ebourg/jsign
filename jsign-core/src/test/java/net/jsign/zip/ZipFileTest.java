@@ -55,7 +55,7 @@ public class ZipFileTest {
 
     @Test
     public void getGetInputStreamWithLimit() {
-        try (ZipFile file = new ZipFile(new File("target/test-classes/minimal.msix"))) {
+        try (ZipFile file = new ZipFile(new File("target/test-classes/minimal.zip"))) {
             file.getInputStream("AppxManifest.xml", 128);
             fail("Exception not thrown");
         } catch (IOException e) {
@@ -113,8 +113,8 @@ public class ZipFileTest {
 
     @Test
     public void testRemoveEntry() throws Exception {
-        File original = new File("target/test-classes/minimal.msix");
-        File modified = new File("target/test-classes/minimal-with-entry-removed.msix.zip");
+        File original = new File("target/test-classes/minimal.zip");
+        File modified = new File("target/test-classes/minimal-with-entry-removed.zip");
 
         FileUtils.copyFile(original, modified);
 

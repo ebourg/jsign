@@ -179,7 +179,7 @@ public class PIVCardTest {
 
         X509Certificate certificate = (X509Certificate) card.getCertificate(SIGNATURE);
         assertNotNull("certificate not found", certificate);
-        assertEquals("subject", "CN=Jsign Code Signing Test Certificate 2022 (RSA)", certificate.getSubjectDN().getName());
+        assertEquals("subject", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", certificate.getSubjectDN().getName());
     }
 
     @Test

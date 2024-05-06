@@ -30,13 +30,13 @@ public class CertificateUtilsTest {
     public void testLoadCertificateChain() throws Exception {
         Certificate[] chain = CertificateUtils.loadCertificateChain(new File("src/test/resources/keystores/jsign-test-certificate-full-chain.pem"));
         X509Certificate certificate = (X509Certificate) chain[0];
-        assertEquals("first certificate", "CN=Jsign Code Signing Test Certificate 2022 (RSA)", certificate.getSubjectX500Principal().getName());
+        assertEquals("first certificate", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", certificate.getSubjectX500Principal().getName());
     }
 
     @Test
     public void testLoadCertificateChainReversed() throws Exception {
         Certificate[] chain = CertificateUtils.loadCertificateChain(new File("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem"));
         X509Certificate certificate = (X509Certificate) chain[0];
-        assertEquals("first certificate", "CN=Jsign Code Signing Test Certificate 2022 (RSA)", certificate.getSubjectX500Principal().getName());
+        assertEquals("first certificate", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", certificate.getSubjectX500Principal().getName());
     }
 }

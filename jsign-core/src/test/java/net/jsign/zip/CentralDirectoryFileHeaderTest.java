@@ -31,7 +31,7 @@ public class CentralDirectoryFileHeaderTest {
 
     @Test
     public void testRead() throws Exception {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             channel.position(0x247B);
@@ -67,7 +67,7 @@ public class CentralDirectoryFileHeaderTest {
 
     @Test
     public void testReadWrongRecord() {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             new CentralDirectoryFileHeader().read(channel);
             fail("Exception not thrown");

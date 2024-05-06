@@ -30,7 +30,7 @@ public class Zip64EndOfCentralDirectoryRecordTest {
 
     @Test
     public void testRead() throws Exception {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             channel.position(0x26E9);
@@ -53,7 +53,7 @@ public class Zip64EndOfCentralDirectoryRecordTest {
 
     @Test
     public void testReadWrongRecord() {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             new Zip64EndOfCentralDirectoryRecord().read(channel);
             fail("Exception not thrown");

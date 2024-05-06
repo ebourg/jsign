@@ -31,7 +31,7 @@ public class LocalFileHeaderTest {
 
     @Test
     public void testRead() throws Exception {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             LocalFileHeader localFileHeader = new LocalFileHeader();
@@ -53,7 +53,7 @@ public class LocalFileHeaderTest {
 
     @Test
     public void testReadWrongRecord() {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             channel.position(1);
             new LocalFileHeader().read(channel);

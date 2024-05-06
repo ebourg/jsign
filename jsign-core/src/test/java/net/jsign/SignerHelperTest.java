@@ -392,7 +392,7 @@ public class SignerHelperTest {
             signer.execute(targetFile);
             fail("Exception not thrown");
         } catch (SignerException e) {
-            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2022)", e.getCause().getMessage());
+            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2024)", e.getCause().getMessage());
         }
 
         SignatureAssert.assertSigned(Signable.of(targetFile));
@@ -414,7 +414,7 @@ public class SignerHelperTest {
             signer.execute(targetFile);
             fail("Exception not thrown");
         } catch (SignerException e) {
-            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2022)", e.getCause().getMessage());
+            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2024)", e.getCause().getMessage());
         }
 
         SignatureAssert.assertSigned(Signable.of(targetFile));

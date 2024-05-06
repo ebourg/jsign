@@ -30,7 +30,7 @@ public class Zip64EndOfCentralDirectoryLocatorTest {
 
     @Test
     public void testRead() throws Exception {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             channel.position(0x2721);
@@ -46,7 +46,7 @@ public class Zip64EndOfCentralDirectoryLocatorTest {
 
     @Test
     public void testReadWrongRecord() {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             new Zip64EndOfCentralDirectoryLocator().read(channel);
             fail("Exception not thrown");

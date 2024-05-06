@@ -19,6 +19,9 @@ keyUsage = keyCertSign,cRLSign
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer
+crlDistributionPoints=URI:http://localhost:31457/jsign-ca.crl
+authorityInfoAccess = caIssuers;URI:http://localhost:31457/jsign-ca.cer
+authorityInfoAccess = OCSP;URI:http://localhost:31457/ocsp
 
 [ final ]
 basicConstraints = CA:FALSE
@@ -26,6 +29,9 @@ keyUsage = digitalSignature
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid,issuer
+crlDistributionPoints=URI:http://localhost:31457/jsign-intermediate.crl
+authorityInfoAccess = caIssuers;URI:http://localhost:31457/jsign-intermediate.cer
+authorityInfoAccess = OCSP;URI:http://localhost:31457/ocsp
 EOF
 
 CERT_OPTS="-days 7300 -text -sha256"
