@@ -25,7 +25,9 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.junit.After;
 import org.junit.Before;
@@ -73,6 +75,34 @@ public class AzureKeyVaultSigningServiceTest {
             fail("Exception not thrown");
         } catch (KeyStoreException e) {
             assertEquals("message", "Unable to retrieve Azure Key Vault certificate aliases", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetAliasesFromJarSigner() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/certificates")
+                .havingQueryStringEqualTo("api-version=7.2")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .respond()
+                .withStatus(403)
+                .withContentType("application/json")
+                .withBody(new FileReader("target/test-classes/services/azure-certificates-error.json"));
+
+        SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
+        List<String> aliases = new jarsigner().apply(service);
+
+        assertEquals("aliases", Collections.emptyList(), aliases);
+    }
+
+    private static final class jarsigner implements Function<SigningService, List<String>> {
+        public List<String> apply(SigningService service) {
+            try {
+                return service.aliases();
+            } catch (KeyStoreException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

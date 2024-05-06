@@ -114,10 +114,26 @@ public class AzureKeyVaultSigningService implements SigningService {
                 aliases.add(id.substring(id.lastIndexOf('/') + 1));
             }
         } catch (IOException e) {
-            throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate aliases", e);
+            // return an empty list when called from the jarsigner JDK tool, because jarsigner fetches the aliases
+            // even if unnecessary for signing and this requires extra permissions on the Azure account (see #219)
+            if (!isCalledByJarSigner(e.getStackTrace())) {
+                throw new KeyStoreException("Unable to retrieve Azure Key Vault certificate aliases", e);
+            }
         }
 
         return aliases;
+    }
+
+    /**
+     * Checks the stacktrace and tells if the calling class is the jarsigner tool.
+     */
+    private boolean isCalledByJarSigner(StackTraceElement[] trace) {
+        for (StackTraceElement element : trace) {
+            if (element.getClassName().contains("jarsigner")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

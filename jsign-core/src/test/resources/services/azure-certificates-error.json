@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "Forbidden",
+    "message": "The user, group or application 'appid={applicationId};iss=https://sts.windows.net/{tenantId}/' does not have certificates list permission on key vault 'jsigntestkeyvault'. For help resolving this issue, please see https://go.microsoft.com/fwlink/?linkid=2125287",
+    "innererror": {
+      "code": "ForbiddenByPolicy"
+    }
+  }
+}

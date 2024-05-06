@@ -64,6 +64,7 @@ See https://ebourg.github.io/jsign for more information.
 * The error message displayed when the password of a PKCS#12 keystore is missing has been fixed
 * The log4j configuration warning displayed when signing a MSI file has been fixed (contributed by Pascal Davoust)
 * The value of the `storetype` parameter is now case insensitive
+* The Azure Key Vault account no longer needs the permission to list the keys when signing with jarsigner
 * API changes:
   * The PEFile class has been refactored to keep only the methods related to signing
 * Switched to BouncyCastle LTS 2.73.5
