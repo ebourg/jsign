@@ -59,6 +59,7 @@ See https://ebourg.github.io/jsign for more information.
 * The `extract` command has been added to extract the signature from a signed file, in DER or PEM format
 * The `remove` command has been added to remove the signature from a signed file
 * The JCA provider now works with [apksigner](https://developer.android.com/tools/apksigner) for signing Android applications
+* RSA 4096 keys are supported with the `PIV` storetype (for Yubikeys with firmware version 5.7 or higher)
 * The APPX/MSIX bundles are now signed with the correct Authenticode UUID
 * The error message displayed when the password of a PKCS#12 keystore is missing has been fixed
 * The log4j configuration warning displayed when signing a MSI file has been fixed (contributed by Pascal Davoust)

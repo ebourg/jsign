@@ -122,6 +122,7 @@ class PIVCard extends SmartCard {
          *   <li>0x06: RSA-1024</li>
          *   <li>0x07: RSA-2048</li>
          *   <li>0x05: RSA-3072</li>
+         *   <li>0x16: RSA-4096</li>
          *   <li>0x11: ECC-P256</li>
          *   <li>0x14: ECC-P384</li>
          * </ul>
@@ -285,6 +286,9 @@ class PIVCard extends SmartCard {
                     break;
                 case 3072:
                     info.algorithmId = 0x05;
+                    break;
+                case 4096:
+                    info.algorithmId = 0x16;
                     break;
             }
         } else if ("EC".equals(info.algorithm)) {
