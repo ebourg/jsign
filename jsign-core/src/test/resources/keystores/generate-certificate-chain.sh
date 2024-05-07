@@ -34,7 +34,7 @@ authorityInfoAccess = caIssuers;URI:http://localhost:31457/jsign-intermediate.ce
 authorityInfoAccess = OCSP;URI:http://localhost:31457/ocsp
 EOF
 
-CERT_OPTS="-days 7300 -text -sha256"
+CERT_OPTS="-days 7305 -text -sha256"
 YEAR=$(date +'%Y')
 
 # Generate the root certificate
