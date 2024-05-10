@@ -423,9 +423,12 @@ public class AuthenticodeSigner {
     }
 
     private CMSSignedDataGenerator createSignedDataGenerator(CMSTypedData contentInfo) throws CMSException, OperatorCreationException, CertificateEncodingException {
+        List<X509Certificate> fullChain = CertificateUtils.getFullCertificateChain((Collection) Arrays.asList(chain));
+        fullChain.removeIf(CertificateUtils::isSelfSigned);
+
         boolean authenticode = AuthenticodeObjectIdentifiers.isAuthenticode(contentInfo.getContentType().getId());
         CMSSignedDataGenerator generator = authenticode ? new AuthenticodeSignedDataGenerator() : new CMSSignedDataGenerator();
-        generator.addCertificates(new JcaCertStore(removeRoot(chain)));
+        generator.addCertificates(new JcaCertStore(fullChain));
         generator.addSignerInfoGenerator(createSignerInfoGenerator());
 
         return generator;
@@ -465,32 +468,6 @@ public class AuthenticodeSigner {
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         signerInfoGeneratorBuilder.setContentDigest(createContentDigestAlgorithmIdentifier(shaSigner.getAlgorithmIdentifier()));
         return signerInfoGeneratorBuilder.build(shaSigner, certificate);
-    }
-
-    /**
-     * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.
-     * 
-     * @param certificates the certificate chain to process
-     * @return the certificate chain without the root certificate
-     */
-    private List<Certificate> removeRoot(Certificate[] certificates) {
-        List<Certificate> list = new ArrayList<>();
-        
-        if (certificates.length == 1) {
-            list.add(certificates[0]);
-        } else {
-            for (Certificate certificate : certificates) {
-                if (!isSelfSigned((X509Certificate) certificate)) {
-                    list.add(certificate);
-                }
-            }
-        }
-        
-        return list;
-    }
-
-    private boolean isSelfSigned(X509Certificate certificate) {
-        return certificate.getSubjectDN().equals(certificate.getIssuerDN());
     }
 
     private void verify(CMSSignedData signedData) throws SignatureException, OperatorCreationException {

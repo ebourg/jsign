@@ -99,8 +99,12 @@ is used in combination with the certfile option.
 
 .TP
 .B -c, --certfile <FILE>
-The file containing the PKCS#7 certificate chain (.p7b or .spc files). This
-option is used in combination with the keyfile option.
+The file containing the PKCS#7 certificate chain, in PEM or DER format (.p7b or .spc files).
+This parameter is required if --keystore isn't specified, or if the keystore used contains
+only the key and not the certificate chain. It may be specified if the keystore holds only
+the signing certificate and not the full certificate chain, otherwise Jsign will attempt
+to download the missing certificates from the URL specified in the Authority Information
+Access field of the certificates.
 
 .TP
 .B -d, --alg <ALGORITHM>

@@ -61,6 +61,7 @@ programmatically or standalone as a command line tool.</p>
   <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
+  <li>Certificate chain completion</li>
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
   <li>Keystores supported:
     <ul>
@@ -81,6 +82,7 @@ programmatically or standalone as a command line tool.</p>
     </ul>
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
+  <li>Automatic download of the intermediate certificates</li>
   <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>, <a href="#github-actions">GitHub Actions</a>)</li>
   <li>Command line signing tool</li>
   <li>Authenticode signing API (<a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a>)</li>
@@ -211,8 +213,14 @@ programmatically or standalone as a command line tool.</p>
     </tr>
     <tr>
       <td class="attribute">certfile</td>
-      <td class="description">The file containing the PKCS#7 certificate chain (<code>.p7b</code> or <code>.spc</code> files).</td>
-      <td class="required" rowspan="2">Yes, unless <code>keystore</code> is specified.</td>
+      <td class="description">
+        The file containing the PKCS#7 certificate chain, in PEM or DER format (<code>.p7b</code> or <code>.spc</code>
+        files). This parameter is required if <code>keystore</code> isn't specified, or if the keystore used contains
+        only the key and not the certificate chain. It may be specified if the keystore holds only the signing
+        certificate and not the full certificate chain, otherwise Jsign will attempt to download the missing
+        certificates from the URL specified in the Authority Information Access field of the certificates.
+      </td>
+      <td class="required" rowspan="2">No, depends on the keystore used.</td>
     </tr>
     <tr>
       <td class="attribute">keyfile</td>
@@ -551,7 +559,7 @@ from the <a href="https://developers.yubico.com/yubico-piv-tool/">Yubico PIV Too
 be installed on the system at the default location.</p>
 
 <pre>
- jsign --storetype YUBIKEY --storepass 123456 --certfile full-chain.pem application.exe
+ jsign --storetype YUBIKEY --storepass 123456 application.exe
 </pre>
 
 <p>Alternatively, the PIV storetype can also be used to sign with a Yubikey and doesn't require the ykcs11 library.</p>
@@ -576,7 +584,7 @@ require OpenSC and any key can be used by providing an external certificate.</p>
 <a href="https://knowledge.digicert.com/general-information/how-to-download-safenet-authentication-client">SafeNet Authentication Client</a>.</p>
 
 <pre>
-  jsign --storetype ETOKEN --storepass &ltPIN&gt; --certfile full-chain.pem application.exe
+  jsign --storetype ETOKEN --storepass &ltPIN&gt; application.exe
 </pre>
 
 <h4 id="example-smart-card">Signing with a smart card</h4>
@@ -603,8 +611,7 @@ a Nitrokey (non-HSM models) or a Yubikey.</p>
        --certfile full-chain.pem application.exe
 </pre>
 
-<p>X.509 certificates stored on the card are automatically used, and the <code>certfile</code> parameter is only
-required if the certificate chain contains an intermediate certificate.</p>
+<p>The <code>certfile</code> parameter is only required if no X.509 certificate is stored on the card for the key used.</p>
 
 <p>If multiple devices are connected, the <code>keystore</code> parameter can be used to specify
 the name of the one to use.</p>
@@ -616,12 +623,8 @@ the name of the one to use.</p>
 Slot numbers are also accepted (for example <code>9c</code> for the digital signature key).
 
 <pre>
- jsign --storetype PIV --storepass 123456 --alias SIGNATURE \
-       --certfile full-chain.pem application.exe
+ jsign --storetype PIV --storepass 123456 --alias SIGNATURE application.exe
 </pre>
-
-<p>X.509 certificates stored on the card are automatically used, and the <code>certfile</code> parameter is only
-required if the certificate chain contains an intermediate certificate.</p>
 
 <p>If multiple devices are connected, the <code>keystore</code> parameter can be used to specify
 the name of the one to use.</p>

@@ -612,4 +612,31 @@ public class PESignerTest {
             assertEquals("Algorithm parameters", DERNull.INSTANCE, ai.getParameters());
         }
     }
+
+    @Test
+    public void testSignWithIncompleteChain() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-completed-chain.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withTimestamping(false);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+
+            CMSSignedData signature = peFile.getSignatures().get(0);
+
+            Collection<X509CertificateHolder> certificates = signature.getCertificates().getMatches(null);
+            assertEquals("Number of certificates", 2, certificates.size());
+            for (X509CertificateHolder certificate : certificates) {
+                if (certificate.getSubject().toString().equals(certificate.getIssuer().toString())) {
+                    fail("Root certificate found: " + certificate.getSubject());
+                }
+            }
+        }
+    }
 }
