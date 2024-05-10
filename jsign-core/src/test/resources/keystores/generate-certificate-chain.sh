@@ -19,9 +19,7 @@ keyUsage = keyCertSign,cRLSign
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer
-crlDistributionPoints=URI:http://localhost:31457/jsign-ca.crl
-authorityInfoAccess = caIssuers;URI:http://localhost:31457/jsign-ca.cer
-authorityInfoAccess = OCSP;URI:http://localhost:31457/ocsp
+authorityInfoAccess = caIssuers;URI:http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-root-ca.cer
 
 [ final ]
 basicConstraints = CA:FALSE
@@ -29,9 +27,7 @@ keyUsage = digitalSignature
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid,issuer
-crlDistributionPoints=URI:http://localhost:31457/jsign-intermediate.crl
-authorityInfoAccess = caIssuers;URI:http://localhost:31457/jsign-intermediate.cer
-authorityInfoAccess = OCSP;URI:http://localhost:31457/ocsp
+authorityInfoAccess = caIssuers;URI:http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-code-signing-ca.cer
 EOF
 
 CERT_OPTS="-days 7305 -text -sha256"
@@ -39,11 +35,13 @@ YEAR=$(date +'%Y')
 
 # Generate the root certificate
 openssl req -new -newkey rsa:4096 -nodes -keyout jsign-root-ca.key -x509 -extensions v3_ca -subj "/CN=Jsign Root Certificate Authority $YEAR" -out jsign-root-ca.pem $CERT_OPTS
+openssl x509 -in jsign-root-ca.pem -out jsign-root-ca.cer -outform DER
 
 # Generate the intermediate certificate
 openssl req -new -newkey rsa:2048 -nodes -keyout jsign-code-signing-ca.key -subj "/CN=Jsign Code Signing CA $YEAR" -out jsign-code-signing-ca.csr
 openssl x509 -req -in jsign-code-signing-ca.csr -CA jsign-root-ca.pem -CAkey jsign-root-ca.key -CAcreateserial \
              -out jsign-code-signing-ca.pem $CERT_OPTS -extfile extensions.cnf -extensions intermediate
+openssl x509 -in jsign-code-signing-ca.pem -out jsign-code-signing-ca.cer -outform DER
 
 # Generate the test certificates (reusing the existing keys)
 openssl req -new -key privatekey.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (RSA)" -out jsign-test-certificate.csr
