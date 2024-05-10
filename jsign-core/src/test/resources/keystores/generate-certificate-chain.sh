@@ -52,6 +52,14 @@ openssl req -new -key privatekey-ec-p384.pkcs1.pem -subj "/CN=Jsign Code Signing
 openssl x509 -req -in jsign-test-certificate-ec.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
              -out jsign-test-certificate-ec.pem $CERT_OPTS -extfile extensions.cnf -extensions final
 
+openssl req -new -key privatekey-ed25519.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (Ed25519)" -out jsign-test-certificate-ed25519.csr
+openssl x509 -req -in jsign-test-certificate-ed25519.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
+             -out jsign-test-certificate-ed25519.pem $CERT_OPTS -extfile extensions.cnf -extensions final
+
+openssl req -new -key privatekey-ed448.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (Ed448)" -out jsign-test-certificate-ed448.csr
+openssl x509 -req -in jsign-test-certificate-ed448.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
+             -out jsign-test-certificate-ed448.pem $CERT_OPTS -extfile extensions.cnf -extensions final
+
 # Generate the certificate chains
 cat jsign-root-ca.pem jsign-code-signing-ca.pem jsign-test-certificate.pem > jsign-test-certificate-full-chain-reversed.pem
 cat jsign-test-certificate.pem jsign-code-signing-ca.pem jsign-root-ca.pem > jsign-test-certificate-full-chain.pem
@@ -69,6 +77,12 @@ openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate.pem            -out keys
 
 OPENSSL_OPTS="-export -inkey privatekey-ec-p384.pkcs1.pem -name test -passout pass:password"
 openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ec.pem         -out keystore-ec.p12
+
+OPENSSL_OPTS="-export -inkey privatekey-ed25519.pem -name test -passout pass:password"
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ed25519.pem    -out keystore-ed25519.p12
+
+OPENSSL_OPTS="-export -inkey privatekey-ed448.pem -name test -passout pass:password"
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ed448.pem      -out keystore-ed448.p12
 
 # Generate the Java keystores
 KEYTOOL_OPTS="-importkeystore -srcstoretype pkcs12 -srcstorepass password -srcalias test -deststoretype jks -deststorepass password -destalias test"

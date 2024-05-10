@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
@@ -539,6 +541,46 @@ public class PESignerTest {
                 .withTimestamping(false)
                 .withProgramName("WinEyes")
                 .withProgramURL("http://www.steelblue.com/WinEyes");
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignWithEd25519Key() throws Exception {
+        Assume.assumeTrue("EdDSA requires Java 15 or higher", SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_15));
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore-ed25519.p12").storepass("password").build();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-ed25519.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, ALIAS, PRIVATE_KEY_PASSWORD).withTimestamping(false);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignWithEd448Key() throws Exception {
+        Assume.assumeTrue("EdDSA requires Java 15 or higher", SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_15));
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore-ed448.p12").storepass("password").build();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-ed448.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, ALIAS, PRIVATE_KEY_PASSWORD).withTimestamping(false);
 
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);

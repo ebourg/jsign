@@ -29,6 +29,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -300,9 +302,18 @@ public class AuthenticodeSigner {
             return signatureAlgorithm;
         } else if ("EC".equals(privateKey.getAlgorithm())) {
             return digestAlgorithm + "withECDSA";
-        } else {
-            return digestAlgorithm + "with" + privateKey.getAlgorithm();
+        } else if ("EdDSA".equals(privateKey.getAlgorithm())) {
+            X509Certificate certificate = (X509Certificate) chain[0];
+            PublicKey publicKey = certificate.getPublicKey();
+            if (publicKey.toString().contains("Ed25519")) {
+                return "Ed25519";
+            } else if (publicKey.toString().contains("Ed448")) {
+                return "Ed448";
+            }
+            // return ((EdECKey) publicKey).getParams().getName(); // todo with Java 15+
         }
+
+        return digestAlgorithm + "with" + privateKey.getAlgorithm();
     }
 
     /**
@@ -574,6 +585,11 @@ public class AuthenticodeSigner {
      * @return an AlgorithmIdentifier for the digestAlgorithm and including parameters
      */
     protected AlgorithmIdentifier createContentDigestAlgorithmIdentifier(AlgorithmIdentifier signatureAlgorithm) {
+        if ("1.3.101.112".equals(signatureAlgorithm.getAlgorithm().getId()) // Ed25519
+            || "1.3.101.113".equals(signatureAlgorithm.getAlgorithm().getId())) { // Ed448
+            return new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        }
+
         AlgorithmIdentifier ai = new DefaultDigestAlgorithmIdentifierFinder().find(signatureAlgorithm);
         if (ai.getParameters() == null) {
             // Always include parameters to align with what signtool does
