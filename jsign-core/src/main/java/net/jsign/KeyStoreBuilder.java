@@ -136,7 +136,11 @@ public class KeyStoreBuilder {
                 storetype = NONE;
             } else {
                 // the keystore type wasn't specified, let's try to guess it
-                storetype = KeyStoreType.of(createFile(keystore));
+                File file = createFile(keystore);
+                if (!file.isFile()) {
+                    throw new IllegalArgumentException("Keystore file '" + keystore + "' not found");
+                }
+                storetype = KeyStoreType.of(file);
                 if (storetype == null) {
                     throw new IllegalArgumentException("Keystore type of '" + keystore + "' not recognized");
                 }

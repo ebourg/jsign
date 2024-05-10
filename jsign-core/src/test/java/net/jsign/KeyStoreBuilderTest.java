@@ -416,6 +416,34 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildWithoutStoreType() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder();
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "Either keystore, or keyfile and certfile, or storetype parameters must be set", e.getMessage());
+        }
+
+        builder.keystore("target/test-classes/keystores/keystore.error");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "Keystore file 'target/test-classes/keystores/keystore.error' not found", e.getMessage());
+        }
+
+        builder.keystore("target/test-classes/keystores/keystore.p12");
+
+        assertEquals("storetype", PKCS12, builder.storetype());
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildPKCS11() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(PKCS11);
 
