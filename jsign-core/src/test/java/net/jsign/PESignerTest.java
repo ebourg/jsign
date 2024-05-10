@@ -26,7 +26,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.DERNull;
@@ -76,11 +75,9 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull("signatures", signatures);
-            assertEquals("number of signatures", 1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = peFile.getSignatures().get(0);
 
             assertNotNull("signature", signature);
             assertNull("signingTime attribute found", signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
@@ -121,11 +118,9 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull("signatures", signatures);
-            assertEquals("number of signatures", 1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = peFile.getSignatures().get(0);
 
             assertNotNull("signature", signature);
 
@@ -519,11 +514,9 @@ public class PESignerTest {
 
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull("signatures", signatures);
-            assertEquals("number of signatures", 1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signedData = signatures.get(0);
+            CMSSignedData signedData = peFile.getSignatures().get(0);
             assertNotNull("signature", signedData);
 
             // Check the signature algorithm
@@ -550,9 +543,7 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull("signatures", signatures);
-            assertEquals("number of signatures", 1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
         }
     }
 
@@ -571,11 +562,9 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull("signatures", signatures);
-            assertEquals("number of signatures", 1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = peFile.getSignatures().get(0);
             AlgorithmIdentifier ai = signature.getDigestAlgorithmIDs().iterator().next();
             assertEquals("Algorithm identifier", signer.digestAlgorithm.oid, ai.getAlgorithm());
             assertEquals("Algorithm parameters", DERNull.INSTANCE, ai.getParameters());
