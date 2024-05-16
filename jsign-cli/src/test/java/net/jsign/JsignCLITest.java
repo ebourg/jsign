@@ -225,7 +225,7 @@ public class JsignCLITest {
     @Test
     public void testSigningMultipleFilesWithListFile() throws Exception {
         File listFile = new File("target/test-classes/files.txt");
-        Files.write(listFile.toPath(), Arrays.asList(targetFile.getAbsolutePath(), targetFile.getAbsolutePath()));
+        Files.write(listFile.toPath(), Arrays.asList("# first file", targetFile.getPath(), " ", "# second file", targetFile.getAbsolutePath()));
         
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "@" + listFile);
 

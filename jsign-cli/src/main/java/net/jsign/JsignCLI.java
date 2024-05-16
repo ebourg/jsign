@@ -172,7 +172,9 @@ public class JsignCLI {
 
         for (String arg : cmd.getArgList()) {
             for (String filename : expand(arg)) {
-                helper.execute(new File(filename));
+                if (!filename.trim().isEmpty() && !filename.startsWith("#")) {
+                    helper.execute(new File(filename));
+                }
             }
         }
     }
