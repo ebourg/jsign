@@ -17,9 +17,14 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -162,8 +167,25 @@ public class JsignCLI {
             throw new SignerException("No file specified");
         }
 
-        for (String filename : cmd.getArgList()) {
-            helper.execute(new File(filename));
+        for (String arg : cmd.getArgList()) {
+            for (String filename : expand(arg)) {
+                helper.execute(new File(filename));
+            }
+        }
+    }
+
+    /**
+     * Expands filenames starting with @ to a list of filenames.
+     */
+    private List<String> expand(String filename) {
+        if (filename.startsWith("@")) {
+            try {
+                return Files.readAllLines(Paths.get(filename.substring(1)));
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Failed to read the file list: " + filename.substring(1), e);
+            }
+        } else {
+            return Collections.singletonList(filename);
         }
     }
 
@@ -189,7 +211,7 @@ public class JsignCLI {
         formatter.setDescPadding(1);
 
         PrintWriter out = new PrintWriter(System.out);
-        formatter.printUsage(out, formatter.getWidth(), getProgramName() + " [COMMAND] [OPTIONS] [FILE]...");
+        formatter.printUsage(out, formatter.getWidth(), getProgramName() + " [COMMAND] [OPTIONS] [FILE] [@FILELIST]...");
         out.println();
         formatter.printWrapped(out, formatter.getWidth(), header);
 

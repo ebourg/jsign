@@ -482,7 +482,7 @@ are the same as those described above for the Ant task.</p>
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
 <pre>
-  usage: jsign [OPTIONS] [FILE]...
+  usage: jsign [OPTIONS] [FILE] [@FILELIST]...
   Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
   files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics
   365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF).
@@ -534,6 +534,8 @@ are the same as those described above for the Ant task.</p>
   -h,--help                  Print the help
 </pre>
 
+<p>After the options Jsign accepts one or more files to sign as arguments. If a filename starts with @ it is considered
+as a text file containing a list of files to sign, one per line.</p>
 
 <h3 id="examples">Examples</h3>
 

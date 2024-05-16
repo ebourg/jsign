@@ -18,9 +18,11 @@ package net.jsign;
 
 import java.io.File;
 import java.net.ProxySelector;
+import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.security.Permission;
 import java.security.ProviderException;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.netty.handler.codec.http.HttpRequest;
@@ -208,6 +210,20 @@ public class JsignCLITest {
     @Test
     public void testSigningMultipleFiles() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "" + targetFile, "" + targetFile);
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            SignatureAssert.assertSigned(peFile, SHA1, SHA1);
+        }
+    }
+
+    @Test
+    public void testSigningMultipleFilesWithListFile() throws Exception {
+        File listFile = new File("target/test-classes/files.txt");
+        Files.write(listFile.toPath(), Arrays.asList(targetFile.getAbsolutePath(), targetFile.getAbsolutePath()));
+        
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "@" + listFile);
 
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
