@@ -173,7 +173,7 @@ public class JsignCLI {
         for (String arg : cmd.getArgList()) {
             for (String filename : expand(arg)) {
                 if (!filename.trim().isEmpty() && !filename.startsWith("#")) {
-                    helper.execute(new File(filename));
+                    helper.execute(new File(unquote(filename)));
                 }
             }
         }
@@ -202,6 +202,17 @@ public class JsignCLI {
         try (BOMInputStream in = new BOMInputStream(new BufferedInputStream(new FileInputStream(file)), false, UTF_8, UTF_16BE, UTF_16LE)) {
             return IOUtils.readLines(in, in.hasBOM() ? in.getBOMCharsetName() : "UTF-8");
         }
+    }
+
+    /**
+     * Removes the quotes around the specified file name.
+     */
+    private String unquote(String value) {
+        value = value.trim();
+        if (value.startsWith("\"") && value.endsWith("\"")) {
+            value = value.substring(1, value.length() - 1);
+        }
+        return value;
     }
 
     private void setOption(String key, SignerHelper helper, CommandLine cmd) {
