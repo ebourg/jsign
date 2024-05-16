@@ -17,7 +17,9 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.ProxySelector;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.security.Permission;
@@ -27,7 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.netty.handler.codec.http.HttpRequest;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -223,6 +227,23 @@ public class JsignCLITest {
         File listFile = new File("target/test-classes/files.txt");
         Files.write(listFile.toPath(), Arrays.asList(targetFile.getAbsolutePath(), targetFile.getAbsolutePath()));
         
+        cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "@" + listFile);
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            SignatureAssert.assertSigned(peFile, SHA1, SHA1);
+        }
+    }
+
+    @Test
+    public void testSigningMultipleFilesWithListFileUTF16() throws Exception {
+        File listFile = new File("target/test-classes/files-utf16.txt");
+        try (FileOutputStream out = new FileOutputStream(listFile)) {
+            out.write(ByteOrderMark.UTF_16LE.getBytes());
+            IOUtils.writeLines(Arrays.asList(targetFile.getAbsolutePath(), targetFile.getAbsolutePath()), "\r\n", out, StandardCharsets.UTF_16LE);
+        }
+
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "@" + listFile);
 
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));

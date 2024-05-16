@@ -16,11 +16,11 @@
 
 package net.jsign;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -34,8 +34,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 
 import static net.jsign.SignerHelper.*;
+import static org.apache.commons.io.ByteOrderMark.*;
 
 /**
  * Command line interface for signing files.
@@ -180,12 +183,22 @@ public class JsignCLI {
     private List<String> expand(String filename) {
         if (filename.startsWith("@")) {
             try {
-                return Files.readAllLines(Paths.get(filename.substring(1)));
+                return readFile(new File(filename.substring(1)));
             } catch (IOException e) {
                 throw new IllegalArgumentException("Failed to read the file list: " + filename.substring(1), e);
             }
         } else {
             return Collections.singletonList(filename);
+        }
+    }
+
+    /**
+     * Reads the content of the text file specified. Byte order marks are supported to detect the encoding,
+     * otherwise UTF-8 is used.
+     */
+    private List<String> readFile(File file) throws IOException {
+        try (BOMInputStream in = new BOMInputStream(new BufferedInputStream(new FileInputStream(file)), false, UTF_8, UTF_16BE, UTF_16LE)) {
+            return IOUtils.readLines(in, in.hasBOM() ? in.getBOMCharsetName() : "UTF-8");
         }
     }
 
