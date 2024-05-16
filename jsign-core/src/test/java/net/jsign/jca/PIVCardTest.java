@@ -22,6 +22,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Set;
 import javax.crypto.Cipher;
+import javax.smartcardio.CardException;
 
 import org.junit.Test;
 
@@ -34,7 +35,11 @@ import static org.junit.Assume.*;
 public class PIVCardTest {
 
     public static void assumeCardPresent() throws Exception {
-        assumeTrue("PIV card not found", SmartCard.getTerminal("Yubikey") != null);
+        try {
+            assumeTrue("PIV card not found", SmartCard.getTerminal("Yubikey") != null);
+        } catch (CardException e) {
+            assumeNoException("PIV card not found", e);
+        }
     }
 
     @Test
