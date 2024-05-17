@@ -58,6 +58,7 @@ See https://ebourg.github.io/jsign for more information.
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
 * The intermediate certificates are downloaded if missing from the keystore or the certificate chain file
 * File list files prefixed with `@` are now supported with the command line tool to sign multiple files
+* Wildcard patterns are now accepted by the command line tool to scan directories for files to sign
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages
 * The `extract` command has been added to extract the signature from a signed file, in DER or PEM format
 * The `remove` command has been added to remove the signature from a signed file

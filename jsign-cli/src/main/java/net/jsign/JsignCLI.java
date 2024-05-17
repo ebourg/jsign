@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -189,6 +190,12 @@ public class JsignCLI {
             } catch (IOException e) {
                 throw new IllegalArgumentException("Failed to read the file list: " + filename.substring(1), e);
             }
+        } else if (filename.contains("*")) {
+            try {
+                return new DirectoryScanner().scan(filename).stream().map(Path::toString).collect(Collectors.toList());
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Failed to scan the directory: " + filename, e);
+            }
         } else {
             return Collections.singletonList(filename);
         }
@@ -237,7 +244,7 @@ public class JsignCLI {
         formatter.setDescPadding(1);
 
         PrintWriter out = new PrintWriter(System.out);
-        formatter.printUsage(out, formatter.getWidth(), getProgramName() + " [COMMAND] [OPTIONS] [FILE] [@FILELIST]...");
+        formatter.printUsage(out, formatter.getWidth(), getProgramName() + " [COMMAND] [OPTIONS] [FILE] [PATTERN] [@FILELIST]...");
         out.println();
         formatter.printWrapped(out, formatter.getWidth(), header);
 

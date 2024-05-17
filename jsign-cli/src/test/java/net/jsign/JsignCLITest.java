@@ -254,6 +254,26 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testSigningMultipleFilesWithPattern() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile1 = new File("target/test-classes/wineyes-pattern1.exe");
+        targetFile1.delete();
+        File targetFile2 = new File("target/test-classes/wineyes-pattern2.exe");
+        targetFile2.delete();
+        FileUtils.copyFile(sourceFile, targetFile1);
+        FileUtils.copyFile(sourceFile, targetFile2);
+
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "target/**/*-pattern*.exe");
+
+        try (PEFile peFile = new PEFile(targetFile1)) {
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+        try (PEFile peFile = new PEFile(targetFile2)) {
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
     public void testSigningPowerShell() throws Exception {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");
