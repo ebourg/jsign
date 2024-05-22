@@ -167,11 +167,15 @@ public class APPXFile extends ZipFile implements Signable {
         return new SpcIndirectDataContent(data, digestInfo);
     }
 
+    private static String normalized(String name) {
+        return name.replaceAll(", ", ",").replace(",ST=", ",S=");
+    }
+
     @Override
     public void validate(Certificate certificate) throws IOException, IllegalArgumentException {
         String name = ((X509Certificate) certificate).getSubjectX500Principal().getName();
         String publisher = getPublisher();
-        if (!name.equals(publisher)) {
+        if (!normalized(name).equals(normalized(publisher))) {
             throw new IllegalArgumentException("The app manifest publisher name (" + publisher + ") must match the subject name of the signing certificate (" + name + ")");
         }
     }
