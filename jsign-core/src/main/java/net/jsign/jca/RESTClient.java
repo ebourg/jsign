@@ -35,21 +35,20 @@ class RESTClient {
     private final String endpoint;
 
     /** Callback setting the authentication headers for the request */
-    private final BiConsumer<HttpURLConnection, byte[]> authenticationHandler;
+    private BiConsumer<HttpURLConnection, byte[]> authenticationHandler;
 
     public RESTClient(String endpoint) {
         this.endpoint = endpoint;
-        this.authenticationHandler = null;
     }
 
-    public RESTClient(String endpoint, Consumer<HttpURLConnection>  authenticationHeaderSupplier) {
-        this.endpoint = endpoint;
+    public RESTClient authentication(Consumer<HttpURLConnection>  authenticationHeaderSupplier) {
         this.authenticationHandler = (conn, data) -> authenticationHeaderSupplier.accept(conn);
+        return this;
     }
 
-    public RESTClient(String endpoint, BiConsumer<HttpURLConnection, byte[]>  authenticationHeaderSupplier) {
-        this.endpoint = endpoint;
+    public RESTClient authentication(BiConsumer<HttpURLConnection, byte[]>  authenticationHeaderSupplier) {
         this.authenticationHandler = authenticationHeaderSupplier;
+        return this;
     }
 
     public Map<String, ?> get(String resource) throws IOException {

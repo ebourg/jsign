@@ -56,7 +56,8 @@ public class HashiCorpVaultSigningService implements SigningService {
      */
     public HashiCorpVaultSigningService(String engineURL, String token, Function<String, Certificate[]> certificateStore) {
         this.certificateStore = certificateStore;
-        this.client = new RESTClient(engineURL.endsWith("/") ? engineURL : engineURL + "/", conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        this.client = new RESTClient(engineURL.endsWith("/") ? engineURL : engineURL + "/")
+                .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     @Override

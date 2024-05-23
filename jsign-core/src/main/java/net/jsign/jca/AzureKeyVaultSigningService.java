@@ -80,7 +80,7 @@ public class AzureKeyVaultSigningService implements SigningService {
         if (!vault.startsWith("http")) {
             vault = "https://" + vault + ".vault.azure.net";
         }
-        this.client = new RESTClient(vault, conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        this.client = new RESTClient(vault).authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     @Override

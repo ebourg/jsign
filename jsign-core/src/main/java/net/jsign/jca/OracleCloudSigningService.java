@@ -99,14 +99,14 @@ public class OracleCloudSigningService implements SigningService {
 
         try {
             // VaultSummary/ListVaults (https://docs.oracle.com/en-us/iaas/api/#/en/key/release/VaultSummary/ListVaults)
-            RESTClient kmsClient = new RESTClient(getVaultEndpoint(), this::sign);
+            RESTClient kmsClient = new RESTClient(getVaultEndpoint()).authentication(this::sign);
             Map<String, ?> result = kmsClient.get("/20180608/vaults?compartmentId=" + credentials.getTenancy());
             Object[] vaults = (Object[]) result.get("result");
             for (Object v : vaults) {
                 Map<String, ?> vault = (Map<String, ?>) v;
                 if ("ACTIVE".equals(vault.get("lifecycleState"))) {
                     String endpoint = (String) vault.get("managementEndpoint");
-                    RESTClient managementClient = new RESTClient(endpoint, this::sign);
+                    RESTClient managementClient = new RESTClient(endpoint).authentication(this::sign);
 
                     // KeySummary/ListKeys (https://docs.oracle.com/en-us/iaas/api/#/en/key/release/KeySummary/ListKeys)
                     result = managementClient.get("/20180608/keys?compartmentId=" + credentials.getTenancy());
@@ -157,7 +157,7 @@ public class OracleCloudSigningService implements SigningService {
         args.put(JsonWriter.TYPE, "false");
 
         try {
-            RESTClient client = new RESTClient(getKeyEndpoint(privateKey.getId()), this::sign);
+            RESTClient client = new RESTClient(getKeyEndpoint(privateKey.getId())).authentication(this::sign);
             Map<String, ?> response = client.post("/20180608/sign", JsonWriter.objectToJson(request, args));
             String signature = (String) response.get("signature");
             return Base64.getDecoder().decode(signature);

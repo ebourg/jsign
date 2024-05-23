@@ -82,18 +82,19 @@ public class DigiCertOneSigningService implements SigningService {
     }
 
     DigiCertOneSigningService(String endpoint, String apiKey, X509KeyManager keyManager) {
-        this.client = new RESTClient(endpoint + "/signingmanager/api/v1/", conn -> {
-            conn.setRequestProperty("x-api-key", apiKey);
-            try {
-                SSLContext context = SSLContext.getInstance("TLS");
-                context.init(new KeyManager[]{keyManager}, null, new SecureRandom());
-                if (conn instanceof HttpsURLConnection) {
-                    ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
-                }
-            } catch (GeneralSecurityException e) {
-                throw new RuntimeException("Unable to load the DigiCert ONE client certificate", e);
-            }
-        });
+        this.client = new RESTClient(endpoint + "/signingmanager/api/v1/")
+                .authentication(conn -> {
+                    conn.setRequestProperty("x-api-key", apiKey);
+                    try {
+                        SSLContext context = SSLContext.getInstance("TLS");
+                        context.init(new KeyManager[]{keyManager}, null, new SecureRandom());
+                        if (conn instanceof HttpsURLConnection) {
+                            ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
+                        }
+                    } catch (GeneralSecurityException e) {
+                        throw new RuntimeException("Unable to load the DigiCert ONE client certificate", e);
+                    }
+                });
     }
 
     @Override

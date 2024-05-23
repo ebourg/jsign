@@ -75,7 +75,7 @@ public class GoogleCloudSigningService implements SigningService {
     GoogleCloudSigningService(String endpoint, String keyring, String token, Function<String, Certificate[]> certificateStore) {
         this.keyring = keyring;
         this.certificateStore = certificateStore;
-        this.client = new RESTClient(endpoint, conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        this.client = new RESTClient(endpoint).authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     @Override

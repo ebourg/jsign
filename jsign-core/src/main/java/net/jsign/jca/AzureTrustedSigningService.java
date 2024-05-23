@@ -72,7 +72,7 @@ public class AzureTrustedSigningService implements SigningService {
         if (!endpoint.startsWith("http")) {
             endpoint = "https://" + endpoint;
         }
-        client = new RESTClient(endpoint, conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
+        client = new RESTClient(endpoint).authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token));
     }
 
     void setTimeout(int timeout) {
