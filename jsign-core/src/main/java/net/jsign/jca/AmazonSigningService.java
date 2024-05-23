@@ -107,7 +107,9 @@ public class AmazonSigningService implements SigningService {
 
     AmazonSigningService(Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore, String endpoint) {
         this.certificateStore = certificateStore;
-        this.client = new RESTClient(endpoint).authentication((conn, data) -> sign(conn, credentials.get(), data, null));
+        this.client = new RESTClient(endpoint)
+                .authentication((conn, data) -> sign(conn, credentials.get(), data, null))
+                .errorHandler(response -> response.get("__type") + ": " + response.get("message"));
     }
 
     /**

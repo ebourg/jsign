@@ -94,6 +94,10 @@ public class DigiCertOneSigningService implements SigningService {
                     } catch (GeneralSecurityException e) {
                         throw new RuntimeException("Unable to load the DigiCert ONE client certificate", e);
                     }
+                })
+                .errorHandler(response -> {
+                    Map error = (Map) response.get("error");
+                    return error.get("status") + ": " + error.get("message");
                 });
     }
 

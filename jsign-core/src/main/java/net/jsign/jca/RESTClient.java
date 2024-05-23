@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.cedarsoftware.util.io.JsonReader;
-import com.cedarsoftware.util.io.JsonWriter;
 import org.apache.commons.io.IOUtils;
 
 class RESTClient {
@@ -37,6 +37,9 @@ class RESTClient {
 
     /** Callback setting the authentication headers for the request */
     private BiConsumer<HttpURLConnection, byte[]> authenticationHandler;
+
+    /** Callback building an error message from the JSON formatted error response */
+    private Function<Map<String, ?>, String> errorHandler;
 
     private boolean debug;
 
@@ -56,6 +59,11 @@ class RESTClient {
 
     public RESTClient debug(boolean debug) {
         this.debug = debug;
+        return this;
+    }
+
+    public RESTClient errorHandler(Function<Map<String, ?>, String> errorHandler) {
+        this.errorHandler = errorHandler;
         return this;
     }
 
@@ -145,51 +153,10 @@ class RESTClient {
                 System.out.println("Error:\n" + error);
             }
             if (contentType != null && (contentType.startsWith("application/json") || contentType.startsWith("application/x-amz-json-1.1"))) {
-                throw new IOException(getErrorMessage(JsonReader.jsonToMaps(error)));
+                throw new IOException(errorHandler != null ? errorHandler.apply(JsonReader.jsonToMaps(error)) : error);
             } else {
                 throw new IOException("HTTP Error " + responseCode + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : "") + " (" + url + ")");
             }
         }
-    }
-
-    private String getErrorMessage(Map<String, ?> response) {
-        StringBuilder message = new StringBuilder();
-
-        if (response.get("error") instanceof Map) {
-            Map error = (Map) response.get("error");
-            if (error.get("code") != null) {
-                message.append(error.get("code"));
-            }
-            if (error.get("status") != null) {
-                if (message.length() > 0) {
-                    message.append(" - ");
-                }
-                message.append(error.get("status"));
-            }
-            if (error.get("message") != null) {
-                if (message.length() > 0) {
-                    message.append(": ");
-                }
-                message.append(error.get("message"));
-            }
-        } else if (response.containsKey("__type")) {
-            // error from the AWS API
-            String error = (String) response.get("__type");
-            String description = (String) response.get("message");
-            message.append(error).append(": ").append(description);
-        } else if (response.containsKey("title") && response.containsKey("errors")) {
-            // error from Azure Code Signing API
-            String errors = JsonWriter.objectToJson(response.get("errors"));
-            message.append(response.get("status")).append(" - ").append(response.get("title")).append(": ").append(errors);
-        } else if (response.containsKey("code") && response.containsKey("message")) {
-            // error from OCI API
-            message.append(response.get("code")).append(": ").append(response.get("message"));
-        } else {
-            // error message from the CSC API
-            String error = (String) response.get("error");
-            String description = (String) response.get("error_description");
-            message.append(error).append(": ").append(description);
-        }
-        return message.toString();
     }
 }

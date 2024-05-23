@@ -64,7 +64,9 @@ public class ESignerSigningService implements SigningService {
     }
 
     public ESignerSigningService(String endpoint, String accessToken) {
-        client = new RESTClient(endpoint).authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + accessToken));
+        client = new RESTClient(endpoint).debug(true)
+                .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + accessToken))
+                .errorHandler(response -> response.get("error") + ": " + response.get("error_description"));
     }
 
     private static String getAccessToken(String endpoint, String clientId, String username, String password) throws IOException {
@@ -77,7 +79,7 @@ public class ESignerSigningService implements SigningService {
         Map<String, Object> args = new HashMap<>();
         args.put(JsonWriter.TYPE, "false");
 
-        RESTClient client = new RESTClient(endpoint);
+        RESTClient client = new RESTClient(endpoint).errorHandler(response -> response.get("error") + ": " + response.get("error_description"));
         Map<String, ?> response = client.post("/oauth2/token", JsonWriter.objectToJson(request, args));
         return (String) response.get("access_token");
     }
