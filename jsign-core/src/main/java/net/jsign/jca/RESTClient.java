@@ -21,6 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -37,6 +38,8 @@ class RESTClient {
     /** Callback setting the authentication headers for the request */
     private BiConsumer<HttpURLConnection, byte[]> authenticationHandler;
 
+    private boolean debug;
+
     public RESTClient(String endpoint) {
         this.endpoint = endpoint;
     }
@@ -48,6 +51,11 @@ class RESTClient {
 
     public RESTClient authentication(BiConsumer<HttpURLConnection, byte[]>  authenticationHeaderSupplier) {
         this.authenticationHandler = authenticationHeaderSupplier;
+        return this;
+    }
+
+    public RESTClient debug(boolean debug) {
+        this.debug = debug;
         return this;
     }
 
@@ -65,6 +73,9 @@ class RESTClient {
 
     private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
+        if (debug) {
+            System.out.println(method + " " + url);
+        }
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
         String userAgent = System.getProperty("http.agent");
@@ -80,18 +91,45 @@ class RESTClient {
             authenticationHandler.accept(conn, data);
         }
         if (body != null) {
-            conn.setDoOutput(true);
             if (!conn.getRequestProperties().containsKey("Content-Type")) {
                 conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             }
             conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+        }
+
+        if (debug) {
+            for (String requestHeader : conn.getRequestProperties().keySet()) {
+                List<String> values = conn.getRequestProperties().get(requestHeader);
+                System.out.println(requestHeader + ": " + (values.size() == 1 ? values.get(0) : values));
+            }
+        }
+
+        if (body != null) {
+            if (debug) {
+                System.out.println("Content:\n" + body);
+            }
+            conn.setDoOutput(true);
             conn.getOutputStream().write(data);
+        }
+        if (debug) {
+            System.out.println();
         }
 
         int responseCode = conn.getResponseCode();
         String contentType = conn.getHeaderField("Content-Type");
+        if (debug) {
+            System.out.println("Response Code: " + responseCode);
+            System.out.println("Content-Type: " + contentType);
+        }
+
         if (responseCode < 400) {
-            String response = IOUtils.toString(conn.getInputStream(), StandardCharsets.UTF_8);
+            byte[] binaryResponse = IOUtils.toByteArray(conn.getInputStream());
+            String response = new String(binaryResponse, StandardCharsets.UTF_8);
+            if (debug) {
+                System.out.println("Content-Length: " + binaryResponse.length);
+                System.out.println("Content:\n" + response);
+                System.out.println();
+            }
 
             Object value = JsonReader.jsonToJava(response);
             if (value instanceof Map) {
@@ -103,6 +141,9 @@ class RESTClient {
             }
         } else {
             String error = conn.getErrorStream() != null ? IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8) : "";
+            if (debug && conn.getErrorStream() != null) {
+                System.out.println("Error:\n" + error);
+            }
             if (contentType != null && (contentType.startsWith("application/json") || contentType.startsWith("application/x-amz-json-1.1"))) {
                 throw new IOException(getErrorMessage(JsonReader.jsonToMaps(error)));
             } else {
