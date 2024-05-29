@@ -62,6 +62,7 @@ See https://ebourg.github.io/jsign for more information.
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages
 * The `extract` command has been added to extract the signature from a signed file, in DER or PEM format
 * The `remove` command has been added to remove the signature from a signed file
+* The new `--debug`, `--verbose` and `--quiet` parameters control the verbosity of the output messages
 * The JCA provider now works with [apksigner](https://developer.android.com/tools/apksigner) for signing Android applications
 * RSA 4096 keys are supported with the `PIV` storetype (for Yubikeys with firmware version 5.7 or higher)
 * Certificates using an Ed25519 or Ed448 key are now supported (experimental)
@@ -72,6 +73,7 @@ See https://ebourg.github.io/jsign for more information.
 * The Azure Key Vault account no longer needs the permission to list the keys when signing with jarsigner
 * API changes:
   * The PEFile class has been refactored to keep only the methods related to signing
+  * The java.util.logging API is now used to log debug messages under the `net.jsign` logger
 * Switched to BouncyCastle LTS 2.73.5
 
 #### Version 6.0 (2024-01-17)

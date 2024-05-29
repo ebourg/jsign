@@ -18,6 +18,8 @@ package net.jsign;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import groovy.lang.Closure;
 import org.gradle.api.Plugin;
@@ -38,7 +40,10 @@ public class JsignGradlePlugin implements Plugin<Project> {
                 String file = params.get("file");
                 params.remove("file");
                 
-                SignerHelper helper = new SignerHelper(new GradleConsole(project.getLogger()), "property");
+                boolean quiet = "true".equals(params.get("quiet"));
+                Logger.getLogger("net.jsign").setLevel(quiet ? Level.WARNING : Level.ALL);
+
+                SignerHelper helper = new SignerHelper("property");
                 helper.setBaseDir(project.getProjectDir());
                 for (Map.Entry<String, String> param : params.entrySet()) {
                     helper.param(param.getKey(), param.getValue());

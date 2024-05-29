@@ -26,11 +26,15 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.cedarsoftware.util.io.JsonReader;
 import org.apache.commons.io.IOUtils;
 
 class RESTClient {
+
+    private final Logger log = Logger.getLogger(getClass().getName());
 
     /** Base URL of the REST service for relative resources */
     private final String endpoint;
@@ -40,8 +44,6 @@ class RESTClient {
 
     /** Callback building an error message from the JSON formatted error response */
     private Function<Map<String, ?>, String> errorHandler;
-
-    private boolean debug;
 
     public RESTClient(String endpoint) {
         this.endpoint = endpoint;
@@ -54,11 +56,6 @@ class RESTClient {
 
     public RESTClient authentication(BiConsumer<HttpURLConnection, byte[]>  authenticationHeaderSupplier) {
         this.authenticationHandler = authenticationHeaderSupplier;
-        return this;
-    }
-
-    public RESTClient debug(boolean debug) {
-        this.debug = debug;
         return this;
     }
 
@@ -81,9 +78,7 @@ class RESTClient {
 
     private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
-        if (debug) {
-            System.out.println(method + " " + url);
-        }
+        log.finest(method + " " + url);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod(method);
         String userAgent = System.getProperty("http.agent");
@@ -105,39 +100,31 @@ class RESTClient {
             conn.setRequestProperty("Content-Length", String.valueOf(data.length));
         }
 
-        if (debug) {
+        if (log.isLoggable(Level.FINEST)) {
             for (String requestHeader : conn.getRequestProperties().keySet()) {
                 List<String> values = conn.getRequestProperties().get(requestHeader);
-                System.out.println(requestHeader + ": " + (values.size() == 1 ? values.get(0) : values));
+                log.finest(requestHeader + ": " + (values.size() == 1 ? values.get(0) : values));
             }
         }
 
         if (body != null) {
-            if (debug) {
-                System.out.println("Content:\n" + body);
-            }
+            log.finest("Content:\n" + body);
             conn.setDoOutput(true);
             conn.getOutputStream().write(data);
         }
-        if (debug) {
-            System.out.println();
-        }
+        log.finest("");
 
         int responseCode = conn.getResponseCode();
         String contentType = conn.getHeaderField("Content-Type");
-        if (debug) {
-            System.out.println("Response Code: " + responseCode);
-            System.out.println("Content-Type: " + contentType);
-        }
+        log.finest("Response Code: " + responseCode);
+        log.finest("Content-Type: " + contentType);
 
         if (responseCode < 400) {
             byte[] binaryResponse = IOUtils.toByteArray(conn.getInputStream());
             String response = new String(binaryResponse, StandardCharsets.UTF_8);
-            if (debug) {
-                System.out.println("Content-Length: " + binaryResponse.length);
-                System.out.println("Content:\n" + response);
-                System.out.println();
-            }
+            log.finest("Content-Length: " + binaryResponse.length);
+            log.finest("Content:\n" + response);
+            log.finest("");
 
             Object value = JsonReader.jsonToJava(response);
             if (value instanceof Map) {
@@ -149,8 +136,8 @@ class RESTClient {
             }
         } else {
             String error = conn.getErrorStream() != null ? IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8) : "";
-            if (debug && conn.getErrorStream() != null) {
-                System.out.println("Error:\n" + error);
+            if (conn.getErrorStream() != null) {
+                log.finest("Error:\n" + error);
             }
             if (contentType != null && (contentType.startsWith("application/json") || contentType.startsWith("application/x-amz-json-1.1"))) {
                 throw new IOException(errorHandler != null ? errorHandler.apply(JsonReader.jsonToMaps(error)) : error);

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Emmanuel Bourg
+ * Copyright 2024 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,33 @@
 
 package net.jsign;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.maven.plugin.logging.Log;
 import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
-public class MavenConsoleTest {
+public class MavenLogHandlerTest {
 
     @Test
-    public void testConsole() {
+    public void testLogging() {
         Log log = mock(Log.class);
-        MavenConsole console = new MavenConsole(log);
+
+        Logger logger = Logger.getAnonymousLogger();
+        logger.setLevel(Level.ALL);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(new MavenLogHandler(log));
         
-        console.debug("debug");
-        console.info("info");
-        console.warn("warning");
-        console.warn("warning", null);
-        
-        verify(log).debug(eq("debug"));
-        verify(log).info(eq("info"));
-        verify(log).warn(eq("warning"));
+        logger.finest("debug");
+        logger.fine("verbose");
+        logger.info("info");
+        logger.warning("warning");
+
+        verify(log).debug(eq("debug"), isNull());
+        verify(log).info(eq("verbose"), isNull());
+        verify(log).info(eq("info"), isNull());
         verify(log).warn(eq("warning"), isNull());
     }
 }

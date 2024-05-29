@@ -19,6 +19,8 @@ package net.jsign.jca;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -37,6 +39,8 @@ import org.apache.commons.io.HexDump;
  */
 abstract class SmartCard {
 
+    private final Logger log = Logger.getLogger(getClass().getName());
+
     private final CardChannel channel;
 
     /** Personal Identification Number */
@@ -45,14 +49,8 @@ abstract class SmartCard {
     /** Data Object cache */
     protected final Map<Integer, byte[]> dataObjectCache = new HashMap<>();
 
-    protected boolean debug;
-
     protected SmartCard(CardChannel channel) {
         this.channel = channel;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 
     /**
@@ -66,10 +64,12 @@ abstract class SmartCard {
      * Transmit the command to the card and display the APDU request/response if debug is enabled.
      */
     protected ResponseAPDU transmit(CommandAPDU command) throws CardException {
-        if (debug) {
-            System.out.println(command);
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest(command.toString());
             try {
-                HexDump.dump(command.getBytes(), 0, System.out, 0);
+                StringBuffer out = new StringBuffer();
+                HexDump.dump(command.getBytes(), 0, out, 0, command.getBytes().length);
+                log.finest(out.toString());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -79,16 +79,18 @@ abstract class SmartCard {
         ResponseAPDU response = channel.transmit(command);
         long t2 = System.nanoTime();
 
-        if (debug) {
-            System.out.println(response + " (" + (t2 - t1) / 1000000 + " ms)");
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest(response + " (" + (t2 - t1) / 1000000 + " ms)");
             if (response.getData().length > 0) {
                 try {
-                    HexDump.dump(response.getData(), 0, System.out, 0);
+                    StringBuffer out = new StringBuffer();
+                    HexDump.dump(response.getData(), 0, out, 0, response.getData().length);
+                    log.finest(out.toString());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-            System.out.println();
+            log.finest("");
         }
 
         return response;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Emmanuel Bourg
+ * Copyright 2024 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,35 @@
 
 package net.jsign;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
-public class AntConsoleTest {
+public class AntLogHandlerTest {
 
     @Test
-    public void testConsole() {
+    public void testLogging() {
         Task task = mock(Task.class);
-        AntConsole console = new AntConsole(task);
+
+        Logger log = Logger.getAnonymousLogger();
+        log.setUseParentHandlers(false);
+        log.setLevel(Level.ALL);
+        log.addHandler(new AntLogHandler(task));
+        log.finest("debug");
+        log.fine("verbose");
+        log.info("info");
+        log.warning("warning");
+        log.severe("severe");
         
-        console.debug("debug");
-        console.info("info");
-        console.warn("warning");
-        console.warn("warning", null);
-        
-        verify(task).log(eq("debug"), eq(Project.MSG_DEBUG));
-        verify(task).log(eq("info"), eq(Project.MSG_INFO));
-        verify(task).log(eq("warning"), eq(Project.MSG_WARN));
+        verify(task).log(eq("debug"), isNull(), eq(Project.MSG_DEBUG));
+        verify(task).log(eq("verbose"), isNull(), eq(Project.MSG_VERBOSE));
+        verify(task).log(eq("info"), isNull(), eq(Project.MSG_INFO));
         verify(task).log(eq("warning"), isNull(), eq(Project.MSG_WARN));
+        verify(task).log(eq("severe"), isNull(), eq(Project.MSG_ERR));
     }
 }

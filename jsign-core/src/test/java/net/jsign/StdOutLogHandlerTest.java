@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Emmanuel Bourg
+ * Copyright 2024 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package net.jsign;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,7 +27,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class StdOutConsoleTest {
+public class StdOutLogHandlerTest {
 
     private static final String LF = System.lineSeparator();
 
@@ -38,67 +40,96 @@ public class StdOutConsoleTest {
         stderr = System.err;
     }
 
+    private Logger getLogger(Level level) {
+        Logger log = Logger.getAnonymousLogger();
+        log.setUseParentHandlers(false);
+        log.setLevel(level);
+        log.addHandler(new StdOutLogHandler());
+        return log;
+    }
+
     @Test
-    public void testConsoleLevelWarn() {
+    public void testLoggingLevelWarn() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
 
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         System.setErr(new PrintStream(err));
 
-        StdOutConsole console = new StdOutConsole(0);
-        console.debug("debug");
-        console.info("info");
-        console.warn("warning");
+        Logger log = getLogger(Level.WARNING);
+        log.finest("debug");
+        log.fine("verbose");
+        log.info("info");
+        log.warning("warning");
         
         assertEquals("", out.toString());
         assertEquals("warning" + LF, err.toString());
     }
 
     @Test
-    public void testConsoleLevelInfo() {
+    public void testLoggingLevelInfo() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
 
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         System.setErr(new PrintStream(err));
 
-        StdOutConsole console = new StdOutConsole(1);
-        console.debug("debug");
-        console.info("info");
-        console.warn("warning");
+        Logger log = getLogger(Level.INFO);
+        log.finest("debug");
+        log.fine("verbose");
+        log.info("info");
+        log.warning("warning");
 
         assertEquals("info" + LF, out.toString());
         assertEquals("warning" + LF, err.toString());
     }
 
     @Test
-    public void testConsoleLevelDebug() {
+    public void testLoggingLevelVerbose() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
 
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         System.setErr(new PrintStream(err));
 
-        StdOutConsole console = new StdOutConsole(2);
-        console.debug("debug");
-        console.info("info");
-        console.warn("warning");
+        Logger log = getLogger(Level.FINE);
+        log.finest("debug");
+        log.fine("verbose");
+        log.info("info");
+        log.warning("warning");
 
-        assertEquals("debug" + LF + "info" + LF, out.toString());
+        assertEquals("verbose" + LF + "info" + LF, out.toString());
         assertEquals("warning" + LF, err.toString());
     }
 
     @Test
-    public void testConsoleException() {
+    public void testLoggingLevelDebug() {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.setOut(new PrintStream(out));
 
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         System.setErr(new PrintStream(err));
 
-        StdOutConsole console = new StdOutConsole(0);
-        console.warn("warning", new Exception("message"));
+        Logger log = getLogger(Level.FINEST);
+        log.finest("debug");
+        log.fine("verbose");
+        log.info("info");
+        log.warning("warning");
+
+        assertEquals("debug" + LF + "verbose" + LF + "info" + LF, out.toString());
+        assertEquals("warning" + LF, err.toString());
+    }
+
+    @Test
+    public void testLoggingException() {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(out));
+
+        ByteArrayOutputStream err = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(err));
+
+        Logger log = getLogger(Level.WARNING);
+        log.log(Level.WARNING, "warning", new Exception("message"));
 
         assertTrue(err.toString().contains("warning" + LF + "java.lang.Exception: message"));
     }

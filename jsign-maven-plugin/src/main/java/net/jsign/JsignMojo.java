@@ -17,6 +17,9 @@
 package net.jsign;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -163,6 +166,9 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.detached", defaultValue = "false")
     private boolean detached;
 
+    @Parameter( property = "jsign.verbose", defaultValue = "false" )
+    private boolean verbose;
+
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
 
@@ -190,7 +196,14 @@ public class JsignMojo extends AbstractMojo {
             throw new MojoExecutionException("file of fileset must be set");
         }
 
-        SignerHelper helper = new SignerHelper(new MavenConsole(getLog()), "element");
+        // configure the logging
+        Logger log = Logger.getLogger("net.jsign");
+        log.setLevel(getLog().isDebugEnabled() ? Level.FINEST : verbose ? Level.FINE : Level.INFO);
+        log.setUseParentHandlers(false);
+        Stream.of(log.getHandlers()).forEach(log::removeHandler);
+        log.addHandler(new MavenLogHandler(getLog()));
+
+        SignerHelper helper = new SignerHelper("element");
         helper.setBaseDir(project.getBasedir());
         
         helper.command(command);

@@ -17,10 +17,19 @@
 package net.jsign;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.BuildLogger;
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.FileSet;
+
+import static org.apache.tools.ant.Project.*;
 
 /**
  * Ant task for signing files with Authenticode.
@@ -169,7 +178,14 @@ public class JsignTask extends Task {
     @Override
     public void execute() throws BuildException {
         try {
-            SignerHelper helper = new SignerHelper(new AntConsole(this), "attribute");
+            // configure the logging
+            Logger log = Logger.getLogger("net.jsign");
+            log.setLevel(getLevel());
+            log.setUseParentHandlers(false);
+            Stream.of(log.getHandlers()).forEach(log::removeHandler);
+            log.addHandler(new AntLogHandler(this));
+
+            SignerHelper helper = new SignerHelper("attribute");
             helper.setBaseDir(getProject().getBaseDir());
             
             helper.command(command);
@@ -201,5 +217,50 @@ public class JsignTask extends Task {
         } catch (Exception e) {
             throw new BuildException(e.getMessage(), e, getLocation());
         }
+    }
+
+    /**
+     * Returns the logging level equivalent to the Ant message output level.
+     */
+    private Level getLevel() {
+        int messageOutputLevel = getMessageOutputLevel();
+        switch (messageOutputLevel) {
+            case MSG_ERR:
+                return Level.SEVERE;
+            case MSG_WARN:
+                return Level.WARNING;
+            case MSG_INFO:
+                return Level.INFO;
+            case MSG_VERBOSE:
+                return Level.FINE;
+            case MSG_DEBUG:
+                return Level.FINEST;
+            default:
+                return Level.INFO;
+        }
+    }
+
+    /**
+     * Returns the Ant message output level.
+     */
+    private int getMessageOutputLevel() {
+        for (Object listener : getProject().getBuildListeners()) {
+            if (listener instanceof BuildLogger) {
+                try {
+                    Method method = BuildLogger.class.getMethod("getMessageOutputLevel"); // requires Ant 1.10.13
+                    return (Integer) method.invoke(listener);
+                } catch (Exception e) {
+                }
+
+                try {
+                    Field field = DefaultLogger.class.getDeclaredField("msgOutputLevel");
+                    field.setAccessible(true);
+                    return (Integer) field.get(listener);
+                } catch (Exception e) {
+                }
+            }
+        }
+
+        return MSG_INFO;
     }
 }

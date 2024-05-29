@@ -27,7 +27,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -107,6 +110,9 @@ public class JsignCLI {
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if previous signatures should be replaced.").build());
         options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one).").build());
         options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused.").build());
+        options.addOption(Option.builder().longOpt("quiet").desc("Print only error messages").build());
+        options.addOption(Option.builder().longOpt("verbose").desc("Print more information").build());
+        options.addOption(Option.builder().longOpt("debug").desc("Print debugging information").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
 
         this.options.put("sign", options);
@@ -141,8 +147,15 @@ public class JsignCLI {
             printHelp();
             return;
         }
-        
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option");
+
+        // configure the logging
+        Logger log = Logger.getLogger("net.jsign");
+        log.setLevel(cmd.hasOption("debug") ? Level.FINEST : cmd.hasOption("verbose") ? Level.FINE : cmd.hasOption("quiet") ? Level.WARNING : Level.INFO);
+        log.setUseParentHandlers(false);
+        Stream.of(log.getHandlers()).forEach(log::removeHandler);
+        log.addHandler(new StdOutLogHandler());
+
+        SignerHelper helper = new SignerHelper("option");
         helper.command(command);
         
         setOption(PARAM_KEYSTORE, helper, cmd);

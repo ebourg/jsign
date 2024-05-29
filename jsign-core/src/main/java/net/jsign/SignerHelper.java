@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -80,7 +81,7 @@ class SignerHelper {
     public static final String PARAM_DETACHED = "detached";
     public static final String PARAM_FORMAT = "format";
 
-    private final Console console;
+    private final Logger log = Logger.getLogger(getClass().getName());
 
     /** The name used to refer to a configuration parameter */
     private final String parameterName;
@@ -105,8 +106,7 @@ class SignerHelper {
 
     private AuthenticodeSigner signer;
 
-    public SignerHelper(Console console, String parameterName) {
-        this.console = console;
+    public SignerHelper(String parameterName) {
         this.parameterName = parameterName;
         this.ksparams = new KeyStoreBuilder(parameterName);
     }
@@ -422,9 +422,7 @@ class SignerHelper {
             File detachedSignature = getDetachedSignature(file);
             if (detached && detachedSignature.exists()) {
                 try {
-                    if (console != null) {
-                        console.info("Attaching Authenticode signature to " + file);
-                    }
+                    log.info("Attaching Authenticode signature to " + file);
                     attach(signable, detachedSignature);
                 } catch (Exception e) {
                     throw new SignerException("Couldn't attach the signature to " + file, e);
@@ -435,9 +433,7 @@ class SignerHelper {
                     signer = build();
                 }
 
-                if (console != null) {
-                    console.info("Adding Authenticode signature to " + file);
-                }
+                log.info("Adding Authenticode signature to " + file);
                 signer.sign(signable);
 
                 if (detached) {
@@ -502,7 +498,7 @@ class SignerHelper {
             if ("PEM".equalsIgnoreCase(format)) {
                 detachedSignature = new File(detachedSignature.getParentFile(), detachedSignature.getName() + ".pem");
             }
-            console.info("Extracting signature to " + detachedSignature);
+            log.info("Extracting signature to " + detachedSignature);
             detach(signable, detachedSignature);
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
             throw new SignerException(e.getMessage());
@@ -521,11 +517,11 @@ class SignerHelper {
         try (Signable signable = Signable.of(file)) {
             List<CMSSignedData> signatures = signable.getSignatures();
             if (signatures.isEmpty()) {
-                console.warn("No signature found in " + file);
+                log.severe("No signature found in " + file);
                 return;
             }
 
-            console.info("Removing signature from " + file);
+            log.info("Removing signature from " + file);
             signable.setSignature(null);
             signable.save();
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
@@ -559,9 +555,7 @@ class SignerHelper {
                     } else {
                         proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port));
                     }
-                    if (console != null) {
-                        console.debug("Proxy selected for " + uri + " : " + proxy);
-                    }
+                    log.fine("Proxy selected for " + uri + " : " + proxy);
                     return Collections.singletonList(proxy);
                 }
 

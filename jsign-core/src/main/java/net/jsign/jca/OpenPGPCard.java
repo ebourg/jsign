@@ -229,7 +229,6 @@ class OpenPGPCard extends SmartCard {
     private byte[] getExtendedCapabilities() throws CardException {
         if (extendedCapabilities == null) {
             TLV relatedData = TLV.parse(ByteBuffer.wrap(getData(0x6E)));
-            System.out.println(relatedData);
             extendedCapabilities = relatedData.find("73", "C0").value();
         }
         return extendedCapabilities;

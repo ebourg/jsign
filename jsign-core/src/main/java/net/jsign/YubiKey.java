@@ -22,6 +22,7 @@ import java.security.Provider;
 import java.security.ProviderException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import sun.security.pkcs11.wrapper.PKCS11;
 import sun.security.pkcs11.wrapper.PKCS11Exception;
@@ -108,7 +109,8 @@ class YubiKey {
             File libykcs11 = new File(programfiles + "/Yubico/Yubico PIV Tool/bin/libykcs11.dll");
 
             if (!System.getenv("PATH").contains("Yubico PIV Tool\\bin")) {
-                System.out.println("WARNING: The YubiKey library path (" + libykcs11.getParentFile().getAbsolutePath().replace('/', '\\') + ") is missing from the PATH environment variable");
+                Logger log = Logger.getLogger(YubiKey.class.getName());
+                log.warning("The YubiKey library path (" + libykcs11.getParentFile().getAbsolutePath().replace('/', '\\') + ") is missing from the PATH environment variable");
             }
 
             return libykcs11;

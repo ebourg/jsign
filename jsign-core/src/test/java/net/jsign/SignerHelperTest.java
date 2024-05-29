@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 import org.apache.commons.io.FileUtils;
@@ -39,6 +40,11 @@ import static org.junit.Assert.*;
 
 public class SignerHelperTest {
 
+    static {
+        Logger.getLogger("net.jsign").setUseParentHandlers(false);
+        Logger.getLogger("net.jsign").addHandler(new StdOutLogHandler());
+    }
+
     @Test
     public void testDetachedSignature() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
@@ -49,7 +55,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password");
 
@@ -70,7 +76,7 @@ public class SignerHelperTest {
         detachedSignatureFile2.delete();
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
-        signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
+        signer = new SignerHelper("parameter").detached(true);
         signer.execute(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
@@ -95,7 +101,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password")
                 .detached(true);
@@ -112,7 +118,7 @@ public class SignerHelperTest {
         detachedSignatureFile2.delete();
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
-        signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
+        signer = new SignerHelper("parameter").detached(true);
         signer.execute(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
@@ -127,7 +133,7 @@ public class SignerHelperTest {
 
         Files.write(new File("target/test-classes/storepass.txt").toPath(), "password".getBytes());
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("file:target/test-classes/storepass.txt");
 
@@ -143,7 +149,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("file:/path/to/missing/file");
 
@@ -163,7 +169,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("env:STOREPASS");
 
@@ -181,7 +187,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("env:MISSING_VAR");
 
@@ -199,7 +205,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("AWS")
                 .keystore("eu-west-3")
                 .storepass(AWS.getAccessKey() + "|" + AWS.getSecretKey())
@@ -219,7 +225,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("AZUREKEYVAULT")
                 .keystore("jsignvault")
                 .storepass(Azure.getAccessToken())
@@ -238,7 +244,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("GOOGLECLOUD")
                 .keystore("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring")
                 .storepass(GoogleCloud.getAccessToken())
@@ -260,7 +266,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("DIGICERTONE")
                 .storepass(apikey + "|" + DigiCertONE.getClientCertificateFile() + "|" + DigiCertONE.getClientCertificatePassword())
                 .alias("Tomcat-PMC-cert-2021-11")
@@ -278,7 +284,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("ESIGNER")
                 .keystore("https://cs-try.ssl.com")
                 .storepass("esigner_demo|esignerDemo#1")
@@ -300,7 +306,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("ORACLECLOUD")
                 .alias("ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza")
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
@@ -318,7 +324,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("TRUSTEDSIGNING")
                 .keystore("weu.codesigning.azure.net")
                 .storepass(Azure.getAccessToken("https://codesigning.azure.net"))
@@ -341,7 +347,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("PIV")
                 .keystore("Yubikey")
                 .storepass("123456")
@@ -361,7 +367,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keyfile("target/test-classes/keystores/privatekey-ec-p384.pkcs1.pem")
                 .keypass("password")
                 .certfile("target/test-classes/keystores/jsign-test-certificate-full-chain.pem");
@@ -383,7 +389,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
                 .keypass("password")
                 .certfile("target/test-classes/keystores/jsign-root-ca.pem");
@@ -405,7 +411,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
                 .keypass("password")
                 .certfile("target/test-classes/keystores/jsign-test-certificate-partial-chain.pem");
@@ -422,7 +428,7 @@ public class SignerHelperTest {
 
     @Test
     public void testMissingPKCS12KeyStorePassword() {
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.keystore("target/test-classes/keystores/keystore.p12");
         signer.alias("test");
         try {
@@ -434,7 +440,7 @@ public class SignerHelperTest {
 
     @Test
     public void testUnknownCommand() {
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.command("unsign");
         try {
             signer.execute("target/test-classes/wineyes.exe");
@@ -450,7 +456,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password");
 
@@ -470,7 +476,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password");
 
@@ -491,7 +497,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password");
 
@@ -512,7 +518,7 @@ public class SignerHelperTest {
     public void testExtractFromUnsignedFile() {
         File file = new File("target/test-classes/wineyes.exe");
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.command("extract");
 
         try {
@@ -527,7 +533,7 @@ public class SignerHelperTest {
     public void testExtractFromMissingFile() {
         File file = new File("target/test-classes/xeyes.exe");
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.command("extract");
 
         try {
@@ -545,7 +551,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password");
 
@@ -566,7 +572,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.command("remove");
         signer.execute(targetFile);
 
@@ -577,7 +583,7 @@ public class SignerHelperTest {
     public void testRemoveFromMissingFile() {
         File file = new File("target/test-classes/xeyes.exe");
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.command("remove");
 
         try {

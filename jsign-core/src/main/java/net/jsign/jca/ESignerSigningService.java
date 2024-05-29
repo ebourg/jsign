@@ -64,7 +64,7 @@ public class ESignerSigningService implements SigningService {
     }
 
     public ESignerSigningService(String endpoint, String accessToken) {
-        client = new RESTClient(endpoint).debug(true)
+        client = new RESTClient(endpoint)
                 .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + accessToken))
                 .errorHandler(response -> response.get("error") + ": " + response.get("error_description"));
     }
