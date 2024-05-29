@@ -365,6 +365,46 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildGaraSign() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(GARASIGN);
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "storepass parameter must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
+        }
+
+        builder.storepass("username|password|keystore.p12|storepass");
+
+        try {
+            builder.build();
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("message", "storepass parameter must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
+        }
+
+        builder.storepass("username|password");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+
+        builder = new KeyStoreBuilder().storetype(GARASIGN).keystore("https://api.garantir.io");
+        builder.storepass("keystore.p12");
+
+        keystore = builder.build();
+        assertNotNull("keystore", keystore);
+
+        builder = new KeyStoreBuilder().storetype(GARASIGN).keystore("https://api.garantir.io");
+        builder.storepass("keystore.p12");
+        builder.storepass("username|password|keystore.p12");
+        builder.keypass("keypass");
+
+        keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildJKS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(JKS);
 

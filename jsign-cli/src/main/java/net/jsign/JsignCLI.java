@@ -88,6 +88,7 @@ public class JsignCLI {
                         + "- AZUREKEYVAULT: Azure Key Vault key management system\n"
                         + "- DIGICERTONE: DigiCert ONE Secure Software Manager\n"
                         + "- ESIGNER: SSL.com eSigner\n"
+                        + "- GARASIGN: Garantir Remote Signing\n"
                         + "- GOOGLECLOUD: Google Cloud KMS\n"
                         + "- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault\n"
                         + "- ORACLECLOUD: Oracle Cloud Key Management Service\n"

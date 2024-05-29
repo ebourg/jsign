@@ -40,6 +40,8 @@ import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.AzureTrustedSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
+import net.jsign.jca.GaraSignCredentials;
+import net.jsign.jca.GaraSignSigningService;
 import net.jsign.jca.GoogleCloudSigningService;
 import net.jsign.jca.HashiCorpVaultSigningService;
 import net.jsign.jca.OpenPGPCardSigningService;
@@ -510,6 +512,36 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return new SigningServiceJcaProvider(new AzureTrustedSigningService(params.keystore(), params.storepass()));
+        }
+    },
+
+    GARASIGN(false, false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() == null || params.storepass().split("\\|").length > 3) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            String[] elements = params.storepass().split("\\|");
+            String username = null;
+            String password = null;
+            String certificate = null;
+            if (elements.length == 1) {
+                certificate = elements[0];
+            } else if (elements.length == 2) {
+                username = elements[0];
+                password = elements[1];
+            } else if (elements.length == 3) {
+                username = elements[0];
+                password = elements[1];
+                certificate = elements[2];
+            }
+
+            GaraSignCredentials credentials = new GaraSignCredentials(username, password, certificate, params.keypass());
+            return new SigningServiceJcaProvider(new GaraSignSigningService(params.keystore(), credentials));
         }
     };
 

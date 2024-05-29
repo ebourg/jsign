@@ -34,6 +34,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
     * [Azure Trusted Signing](https://learn.microsoft.com/en-us/azure/trusted-signing/)
     * [DigiCert ONE](https://one.digicert.com)
+    * [GaraSign](https://garantir.io/garasign/)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)
     * [Oracle Cloud KMS](https://www.oracle.com/security/cloud-security/key-management/)
@@ -55,6 +56,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * The Azure Trusted Signing service has been integrated
 * The Oracle Cloud signing service has been integrated
+* The GaraSign signing service has been integrated
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
 * The intermediate certificates are downloaded if missing from the keystore or the certificate chain file
 * File list files prefixed with `@` are now supported with the command line tool to sign multiple files

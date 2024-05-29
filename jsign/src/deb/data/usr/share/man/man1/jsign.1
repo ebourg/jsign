@@ -69,6 +69,8 @@ The type of the keystore:
 .br
 - ESIGNER       : SSL.com eSigner
 .br
+- GARASIGN      : Garantir Remote Signing
+.br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
 - HASHICORPVAULT : Google Cloud KMS via HashiCorp Vault
@@ -390,6 +392,32 @@ jsign --storetype ESIGNER \\
 
 SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
 "--keystore https://cs-try.ssl.com".
+
+
+.TP
+
+Signing with GaraSign:
+
+GaraSign is a remote signing service provided by Garantir. The authentication is performed by specifying
+the username/password or the TLS client certificate in the storepass parameter. If the TLS client certificate
+is stored in a password protected keystore, the password is specified in the keypass parameter. The keystore
+parameter references the URL of the GaraSign REST API (https://garasign.com:8443/CodeSigningRestService/ by default).
+
+Authenticating with a username and a password:
+
+jsign --storetype GARASIGN \\
+      --storepass "<username>|<password>" \\
+      --alias test \\
+      application.exe
+
+Authenticating with a TLS client certificate and a non-default endpoint:
+
+jsign --storetype GARASIGN \\
+      --keystore https://demo.garantir.io/CodeSigningRestService \\
+      --storepass "/path/to/client-certificate.p12" \\
+      --keypass <client-certificate-password> \\
+      --alias test \\
+      application.exe
 
 
 .TP

@@ -73,6 +73,7 @@ programmatically or standalone as a command line tool.</p>
           <li><a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a></li>
           <li><a href="https://learn.microsoft.com/en-us/azure/trusted-signing/">Azure Trusted Signing</a></li>
           <li><a href="https://one.digicert.com">DigiCert ONE</a></li>
+          <li><a href="https://garantir.io/garasign/">GaraSign</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
           <li><a href="https://www.oracle.com/security/cloud-security/key-management/">Oracle Cloud KMS</a></li>
@@ -198,6 +199,7 @@ programmatically or standalone as a command line tool.</p>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
           <li><code>ESIGNER</code>: SSL.com eSigner</li>
+          <li><code>GARASIGN</code>: Garantir Remote Signing</li>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
           <li><code>HASHICORPVAULT</code>: Google Cloud KMS via HashiCorp Vault</li>
           <li><code>ORACLECLOUD</code>: Oracle Cloud Key Management Service</li>
@@ -505,6 +507,7 @@ are the same as those described above for the Ant task.</p>
                              - AZUREKEYVAULT: Azure Key Vault key management system
                              - DIGICERTONE: DigiCert ONE Secure Software Manager
                              - ESIGNER: SSL.com eSigner
+                             - GARASIGN: Garantir Remote Signing
                              - GOOGLECLOUD: Google Cloud KMS
                              - HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
                              - ORACLECLOUD: Oracle Cloud Key Management Service
@@ -736,6 +739,34 @@ password are used as the keystore password, and the base64 encoded TOTP secret i
 
 <p>SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
 <code>--keystore https://cs-try.ssl.com</code>.</p>
+
+<h4 id="example-garasign">Signing with GaraSign</h4>
+
+<p><a href="https://garantir.io/garasign/">GaraSign</a> is a remote signing service provided by Garantir.
+The authentication is performed by specifying the username/password or the TLS client certificate in the
+<code>storepass</code> parameter. If the TLS client certificate is stored in a password protected keystore,
+the password is specified in the <code>keypass</code> parameter. The <code>keystore</code> parameter references
+the URL of the GaraSign REST API (https://garasign.com:8443/CodeSigningRestService/ by default).</p>
+
+<p>Authenticating with a username and a password:</p>
+
+<pre>
+ jsign --storetype GARASIGN \
+       --storepass "&lt;username&gt;|&lt;password&gt;" \
+       --alias test \
+       application.exe
+</pre>
+
+<p>Authenticating with a TLS client certificate and a non-default endpoint:</p>
+
+<pre>
+ jsign --storetype GARASIGN \
+       --keystore https://demo.garantir.io/CodeSigningRestService \
+       --storepass "/path/to/client-certificate.p12" \
+       --keypass &lt;client-certificate-password&gt; \
+       --alias test \
+       application.exe
+</pre>
 
 <h4 id="example-googlecloud">Signing with Google Cloud KMS</h4>
 

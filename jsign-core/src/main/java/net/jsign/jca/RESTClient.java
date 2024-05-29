@@ -19,6 +19,7 @@ package net.jsign.jca;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,21 @@ class RESTClient {
 
     public Map<String, ?> post(String resource, String body, Map<String, String> headers) throws IOException {
         return query("POST", resource, body, headers);
+    }
+
+    public Map<String, ?> post(String resource, Map<String, String> params) throws IOException {
+        StringBuilder body = new StringBuilder();
+        for (Map.Entry<String, String> param : params.entrySet()) {
+            if (body.length() > 0) {
+                body.append('&');
+            }
+            body.append(param.getKey()).append('=').append(URLEncoder.encode(param.getValue(), "UTF-8"));
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
+
+        return post(resource, body.toString(), headers);
     }
 
     private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {

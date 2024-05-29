@@ -284,4 +284,22 @@ public class KeyStoreBuilder {
         validate();
         return storetype().getKeystore(this, provider());
     }
+
+    /**
+     * Returns a java.security.KeyStore.Builder using the parameters of this builder.
+     */
+    public KeyStore.Builder builder() {
+        return new KeyStore.Builder() {
+            @Override
+            public KeyStore getKeyStore() throws KeyStoreException {
+                return build();
+            }
+
+            @Override
+            public KeyStore.ProtectionParameter getProtectionParameter(String alias) {
+                String storepass = storepass();
+                return new KeyStore.PasswordProtection(storepass != null ? storepass.toCharArray() : null);
+            }
+        };
+    }
 }

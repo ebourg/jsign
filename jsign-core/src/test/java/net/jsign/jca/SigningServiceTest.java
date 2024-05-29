@@ -35,6 +35,7 @@ import net.jsign.SignatureAssert;
 import net.jsign.pe.PEFile;
 
 import static net.jsign.DigestAlgorithm.*;
+import static org.junit.Assert.*;
 
 public class SigningServiceTest {
 
@@ -209,5 +210,20 @@ public class SigningServiceTest {
         keystore.load(null, "".toCharArray());
 
         testCustomProvider(provider, keystore, "MyAccount/MyProfile", "");
+    }
+
+    @Test
+    public void testGaraSignProvider() throws Exception {
+        GaraSignCredentials credentials = new GaraSignCredentials("demo_user", "password", "src/test/resources/keystores/keystore.p12", "password");
+        Provider provider = new SigningServiceJcaProvider(new GaraSignSigningService(null, credentials));
+        KeyStore keystore = KeyStore.getInstance("GARASIGN", provider);
+        keystore.load(null, "".toCharArray());
+
+        try {
+            testCustomProvider(provider, keystore, "windows_codesign", "");
+            fail("Exception not thrown");
+        } catch (Exception e) {
+            assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getCause().getMessage());
+        }
     }
 }
