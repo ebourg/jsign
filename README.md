@@ -77,7 +77,7 @@ See https://ebourg.github.io/jsign for more information.
 * API changes:
   * The PEFile class has been refactored to keep only the methods related to signing
   * The java.util.logging API is now used to log debug messages under the `net.jsign` logger
-* Switched to BouncyCastle LTS 2.73.5
+* Switched to BouncyCastle LTS 2.73.6
 
 #### Version 6.0 (2024-01-17)
 

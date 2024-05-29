@@ -57,7 +57,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.11</version>
+        <version>0.8.12</version>
         <executions>
           <execution>
             <id>jacoco-report</id>
@@ -203,14 +203,14 @@
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-core</artifactId>
-            <version>9.1.1</version>
+            <version>9.1.4</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>com.github.siom79.japicmp</groupId>
         <artifactId>japicmp-maven-plugin</artifactId>
-        <version>0.18.5</version>
+        <version>0.21.2</version>
         <executions>
           <execution>
             <phase>verify</phase>
