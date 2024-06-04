@@ -23,10 +23,6 @@
 
           <h1 id="project_title">Jsign</h1>
           <h2 id="project_tagline">Versatile code signing tool for Windows executable files, installers and scripts</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="#files">Download Jsign</a>
-            </section>
         </header>
     </div>
 
@@ -86,6 +82,17 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
   <li>Command line signing tool</li>
   <li>Authenticode signing API (<a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a>)</li>
   <li>JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner or apksigner</li>
+</ul>
+
+
+<h3 id="files">Downloads</h3>
+
+<ul>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign_6.0_all.deb">DEB package</a> (Debian/Ubuntu)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign-6.0-1.noarch.rpm">RPM package</a> (RedHat/Fedora)</li>
+  <li><a href="https://community.chocolatey.org/packages/jsign/">Chocolatey package</a> (Windows)</li>
+  <li><a href="https://formulae.brew.sh/formula/jsign">Homebrew package</a> (macOS/Linux)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign-6.0.jar">All-in-one JAR</a> (Other systems, Ant task, JCA provider)</li>
 </ul>
 
 
@@ -462,16 +469,7 @@ are the same as those described above for the Ant task.</p>
 
 <h3 id="cli">Command Line Tool</h3>
 
-<p>Jsign can also be used as a command line tool, packages are available for various systems:</p>
-
-<ul>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign_6.0_all.deb">DEB package</a> (Debian/Ubuntu)</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign-6.0-1.noarch.rpm">RPM package</a> (RedHat/Fedora)</li>
-  <li><a href="https://community.chocolatey.org/packages/jsign/">Chocolatey package</a> (Windows)</li>
-  <li><a href="https://formulae.brew.sh/formula/jsign">Homebrew package</a> (macOS/Linux)</li>
-</ul>
-
-<p>On these systems the command line is invoked with:</p>
+<p>On systems with an <a href="#files">installation package</a> available the command line is invoked with:</p>
 
 <pre> jsign [OPTIONS] [FILE]...</pre>
 
@@ -947,15 +945,6 @@ The syntax looks like this:</p>
       --cert &lt;certfile&gt; \
       --in application.apk
 </pre>
-
-<h3 id="files">Downloads</h3>
-
-<ul>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign_6.0_all.deb">jsign_6.0_all.deb</a> - Jsign command line tool for Debian/Ubuntu</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign-6.0-1.noarch.rpm">jsign-6.0-1.noarch.rpm</a> - Jsign command line tool for RedHat/Fedora</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/6.0/jsign-6.0.jar">jsign-6.0.jar</a> - Jsign Ant Task</li>
-</ul>
-
 
 <h3 id="credits">Credits</h3>
 
