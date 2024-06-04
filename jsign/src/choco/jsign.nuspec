@@ -16,10 +16,10 @@
     <tags>signing code-signing authenticode signtool PE EXE SYS DLL CAB MSI VBS WSF APPX MSIX NAVX NUGET</tags>
     <summary>Command line tool for signing Windows executable files, installers and scripts</summary>
     <description>
-      Jsign is a Java implementation of Microsoft Authenticode that lets you sign and timestamp executable files
-      for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX),
-      Microsoft Dynamics 365 extension packages, NuGet packages and scripts. Jsign is platform independent and provides
-      an alternative to native tools like signcode/signtool on Windows or the Mono development tools on Unix systems.
+      Jsign is a versatile code signing tool that allows you to sign and timestamp Windows executable files, installer
+      packages and scripts. Jsign is platform independent and provides an alternative to native tools like signtool
+      on Windows or the Mono development tools on Unix systems. It emphasizes on seamless integration with cloud key
+      management systems and hardware tokens.
     </description>
     <releaseNotes>https://github.com/ebourg/jsign/blob/master/README.md</releaseNotes>
     <dependencies>
