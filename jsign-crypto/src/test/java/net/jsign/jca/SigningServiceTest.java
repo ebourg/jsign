@@ -19,42 +19,37 @@ package net.jsign.jca;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.Key;
 import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.Signature;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
 import org.junit.Test;
 
-import net.jsign.AuthenticodeSigner;
-import net.jsign.SignatureAssert;
-import net.jsign.pe.PEFile;
-
-import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class SigningServiceTest {
 
     public void testCustomProvider(Provider signingProvider, KeyStore keystore, String alias, String keypass) throws Exception {
-        File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-signed-with-signing-service-" + signingProvider.getName().toLowerCase() + ".exe");
+        Certificate[] chain = keystore.getCertificateChain(alias);
+        assertNotNull("Certificate chain not found", chain);
+        assertNotEquals("Empty certificate chain", 0, chain.length);
 
-        FileUtils.copyFile(sourceFile, targetFile);
+        Key key = keystore.getKey(alias, keypass.toCharArray());
+        assertNotNull("Private key not found", key);
 
-        try (PEFile peFile = new PEFile(targetFile)) {
-            AuthenticodeSigner signer = new AuthenticodeSigner(keystore, alias, keypass)
-                    .withSignatureProvider(signingProvider)
-                    .withTimestamping(false)
-                    .withDigestAlgorithm(SHA256);
+        Signature signature = Signature.getInstance("SHA256withRSA", signingProvider);
+        signature.initSign((PrivateKey) key);
+        signature.update("Hello".getBytes());
+        byte[] s = signature.sign();
 
-            signer.sign(peFile);
-
-            SignatureAssert.assertSigned(peFile, SHA256);
-        }
+        assertNotNull("signature null", s);
     }
 
     @Test
@@ -72,7 +67,7 @@ public class SigningServiceTest {
         OpenPGPCardTest.assumeCardPresent();
         Provider provider = new SigningServiceJcaProvider(new OpenPGPCardSigningService(null, "123456", alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
@@ -93,7 +88,7 @@ public class SigningServiceTest {
         PIVCardTest.assumeCardPresent();
         Provider provider = new SigningServiceJcaProvider(new PIVCardSigningService(null, "123456", alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
@@ -114,7 +109,7 @@ public class SigningServiceTest {
         AmazonCredentials credentials = new AmazonCredentials(AWS.getAccessKey(), AWS.getSecretKey(), null);
         Provider provider = new SigningServiceJcaProvider(new AmazonSigningService("eu-west-3", credentials, alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
+                try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
@@ -142,7 +137,7 @@ public class SigningServiceTest {
     public void testGoogleCloudProvider() throws Exception {
         Provider provider = new SigningServiceJcaProvider(new GoogleCloudSigningService("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring", GoogleCloud.getAccessToken(), alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")) {
+                try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
@@ -187,7 +182,7 @@ public class SigningServiceTest {
         OracleCloudCredentials credentials = OracleCloudCredentials.getDefault();
         Provider provider = new SigningServiceJcaProvider(new OracleCloudSigningService(credentials, alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")) {
+                try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
@@ -214,7 +209,7 @@ public class SigningServiceTest {
 
     @Test
     public void testGaraSignProvider() throws Exception {
-        GaraSignCredentials credentials = new GaraSignCredentials("demo_user", "password", "src/test/resources/keystores/keystore.p12", "password");
+        GaraSignCredentials credentials = new GaraSignCredentials("demo_user", "password", "target/test-classes/keystores/keystore.p12", "password");
         Provider provider = new SigningServiceJcaProvider(new GaraSignSigningService(null, credentials));
         KeyStore keystore = KeyStore.getInstance("GARASIGN", provider);
         keystore.load(null, "".toCharArray());

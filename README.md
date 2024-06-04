@@ -74,6 +74,7 @@ See https://ebourg.github.io/jsign for more information.
 * The Azure Key Vault account no longer needs the permission to list the keys when signing with jarsigner
 * On Windows the YubiKey library path is automatically added to the PATH of the command line tool
 * API changes:
+  * The keystore builder and the JCA provider are now in a separate `jsign-crypto` module
   * The PEFile class has been refactored to keep only the methods related to signing
   * The java.util.logging API is now used to log debug messages under the `net.jsign` logger
 * Switched to BouncyCastle LTS 2.73.6

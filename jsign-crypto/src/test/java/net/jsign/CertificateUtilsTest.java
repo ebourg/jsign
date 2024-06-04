@@ -30,21 +30,21 @@ public class CertificateUtilsTest {
 
     @Test
     public void testLoadCertificateChain() throws Exception {
-        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("src/test/resources/keystores/jsign-test-certificate-full-chain.pem"));
+        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain.pem"));
         X509Certificate certificate = (X509Certificate) chain[0];
         assertEquals("first certificate", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", certificate.getSubjectX500Principal().getName());
     }
 
     @Test
     public void testLoadCertificateChainReversed() throws Exception {
-        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem"));
+        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain-reversed.pem"));
         X509Certificate certificate = (X509Certificate) chain[0];
         assertEquals("first certificate", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", certificate.getSubjectX500Principal().getName());
     }
 
     @Test
     public void testGetIssuerCertificateURL() throws Exception {
-        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("src/test/resources/keystores/jsign-test-certificate-full-chain.pem"));
+        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain.pem"));
 
         assertEquals("certificate 1 issuer", "http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-code-signing-ca.cer", CertificateUtils.getIssuerCertificateURL((X509Certificate) chain[0]));
         assertEquals("certificate 2 issuer", "http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-root-ca.cer", CertificateUtils.getIssuerCertificateURL((X509Certificate) chain[1]));
@@ -55,7 +55,7 @@ public class CertificateUtilsTest {
     public void testGetFullCertificateChain() throws Exception {
         System.setProperty("jsign.cachedir", "target/test-classes/cache/");
 
-        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("src/test/resources/keystores/jsign-test-certificate-full-chain.pem"));
+        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain.pem"));
 
         List<X509Certificate> fullChain = CertificateUtils.getFullCertificateChain(Collections.singletonList((X509Certificate) chain[0]));
         assertEquals("chain size", chain.length, fullChain.size());

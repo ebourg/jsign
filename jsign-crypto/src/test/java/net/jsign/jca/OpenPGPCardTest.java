@@ -80,7 +80,7 @@ public class OpenPGPCardTest {
         assertNotNull("result", result);
         assertEquals("result length (bits)", 2048, result.length * 8);
 
-        File privateKeyFile = new File("src/test/resources/keystores/privatekey.pkcs1.pem");
+        File privateKeyFile = new File("target/test-classes/keystores/privatekey.pkcs1.pem");
         PrivateKey privateKey = PrivateKeyUtils.load(privateKeyFile, null);
 
         // encrypt the message with the private key

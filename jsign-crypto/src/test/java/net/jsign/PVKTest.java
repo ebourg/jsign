@@ -51,17 +51,17 @@ public class PVKTest {
 
     @Test
     public void testParseUnencrypted() throws Exception {
-        testParse("src/test/resources/keystores/privatekey.pvk");
+        testParse("target/test-classes/keystores/privatekey.pvk");
     }
 
     @Test
     public void testParseEncryptedWeak() throws Exception {
-        testParse("src/test/resources/keystores/privatekey-encrypted.pvk");
+        testParse("target/test-classes/keystores/privatekey-encrypted.pvk");
     }
 
     @Test
     public void testParseEncryptedStrong() throws Exception {
-        testParse("src/test/resources/keystores/privatekey-encrypted-strong.pvk");
+        testParse("target/test-classes/keystores/privatekey-encrypted-strong.pvk");
     }
 
     private void testParse(String filename) throws Exception {
@@ -75,21 +75,21 @@ public class PVKTest {
 
     @Test
     public void testCompare() throws Exception {
-        PrivateKey key1 = PVK.parse(new File("src/test/resources/keystores/privatekey.pvk"), "password");
-        PrivateKey key2 = PVK.parse(new File("src/test/resources/keystores/privatekey-encrypted.pvk"), "password");
+        PrivateKey key1 = PVK.parse(new File("target/test-classes/keystores/privatekey.pvk"), "password");
+        PrivateKey key2 = PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
         
         assertEquals("private key", key1, key2);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidFile() throws Exception {
-        PVK.parse(new File("src/test/resources/keystores/keystore.jks"), null);
+        PVK.parse(new File("target/test-classes/keystores/keystore.jks"), null);
     }
 
     @Test
     public void testInvalidPassword() throws Exception {
         try {
-            PVK.parse(new File("src/test/resources/keystores/privatekey-encrypted.pvk"), "secret");
+            PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "secret");
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
@@ -99,7 +99,7 @@ public class PVKTest {
     @Test
     public void testMissingPassword() throws Exception {
         try {
-            PVK.parse(new File("src/test/resources/keystores/privatekey-encrypted.pvk"), null);
+            PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), null);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());

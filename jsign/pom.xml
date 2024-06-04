@@ -19,7 +19,13 @@
       <artifactId>jsign-core</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>net.jsign</groupId>
+      <artifactId>jsign-crypto</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>net.jsign</groupId>
       <artifactId>jsign-ant</artifactId>

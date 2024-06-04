@@ -33,7 +33,7 @@ public class OracleCloudCredentialsTest {
                 "user=ocid1.user.oc1..abcdefghijk\n" +
                 "tenancy=ocid1.tenancy.oc1..abcdefghijk\n" +
                 "region=eu-paris-1\n" +
-                "key_file=src/test/resources/keystores/privatekey.pkcs8.pem\n" +
+                "key_file=target/test-classes/keystores/privatekey.pkcs8.pem\n" +
                 "fingerprint=97:a2:2f:f5:e8:39:d3:44:b7:63:f2:4e:31:18:a6:62\n" +
                 "pass_phrase=password\n";
 
@@ -49,7 +49,7 @@ public class OracleCloudCredentialsTest {
                 "user=ocid1.user.oc1..abcdefghijk\n" +
                 "tenancy=ocid1.tenancy.oc1..abcdefghijk\n" +
                 "region=eu-paris-1\n" +
-                "key_file=src/test/resources/keystores/privatekey.pkcs8.pem\n" +
+                "key_file=target/test-classes/keystores/privatekey.pkcs8.pem\n" +
                 "fingerprint=97:a2:2f:f5:e8:39:d3:44:b7:63:f2:4e:31:18:a6:62\n" +
                 "pass_phrase=password\n" +
                 "\n" +
@@ -57,7 +57,7 @@ public class OracleCloudCredentialsTest {
                 "user=ocid1.user.oc1..mnopqrstuvw\n" +
                 "tenancy=ocid1.tenancy.oc1..mnopqrstuvw\n" +
                 "region=eu-milan-1\n" +
-                "key_file=src/test/resources/keystores/privatekey.pkcs1.pem\n" +
+                "key_file=target/test-classes/keystores/privatekey.pkcs1.pem\n" +
                 "fingerprint=b7:63:f2:4e:31:18:a6:62:97:a2:2f:f5:e8:39:d3:44\n" +
                 "pass_phrase=secret\n";
 
@@ -78,7 +78,7 @@ public class OracleCloudCredentialsTest {
         assertEquals("user", "ocid1.user.oc1..mnopqrstuvw", credentials.getUser());
         assertEquals("tenancy", "ocid1.tenancy.oc1..mnopqrstuvw", credentials.getTenancy());
         assertEquals("region", "eu-milan-1", credentials.getRegion());
-        assertEquals("keyfile", "src/test/resources/keystores/privatekey.pkcs1.pem", credentials.getKeyfile());
+        assertEquals("keyfile", "target/test-classes/keystores/privatekey.pkcs1.pem", credentials.getKeyfile());
         assertEquals("fingerprint", "b7:63:f2:4e:31:18:a6:62:97:a2:2f:f5:e8:39:d3:44", credentials.getFingerprint());
         assertEquals("pass phrase", "secret", credentials.getPassphrase());
         assertEquals("keyid", "ocid1.tenancy.oc1..mnopqrstuvw/ocid1.user.oc1..mnopqrstuvw/b7:63:f2:4e:31:18:a6:62:97:a2:2f:f5:e8:39:d3:44", credentials.getKeyId());
@@ -103,7 +103,7 @@ public class OracleCloudCredentialsTest {
             when(OracleCloudCredentials.getenv("OCI_CLI_USER")).thenReturn("ocid1.user.oc1..abcdefghijk");
             when(OracleCloudCredentials.getenv("OCI_CLI_TENANCY")).thenReturn("ocid1.tenancy.oc1..abcdefghijk");
             when(OracleCloudCredentials.getenv("OCI_CLI_REGION")).thenReturn("eu-paris-1");
-            when(OracleCloudCredentials.getenv("OCI_CLI_KEY_FILE")).thenReturn("src/test/resources/keystores/privatekey.pkcs8.pem");
+            when(OracleCloudCredentials.getenv("OCI_CLI_KEY_FILE")).thenReturn("target/test-classes/keystores/privatekey.pkcs8.pem");
             when(OracleCloudCredentials.getenv("OCI_CLI_FINGERPRINT")).thenReturn("97:a2:2f:f5:e8:39:d3:44:b7:63:f2:4e:31:18:a6:62");
             when(OracleCloudCredentials.getenv("OCI_CLI_PASS_PHRASE")).thenReturn("password");
 
@@ -113,7 +113,7 @@ public class OracleCloudCredentialsTest {
             assertEquals("user", "ocid1.user.oc1..abcdefghijk", credentials.getUser());
             assertEquals("tenancy", "ocid1.tenancy.oc1..abcdefghijk", credentials.getTenancy());
             assertEquals("region", "eu-paris-1", credentials.getRegion());
-            assertEquals("keyfile", "src/test/resources/keystores/privatekey.pkcs8.pem", credentials.getKeyfile());
+            assertEquals("keyfile", "target/test-classes/keystores/privatekey.pkcs8.pem", credentials.getKeyfile());
             assertEquals("fingerprint", "97:a2:2f:f5:e8:39:d3:44:b7:63:f2:4e:31:18:a6:62", credentials.getFingerprint());
             assertEquals("pass phrase", "password", credentials.getPassphrase());
         }
@@ -131,7 +131,7 @@ public class OracleCloudCredentialsTest {
             assertEquals("user", "ocid1.user.oc1..mnopqrstuvw", credentials.getUser());
             assertEquals("tenancy", "ocid1.tenancy.oc1..abcdefghijk", credentials.getTenancy());
             assertEquals("region", "eu-paris-1", credentials.getRegion());
-            assertEquals("keyfile", "src/test/resources/keystores/privatekey.pkcs8.pem", credentials.getKeyfile());
+            assertEquals("keyfile", "target/test-classes/keystores/privatekey.pkcs8.pem", credentials.getKeyfile());
             assertEquals("fingerprint", "97:a2:2f:f5:e8:39:d3:44:b7:63:f2:4e:31:18:a6:62", credentials.getFingerprint());
             assertEquals("pass phrase", "password", credentials.getPassphrase());
         }
@@ -181,7 +181,7 @@ public class OracleCloudCredentialsTest {
                 "user=ocid1.user.oc1..abcdefghijk\n" +
                 "tenancy=ocid1.tenancy.oc1..abcdefghijk\n" +
                 "region=eu-paris-1\n" +
-                "key_file=src/test/resources/keystores/privatekey.pkcs1.pem\n" +
+                "key_file=target/test-classes/keystores/privatekey.pkcs1.pem\n" +
                 "pass_phrase=password\n";
 
         File config = File.createTempFile("ociconfig", null);

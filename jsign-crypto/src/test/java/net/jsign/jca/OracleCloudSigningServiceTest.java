@@ -56,7 +56,7 @@ public class OracleCloudSigningServiceTest {
                 "user=ocid1.user.oc1..abcdefghijk\n" +
                 "tenancy=ocid1.tenancy.oc1..abcdefghijk\n" +
                 "region=eu-paris-1\n" +
-                "key_file=src/test/resources/keystores/privatekey.pkcs8.pem\n" +
+                "key_file=target/test-classes/keystores/privatekey.pkcs8.pem\n" +
                 "fingerprint=97:a2:2f:f5:e8:39:d3:44:b7:63:f2:4e:31:18:a6:62\n" +
                 "pass_phrase=password\n", "UTF-8");
 
@@ -68,7 +68,7 @@ public class OracleCloudSigningServiceTest {
     private SigningService getTestService() throws Exception {
         return new OracleCloudSigningService(getCredentials(), alias -> {
             try {
-                try (FileInputStream in = new FileInputStream("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")) {
+                try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate-full-chain.pem")) {
                     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
                     Collection<? extends Certificate> certificates = certificateFactory.generateCertificates(in);
                     return certificates.toArray(new Certificate[0]);
