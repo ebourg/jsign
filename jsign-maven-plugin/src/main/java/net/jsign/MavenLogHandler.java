@@ -38,14 +38,31 @@ class MavenLogHandler extends Handler {
     @Override
     public void publish(LogRecord record) {
         int level = record.getLevel().intValue();
+        if (level >= Level.SEVERE.intValue()) {
+            if (record.getThrown() != null) {
+                log.error(record.getMessage(), record.getThrown());
+            } else {
+                log.error(record.getMessage());
+            }
+        }
         if (level >= Level.WARNING.intValue()) {
-            log.warn(record.getMessage(), record.getThrown());
-        } else if (level >= Level.INFO.intValue()) {
-            log.info(record.getMessage(), record.getThrown());
+            if (record.getThrown() != null) {
+                log.warn(record.getMessage(), record.getThrown());
+            } else {
+                log.warn(record.getMessage());
+            }
         } else if (level >= Level.FINE.intValue()) {
-            log.info(record.getMessage(), record.getThrown());
+            if (record.getThrown() != null) {
+                log.info(record.getMessage(), record.getThrown());
+            } else {
+                log.info(record.getMessage());
+            }
         } else {
-            log.debug(record.getMessage(), record.getThrown());
+            if (record.getThrown() != null) {
+                log.debug(record.getMessage(), record.getThrown());
+            } else {
+                log.debug(record.getMessage());
+            }
         }
     }
 

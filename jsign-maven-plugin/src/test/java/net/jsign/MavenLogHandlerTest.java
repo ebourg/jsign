@@ -34,15 +34,31 @@ public class MavenLogHandlerTest {
         logger.setLevel(Level.ALL);
         logger.setUseParentHandlers(false);
         logger.addHandler(new MavenLogHandler(log));
-        
-        logger.finest("debug");
-        logger.fine("verbose");
-        logger.info("info");
-        logger.warning("warning");
 
-        verify(log).debug(eq("debug"), isNull());
-        verify(log).info(eq("verbose"), isNull());
-        verify(log).info(eq("info"), isNull());
-        verify(log).warn(eq("warning"), isNull());
+        // without exception
+        logger.log(Level.FINEST, "debug");
+        logger.log(Level.FINE, "verbose");
+        logger.log(Level.INFO, "info");
+        logger.log(Level.WARNING, "warning");
+        logger.log(Level.SEVERE, "error");
+
+        // with exception
+        logger.log(Level.FINEST, "debug", new Exception());
+        logger.log(Level.FINE, "verbose", new Exception());
+        logger.log(Level.INFO, "info", new Exception());
+        logger.log(Level.WARNING, "warning", new Exception());
+        logger.log(Level.SEVERE, "error", new Exception());
+
+        verify(log).debug(eq("debug"));
+        verify(log).info(eq("verbose"));
+        verify(log).info(eq("info"));
+        verify(log).warn(eq("warning"));
+        verify(log).warn(eq("error"));
+
+        verify(log).debug(eq("debug"), isNotNull());
+        verify(log).info(eq("verbose"), isNotNull());
+        verify(log).info(eq("info"), isNotNull());
+        verify(log).warn(eq("warning"), isNotNull());
+        verify(log).warn(eq("error"), isNotNull());
     }
 }
