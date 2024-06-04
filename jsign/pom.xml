@@ -55,6 +55,7 @@
               <dependencySourceExcludes>
                 <dependencySourceExclude>net.jsign:jsign-cli</dependencySourceExclude>
                 <dependencySourceExclude>net.jsign:jsign-ant</dependencySourceExclude>
+                <dependencySourceExclude>org.kohsuke.metainf-services:metainf-services</dependencySourceExclude>
               </dependencySourceExcludes>
             </configuration>
           </execution>
