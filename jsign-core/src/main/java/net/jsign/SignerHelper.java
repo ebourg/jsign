@@ -29,6 +29,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -41,7 +42,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSException;
@@ -451,7 +451,7 @@ class SignerHelper {
     }
 
     private void attach(Signable signable, File detachedSignature) throws IOException, CMSException {
-        byte[] signatureBytes = FileUtils.readFileToByteArray(detachedSignature);
+        byte[] signatureBytes = Files.readAllBytes(detachedSignature.toPath());
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
         signable.setSignature(signedData);
@@ -463,7 +463,7 @@ class SignerHelper {
         CMSSignedData signedData = signable.getSignatures().get(0);
         byte[] content = signedData.toASN1Structure().getEncoded("DER");
         if (format == null || "DER".equalsIgnoreCase(format)) {
-            FileUtils.writeByteArrayToFile(detachedSignature, content);
+            Files.write(detachedSignature.toPath(), content);
         } else if ("PEM".equalsIgnoreCase(format)) {
             try (FileWriter out = new FileWriter(detachedSignature)) {
                 String encoded = Base64.getEncoder().encodeToString(content);

@@ -21,13 +21,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * Central directory of a ZIP file.
@@ -165,7 +164,7 @@ public class CentralDirectory {
         tmp.deleteOnExit();
         try (RandomAccessFile raf = new RandomAccessFile(tmp, "rw")) {
             write(raf.getChannel(), centralDirectoryOffset);
-            return FileUtils.readFileToByteArray(tmp);
+            return Files.readAllBytes(tmp.toPath());
         } finally {
             tmp.delete();
         }
