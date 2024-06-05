@@ -26,8 +26,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  * Simple HTTP client with resource caching.
@@ -102,6 +102,6 @@ class HttpClient {
         MessageDigest digest = DigestAlgorithm.SHA1.getMessageDigest();
         digest.update(url.toString().getBytes());
 
-        return Hex.encodeHexString(digest.digest());
+        return Hex.toHexString(digest.digest());
     }
 }

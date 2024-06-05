@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  * Simple BER-TLV parser.
@@ -79,7 +79,7 @@ class TLV {
     @Override
     public String toString() {
         if (children == null) {
-            return "[TLV tag=" + tag + " value(" + value.length + ")=" + Hex.encodeHexString(value).toUpperCase() + "]";
+            return "[TLV tag=" + tag + " value(" + value.length + ")=" + Hex.toHexString(value).toUpperCase() + "]";
         } else {
             return "[TLV tag=" + tag + " children=" + children + "]";
         }

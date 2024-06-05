@@ -18,7 +18,7 @@ package net.jsign.jca;
 
 import java.nio.ByteBuffer;
 
-import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -27,7 +27,7 @@ public class TLVTest {
 
     @Test
     public void testParseList() throws Exception {
-        byte[] data = Hex.decodeHex("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
+        byte[] data = Hex.decode("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
         TLV tlv = TLV.parse(ByteBuffer.wrap(data));
 
         assertNull("Root tag", tlv.tag());
@@ -35,9 +35,9 @@ public class TLVTest {
         assertEquals("Tag 1", "1", tlv.children().get(0).tag());
         assertEquals("Tag 2", "2", tlv.children().get(1).tag());
         assertEquals("Tag 3", "8", tlv.children().get(2).tag());
-        assertEquals("Value 1", "86", Hex.encodeHexString(tlv.children().get(0).value()));
-        assertEquals("Value 2", "0505", Hex.encodeHexString(tlv.children().get(1).value()));
-        assertEquals("Value 3", "01269a33", Hex.encodeHexString(tlv.children().get(2).value()));
+        assertEquals("Value 1", "86", Hex.toHexString(tlv.children().get(0).value()));
+        assertEquals("Value 2", "0505", Hex.toHexString(tlv.children().get(1).value()));
+        assertEquals("Value 3", "01269a33", Hex.toHexString(tlv.children().get(2).value()));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class TLVTest {
 
     @Test
     public void testEncode() throws Exception {
-        byte[] data = Hex.decodeHex("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
+        byte[] data = Hex.decode("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
         TLV tlv = TLV.parse(ByteBuffer.wrap(data));
 
         assertArrayEquals("Encoded", data, tlv.getEncoded());

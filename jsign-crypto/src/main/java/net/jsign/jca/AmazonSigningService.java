@@ -45,7 +45,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.cedarsoftware.util.io.JsonWriter;
-import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.encoders.Hex;
 
 import net.jsign.DigestAlgorithm;
 
@@ -297,7 +297,7 @@ public class AmazonSigningService implements SigningService {
         conn.setRequestProperty("Authorization",
                 "AWS4-HMAC-SHA256 Credential=" + credentials.getAccessKey() + "/" + credentialScope
                 + ", SignedHeaders=" + signedHeaders(headers)
-                + ", Signature=" + Hex.encodeHexString(signature).toLowerCase());
+                + ", Signature=" + Hex.toHexString(signature).toLowerCase());
 
         if (credentials.getSessionToken() != null) {
             conn.setRequestProperty("X-Amz-Security-Token", credentials.getSessionToken());
@@ -333,6 +333,6 @@ public class AmazonSigningService implements SigningService {
     private String sha256(byte[] data) {
         MessageDigest digest =  DigestAlgorithm.SHA256.getMessageDigest();
         digest.update(data);
-        return Hex.encodeHexString(digest.digest()).toLowerCase();
+        return Hex.toHexString(digest.digest()).toLowerCase();
     }
 }

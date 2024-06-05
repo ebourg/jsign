@@ -22,7 +22,7 @@ import java.util.Set;
 import javax.crypto.Cipher;
 import javax.smartcardio.CardException;
 
-import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import net.jsign.PrivateKeyUtils;
@@ -114,7 +114,7 @@ public class OpenPGPCardTest {
         byte[] result = pgpcard.getAID();
         assertNotNull("result", result);
         assertEquals("result length", 16, result.length);
-        assertEquals("AID", "D27600012401", Hex.encodeHexString(result).substring(0, 12).toUpperCase());
+        assertEquals("AID", "D27600012401", Hex.toHexString(result).substring(0, 12).toUpperCase());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class OpenPGPCardTest {
         OpenPGPCard.KeyInfo keyInfo = pgpcard.getKeyInfo(OpenPGPCard.Key.SIGNATURE);
         assertNotNull("key info", keyInfo);
 
-        String fingerprint = Hex.encodeHexString(keyInfo.fingerprint).toUpperCase();
+        String fingerprint = Hex.toHexString(keyInfo.fingerprint).toUpperCase();
         assertEquals("Fingerprint", "97147A24770EFC11A41979BA5D37E9FA3D904376", fingerprint);
     }
 
