@@ -101,7 +101,7 @@ public class HashiCorpVaultSigningServiceTest {
             service.getPrivateKey("key1", null);
             fail("Exception not thrown");
         } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch HashiCorp Vault Google Cloud private key 'key1' (missing key version)", e.getMessage());
+            assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1' (missing key version)", e.getMessage());
         }
     }
 
@@ -123,7 +123,7 @@ public class HashiCorpVaultSigningServiceTest {
         SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
         SigningServicePrivateKey privateKey = service.getPrivateKey("key1:7", null);
         assertNotNull("privateKey", privateKey);
-        assertEquals("algorithm", "key1:7", privateKey.getId());
+        assertEquals("keyId", "key1:7", privateKey.getId());
         assertEquals("algorithm", "RSA", privateKey.getAlgorithm());
 
         // check if the key is cached
@@ -138,7 +138,7 @@ public class HashiCorpVaultSigningServiceTest {
             service.getPrivateKey("key1:7", null);
             fail("Exception not thrown");
         } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch HashiCorp Vault Google Cloud private key 'key1:7'", e.getMessage());
+            assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1:7'", e.getMessage());
         }
     }
 
@@ -195,6 +195,101 @@ public class HashiCorpVaultSigningServiceTest {
                         "  \"data\": {" +
                         "    \"id\": \"projects/first-rain-123/locations/global/keyRings/mykeyring/cryptoKeys/key1\", " +
                         "    \"algorithm\": \"rsa_sign_pkcs1_2048_sha256\"" +
+                        "  }" +
+                        "}");
+
+        SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
+        SigningServicePrivateKey privateKey = service.getPrivateKey("key1:7", null);
+
+        service.sign(privateKey, "SHA256withRSA", data);
+    }
+
+    @Test
+    public void testGetTransitPrivateKey() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/keys/key1")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .respond()
+                .withStatus(200)
+                .withBody("{" +
+                        "  \"data\": {" +
+                        "    \"type\": \"rsa-2048\"" +
+                        "  }" +
+                        "}");
+
+        SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
+        SigningServicePrivateKey privateKey = service.getPrivateKey("key1:7", null);
+        assertNotNull("privateKey", privateKey);
+        assertEquals("keyId", "key1:7", privateKey.getId());
+        assertEquals("algorithm", "RSA", privateKey.getAlgorithm());
+
+        // check if the key is cached
+        SigningServicePrivateKey privateKey2 = service.getPrivateKey("key1:7", null);
+        assertSame("privateKey", privateKey, privateKey2);
+    }
+
+    @Test
+    public void testGetTransitPrivateError() {
+        SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
+        try {
+            service.getPrivateKey("key1:7", null);
+            fail("Exception not thrown");
+        } catch (UnrecoverableKeyException e) {
+            assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1:7'", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testTransitSign() throws Exception {
+        byte[] data = "0123456789ABCDEF0123456789ABCDEF".getBytes();
+        byte[] digest = DigestAlgorithm.SHA384.getMessageDigest().digest(data);
+
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/keys/key1")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .respond()
+                .withStatus(200)
+                .withBody("{" +
+                        "  \"data\": {" +
+                        "    \"type\": \"rsa-2048\"" +
+                        "  }" +
+                        "}");
+
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/sign/key1")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .havingBodyEqualTo("{\"prehashed\":true,\"input\":\"" + Base64.getEncoder().encodeToString(digest) +"\",\"key_version\":\"7\",\"hash_algorithm\":\"sha2-384\",\"signature_algorithm\":\"pkcs1v15\"}")
+                .respond()
+                .withStatus(200)
+                .withBody("{" +
+                        "  \"data\": {" +
+                        "    \"signature\": \"vault:v7:" + Base64.getEncoder().encodeToString(new byte[32]) + "\"" +
+                        "  }" +
+                        "}");
+
+        SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port() , "token", null);
+        SigningServicePrivateKey privateKey = service.getPrivateKey("key1:7", null);
+
+        byte[] signature = service.sign(privateKey, "SHA384withRSA", data);
+        assertNotNull("signature", signature);
+    }
+
+    @Test (expected = GeneralSecurityException.class)
+    public void testTransitSignError() throws Exception {
+        byte[] data = "0123456789ABCDEF0123456789ABCDEF".getBytes();
+
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/keys/key1")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .respond()
+                .withStatus(200)
+                .withBody("{" +
+                        "  \"data\": {" +
+                        "    \"type\": \"rsa-2048\"" +
                         "  }" +
                         "}");
 
