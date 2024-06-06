@@ -17,13 +17,13 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-lts8on</artifactId>
-      <version>2.73.6</version>
+      <version>${bouncycastle.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpkix-lts8on</artifactId>
-      <version>2.73.6</version>
+      <version>${bouncycastle.version}</version>
     </dependency>
 
     <dependency>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcpg-lts8on</artifactId>
-      <version>2.73.6</version>
+      <version>${bouncycastle.version}</version>
       <scope>test</scope>
     </dependency>
 
