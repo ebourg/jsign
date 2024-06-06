@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.cedarsoftware.util.io.JsonWriter;
 import org.bouncycastle.util.encoders.Hex;
 
 import net.jsign.DigestAlgorithm;
@@ -206,11 +205,8 @@ public class AmazonSigningService implements SigningService {
         request.put("Message", Base64.getEncoder().encodeToString(data));
         request.put("SigningAlgorithm", alg);
 
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, "false");
-
         try {
-            Map<String, ?> response = query("TrentService.Sign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = query("TrentService.Sign", JsonWriter.format(request));
             String signature = (String) response.get("Signature");
             return Base64.getDecoder().decode(signature);
         } catch (IOException e) {

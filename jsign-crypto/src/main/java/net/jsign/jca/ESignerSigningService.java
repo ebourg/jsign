@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.cedarsoftware.util.io.JsonWriter;
 import org.bouncycastle.operator.DefaultSignatureAlgorithmIdentifierFinder;
 
 import net.jsign.DigestAlgorithm;
@@ -76,11 +75,8 @@ public class ESignerSigningService implements SigningService {
         request.put("username", username);
         request.put("password", password);
 
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, "false");
-
         RESTClient client = new RESTClient(endpoint).errorHandler(response -> response.get("error") + ": " + response.get("error_description"));
-        Map<String, ?> response = client.post("/oauth2/token", JsonWriter.objectToJson(request, args));
+        Map<String, ?> response = client.post("/oauth2/token", JsonWriter.format(request));
         return (String) response.get("access_token");
     }
 
@@ -94,9 +90,7 @@ public class ESignerSigningService implements SigningService {
         try {
             Map<String, String> request = new HashMap<>();
             request.put("clientData", "EVCS");
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post("/csc/v0/credentials/list", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("/csc/v0/credentials/list", JsonWriter.format(request));
             Object[] credentials = (Object[]) response.get("credentialIDs");
             return Stream.of(credentials).map(Object::toString).collect(Collectors.toList());
         } catch (IOException e) {
@@ -115,10 +109,7 @@ public class ESignerSigningService implements SigningService {
             request.put("credentialID", alias);
             request.put("certificates", "chain");
 
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-
-            Map<String, ?> response = client.post("/csc/v0/credentials/info", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("/csc/v0/credentials/info", JsonWriter.format(request));
             certificates.put(alias, (Map) response.get("cert"));
         }
 
@@ -159,13 +150,10 @@ public class ESignerSigningService implements SigningService {
     private void scan(SigningServicePrivateKey privateKey, String hashToSign, String hashToScan) {
         boolean malwareScanEnabled;
 
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, "false");
-
         Map<String, Object>  request = new LinkedHashMap<>();
         request.put("credential_id", privateKey.getId());
         try {
-            Map<String, ?> response = client.post("/scan/settings", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("/scan/settings", JsonWriter.format(request));
             malwareScanEnabled = Boolean.TRUE.equals(response.get("malware_scan_enabled"));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -178,7 +166,7 @@ public class ESignerSigningService implements SigningService {
             request.put("hash_to_sign", hashToSign);
 
             try {
-                client.post("/scan/hash", JsonWriter.objectToJson(request, args));
+                client.post("/scan/hash", JsonWriter.format(request));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -201,10 +189,8 @@ public class ESignerSigningService implements SigningService {
         request.put("hash", new String[] { hash });
         request.put("signAlgo", new DefaultSignatureAlgorithmIdentifierFinder().find(algorithm).getAlgorithm().getId());
 
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, "false");
         try {
-            Map<String, ?> response = client.post("/csc/v0/signatures/signHash", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("/csc/v0/signatures/signHash", JsonWriter.format(request));
             Object[] signatures = (Object[]) response.get("signatures");
 
             return Base64.getDecoder().decode(signatures[0].toString());
@@ -225,9 +211,7 @@ public class ESignerSigningService implements SigningService {
         }
 
         try {
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post("/csc/v0/credentials/authorize", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("/csc/v0/credentials/authorize", JsonWriter.format(request));
             return (String) response.get("SAD");
         } catch (IOException e) {
             throw new GeneralSecurityException("Couldn't get signing authorization for SSL.com certificate " + privateKey.getId(), e);

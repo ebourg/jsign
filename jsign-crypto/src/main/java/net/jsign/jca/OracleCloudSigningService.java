@@ -42,8 +42,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import net.jsign.DigestAlgorithm;
 
 /**
@@ -153,12 +151,9 @@ public class OracleCloudSigningService implements SigningService {
         request.put("message", Base64.getEncoder().encodeToString(data));
         request.put("signingAlgorithm", alg);
 
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, "false");
-
         try {
             RESTClient client = new RESTClient(getKeyEndpoint(privateKey.getId())).authentication(this::sign).errorHandler(this::error);
-            Map<String, ?> response = client.post("/20180608/sign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("/20180608/sign", JsonWriter.format(request));
             String signature = (String) response.get("signature");
             return Base64.getDecoder().decode(signature);
         } catch (IOException e) {

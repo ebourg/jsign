@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import net.jsign.DigestAlgorithm;
 
 /**
@@ -195,9 +193,7 @@ public class GoogleCloudSigningService implements SigningService {
         request.put("digest", digest);
 
         try {
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post(privateKey.getId() + ":asymmetricSign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post(privateKey.getId() + ":asymmetricSign", JsonWriter.format(request));
             String signature = (String) response.get("signature");
 
             return Base64.getDecoder().decode(signature);

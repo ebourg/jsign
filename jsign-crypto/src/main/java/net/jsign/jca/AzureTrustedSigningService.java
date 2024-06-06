@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import net.jsign.DigestAlgorithm;
 
 /**
@@ -75,7 +73,7 @@ public class AzureTrustedSigningService implements SigningService {
         client = new RESTClient(endpoint)
                 .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token))
                 .errorHandler(response -> {
-                    String errors = JsonWriter.objectToJson(response.get("errors"));
+                    String errors = JsonWriter.format(response.get("errors"));
                     return response.get("status") + " - " + response.get("title") + ": " + errors;
                 });
     }
@@ -141,10 +139,7 @@ public class AzureTrustedSigningService implements SigningService {
         request.put("signatureAlgorithm", algorithm);
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
-        Map<String, Object> args = new HashMap<>();
-        args.put(JsonWriter.TYPE, "false");
-
-        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2022-06-15-preview", JsonWriter.objectToJson(request, args));
+        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2022-06-15-preview", JsonWriter.format(request));
 
         String operationId = (String) response.get("operationId");
 

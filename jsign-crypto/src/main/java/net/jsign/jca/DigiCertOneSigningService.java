@@ -39,8 +39,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509KeyManager;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import net.jsign.DigestAlgorithm;
 import net.jsign.KeyStoreBuilder;
 
@@ -204,9 +202,7 @@ public class DigiCertOneSigningService implements SigningService {
         request.put("hash", Base64.getEncoder().encodeToString(data));
 
         try {
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post("keypairs/" + privateKey.getId() + "/sign", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("keypairs/" + privateKey.getId() + "/sign", JsonWriter.format(request));
             String value = (String) response.get("signature");
 
             return Base64.getDecoder().decode(value);

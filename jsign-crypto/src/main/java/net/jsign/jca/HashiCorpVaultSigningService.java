@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import com.cedarsoftware.util.io.JsonWriter;
-
 import net.jsign.DigestAlgorithm;
 
 /**
@@ -136,9 +134,7 @@ public class HashiCorpVaultSigningService implements SigningService {
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
         try {
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post("sign/" + keyName, JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post("sign/" + keyName, JsonWriter.format(request));
             String signature = ((Map<String, String>) response.get("data")).get("signature");
 
             return Base64.getDecoder().decode(signature);

@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cedarsoftware.util.io.JsonWriter;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
@@ -198,9 +197,7 @@ public class AzureKeyVaultSigningService implements SigningService {
         request.put("value", Base64.getEncoder().encodeToString(data));
 
         try {
-            Map<String, Object> args = new HashMap<>();
-            args.put(JsonWriter.TYPE, "false");
-            Map<String, ?> response = client.post(privateKey.getId() + "/sign?api-version=7.2", JsonWriter.objectToJson(request, args));
+            Map<String, ?> response = client.post(privateKey.getId() + "/sign?api-version=7.2", JsonWriter.format(request));
             String value = (String) response.get("value");
 
             return Base64.getUrlDecoder().decode(value);
