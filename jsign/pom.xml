@@ -109,6 +109,8 @@
                     <exclude>assets/org/apache/commons/math3/**</exclude>
                     <exclude>native/**</exclude>
                     <exclude>**/bouncycastle/pqc/**</exclude>
+                    <exclude>**/bouncycastle/crypto/digests/Tiger**</exclude>
+                    <exclude>**/bouncycastle/crypto/digests/GOST**</exclude>
                   </excludes>
                 </filter>
                 <filter>
