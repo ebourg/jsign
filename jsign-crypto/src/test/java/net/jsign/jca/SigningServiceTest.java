@@ -46,10 +46,20 @@ public class SigningServiceTest {
 
         Signature signature = Signature.getInstance("SHA256withRSA", signingProvider);
         signature.initSign((PrivateKey) key);
-        signature.update("Hello".getBytes());
-        byte[] s = signature.sign();
+        signature.update("Hello World".getBytes());
+        byte[] s1 = signature.sign();
 
-        assertNotNull("signature null", s);
+        assertNotNull("signature null", s1);
+
+        // test with multiple updates
+        signature = Signature.getInstance("SHA256withRSA", signingProvider);
+        signature.initSign((PrivateKey) key);
+        signature.update("Hello".getBytes());
+        signature.update(" ".getBytes());
+        signature.update("World".getBytes());
+        byte[] s2 = signature.sign();
+
+        assertArrayEquals("signature", s1, s2);
     }
 
     @Test

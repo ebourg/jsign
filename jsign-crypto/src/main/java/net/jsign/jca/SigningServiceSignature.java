@@ -16,6 +16,7 @@
 
 package net.jsign.jca;
 
+import java.io.ByteArrayOutputStream;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
@@ -23,7 +24,7 @@ import java.security.SignatureException;
 class SigningServiceSignature extends AbstractSignatureSpi {
 
     private SigningServicePrivateKey privateKey;
-    private byte[] data;
+    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     public SigningServiceSignature(String signingAlgorithm) {
         super(signingAlgorithm);
@@ -36,14 +37,13 @@ class SigningServiceSignature extends AbstractSignatureSpi {
 
     @Override
     protected void engineUpdate(byte[] b, int off, int len) {
-        data = new byte[len];
-        System.arraycopy(b, off, data, 0, len);
+        buffer.write(b, off, len);
     }
 
     @Override
     protected byte[] engineSign() throws SignatureException {
         try {
-            return privateKey.getService().sign(privateKey, signingAlgorithm, data);
+            return privateKey.getService().sign(privateKey, signingAlgorithm, buffer.toByteArray());
         } catch (GeneralSecurityException e) {
             throw new SignatureException(e);
         }
