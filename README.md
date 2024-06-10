@@ -73,6 +73,7 @@ See https://ebourg.github.io/jsign for more information.
 * The value of the `storetype` parameter is now case insensitive
 * The Azure Key Vault account no longer needs the permission to list the keys when signing with jarsigner
 * On Windows the YubiKey library path is automatically added to the PATH of the command line tool
+* Signing more than one file with the `YUBIKEY` storetype no longer triggers a `CKR_USER_NOT_LOGGED_IN` error
 * API changes:
   * The keystore builder and the JCA provider are now in a separate `jsign-crypto` module
   * The PEFile class has been refactored to keep only the methods related to signing
