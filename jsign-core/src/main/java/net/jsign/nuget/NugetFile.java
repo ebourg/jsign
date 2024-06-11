@@ -22,12 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.poi.util.IOUtils;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSProcessableByteArray;
@@ -37,6 +36,7 @@ import org.bouncycastle.cms.CMSTypedData;
 import net.jsign.ChannelUtils;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
+import net.jsign.SignatureUtils;
 import net.jsign.zip.CentralDirectory;
 import net.jsign.zip.ZipFile;
 
@@ -119,19 +119,12 @@ public class NugetFile extends ZipFile implements Signable {
 
     @Override
     public List<CMSSignedData> getSignatures() throws IOException {
-        List<CMSSignedData> signatures = new ArrayList<>();
-
         if (centralDirectory.entries.containsKey(SIGNATURE_ENTRY)) {
             InputStream in = getInputStream(SIGNATURE_ENTRY, 1024 * 1024 /* 1MB */);
-            byte[] signatureBytes = IOUtils.toByteArray(in);
-
-            try {
-                signatures.add(new CMSSignedData(new ASN1InputStream(signatureBytes)));
-            } catch (Exception | StackOverflowError e) {
-                e.printStackTrace();
-            }
+            return SignatureUtils.getSignatures(IOUtils.toByteArray(in));
+        } else {
+            return Collections.emptyList();
         }
-        return signatures;
     }
 
     @Override

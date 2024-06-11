@@ -23,26 +23,19 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSTypedData;
-import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.util.CollectionStore;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
-import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.SignatureUtils;
 
 /**
  * Windows Catalog file.
@@ -126,29 +119,11 @@ public class CatalogFile implements Signable {
 
     @Override
     public List<CMSSignedData> getSignatures() throws IOException {
-        List<CMSSignedData> signatures = new ArrayList<>();
-
-        try {
-            if (signedData.getSignerInfos().size() > 0) {
-                signatures.add(signedData);
-
-                // look for nested signatures
-                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
-                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-                if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-                    if (nestedSignatures != null) {
-                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
-                        }
-                    }
-                }
-            }
-        } catch (CMSException | StackOverflowError e) {
-            throw new IOException(e);
+        if (signedData.getSignerInfos().size() > 0) {
+            return SignatureUtils.getSignatures(signedData);
+        } else {
+            return Collections.emptyList();
         }
-
-        return signatures;
     }
 
     @Override
