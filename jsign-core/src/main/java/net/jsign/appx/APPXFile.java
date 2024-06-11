@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.poi.util.IOUtils;
@@ -167,15 +168,25 @@ public class APPXFile extends ZipFile implements Signable {
         return new SpcIndirectDataContent(data, digestInfo);
     }
 
-    private static String normalized(String name) {
-        return name.replaceAll(", ", ",").replace(",ST=", ",S=");
+    /**
+     * Normalize the X500 name specified.
+     */
+    private String normalize(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        // replace the non-standard S abbreviation used by Microsoft with ST for the stateOrProvinceName attribute
+        name = name.replaceAll(",\\s*S\\s*=", ",ST=");
+
+        return new X500Principal(name).getName(X500Principal.CANONICAL);
     }
 
     @Override
     public void validate(Certificate certificate) throws IOException, IllegalArgumentException {
         String name = ((X509Certificate) certificate).getSubjectX500Principal().getName();
         String publisher = getPublisher();
-        if (!normalized(name).equals(normalized(publisher))) {
+        if (!normalize(name).equals(normalize(publisher))) {
             throw new IllegalArgumentException("The app manifest publisher name (" + publisher + ") must match the subject name of the signing certificate (" + name + ")");
         }
     }
