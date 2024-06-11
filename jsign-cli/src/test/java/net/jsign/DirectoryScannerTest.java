@@ -18,6 +18,7 @@ package net.jsign;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -130,10 +131,12 @@ public class DirectoryScannerTest {
     public void testScanParentDirectoryRecursively() throws Exception {
         DirectoryScanner scanner = new DirectoryScanner();
         List<Path> matches = scanner.scan("../jsign-c*/**/pom.xml");
+        matches.sort(Comparator.comparing(Path::toString));
 
-        assertEquals("number of matches", 2, matches.size());
+        assertEquals("number of matches", 3, matches.size());
         assertEquals("match", new File("../jsign-cli/pom.xml"), matches.get(0).toFile());
         assertEquals("match", new File("../jsign-core/pom.xml"), matches.get(1).toFile());
+        assertEquals("match", new File("../jsign-crypto/pom.xml"), matches.get(2).toFile());
     }
 
     @Test

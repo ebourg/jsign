@@ -371,7 +371,7 @@ public class JsignCLITest {
     public void testSigningWithYubikey() throws Exception {
         Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
 
-        cli.execute("--storetype=YUBIKEY", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--storepass=123456", "" + targetFile);
+        cli.execute("--storetype=YUBIKEY", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--storepass=123456", "--alias=X.509 Certificate for Digital Signature", "" + targetFile, "" + targetFile);
     }
 
     @Test

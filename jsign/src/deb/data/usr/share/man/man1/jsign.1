@@ -2,19 +2,35 @@
 .TH man 1 "25 Mar 2021" "@VERSION@" "jsign man page"
 
 .SH NAME
-jsign \- sign and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
+jsign \- code signing tool for Windows executable files, installer packages and scripts
 
 .SH SYNOPSIS
 .B jsign
 [OPTIONS] [FILE] [PATTERN] [@FILELIST]...
 
 .SH DESCRIPTION
-Jsign is a Java implementation of Microsoft Authenticode that lets you sign
-and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet
-files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft
-Dynamics 365 extension packages, NuGet packages and scripts. Jsign is platform
-independent and provides an alternative to native tools like signcode/signtool
-on Windows or the Mono development tools on Unix systems.
+Jsign is a versatile code signing tool that allows you to sign and timestamp
+Windows executable files, installer packages and scripts. Jsign is platform
+independent and provides an alternative to native tools like signtool on Windows
+or the Mono development tools on Unix systems.
+
+It supports the following file formats:
+.br
+- Windows executable files (.exe) and libraries (.dll)
+.br
+- Microsoft Installers (.msi)
+.br
+- Cabinet files (.cab)
+.br
+- Catalog files (.cat)
+.br
+- Windows packages (.appx, .msix)
+.br
+- Microsoft Dynamics 365 extension packages
+.br
+- NuGet packages
+.br
+- Windows scripts (PowerShell, VBScript, JScript, WSF)
 
 Jsign can use private keys and certificates in various formats, either Java keystores,
 PKCS#12 keystores, PKCS#11 hardware tokens, SPC/PVK files or from cloud key management

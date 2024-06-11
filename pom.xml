@@ -10,9 +10,8 @@
   <inceptionYear>2012</inceptionYear>
 
   <description>
-    Pure Java implementation of Microsoft Authenticode for signing Windows executable files, Microsoft Installers (MSI),
-    Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages,
-    NuGet packages and scripts (PowerShell, VBScript, JScript, WSF).
+    Java implementation of Microsoft Authenticode for signing Windows executable files, installer packages and scripts,
+    with an emphasis on seamless integration with cloud key management systems and hardware tokens.
   </description>
   <url>https://ebourg.github.io/jsign</url>
 
@@ -50,6 +49,7 @@
   </distributionManagement>
 
   <modules>
+    <module>jsign-crypto</module>
     <module>jsign-core</module>
     <module>jsign-ant</module>
     <module>jsign-cli</module>
@@ -74,6 +74,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-inline</artifactId>
       <version>4.11.0</version>
@@ -83,14 +90,14 @@
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy-agent</artifactId>
-      <version>1.14.9</version>
+      <version>1.14.16</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
-      <version>1.14.9</version>
+      <version>1.14.16</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -101,12 +108,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.1</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.11</version>
+          <version>0.8.12</version>
           <executions>
             <execution>
               <id>prepare-jacoco-agent</id>
@@ -162,12 +169,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.1.2</version>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.11</version>
+        <version>0.8.12</version>
       </plugin>
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
@@ -215,6 +222,26 @@
               <goal>aggregate</goal>
             </goals>
             <phase>site</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.6.3</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -346,12 +373,14 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.8.3.1</version>
+        <version>4.8.5.0</version>
       </plugin>
     </plugins>
   </reporting>
 
   <properties>
+    <bouncycastle.version>2.73.6</bouncycastle.version>
+
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>2024-01-17T12:00:00Z</project.build.outputTimestamp>
   </properties>
