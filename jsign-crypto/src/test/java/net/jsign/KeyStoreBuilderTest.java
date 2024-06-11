@@ -193,6 +193,7 @@ public class KeyStoreBuilderTest {
             assertEquals("message", "Failed to load the client certificate for DigiCert ONE", e.getMessage());
         }
 
+        builder.keystore("https://clientauth.demo.one.digicert.com");
         builder.storepass("APIKEY|target/test-classes/keystores/keystore.p12|password");
 
         KeyStore keystore = builder.build();

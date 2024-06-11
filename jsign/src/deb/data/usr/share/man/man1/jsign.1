@@ -387,7 +387,8 @@ Signing with DigiCert ONE:
 
 Certificates and keys stored in the DigiCert ONE Secure Software Manager can be used directly without installing
 the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding a client certificate for the
-authentication.
+authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com) but a different
+host can be specified with the --keystore parameter.
 
 jsign --storetype DIGICERTONE \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\

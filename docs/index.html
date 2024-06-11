@@ -713,7 +713,8 @@ the quota usage.</p>
 
 <p>Certificates and keys stored in the <a href="https://one.digicert.com">DigiCert ONE</a> Secure Software Manager
 can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
-a client certificate for the authentication.</p>
+a client certificate for the authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com)
+but a different host can be specified with the <code>--keystore</code> parameter.</p>
 
 <pre>
  jsign --storetype DIGICERTONE \
