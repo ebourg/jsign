@@ -92,6 +92,37 @@ public class ChannelUtils {
     }
 
     /**
+     * Remove data from a SeekableByteChannel, shifting the data after the deletion point.
+     */
+    public static void delete(SeekableByteChannel channel, long position, long length) throws IOException {
+        delete(channel, position, length, 1024 * 1024);
+    }
+
+    public static void delete(SeekableByteChannel channel, long position, long length, int bufferSize) throws IOException {
+        if (position + length > channel.size()) {
+            throw new IOException("Cannot delete data after the end of the file");
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+        long remaining = channel.size() - position - length;
+        while (remaining > 0) {
+            buffer.clear();
+            buffer.limit((int) Math.min(remaining, buffer.capacity()));
+
+            channel.position(position + length);
+            channel.read(buffer);
+            buffer.flip();
+
+            channel.position(position);
+            channel.write(buffer);
+            remaining -= buffer.position();
+            position += buffer.position();
+        }
+        
+        channel.truncate(channel.size() - length);
+    }
+
+    /**
      * Update the specified digest by reading the SeekableByteChannel
      * from the start offset included to the end offset excluded.
      *

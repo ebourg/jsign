@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 
@@ -40,5 +41,77 @@ public class ChannelUtilsTest {
         String s = "ABCD";
         SeekableByteChannel channel = new SeekableInMemoryByteChannel((s).getBytes(StandardCharsets.UTF_8));
         ChannelUtils.readNullTerminatedString(channel);
+    }
+
+    @Test(expected = IOException.class)
+    public void testDeleteAfterEOF() throws Exception {
+        byte[] data = new byte[1024];
+        SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
+        ChannelUtils.delete(channel, 2048, 512);
+    }
+
+    @Test(expected = IOException.class)
+    public void testDeleteAcrossEOF() throws Exception {
+        byte[] data = new byte[1024];
+        SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
+        ChannelUtils.delete(channel, 1024 - 256, 512);
+    }
+
+    @Test
+    public void testDeleteToEOFWithOneChunk() throws Exception {
+        byte[] data = new byte[1024];
+        SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
+        ChannelUtils.delete(channel, 512, 512);
+        
+        assertEquals("channel size", 512, channel.size());
+    }
+
+    @Test
+    public void testDeleteToEOFWithMultipleChunks() throws Exception {
+        byte[] data = new byte[1024];
+        SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
+        ChannelUtils.delete(channel, 512, 512, 67);
+
+        assertEquals("channel size", 512, channel.size());
+    }
+
+    @Test
+    public void testDeleteBeforeEOFWithOneChunk() throws Exception {
+        byte[] data = new byte[1024];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (byte) (i % 64);
+        }
+        SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
+        ChannelUtils.delete(channel, 128, 509);
+
+        assertEquals("channel size", 1024 - 509, channel.size());
+        
+        channel.position(127);
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        channel.read(buffer);
+        buffer.flip();
+        
+        assertEquals("value before deletion point", 63, buffer.get());
+        assertEquals("value after deletion point",  61, buffer.get());
+    }
+
+    @Test
+    public void testDeleteBeforeEOFWithMultipleChunks() throws Exception {
+        byte[] data = new byte[1024];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (byte) (i % 64);
+        }
+        SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
+        ChannelUtils.delete(channel, 128, 509, 67);
+
+        assertEquals("channel size", 1024 - 509, channel.size());
+
+        channel.position(127);
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        channel.read(buffer);
+        buffer.flip();
+
+        assertEquals("value before deletion point", 63, buffer.get());
+        assertEquals("value after deletion point",  61, buffer.get());
     }
 }

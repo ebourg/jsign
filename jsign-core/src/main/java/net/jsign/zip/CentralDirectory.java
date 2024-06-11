@@ -145,15 +145,42 @@ public class CentralDirectory {
     public void removeEntry(String name) {
         if (entries.containsKey(name)) {
             CentralDirectoryFileHeader centralDirectoryFileHeader = entries.get(name);
+            long size = getEntrySize(name);
 
-            CentralDirectoryFileHeader lastCentralDirectoryFileHeader = new ArrayList<>(entries.values()).get(entries.size() - 1);
-            if (centralDirectoryFileHeader != lastCentralDirectoryFileHeader) {
-                throw new IllegalArgumentException("The entry " + name + " is not the last one and cannot be removed");
-            }
-
+            // remove the entry
             entries.remove(name);
-            centralDirectoryOffset = centralDirectoryFileHeader.getLocalHeaderOffset();
+
+            // shift the central directory offset
+            centralDirectoryOffset = centralDirectoryOffset - size;
+
+            // shift the local header offset of the following entries
+            for (CentralDirectoryFileHeader entry : entries.values()) {
+                if (entry.getLocalHeaderOffset() > centralDirectoryFileHeader.getLocalHeaderOffset()) {
+                    entry.setLocalHeaderOffset(entry.getLocalHeaderOffset() - size);
+                }
+            }
         }
+    }
+
+    /**
+     * Returns the size of the specified entry (local header + compressed data).
+     *
+     * @param name the name of the entry
+     * @since 6.1
+     */
+    public long getEntrySize(String name) {
+        CentralDirectoryFileHeader centralDirectoryFileHeader = entries.get(name);
+
+        // the size is the smallest strictly positive distance between the offset and the entry and the others
+        long size = centralDirectoryOffset - centralDirectoryFileHeader.getLocalHeaderOffset();
+        for (CentralDirectoryFileHeader entry : entries.values()) {
+            long distance = entry.getLocalHeaderOffset() - centralDirectoryFileHeader.getLocalHeaderOffset();
+            if (distance > 0 && distance < size) {
+                size = distance;
+            }
+        }
+
+        return size;
     }
 
     /**
