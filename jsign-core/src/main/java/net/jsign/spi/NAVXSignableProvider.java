@@ -28,7 +28,7 @@ import net.jsign.navx.NAVXFile;
 /**
  * {@link SignableProvider} for NAVX files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices
 public class NAVXSignableProvider implements SignableProvider {

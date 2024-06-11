@@ -35,7 +35,7 @@ import net.jsign.DigestAlgorithm;
 /**
  * Signing service using the Garantir Remote Signing REST Service API.
  *
- * @since 6.1
+ * @since 7.0
  */
 public class GaraSignSigningService implements SigningService {
 

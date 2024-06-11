@@ -36,7 +36,7 @@ import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 /**
  * Helper class for working with signatures.
  *
- * @since 6.1
+ * @since 7.0
  */
 public class SignatureUtils {
 

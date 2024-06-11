@@ -51,7 +51,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 6.1 (in development)
+#### Version 7.0 (in development)
 
 * The Azure Trusted Signing service has been integrated
 * The Oracle Cloud signing service has been integrated

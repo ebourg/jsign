@@ -76,7 +76,7 @@ class CertificateUtils {
     /**
      * Returns the authority information access extension of the specified certificate.
      *
-     * @since 6.1
+     * @since 7.0
      */
     public static AuthorityInformationAccess getAuthorityInformationAccess(X509Certificate certificate) {
         byte[] aia = certificate.getExtensionValue(Extension.authorityInfoAccess.getId());
@@ -86,7 +86,7 @@ class CertificateUtils {
     /**
      * Returns the issuer certificate URL of the specified certificate.
      *
-     * @since 6.1
+     * @since 7.0
      */
     public static String getIssuerCertificateURL(X509Certificate certificate) {
         AuthorityInformationAccess aia = getAuthorityInformationAccess(certificate);
@@ -105,7 +105,7 @@ class CertificateUtils {
      * Returns the issuer certificates of the specified certificate. Multiple issuer certificates may be returned
      * if the certificate is cross-signed.
      *
-     * @since 6.1
+     * @since 7.0
      */
     public static Collection<X509Certificate> getIssuerCertificates(X509Certificate certificate) throws IOException, CertificateException {
         String certificateURL = getIssuerCertificateURL(certificate);
@@ -124,7 +124,7 @@ class CertificateUtils {
     /**
      * Returns the certificate chain of the specified certificate up to the specified depth.
      *
-     * @since 6.1
+     * @since 7.0
      */
     public static Collection<X509Certificate> getCertificateChain(X509Certificate certificate, int maxDepth) {
         List<X509Certificate> chain = new ArrayList<>();
@@ -147,7 +147,7 @@ class CertificateUtils {
     /**
      * Tells if the specified certificate is self-signed.
      *
-     * @since 6.1
+     * @since 7.0
      */
     public static boolean isSelfSigned(X509Certificate certificate) {
         return certificate.getSubjectDN().equals(certificate.getIssuerDN());
@@ -156,7 +156,7 @@ class CertificateUtils {
     /**
      * Completes the specified chain with the missing issuer certificates.
      *
-     * @since 6.1
+     * @since 7.0
      */
     public static List<X509Certificate> getFullCertificateChain(Collection<X509Certificate> chain) {
         Set<String> issuerNames = chain.stream().map(c -> c.getIssuerX500Principal().getName()).collect(Collectors.toSet());

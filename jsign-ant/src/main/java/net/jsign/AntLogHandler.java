@@ -26,7 +26,7 @@ import org.apache.tools.ant.Task;
 /**
  * Console implementation for Ant tasks.
  *
- * @since 6.1
+ * @since 7.0
  */
 class AntLogHandler extends Handler {
 

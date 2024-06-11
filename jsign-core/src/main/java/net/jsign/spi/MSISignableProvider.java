@@ -28,7 +28,7 @@ import net.jsign.msi.MSIFile;
 /**
  * {@link SignableProvider} for MSI files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices
 public class MSISignableProvider implements SignableProvider {

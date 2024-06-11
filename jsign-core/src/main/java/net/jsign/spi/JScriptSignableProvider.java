@@ -28,7 +28,7 @@ import net.jsign.script.JScript;
 /**
  * {@link SignableProvider} for JScript files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices(SignableProvider.class)
 public class JScriptSignableProvider extends ExtensionBasedSignableProvider {

@@ -36,7 +36,7 @@ import net.jsign.PrivateKeyUtils;
 /**
  * Oracle Cloud credentials loaded from the <code>.oci/config</code> file or from the environment variables.
  * 
- * @since 6.1
+ * @since 7.0
  */
 public class OracleCloudCredentials {
 

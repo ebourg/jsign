@@ -37,7 +37,7 @@ import net.jsign.DigestAlgorithm;
 /**
  * Signing service using the Azure Trusted Signing API.
  *
- * @since 6.1
+ * @since 7.0
  */
 public class AzureTrustedSigningService implements SigningService {
 

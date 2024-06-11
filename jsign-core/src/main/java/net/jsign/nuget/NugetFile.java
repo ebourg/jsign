@@ -46,7 +46,7 @@ import net.jsign.zip.ZipFile;
  * @see <a href="https://github.com/NuGet/Home/wiki/Package-Signatures-Technical-Details">NuGet Package Signatures Technical Specification</a>
  *
  * @author Sebastian Stamm
- * @since 6.1
+ * @since 7.0
  */
 public class NugetFile extends ZipFile implements Signable {
 

@@ -166,7 +166,7 @@ public class CentralDirectory {
      * Returns the size of the specified entry (local header + compressed data).
      *
      * @param name the name of the entry
-     * @since 6.1
+     * @since 7.0
      */
     public long getEntrySize(String name) {
         CentralDirectoryFileHeader centralDirectoryFileHeader = entries.get(name);
