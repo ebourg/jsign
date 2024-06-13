@@ -198,11 +198,17 @@ invalidating the signature:</p>
     <tr>
       <td class="attribute">storetype</td>
       <td class="description">
-        The type of the keystore:
+        The type of the keystore.
+
+        <p>File based:</p>
         <ul>
           <li><code>JKS</code>: Java keystore (<code>.jks</code> files)</li>
           <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
+        </ul>
+
+        <p>Hardware tokens:</p>
+        <ul>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>ETOKEN</code>: SafeNet eToken</li>
           <li><code>NITROKEY</code>: Nitrokey HSM</li>
@@ -210,6 +216,10 @@ invalidating the signature:</p>
           <li><code>OPENSC</code>: Smart card</li>
           <li><code>PIV</code>: PIV card</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
+        </ul>
+
+        <p>Cloud key management systems:</p>
+        <ul>
           <li><code>AWS</code>: AWS Key Management Service</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
@@ -517,10 +527,12 @@ are the same as those described above for the Ant task.</p>
   -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file,
                              the cloud keystore name, or the card/token name
      --storepass &lt;PASSWORD>  The password to open the keystore
-     --storetype &lt;TYPE>      The type of the keystore:
+     --storetype &lt;TYPE>      The type of the keystore
+                             File based:
                              - JKS: Java keystore (.jks files)
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
+                             Hardware tokens:
                              - PKCS11: PKCS#11 hardware token
                              - ETOKEN: SafeNet eToken
                              - NITROKEY: Nitrokey HSM
@@ -528,6 +540,7 @@ are the same as those described above for the Ant task.</p>
                              - OPENSC: Smart card
                              - PIV: PIV card
                              - YUBIKEY: YubiKey security key
+                             Cloud key management systems:
                              - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
                              - DIGICERTONE: DigiCert ONE Secure Software Manager

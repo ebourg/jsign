@@ -56,12 +56,16 @@ by using the env: prefix followed by the name of the variable.
 .TP
 .B --storetype <TYPE>
 The type of the keystore:
+
+File based:
 .br
 - JKS           : Java keystore (.jks files)
 .br
 - JCEKS         : SunJCE keystore (.jceks files)
 .br
 - PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
+
+Hardware tokens;
 .br
 - PKCS11        : PKCS#11 hardware token
 .br
@@ -76,6 +80,8 @@ The type of the keystore:
 - PIV           : PIV card
 .br
 - YUBIKEY       : YubiKey security key (requires ykcs11)
+
+Cloud key management systems:
 .br
 - AWS           : AWS Key Management Service
 .br
@@ -89,12 +95,12 @@ The type of the keystore:
 .br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
-- HASHICORPVAULT : Google Cloud KMS via HashiCorp Vault
+- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
 .br
 - ORACLECLOUD   : Oracle Cloud Key Management Service
 .br
 - TRUSTEDSIGNING: Azure Trusted Signing
-.br
+
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
 .TP

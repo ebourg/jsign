@@ -73,10 +73,12 @@ public class JsignCLI {
         options.addOption(Option.builder("s").hasArg().longOpt(PARAM_KEYSTORE).argName("FILE").desc("The keystore file, the SunPKCS11 configuration file, the cloud keystore name, or the card/token name").type(File.class).build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STOREPASS).argName("PASSWORD").desc("The password to open the keystore").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STORETYPE).argName("TYPE")
-                .desc("The type of the keystore:\n"
+                .desc("The type of the keystore\n"
+                        + "File based:\n"
                         + "- JKS: Java keystore (.jks files)\n"
                         + "- JCEKS: SunJCE keystore (.jceks files)\n"
                         + "- PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)\n"
+                        + "Hardware tokens\n"
                         + "- PKCS11: PKCS#11 hardware token\n"
                         + "- ETOKEN: SafeNet eToken\n"
                         + "- NITROKEY: Nitrokey HSM\n"
@@ -84,6 +86,7 @@ public class JsignCLI {
                         + "- OPENSC: Smart card\n"
                         + "- PIV: PIV card\n"
                         + "- YUBIKEY: YubiKey security key\n"
+                        + "Cloud key management systems:\n"
                         + "- AWS: AWS Key Management Service\n"
                         + "- AZUREKEYVAULT: Azure Key Vault key management system\n"
                         + "- DIGICERTONE: DigiCert ONE Secure Software Manager\n"
