@@ -136,6 +136,16 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
  &lt;/jsign>
 </pre>
 
+<br>
+
+<p>The <code>sign</code> command is used by default, but other commands can be specified with the <code>command</code>
+attribute. For example for <a href="#tagging">tagging</a> a signed file with user identification data without
+invalidating the signature:</p>
+
+<pre class="prettyprint lang-xml">
+ &lt;jsign command="tag" value="userid:1234-ABCD-5678-EFGH" file="application.exe"/>
+</pre>
+
 <br><br>
 
 <h4 id="attributes" class="mobile-only">Attributes</h4>
@@ -300,6 +310,21 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
         </ul>
       </td>
       <td class="required">No; defaults to "false"</td>
+    </tr>
+    <tr>
+      <td class="attribute">value</td>
+      <td class="description">
+          The value of the unsigned attribute when tagging a file. The value is either:
+          <ul>
+            <li>a string (such as a user id, a license key or a JWT token)</li>
+            <li>the name of the file to include, prefixed with <code>file:</code>
+            <li>a binary value in hexadecimal format, prefixed with <code>0x</code>
+          </ul>
+          <p>If no value is specified a default 1KB template is used, filled with zeros and delimited by
+          <code style="white-space: nowrap">-----BEGIN TAG-----</code> and
+          <code style="white-space: nowrap">-----END TAG-----</code> markers.</p>
+      </td>
+      <td class="required">No; defaults to 1KB template</td>
     </tr>
   </tbody>
 </table>
@@ -861,6 +886,35 @@ of the key.</p>
   <li><code>OCI_CLI_PASS_PHRASE</code>: The pass phrase of the private key</li>
 </ul>
 
+<br>
+
+<h4 id="tagging">Tagging</h4>
+
+<p>A signed file can be modified to include additional data without invalidating the signature. This feature is useful
+for embedding user identification data, such as a licence key or a session token, within a signed installer when the
+file is downloaded. Upon installation, the installer extracts this data, enabling the application to automatically
+authenticate the user without requiring credentials.</p>
+
+<p>For example, to tag a signed installer with a licence key:</p>
+
+<pre>
+  jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
+</pre>
+
+<p>For an executable file, the tag can be found next to the timestamp of the signature, in the last few kilobytes
+of the file.</p>
+
+<p>A common pattern consist in embedding a default template at build time, providing enough space for the data
+to be inserted when the file is downloaded. This allows a simple search-and-replace operation to be performed
+on the download server without needing Jsign to be installed. For example:</p>
+
+<pre>
+  jsign tag --value "&lt;TEMPLATE>XXXXXXXXXXXXXXXXXXXXXXXXXXX&lt;/TEMPLATE>" installer.exe
+</pre>
+
+<p>If the <code>value</code> parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
+<code style="white-space: nowrap">-----BEGIN TAG-----</code> and <code style="white-space: nowrap">-----END TAG-----</code>
+markers.</p>
 
 <h3 id="api">API</h3>
 

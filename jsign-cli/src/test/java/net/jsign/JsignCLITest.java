@@ -620,4 +620,13 @@ public class JsignCLITest {
             assertEquals("message", "Couldn't find xeyes.exe", e.getMessage());
         }
     }
+
+    @Test
+    public void testTag() throws Exception {
+        try {
+            cli.execute("tag", "--value", "userid:1234-ABCD-5678-EFGH", "" + targetFile);
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
+        }
+    }
 }

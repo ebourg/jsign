@@ -24,6 +24,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
 * Supports multiple signatures per file, for all file types
 * Extracts and embeds detached signatures to support [reproducible builds](https://reproducible-builds.org/docs/embedded-signatures/)
+* Tags signed files with unsigned data (for user identification)
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported:
   * PKCS#12, JKS and JCEKS files
@@ -61,6 +62,7 @@ See https://ebourg.github.io/jsign for more information.
 * File list files prefixed with `@` are now supported with the command line tool to sign multiple files
 * Wildcard patterns are now accepted by the command line tool to scan directories for files to sign
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages (with contributions from Scott Cooper)
+* The `tag` command has been added to add unsigned data (such as user identification data) to signed files
 * The `extract` command has been added to extract the signature from a signed file, in DER or PEM format
 * The `remove` command has been added to remove the signature from a signed file
 * The new `--debug`, `--verbose` and `--quiet` parameters control the verbosity of the output messages

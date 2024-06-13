@@ -37,7 +37,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         assertNotNull("null pom", pom);
         assertTrue("pom not found", pom.exists());
 
-        JsignMojo mojo = (JsignMojo) lookupMojo("sign", pom);
+        JsignMojo mojo = lookupMojo("sign", pom);
         assertNotNull("plugin not found", mojo);
 
         MavenProject project = new MavenProject();
@@ -375,6 +375,24 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         } catch (MojoExecutionException e) {
             // expected
             assertEquals("No password or passphrase found for server 'jsign' in settings.xml", e.getMessage());
+        }
+    }
+
+    public void testTag() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        setVariableValueToObject(mojo, "command", "tag");
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+
+        try {
+            mojo.execute();
+        } catch (MojoFailureException e) {
+            // expected
+            Throwable rootCause = e;
+            while (rootCause.getCause() != null) {
+                rootCause = rootCause.getCause();
+            }
+            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", rootCause.getMessage().replace('\\', '/'));
         }
     }
 }

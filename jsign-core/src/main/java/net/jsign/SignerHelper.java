@@ -37,6 +37,7 @@ import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.cert.Certificate;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,12 +47,22 @@ import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.login.LoginException;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.DERUTF8String;
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.util.encoders.Hex;
 
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -84,6 +95,7 @@ class SignerHelper {
     public static final String PARAM_ENCODING = "encoding";
     public static final String PARAM_DETACHED = "detached";
     public static final String PARAM_FORMAT = "format";
+    public static final String PARAM_VALUE = "value";
 
     private final Logger log = Logger.getLogger(getClass().getName());
 
@@ -107,6 +119,7 @@ class SignerHelper {
     private Charset encoding;
     private boolean detached;
     private String format;
+    private String value;
 
     private AuthenticodeSigner signer;
 
@@ -235,6 +248,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper value(String value) {
+        this.value = value;
+        return this;
+    }
+
     public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
@@ -263,6 +281,7 @@ class SignerHelper {
             case PARAM_ENCODING:   return encoding(value);
             case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
             case PARAM_FORMAT:     return format(value);
+            case PARAM_VALUE:      return value(value);
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -286,6 +305,9 @@ class SignerHelper {
                 break;
             case "remove":
                 remove(file);
+                break;
+            case "tag":
+                tag(file);
                 break;
             default:
                 throw new SignerException("Unknown command '" + command + "'");
@@ -549,6 +571,66 @@ class SignerHelper {
             throw new SignerException(e.getMessage());
         } catch (Exception e) {
             throw new SignerException("Couldn't remove the signature from " + file, e);
+        }
+    }
+
+    private void tag(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                throw new SignerException("No signature found in " + file);
+            }
+
+            log.info("Adding tag to " + file);
+            CMSSignedData signature = signatures.get(0);
+            signature = addUnsignedAttribute(signature, AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue());
+            signable.setSignature(signature);
+        } catch (SignerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SignerException("Couldn't modify the signature of " + file, e);
+        }
+    }
+
+    private CMSSignedData addUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid, ASN1Encodable value) {
+        SignerInformationStore store = signature.getSignerInfos();
+        Collection<SignerInformation> signers = store.getSigners();
+        SignerInformation signer = signers.iterator().next();
+
+        AttributeTable attributes = signer.getUnsignedAttributes();
+        if (attributes == null) {
+            attributes = new AttributeTable(new DERSet());
+        }
+        attributes = attributes.add(oid, value);
+
+        signers.remove(signer);
+        signers.add(SignerInformation.replaceUnsignedAttributes(signer, attributes));
+        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signers));
+    }
+
+    private ASN1Encodable getTagValue() throws IOException {
+        if (value == null) {
+            byte[] array = new byte[1024];
+            String begin = "-----BEGIN TAG-----";
+            System.arraycopy(begin.getBytes(), 0, array, 0, begin.length());
+            String end = "-----END TAG-----";
+            System.arraycopy(end.getBytes(), 0, array, array.length - end.length(), end.length());
+            return new DEROctetString(array);
+
+        } else if (value.startsWith("0x")) {
+            byte[] array = Hex.decode(value.substring(2));
+            return new DEROctetString(array);
+
+        } else if (value.startsWith("file:")) {
+            byte[] array = Files.readAllBytes(new File(value.substring("file:".length())).toPath());
+            return new DEROctetString(array);
+
+        } else {
+            return new DERUTF8String(value);
         }
     }
 

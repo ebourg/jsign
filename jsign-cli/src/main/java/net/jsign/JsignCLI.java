@@ -126,6 +126,11 @@ public class JsignCLI {
         options = new Options();
 
         this.options.put("remove", options);
+
+        options = new Options();
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_VALUE).argName("VALUE").desc("        The value of the unsigned attribute").build());
+
+        this.options.put("tag", options);
     }
 
     void execute(String... args) throws SignerException, ParseException {
@@ -180,6 +185,7 @@ public class JsignCLI {
         setOption(PARAM_ENCODING, helper, cmd);
         helper.detached(cmd.hasOption(PARAM_DETACHED));
         setOption(PARAM_FORMAT, helper, cmd);
+        setOption(PARAM_VALUE, helper, cmd);
 
         if (cmd.getArgList().isEmpty()) {
             throw new SignerException("No file specified");

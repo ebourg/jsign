@@ -185,4 +185,8 @@
            detached="true"/>
   </target>
 
+  <target name="tag-unsigned-file">
+    <jsign command="tag" file="wineyes.exe"/>
+  </target>
+
 </project>

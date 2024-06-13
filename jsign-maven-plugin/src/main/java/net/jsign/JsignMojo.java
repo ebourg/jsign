@@ -166,6 +166,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.detached", defaultValue = "false")
     private boolean detached;
 
+    /** The value of the unsigned attribute */
+    @Parameter( property = "jsign.value")
+    private String value;
+
     @Parameter( property = "jsign.verbose", defaultValue = "false" )
     private boolean verbose;
 
@@ -224,6 +228,7 @@ public class JsignMojo extends AbstractMojo {
         helper.replace(replace);
         helper.encoding(encoding);
         helper.detached(detached);
+        helper.value(value);
 
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {
