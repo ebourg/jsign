@@ -209,4 +209,26 @@ public class AzureTrustedSigningServiceTest {
             assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
         }
     }
+
+    @Test
+    public void testSignWithAuthorizationError() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
+                .havingQueryStringEqualTo("api-version=2022-06-15-preview")
+                .respond()
+                .withStatus(404)
+                .withContentType("application/json")
+                .withBody("{\"errorDetail\":{\"code\":\"InternalError\",\"message\":\"Response status code does not indicate success: 403 (Forbidden).\",\"target\":null}}");
+
+        AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
+        SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
+
+        try {
+            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
+            fail("Exception not thrown");
+        } catch (GeneralSecurityException e) {
+            assertEquals("message", "InternalError - Response status code does not indicate success: 403 (Forbidden).", e.getCause().getMessage());
+        }
+    }
 }
