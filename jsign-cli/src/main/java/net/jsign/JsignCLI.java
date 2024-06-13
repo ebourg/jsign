@@ -93,24 +93,24 @@ public class JsignCLI {
                         + "- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault\n"
                         + "- ORACLECLOUD: Oracle Cloud Key Management Service\n"
                         + "- TRUSTEDSIGNING: Azure Trusted Signing\n").build());
-        options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore.").build());
-        options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS).argName("PASSWORD").desc("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password.").build());
-        options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYFILE).argName("FILE").desc("The file containing the private key. PEM and PVK files are supported. ").type(File.class).build());
-        options.addOption(Option.builder("c").hasArg().longOpt(PARAM_CERTFILE).argName("FILE").desc("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files).").type(File.class).build());
+        options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS).argName("PASSWORD").desc("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYFILE).argName("FILE").desc("The file containing the private key. PEM and PVK files are supported").type(File.class).build());
+        options.addOption(Option.builder("c").hasArg().longOpt(PARAM_CERTFILE).argName("FILE").desc("The file containing the PKCS#7 certificate chain\n(.p7b or .spc files)").type(File.class).build());
         options.addOption(Option.builder("d").hasArg().longOpt(PARAM_ALG).argName("ALGORITHM").desc("The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)").build());
         options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority. Several URLs separated by a comma can be specified to fallback on alternative servers").build());
-        options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority.").build());
+        options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority").build());
         options.addOption(Option.builder("m").hasArg().longOpt(PARAM_TSMODE).argName("MODE").desc("The timestamping mode (RFC3161 or Authenticode)").build());
         options.addOption(Option.builder("r").hasArg().longOpt(PARAM_TSRETRIES).argName("NUMBER").desc("The number of retries for timestamping").build());
         options.addOption(Option.builder("w").hasArg().longOpt(PARAM_TSRETRY_WAIT).argName("SECONDS").desc("The number of seconds to wait between timestamping retries").build());
         options.addOption(Option.builder("n").hasArg().longOpt(PARAM_NAME).argName("NAME").desc("The name of the application").build());
         options.addOption(Option.builder("u").hasArg().longOpt(PARAM_URL).argName("URL").desc("The URL of the application").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_URL).argName("URL").desc("The URL of the HTTP proxy").build());
-        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If an user is needed.").build());
-        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If an user is needed.").build());
-        options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if previous signatures should be replaced.").build());
-        options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one).").build());
-        options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused.").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If an user is needed").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If an user is needed").build());
+        options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous signatures should be replaced").build());
+        options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one)").build());
+        options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused").build());
         options.addOption(Option.builder().longOpt("quiet").desc("Print only error messages").build());
         options.addOption(Option.builder().longOpt("verbose").desc("Print more information").build());
         options.addOption(Option.builder().longOpt("debug").desc("Print debugging information").build());
@@ -248,7 +248,7 @@ public class JsignCLI {
     }
 
     private void printHelp() {
-        String header = "Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF).\n\n";
+        String header = "Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)\n\n";
         String footer ="\n" +
                 "Examples:\n\n" +
                 "   Signing with a PKCS#12 keystore and timestamping:\n\n" +
