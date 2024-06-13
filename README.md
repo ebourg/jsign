@@ -33,7 +33,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [AWS KMS](https://aws.amazon.com/kms/)
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
     * [Azure Trusted Signing](https://learn.microsoft.com/en-us/azure/trusted-signing/)
-    * [DigiCert ONE](https://one.digicert.com)
+    * [DigiCert ONE](https://www.digicert.com/digicert-one) / [DigiCert KeyLocker](https://docs.digicert.com/en/digicert-keylocker.html)
     * [GaraSign](https://garantir.io/garasign/)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)

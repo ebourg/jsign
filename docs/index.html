@@ -66,7 +66,7 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
           <li><a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a></li>
           <li><a href="https://learn.microsoft.com/en-us/azure/trusted-signing/">Azure Trusted Signing</a></li>
-          <li><a href="https://one.digicert.com">DigiCert ONE</a></li>
+          <li><a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> / <a href="https://docs.digicert.com/en/digicert-keylocker.html">DigiCert KeyLocker</a></li>
           <li><a href="https://garantir.io/garasign/">GaraSign</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
@@ -756,9 +756,9 @@ with this service.</p>
 signing. When signing multiple files it's recommended to invoke Jsign only once with the list of files to avoid doubling
 the quota usage.</p>
 
-<h4 id="example-digicertone">Signing with DigiCert ONE</h4>
+<h4 id="example-digicertone">Signing with DigiCert ONE / DigiCert KeyLocker</h4>
 
-<p>Certificates and keys stored in the <a href="https://one.digicert.com">DigiCert ONE</a> Secure Software Manager
+<p>Certificates and keys stored in the <a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> Secure Software Manager
 can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
 a client certificate for the authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com)
 but a different host can be specified with the <code>--keystore</code> parameter.</p>
