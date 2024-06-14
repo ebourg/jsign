@@ -62,6 +62,7 @@ See https://ebourg.github.io/jsign for more information.
 * File list files prefixed with `@` are now supported with the command line tool to sign multiple files
 * Wildcard patterns are now accepted by the command line tool to scan directories for files to sign
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages (with contributions from Scott Cooper)
+* The `timestamp` command has been added to timestamp the signatures of a file
 * The `tag` command has been added to add unsigned data (such as user identification data) to signed files
 * The `extract` command has been added to extract the signature from a signed file, in DER or PEM format
 * The `remove` command has been added to remove the signature from a signed file

@@ -26,6 +26,7 @@ import java.util.zip.CRC32;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.junit.Assume;
@@ -39,6 +40,7 @@ import net.jsign.jca.GoogleCloud;
 import net.jsign.jca.OracleCloudCredentials;
 import net.jsign.jca.PIVCardTest;
 import net.jsign.pe.PEFile;
+import net.jsign.timestamp.TimestampingMode;
 
 import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
@@ -756,6 +758,107 @@ public class SignerHelperTest {
 
         SignerHelper signer = new SignerHelper("parameter");
         signer.command("tag");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTimestamp() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-then-timestamped.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .tsmode(TimestampingMode.AUTHENTICODE.name());
+
+        signer.execute(targetFile);
+
+        signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+            SignatureAssert.assertNotTimestamped("Unexpected timestamp", signable.getSignatures().get(1));
+            SignatureAssert.assertNotTimestamped("Unexpected timestamp", signable.getSignatures().get(2));
+        }
+
+        signer.command("timestamp");
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(1));
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(2));
+        }
+    }
+
+    @Test
+    public void testReplaceTimestamp() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamp-replaced.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .tsaurl("http://timestamp.sectigo.com")
+                .tsmode(TimestampingMode.AUTHENTICODE.name());
+
+        signer.execute(targetFile);
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+        }
+
+        signer = new SignerHelper("parameter");
+        signer.command("timestamp");
+        signer.tsaurl("http://timestamp.sectigo.com");
+        signer.tsmode(TimestampingMode.AUTHENTICODE.name());
+        signer.replace(true);
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            CMSSignedData signature = signable.getSignatures().get(0);
+            SignatureAssert.assertTimestamped("Invalid timestamp", signature);
+            SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
+            assertNull("old timestamp not removed", signerInformation.getUnsignedAttributes().get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID));
+            assertNotNull("missing new timestamp", signerInformation.getUnsignedAttributes().get(CMSAttributes.counterSignature));
+        }
+    }
+
+    @Test
+    public void testTimestampUnsignedFile() {
+        File file = new File("target/test-classes/wineyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("timestamp");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTimestampMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("timestamp");
 
         try {
             signer.execute(file);

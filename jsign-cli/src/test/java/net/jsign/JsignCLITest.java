@@ -629,4 +629,13 @@ public class JsignCLITest {
             assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
         }
     }
+
+    @Test
+    public void testTimestamp() throws Exception {
+        try {
+            cli.execute("timestamp", "" + targetFile);
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
+        }
+    }
 }

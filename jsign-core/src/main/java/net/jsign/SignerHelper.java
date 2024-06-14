@@ -36,9 +36,11 @@ import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,14 +57,19 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.bouncycastle.util.encoders.Hex;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -102,7 +109,9 @@ class SignerHelper {
     /** The name used to refer to a configuration parameter */
     private final String parameterName;
 
+    /** The command to execute */
     private String command = "sign";
+
     private final KeyStoreBuilder ksparams;
     private String alias;
     private String tsaurl;
@@ -299,6 +308,9 @@ class SignerHelper {
         switch (command) {
             case "sign":
                 sign(file);
+                break;
+            case "timestamp":
+                timestamp(file);
                 break;
             case "extract":
                 extract(file);
@@ -631,6 +643,71 @@ class SignerHelper {
 
         } else {
             return new DERUTF8String(value);
+        }
+    }
+
+    private void timestamp(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try {
+            initializeProxy(proxyUrl, proxyUser, proxyPass);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't initialize proxy", e);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            if (signable.getSignatures().isEmpty()) {
+                throw new SignerException("No signature found in " + file);
+            }
+
+            Timestamper timestamper = Timestamper.create(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE);
+            timestamper.setRetries(tsretries);
+            timestamper.setRetryWait(tsretrywait);
+            if (tsaurl != null) {
+                timestamper.setURLs(tsaurl.split(","));
+            }
+            DigestAlgorithm digestAlgorithm = alg != null ? DigestAlgorithm.of(alg) : DigestAlgorithm.getDefault();
+
+            List<CMSSignedData> signatures = new ArrayList<>();
+            for (CMSSignedData signature : signable.getSignatures()) {
+                SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
+                SignerId signerId = signerInformation.getSID();
+                X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
+
+                String digestAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(signerInformation.getDigestAlgorithmID()); 
+                String keyAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(new ASN1ObjectIdentifier(signerInformation.getEncryptionAlgOID()));
+                String name = digestAlgorithmName + "/" + keyAlgorithmName + " signature from '" + certificate.getSubject() + "'";
+
+                if (SignatureUtils.isTimestamped(signature) && !replace) {
+                    log.fine(name + " already timestamped");
+                    signatures.add(signature);
+                    continue;
+                }
+
+                boolean expired = certificate.getNotAfter().before(new Date());
+                if (expired) {
+                    log.fine(name + " is expired, skipping");
+                    signatures.add(signature);
+                    continue;
+                }
+
+                log.info("Adding timestamp to " + name);
+                signature = SignatureUtils.removeTimestamp(signature);
+                signature = timestamper.timestamp(digestAlgorithm, signature);
+
+                signatures.add(signature);
+            }
+
+            CMSSignedData signature = signatures.get(0);
+            if (signatures.size() > 1) {
+                Collection<CMSSignedData> nestedSignatures = signatures.subList(1, signatures.size());
+                signature = SignatureUtils.addNestedSignature(signature, true, nestedSignatures.toArray(new CMSSignedData[0]));
+            }
+            signable.setSignature(signature);
+        } catch (IOException | CMSException e) {
+            throw new SignerException("Couldn't timestamp " + file, e);
         }
     }
 

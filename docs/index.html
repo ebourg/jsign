@@ -521,7 +521,7 @@ are the same as those described above for the Ant task.</p>
   files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics
   365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
   
-  commands: sign (default), extract, remove, tag
+  commands: sign (default), timestamp, extract, remove, tag
 
   sign:
   -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file,
@@ -575,6 +575,15 @@ are the same as those described above for the Ant task.</p>
      --verbose               Print more information
      --debug                 Print debugging information
   -h,--help                  Print the help
+
+  timestamp:
+  -t,--tsaurl &lt;URL>          The URL of the timestamping authority
+  -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
+  -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
+  -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
+  -n,--name &lt;NAME>           The name of the application
+  -u,--url &lt;URL>             The URL of the application
+     --replace               Tells if the previous timestamps should be replaced
 
   extract:
      --format &lt;FORMAT>       The output format of the signature (DER or PEM)

@@ -122,6 +122,17 @@ public class JsignCLI {
         this.options.put("sign", options);
 
         options = new Options();
+        options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority").build());
+        options.addOption(Option.builder("m").hasArg().longOpt(PARAM_TSMODE).argName("MODE").desc("The timestamping mode (RFC3161 or Authenticode)").build());
+        options.addOption(Option.builder("r").hasArg().longOpt(PARAM_TSRETRIES).argName("NUMBER").desc("The number of retries for timestamping").build());
+        options.addOption(Option.builder("w").hasArg().longOpt(PARAM_TSRETRY_WAIT).argName("SECONDS").desc("The number of seconds to wait between timestamping retries").build());
+        options.addOption(Option.builder("n").hasArg().longOpt(PARAM_NAME).argName("NAME").desc("The name of the application").build());
+        options.addOption(Option.builder("u").hasArg().longOpt(PARAM_URL).argName("URL").desc("The URL of the application").build());
+        options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous timestamps should be replaced").build());
+
+        this.options.put("timestamp", options);
+
+        options = new Options();
         options.addOption(Option.builder().hasArg().longOpt(PARAM_FORMAT).argName("FORMAT").desc("      The output format of the signature (DER or PEM)").build());
 
         this.options.put("extract", options);
