@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import org.apache.commons.io.HexDump;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -48,6 +51,8 @@ import net.jsign.asn1.authenticode.AuthenticodeSignedDataGenerator;
  * @since 1.3
  */
 public abstract class Timestamper {
+
+    protected Logger log = Logger.getLogger(getClass().getName());
 
     /** The URL of the current timestamping service */
     protected URL tsaurl;
@@ -127,13 +132,19 @@ public abstract class Timestamper {
             if (count > 0) {
                 // pause before the next attempt
                 try {
-                    Thread.sleep(retryWait * 1000L);
+                    long pause = retryWait * 1000L;
+                    log.fine("Timestamping failed, retrying in " + pause / 1000 + " seconds");
+                    Thread.sleep(pause);
                 } catch (InterruptedException ie) {
                 }
             }
             try {
                 tsaurl = tsaurls.get(count % tsaurls.size());
+                log.fine("Timestamping with " + tsaurl);
+                long t0 = System.currentTimeMillis();
                 token = timestamp(algo, getEncryptedDigest(sigData));
+                long t1 = System.currentTimeMillis();
+                log.fine("Timestamping completed in " + (t1 - t0) + " ms");
                 break;
             } catch (TimestampingException | IOException e) {
                 exception.addSuppressed(e);
@@ -149,6 +160,8 @@ public abstract class Timestamper {
     }
 
     byte[] post(URL url, byte[] data, Map<String, String> headers) throws IOException {
+        log.finest("POST " + url);
+
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(10000);
@@ -162,14 +175,40 @@ public abstract class Timestamper {
             conn.setRequestProperty(header.getKey(), header.getValue());
         }
 
+        if (log.isLoggable(Level.FINEST)) {
+            for (String header : conn.getRequestProperties().keySet()) {
+                log.finest(header + ": " + conn.getRequestProperty(header));
+            }
+            log("Content", data);
+        }
+
         conn.getOutputStream().write(data);
         conn.getOutputStream().flush();
 
+        for (String header : conn.getHeaderFields().keySet()) {
+            log.finest((header != null ? header + ": " : "") + conn.getHeaderField(header));
+        }
         if (conn.getResponseCode() >= 400) {
+            byte[] error = conn.getErrorStream() != null ? IOUtils.toByteArray(conn.getErrorStream()) : new byte[0];
+            if (conn.getErrorStream() != null) {
+                log("Error", error);
+            }
             throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());
         }
 
-        return IOUtils.toByteArray(conn.getInputStream());
+        byte[] content = IOUtils.toByteArray(conn.getInputStream());
+        log("Content", content);
+        
+        return content;
+    }
+
+    private void log(String description, byte[] data) throws IOException {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest(description + ":");
+            StringBuffer out = new StringBuffer();
+            HexDump.dump(data, 0, out, 0, data.length);
+            log.finest(out.toString());
+        }
     }
 
     /**
