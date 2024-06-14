@@ -16,11 +16,10 @@
 
 package net.jsign.timestamp;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -49,29 +48,13 @@ public class AuthenticodeTimestamper extends Timestamper {
         AuthenticodeTimeStampRequest timestampRequest = new AuthenticodeTimeStampRequest(encryptedDigest);
 
         byte[] request = Base64.encode(timestampRequest.getEncoded("DER"));
-
-        HttpURLConnection conn = (HttpURLConnection) tsaurl.openConnection();
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(10000);
-        conn.setDoOutput(true);
-        conn.setDoInput(true);
-        conn.setUseCaches(false);
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-type", "application/octet-stream");
-        conn.setRequestProperty("Content-length", String.valueOf(request.length));
-        conn.setRequestProperty("Accept", "application/octet-stream");
-        conn.setRequestProperty("User-Agent", "Transport");
-
-        conn.getOutputStream().write(request);
-        conn.getOutputStream().flush();
-
-        if (conn.getResponseCode() >= 400) {
-            throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());
-        }
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/octet-stream");
+        headers.put("Accept", "application/octet-stream");
+        byte[] response = post(tsaurl, request, headers);
 
         try {
-            byte[] response = Base64.decode(toBytes(conn.getInputStream()));
-            return new CMSSignedData(response);
+            return new CMSSignedData(Base64.decode(response));
         } catch (Exception e) {
             throw new TimestampingException("Unable to complete the timestamping", e);
         }
@@ -86,17 +69,5 @@ public class AuthenticodeTimestamper extends Timestamper {
     protected Attribute getCounterSignature(CMSSignedData token) {
         SignerInformation timestampSignerInformation = token.getSignerInfos().getSigners().iterator().next();
         return new Attribute(CMSAttributes.counterSignature, new DERSet(timestampSignerInformation.toASN1Structure()));
-    }
-
-    private byte[] toBytes(InputStream in) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-
-        byte[] buffer = new byte[4096];
-        int n;
-        while ((n = in.read(buffer)) != -1) {
-            bout.write(buffer, 0, n);
-        }
-        
-        return bout.toByteArray();
     }
 }

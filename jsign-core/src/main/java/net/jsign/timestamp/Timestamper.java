@@ -17,12 +17,15 @@
 package net.jsign.timestamp;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -142,6 +145,30 @@ public abstract class Timestamper {
         }
         
         return modifySignedData(sigData, getCounterSignature(token), getExtraCertificates(token));
+    }
+
+    byte[] post(URL url, byte[] data, Map<String, String> headers) throws IOException {
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(10000);
+        conn.setDoOutput(true);
+        conn.setDoInput(true);
+        conn.setUseCaches(false);
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-length", String.valueOf(data.length));
+        conn.setRequestProperty("User-Agent", "Transport");
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            conn.setRequestProperty(header.getKey(), header.getValue());
+        }
+
+        conn.getOutputStream().write(data);
+        conn.getOutputStream().flush();
+
+        if (conn.getResponseCode() >= 400) {
+            throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());
+        }
+
+        return IOUtils.toByteArray(conn.getInputStream());
     }
 
     /**
