@@ -54,18 +54,17 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.0 (in development)
 
-* The Azure Trusted Signing service has been integrated
-* The Oracle Cloud signing service has been integrated
-* The GaraSign signing service has been integrated
+* New signing services: Azure Trusted Signing, Oracle Cloud and GaraSign
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
+* Commands have been added:
+  * `timestamp`: timestamps the signatures of a file
+  * `tag`: adds unsigned data (such as user identification data) to signed files
+  * `extract`: extracts the signature from a signed file, in DER or PEM format
+  * `remove`: removes the signature from a signed file
 * The intermediate certificates are downloaded if missing from the keystore or the certificate chain file
 * File list files prefixed with `@` are now supported with the command line tool to sign multiple files
 * Wildcard patterns are now accepted by the command line tool to scan directories for files to sign
 * Jsign now checks if the certificate subject matches the app manifest publisher before signing APPX/MSIX packages (with contributions from Scott Cooper)
-* The `timestamp` command has been added to timestamp the signatures of a file
-* The `tag` command has been added to add unsigned data (such as user identification data) to signed files
-* The `extract` command has been added to extract the signature from a signed file, in DER or PEM format
-* The `remove` command has been added to remove the signature from a signed file
 * The new `--debug`, `--verbose` and `--quiet` parameters control the verbosity of the output messages
 * The JCA provider now works with [apksigner](https://developer.android.com/tools/apksigner) for signing Android applications
 * RSA 4096 keys are supported with the `PIV` storetype (for Yubikeys with firmware version 5.7 or higher)
@@ -76,13 +75,15 @@ See https://ebourg.github.io/jsign for more information.
 * The log4j configuration warning displayed when signing a MSI file has been fixed (contributed by Pascal Davoust)
 * The value of the `storetype` parameter is now case insensitive
 * The Azure Key Vault account no longer needs the permission to list the keys when signing with jarsigner
-* The DigiCert ONE host can now be specified with the --keystore parameter
+* The DigiCert ONE host can now be specified with the `keystore` parameter
 * On Windows the YubiKey library path is automatically added to the PATH of the command line tool
 * Signing more than one file with the `YUBIKEY` storetype no longer triggers a `CKR_USER_NOT_LOGGED_IN` error
 * API changes:
   * The keystore builder and the JCA provider are now in a separate `jsign-crypto` module
   * The PEFile class has been refactored to keep only the methods related to signing
   * The java.util.logging API is now used to log debug messages under the `net.jsign` logger
+  * `Signable` implementations are now discovered dynamically using the ServiceLoader mechanism
+  * `Signable.createContentInfo()` has been replaced with `Signable.createSignedContent()`
 * Switched to BouncyCastle LTS 2.73.6
 
 #### Version 6.0 (2024-01-17)
