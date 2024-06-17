@@ -22,6 +22,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
 
+import static net.jsign.ChannelUtils.*;
+
 /**
  * Cabinet File Header structure (CFHEADER):
  *
@@ -71,6 +73,10 @@ class CFHeader {
     public short cbCFFolder;    // u1
     public short cbCFData;      // u1
     public byte[] abReserved;
+    public byte[] szCabinetPrev;
+    public byte[] szDiskPrev;
+    public byte[] szCabinetNext;
+    public byte[] szDiskNext;
 
     /**
      * FLAG_PREV_CABINET is set if this cabinet file is not the first in a set
@@ -116,6 +122,10 @@ class CFHeader {
         this.cbCFFolder = header.cbCFFolder;
         this.cbCFData = header.cbCFData;
         this.abReserved = header.abReserved != null ? header.abReserved.clone() : null;
+        this.szCabinetPrev = header.szCabinetPrev;
+        this.szDiskPrev = header.szDiskPrev;
+        this.szCabinetNext = header.szCabinetNext;
+        this.szDiskNext = header.szDiskNext;
     }
 
     public void read(SeekableByteChannel channel) throws IOException {
@@ -159,6 +169,16 @@ class CFHeader {
                 channel.read(ByteBuffer.wrap(this.abReserved));
             }
         }
+
+        if (hasPreviousCabinet()) {
+            szCabinetPrev = readNullTerminatedString(channel);
+            szDiskPrev = readNullTerminatedString(channel);
+        }
+
+        if (hasNextCabinet()) {
+            szCabinetNext = readNullTerminatedString(channel);
+            szDiskNext = readNullTerminatedString(channel);
+        }
     }
 
     public void write(ByteBuffer buffer) {
@@ -183,14 +203,30 @@ class CFHeader {
                 buffer.put(this.abReserved);
             }
         }
+        if (hasPreviousCabinet()) {
+            buffer.put(szCabinetPrev);
+            buffer.put(szDiskPrev);
+        }
+        if (hasNextCabinet()) {
+            buffer.put(szCabinetNext);
+            buffer.put(szDiskNext);
+        }
     }
 
     public int getHeaderSize() {
+        int size = BASE_SIZE;
         if (isReservePresent()) {
-            return BASE_SIZE + 4 + this.cbCFHeader;
-        } else {
-            return BASE_SIZE;
+            size += 4 + this.cbCFHeader;
         }
+        if (hasPreviousCabinet()) {
+            size += szCabinetPrev.length;
+            size += szDiskPrev.length;
+        }
+        if (hasNextCabinet()) {
+            size += szCabinetNext.length;
+            size += szDiskNext.length;
+        }
+        return size;
     }
 
     public void headerDigestUpdate(MessageDigest digest) {
@@ -215,6 +251,16 @@ class CFHeader {
 
         if (this.abReserved != null) {
             digest.update(abReserved, 0, 2); // 0x0000
+        }
+
+        if (hasPreviousCabinet()) {
+            digest.update(szCabinetPrev);
+            digest.update(szDiskPrev);
+        }
+
+        if (hasNextCabinet()) {
+            digest.update(szCabinetNext);
+            digest.update(szDiskNext);
         }
     }
 

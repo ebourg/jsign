@@ -153,16 +153,6 @@ public class MSCabinetFile implements Signable {
 
         channel.position(header.getHeaderSize());
 
-        if (header.hasPreviousCabinet()) {
-            digest.update(readNullTerminatedString(channel)); // szCabinetPrev
-            digest.update(readNullTerminatedString(channel)); // szDiskPrev
-        }
-
-        if (header.hasNextCabinet()) {
-            digest.update(readNullTerminatedString(channel)); // szCabinetNext
-            digest.update(readNullTerminatedString(channel)); // szDiskNext
-        }
-
         for (int i = 0; i < header.cFolders; i++) {
             CFFolder folder = CFFolder.read(channel);
             folder.coffCabStart += shift;
@@ -221,7 +211,7 @@ public class MSCabinetFile implements Signable {
         }
 
         if (shift > 0) {
-            insert(channel, CFHeader.BASE_SIZE, new byte[shift]);
+            insert(channel, 0, new byte[shift]);
             header.cbCabinet += shift;
             header.coffFiles += shift;
         }
@@ -238,17 +228,6 @@ public class MSCabinetFile implements Signable {
         header.write(buffer);
         buffer.flip();
         channel.write(buffer);
-
-        // skip the previous/next cabinet names
-        if (header.hasPreviousCabinet()) {
-            readNullTerminatedString(channel); // szCabinetPrev
-            readNullTerminatedString(channel); // szDiskPrev
-        }
-
-        if (header.hasNextCabinet()) {
-            readNullTerminatedString(channel); // szCabinetNext
-            readNullTerminatedString(channel); // szDiskNext
-        }
 
         // shift the start offset of the CFFOLDER structures
         for (int i = 0; i < header.cFolders; i++) {
