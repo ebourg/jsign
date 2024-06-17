@@ -28,6 +28,7 @@ import org.junit.Test;
 import net.jsign.mscab.MSCabinetFile;
 
 import static net.jsign.DigestAlgorithm.*;
+import static org.junit.Assert.*;
 
 public class MSCabinetSignerTest {
 
@@ -215,6 +216,32 @@ public class MSCabinetSignerTest {
 
         try (MSCabinetFile file = new MSCabinetFile(new SeekableInMemoryByteChannel(data))) {
             SignatureAssert.assertSigned(file, SHA512);
+        }
+    }
+
+    @Test
+    public void testRemoveSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample1.cab");
+        File targetFile = new File("target/test-classes/mscab/sample1-unsigned.cab");
+
+        targetFile.getParentFile().mkdirs();
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false);
+
+            signer.sign(cabFile);
+
+            SignatureAssert.assertSigned(cabFile, SHA256);
+
+            cabFile.setSignature(null);
+
+            SignatureAssert.assertNotSigned(cabFile);
+
+            assertEquals("file size", sourceFile.length(), targetFile.length());
+            assertEquals("CRC", FileUtils.checksumCRC32(sourceFile), FileUtils.checksumCRC32(targetFile));
         }
     }
 }

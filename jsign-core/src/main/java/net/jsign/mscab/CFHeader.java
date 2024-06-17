@@ -249,7 +249,7 @@ class CFHeader {
         buffer.flip();
         digest.update(buffer);
 
-        if (this.abReserved != null) {
+        if (this.abReserved != null && this.abReserved.length > 0) {
             digest.update(abReserved, 0, 2); // 0x0000
         }
 
@@ -277,10 +277,30 @@ class CFHeader {
     }
 
     public boolean hasSignature() {
-        return this.abReserved != null;
+        return this.abReserved != null && this.abReserved.length > 0;
     }
 
     public CABSignature getSignature() {
-        return abReserved != null ? new CABSignature(abReserved) : null;
+        return hasSignature() ? new CABSignature(abReserved) : null;
+    }
+
+    public void setReserve(byte[] reserve) {
+        int previousSize = getHeaderSize();
+
+        this.abReserved = reserve;
+        this.cbCFHeader = reserve.length;
+
+        // update the reserve flag
+        if (cbCFHeader != 0 || cbCFFolder != 0 || cbCFData != 0) {
+            this.flags |= FLAG_RESERVE_PRESENT;
+        } else {
+            this.flags &= ~FLAG_RESERVE_PRESENT;
+        }
+
+        // adjust the size of the cabinet and the offset of the first file
+        int currentSize = getHeaderSize();
+        int shift = currentSize - previousSize;
+        this.cbCabinet += shift;
+        this.coffFiles += shift;
     }
 }

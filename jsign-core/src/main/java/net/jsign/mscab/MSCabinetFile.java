@@ -132,24 +132,10 @@ public class MSCabinetFile implements Signable {
         MessageDigest digest = digestAlgorithm.getMessageDigest();
 
         CFHeader modifiedHeader = new CFHeader(header);
-        int shift = 0;
-        if (!header.isReservePresent()) {
-            shift = 4;
-            modifiedHeader.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        }
-
-        if (header.cbCFHeader == 0) {
-            modifiedHeader.cbCFHeader = CABSignature.SIZE;
-            shift += CABSignature.SIZE;
-            modifiedHeader.cbCabinet += shift;
-            modifiedHeader.coffFiles += shift;
-
-            CABSignature cabsig = new CABSignature();
-            cabsig.offset = (int) modifiedHeader.cbCabinet;
-
-            modifiedHeader.abReserved = cabsig.array();
-        }
+        modifiedHeader.setReserve(new byte[CABSignature.SIZE]);
         modifiedHeader.headerDigestUpdate(digest);
+
+        int shift = modifiedHeader.getHeaderSize() - header.getHeaderSize();
 
         channel.position(header.getHeaderSize());
 
@@ -197,30 +183,28 @@ public class MSCabinetFile implements Signable {
 
         byte[] content = signature != null ? signature.toASN1Structure().getEncoded("DER") : new byte[0];
 
-        int shift = 0;
+        int previousSize = header.getHeaderSize();
 
-        if (!header.isReservePresent()) {
-            shift = 4;
-            header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        if (content.length > 0) {
+            header.setReserve(new byte[CABSignature.SIZE]);
+
+            CABSignature cabsig = new CABSignature();
+            cabsig.offset = header.cbCabinet;
+            cabsig.length = content.length;
+
+            header.setReserve(cabsig.array());
+        } else {
+            header.setReserve(new byte[0]);
         }
 
-        if (header.cbCFHeader == 0) {
-            shift += CABSignature.SIZE;
-            header.cbCFHeader = CABSignature.SIZE;
-            header.abReserved = new byte[CABSignature.SIZE];
-        }
+        int currentSize = header.getHeaderSize();
+        int shift = currentSize - previousSize;
 
-        if (shift > 0) {
-            insert(channel, 0, new byte[shift]);
-            header.cbCabinet += shift;
-            header.coffFiles += shift;
+        if (shift >= 0) {
+            insert(channel, previousSize, new byte[shift]);
+        } else {
+            delete(channel, previousSize + shift, -shift);
         }
-
-        CABSignature cabsig = new CABSignature(header.abReserved);
-        cabsig.header = CABSignature.HEADER;
-        cabsig.offset = header.cbCabinet;
-        cabsig.length = content.length;
-        header.abReserved = cabsig.array();
 
         // rewrite the header
         channel.position(0);
@@ -240,7 +224,7 @@ public class MSCabinetFile implements Signable {
         }
 
         // write the signature
-        channel.position(cabsig.offset);
+        channel.position(header.cbCabinet);
         channel.write(ByteBuffer.wrap(content));
 
         // shrink the file if the new signature is shorter
