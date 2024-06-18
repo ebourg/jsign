@@ -24,7 +24,7 @@ import java.util.logging.LogRecord;
 /**
  * Log handler for the command line tool.
  *
- * @since 6.1
+ * @since 7.0
  */
 class StdOutLogHandler extends Handler {
 

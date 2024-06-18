@@ -28,7 +28,7 @@ import net.jsign.pe.PEFile;
 /**
  * {@link SignableProvider} for Portable Executable files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices
 public class PESignableProvider implements SignableProvider {

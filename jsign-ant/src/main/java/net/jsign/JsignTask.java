@@ -99,6 +99,13 @@ public class JsignTask extends Task {
     /** Tells if a detached signature should be generated or reused. */
     private boolean detached;
 
+    /** The value of the unsigned attribute */
+    private String value;
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
+
     public void setFile(File file) {
         this.file = file;
     }
@@ -175,6 +182,10 @@ public class JsignTask extends Task {
         this.detached = detached;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -206,6 +217,7 @@ public class JsignTask extends Task {
             helper.replace(replace);
             helper.encoding(encoding);
             helper.detached(detached);
+            helper.value(value);
 
             if (fileset != null) {
                 for(String fileElement : fileset.getDirectoryScanner().getIncludedFiles()) {

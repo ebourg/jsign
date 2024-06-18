@@ -72,14 +72,29 @@ public class DigiCertOneSigningService implements SigningService {
     /**
      * Creates a new DigiCert ONE signing service.
      *
+     * @param endpoint  the URL of the DigiCert ONE host
+     * @param apiKey    the DigiCert ONE API access token
+     * @param keystore  the keystore holding the client certificate to authenticate with the server
+     * @param storepass the password of the keystore
+     */
+    public DigiCertOneSigningService(String endpoint, String apiKey, File keystore, String storepass) {
+        this(endpoint, apiKey, (X509KeyManager) getKeyManager(keystore, storepass));
+    }
+
+    /**
+     * Creates a new DigiCert ONE signing service.
+     *
      * @param apiKey     the DigiCert ONE API access token
      * @param keyManager the key manager to authenticate the client with the server
      */
     public DigiCertOneSigningService(String apiKey, X509KeyManager keyManager) {
-        this("https://clientauth.one.digicert.com", apiKey, keyManager);
+        this(null, apiKey, keyManager);
     }
 
     DigiCertOneSigningService(String endpoint, String apiKey, X509KeyManager keyManager) {
+        if (endpoint == null) {
+            endpoint = "https://clientauth.one.digicert.com";
+        }
         this.client = new RESTClient(endpoint + "/signingmanager/api/v1/")
                 .authentication(conn -> {
                     conn.setRequestProperty("x-api-key", apiKey);
@@ -95,7 +110,7 @@ public class DigiCertOneSigningService implements SigningService {
                 })
                 .errorHandler(response -> {
                     Map error = (Map) response.get("error");
-                    return error.get("status") + ": " + error.get("message");
+                    return error != null ? error.get("status") + ": " + error.get("message") : JsonWriter.format(response);
                 });
     }
 

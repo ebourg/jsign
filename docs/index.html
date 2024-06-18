@@ -66,7 +66,7 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
           <li><a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a></li>
           <li><a href="https://learn.microsoft.com/en-us/azure/trusted-signing/">Azure Trusted Signing</a></li>
-          <li><a href="https://one.digicert.com">DigiCert ONE</a></li>
+          <li><a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> / <a href="https://docs.digicert.com/en/digicert-keylocker.html">DigiCert KeyLocker</a></li>
           <li><a href="https://garantir.io/garasign/">GaraSign</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
@@ -136,6 +136,16 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
  &lt;/jsign>
 </pre>
 
+<br>
+
+<p>The <code>sign</code> command is used by default, but other commands can be specified with the <code>command</code>
+attribute. For example for <a href="#tagging">tagging</a> a signed file with user identification data without
+invalidating the signature:</p>
+
+<pre class="prettyprint lang-xml">
+ &lt;jsign command="tag" value="userid:1234-ABCD-5678-EFGH" file="application.exe"/>
+</pre>
+
 <br><br>
 
 <h4 id="attributes" class="mobile-only">Attributes</h4>
@@ -188,11 +198,17 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
     <tr>
       <td class="attribute">storetype</td>
       <td class="description">
-        The type of the keystore:
+        The type of the keystore.
+
+        <p>File based:</p>
         <ul>
           <li><code>JKS</code>: Java keystore (<code>.jks</code> files)</li>
           <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
           <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
+        </ul>
+
+        <p>Hardware tokens:</p>
+        <ul>
           <li><code>PKCS11</code>: PKCS#11 hardware token</li>
           <li><code>ETOKEN</code>: SafeNet eToken</li>
           <li><code>NITROKEY</code>: Nitrokey HSM</li>
@@ -200,6 +216,10 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
           <li><code>OPENSC</code>: Smart card</li>
           <li><code>PIV</code>: PIV card</li>
           <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
+        </ul>
+
+        <p>Cloud key management systems:</p>
+        <ul>
           <li><code>AWS</code>: AWS Key Management Service</li>
           <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
           <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
@@ -300,6 +320,21 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
         </ul>
       </td>
       <td class="required">No; defaults to "false"</td>
+    </tr>
+    <tr>
+      <td class="attribute">value</td>
+      <td class="description">
+          The value of the unsigned attribute when tagging a file. The value is either:
+          <ul>
+            <li>a string (such as a user id, a license key or a JWT token)</li>
+            <li>the name of the file to include, prefixed with <code>file:</code>
+            <li>a binary value in hexadecimal format, prefixed with <code>0x</code>
+          </ul>
+          <p>If no value is specified a default 1KB template is used, filled with zeros and delimited by
+          <code style="white-space: nowrap">-----BEGIN TAG-----</code> and
+          <code style="white-space: nowrap">-----END TAG-----</code> markers.</p>
+      </td>
+      <td class="required">No; defaults to 1KB template</td>
     </tr>
   </tbody>
 </table>
@@ -480,18 +515,24 @@ are the same as those described above for the Ant task.</p>
 <p>The parameters expected are the same as those used by the Ant task:</p>
 
 <pre>
-  usage: jsign [OPTIONS] [FILE] [PATTERN] [@FILELIST]...
+  usage: jsign [COMMAND] [OPTIONS] [FILE] [PATTERN] [@FILELIST]...
+
   Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
   files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics
-  365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF).
+  365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
   
+  commands: sign (default), timestamp, extract, remove, tag
+
+  sign:
   -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file,
                              the cloud keystore name, or the card/token name
      --storepass &lt;PASSWORD>  The password to open the keystore
-     --storetype &lt;TYPE>      The type of the keystore:
+     --storetype &lt;TYPE>      The type of the keystore
+                             File based:
                              - JKS: Java keystore (.jks files)
                              - JCEKS: SunJCE keystore (.jceks files)
                              - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
+                             Hardware tokens:
                              - PKCS11: PKCS#11 hardware token
                              - ETOKEN: SafeNet eToken
                              - NITROKEY: Nitrokey HSM
@@ -499,6 +540,7 @@ are the same as those described above for the Ant task.</p>
                              - OPENSC: Smart card
                              - PIV: PIV card
                              - YUBIKEY: YubiKey security key
+                             Cloud key management systems:
                              - AWS: AWS Key Management Service
                              - AZUREKEYVAULT: Azure Key Vault key management system
                              - DIGICERTONE: DigiCert ONE Secure Software Manager
@@ -508,32 +550,46 @@ are the same as those described above for the Ant task.</p>
                              - HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
                              - ORACLECLOUD: Oracle Cloud Key Management Service
                              - TRUSTEDSIGNING: Azure Trusted Signing
-  -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore.
+  -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
-                             same password.
+                             same password
      --keyfile &lt;FILE>        The file containing the private key (supports PEM &amp; PVK files)
   -c,--certfile &lt;FILE>       The file containing the PKCS#7 certificate chain
                              (.p7b or .spc files).
   -d,--alg &lt;ALGORITHM>       The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)
-  -t,--tsaurl &lt;URL>          The URL of the timestamping authority. Several URLs separated
-                             by a comma can be specified to fallback on alternative servers
+  -t,--tsaurl &lt;URL>          The URL of the timestamping authority
   -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
   -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
   -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
   -n,--name &lt;NAME>           The name of the application
   -u,--url &lt;URL>             The URL of the application
      --proxyUrl &lt;URL>        The URL of the HTTP proxy
-     --proxyUser &lt;NAME>      The user for the HTTP proxy. If an user is needed.
-     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is needed.
-     --replace               Tells if previous signatures should be replaced.
+     --proxyUser &lt;NAME>      The user for the HTTP proxy. If an user is needed
+     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If an user is needed
+     --replace               Tells if the previous signatures should be replaced
   -e,--encoding &lt;ENCODING>   The encoding of the script to be signed (UTF-8 by default,
                              or the encoding specified by the byte order mark if there is one)
-     --detached              Tells if a detached signature should be generated or reused.
+     --detached              Tells if a detached signature should be generated or reused
      --quiet                 Print only error messages
      --verbose               Print more information
      --debug                 Print debugging information
   -h,--help                  Print the help
+
+  timestamp:
+  -t,--tsaurl &lt;URL>          The URL of the timestamping authority
+  -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
+  -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
+  -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
+  -n,--name &lt;NAME>           The name of the application
+  -u,--url &lt;URL>             The URL of the application
+     --replace               Tells if the previous timestamps should be replaced
+
+  extract:
+     --format &lt;FORMAT>       The output format of the signature (DER or PEM)
+
+  tag:
+     --value &lt;VALUE>         The value of the unsigned attribute
 </pre>
 
 <p>After the options Jsign accepts one or more files to sign as arguments. The arguments may contain <code>'*'</code>
@@ -709,11 +765,12 @@ with this service.</p>
 signing. When signing multiple files it's recommended to invoke Jsign only once with the list of files to avoid doubling
 the quota usage.</p>
 
-<h4 id="example-digicertone">Signing with DigiCert ONE</h4>
+<h4 id="example-digicertone">Signing with DigiCert ONE / DigiCert KeyLocker</h4>
 
-<p>Certificates and keys stored in the <a href="https://one.digicert.com">DigiCert ONE</a> Secure Software Manager
+<p>Certificates and keys stored in the <a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> Secure Software Manager
 can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
-a client certificate for the authentication.</p>
+a client certificate for the authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com)
+but a different host can be specified with the <code>--keystore</code> parameter.</p>
 
 <pre>
  jsign --storetype DIGICERTONE \
@@ -860,6 +917,35 @@ of the key.</p>
   <li><code>OCI_CLI_PASS_PHRASE</code>: The pass phrase of the private key</li>
 </ul>
 
+<br>
+
+<h4 id="tagging">Tagging</h4>
+
+<p>A signed file can be modified to include additional data without invalidating the signature. This feature is useful
+for embedding user identification data, such as a licence key or a session token, within a signed installer when the
+file is downloaded. Upon installation, the installer extracts this data, enabling the application to automatically
+authenticate the user without requiring credentials.</p>
+
+<p>For example, to tag a signed installer with a licence key:</p>
+
+<pre>
+  jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
+</pre>
+
+<p>For an executable file, the tag can be found next to the timestamp of the signature, in the last few kilobytes
+of the file.</p>
+
+<p>A common pattern consist in embedding a default template at build time, providing enough space for the data
+to be inserted when the file is downloaded. This allows a simple search-and-replace operation to be performed
+on the download server without needing Jsign to be installed. For example:</p>
+
+<pre>
+  jsign tag --value "&lt;TEMPLATE>XXXXXXXXXXXXXXXXXXXXXXXXXXX&lt;/TEMPLATE>" installer.exe
+</pre>
+
+<p>If the <code>value</code> parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
+<code style="white-space: nowrap">-----BEGIN TAG-----</code> and <code style="white-space: nowrap">-----END TAG-----</code>
+markers.</p>
 
 <h3 id="api">API</h3>
 

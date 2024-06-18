@@ -294,4 +294,14 @@ public class JsignTaskTest {
 
         assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes-signed-detached.exe.sig").exists());
     }
+
+    @Test
+    public void testTag() {
+        try {
+            project.executeTarget("tag-unsigned-file");
+            fail("No exception thrown");
+        } catch (BuildException e) {
+            assertTrue("message", e.getMessage().startsWith("No signature found in"));
+        }
+    }
 }

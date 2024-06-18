@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /**
  * Simple JSON formatter.
  *
- * @since 6.1
+ * @since 7.0
  */
 class JsonWriter {
 

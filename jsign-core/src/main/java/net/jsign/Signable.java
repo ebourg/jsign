@@ -47,7 +47,7 @@ public interface Signable extends Closeable {
      * @param digestAlgorithm the digest algorithm to use
      * @return the ContentInfo or EncapsulatedContentInfo structure
      * @throws IOException if an I/O error occurs
-     * @since 6.1
+     * @since 7.0
      */
     default CMSTypedData createSignedContent(DigestAlgorithm digestAlgorithm) throws IOException {
         return new PKCS7ProcessableObject(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
@@ -105,7 +105,7 @@ public interface Signable extends Closeable {
      * @param certificate the certificate to validate
      * @throws IOException if an I/O error occurs
      * @throws IllegalArgumentException if the certificate doesn't match the publisher identity
-     * @since 6.1
+     * @since 7.0
      */
     default void validate(Certificate certificate) throws IOException, IllegalArgumentException {
     }

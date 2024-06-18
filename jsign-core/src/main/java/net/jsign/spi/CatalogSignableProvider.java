@@ -28,7 +28,7 @@ import net.jsign.cat.CatalogFile;
 /**
  * {@link SignableProvider} for Catalog files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices
 public class CatalogSignableProvider implements SignableProvider {

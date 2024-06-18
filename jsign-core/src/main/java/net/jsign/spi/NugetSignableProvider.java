@@ -28,7 +28,7 @@ import net.jsign.nuget.NugetFile;
 /**
  * {@link SignableProvider} for NuGet files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices(SignableProvider.class)
 public class NugetSignableProvider extends ExtensionBasedSignableProvider {

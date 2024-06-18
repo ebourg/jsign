@@ -348,7 +348,7 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             String[] elements = params.storepass().split("\\|");
-            return new SigningServiceJcaProvider(new DigiCertOneSigningService(elements[0], params.createFile(elements[1]), elements[2]));
+            return new SigningServiceJcaProvider(new DigiCertOneSigningService(params.keystore(), elements[0], params.createFile(elements[1]), elements[2]));
         }
     },
 

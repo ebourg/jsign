@@ -143,6 +143,25 @@ public class DigiCertOneSigningServiceTest {
     }
 
     @Test
+    public void testGetCertificateChainWithInvalidEndpoint() {
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .respond()
+                .withStatus(404)
+                .withContentType("application/json")
+                .withBody("{\"errors\":[{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"Path not found\"}]}");
+
+        SigningService service = getTestService();
+        try {
+            service.getCertificateChain("jsign-1995-cert");
+            fail("Exception not thrown");
+        } catch (KeyStoreException e) {
+            assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
+            assertEquals("message", "{\"errors\":[{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"Path not found\"}]}", e.getCause().getMessage());
+        }
+    }
+
+    @Test
     public void testGetPrivateKey() throws Exception {
         onRequest()
                 .havingMethodEqualTo("GET")

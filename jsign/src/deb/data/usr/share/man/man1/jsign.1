@@ -56,12 +56,16 @@ by using the env: prefix followed by the name of the variable.
 .TP
 .B --storetype <TYPE>
 The type of the keystore:
+
+File based:
 .br
 - JKS           : Java keystore (.jks files)
 .br
 - JCEKS         : SunJCE keystore (.jceks files)
 .br
 - PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
+
+Hardware tokens;
 .br
 - PKCS11        : PKCS#11 hardware token
 .br
@@ -76,6 +80,8 @@ The type of the keystore:
 - PIV           : PIV card
 .br
 - YUBIKEY       : YubiKey security key (requires ykcs11)
+
+Cloud key management systems:
 .br
 - AWS           : AWS Key Management Service
 .br
@@ -89,12 +95,12 @@ The type of the keystore:
 .br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
-- HASHICORPVAULT : Google Cloud KMS via HashiCorp Vault
+- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
 .br
 - ORACLECLOUD   : Oracle Cloud Key Management Service
 .br
 - TRUSTEDSIGNING: Azure Trusted Signing
-.br
+
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
 .TP
@@ -193,6 +199,19 @@ If the signature exists it is attached to the file, replacing any existing signa
 .RE
 
 .TP
+.B --value
+The value of the unsigned attribute when tagging a file. The value is either:
+.br
+- a string (such as a user id, a license key or a JWT token)
+.br
+- the name of the file to include, prefixed with file:
+.br
+- a binary value in hexadecimal format, prefixed with 0x
+
+If no value is specified a default 1KB template is used, filled with zeros and delimited by
+-----BEGIN TAG----- and -----END TAG----- markers.
+
+.TP
 .B --quiet
 Print only error messages
 
@@ -264,8 +283,7 @@ it doesn't require OpenSC and any key can be used by providing an external certi
 
 Signing with a SafeNet eToken:
 
-Signing with a SafeNet eToken requires the installation of the SafeNet Authentication Client
-<a href="https://knowledge.digicert.com/general-information/how-to-download-safenet-authentication-client"></a>.</p>
+Signing with a SafeNet eToken requires the installation of the SafeNet Authentication Client.
 
 jsign --storetype ETOKEN --storepass <PIN> --certfile full-chain.pem application.exe
 
@@ -383,11 +401,12 @@ the quota usage.
 
 .TP
 
-Signing with DigiCert ONE:
+Signing with DigiCert ONE / DigiCert KeyLocker:
 
 Certificates and keys stored in the DigiCert ONE Secure Software Manager can be used directly without installing
 the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding a client certificate for the
-authentication.
+authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com) but a different
+host can be specified with the --keystore parameter.
 
 jsign --storetype DIGICERTONE \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
@@ -529,6 +548,32 @@ The configuration file can be replaced (or overridden) by environment variables.
 \- OCI_CLI_KEY_FILE    : The path to the private key signing the API requests in PEM format
 .br
 \- OCI_CLI_PASS_PHRASE : The pass phrase of the private key
+
+
+.TP
+
+Tagging
+
+A signed file can be modified to include additional data without invalidating the signature. This feature is useful
+for embedding user identification data, such as a licence key or a session token, within a signed installer when the
+file is downloaded. Upon installation, the installer extracts this data, enabling the application to automatically
+authenticate the user without requiring credentials.
+
+For example, to tag a signed installer with a licence key:
+
+jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
+
+For an executable file, the tag can be found next to the timestamp of the signature, in the last few kilobytes
+of the file.
+
+A common pattern consist in embedding a default template at build time, providing enough space for the data
+to be inserted when the file is downloaded. This allows a simple search-and-replace operation to be performed
+on the download server without needing Jsign to be installed. For example:
+
+jsign tag --value "<TEMPLATE>XXXXXXXXXXXXXXXXXXXXXXXXXXX</TEMPLATE>" installer.exe
+
+If the value parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
+-----BEGIN TAG----- and -----END TAG----- markers.
 
 
 .SH REPORTING BUGS

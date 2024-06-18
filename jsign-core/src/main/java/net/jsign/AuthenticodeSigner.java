@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -54,8 +53,6 @@ import org.bouncycastle.cms.DefaultCMSSignatureEncryptionAlgorithmFinder;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
-import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.ContentSigner;
@@ -376,7 +373,7 @@ public class AuthenticodeSigner {
             List<CMSSignedData> signatures = file.getSignatures();
             if (!signatures.isEmpty()) {
                 // append the nested signature
-                sigData = addNestedSignature(signatures.get(0), sigData);
+                sigData = SignatureUtils.addNestedSignature(signatures.get(0), false, sigData);
             }
         }
         
@@ -514,42 +511,6 @@ public class AuthenticodeSigner {
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
 
         return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
-    }
-
-    /**
-     * Embed a signature as an unsigned attribute of an existing signature.
-     * 
-     * @param primary   the root signature hosting the nested secondary signature
-     * @param secondary the additional signature to nest inside the primary one
-     * @return the signature combining the specified signatures
-     */
-    protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {
-        SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();
-        
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        if (unsignedAttributes == null) {
-            unsignedAttributes = new AttributeTable(new DERSet());
-        }
-        Attribute nestedSignaturesAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-        if (nestedSignaturesAttribute == null) {
-            // first nested signature
-            unsignedAttributes = unsignedAttributes.add(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, secondary.toASN1Structure());
-        } else {
-            // append the signature to the previous nested signatures
-            ASN1EncodableVector nestedSignatures = new ASN1EncodableVector();
-            for (ASN1Encodable nestedSignature : nestedSignaturesAttribute.getAttrValues()) {
-                nestedSignatures.add(nestedSignature);
-            }
-            nestedSignatures.add(secondary.toASN1Structure());
-            
-            ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();
-            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));
-            
-            unsignedAttributes = new AttributeTable(attributes);
-        }
-        
-        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
-        return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
     }
 
     /**

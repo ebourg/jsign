@@ -31,7 +31,7 @@ import net.jsign.KeyStoreBuilder;
 /**
  * Credentials for the Garantir Remote Signing service.
  *
- * @since 6.1
+ * @since 7.0
  */
 public class GaraSignCredentials {
 

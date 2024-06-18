@@ -196,4 +196,13 @@ public class CentralDirectoryFileHeader extends ZipRecord {
             return localHeaderOffset;
         }
     }
+
+    public void setLocalHeaderOffset(long offset) {
+        if (offset > 0xFFFFFFFFL) {
+            Zip64ExtendedInfoExtraField zip64ExtraField = (Zip64ExtendedInfoExtraField) extraFields.get(1);
+            zip64ExtraField.localHeaderOffset = offset;
+        } else {
+            localHeaderOffset = offset;
+        }
+    }
 }

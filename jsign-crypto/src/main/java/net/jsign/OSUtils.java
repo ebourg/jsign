@@ -22,7 +22,7 @@ import java.nio.file.FileSystems;
 /**
  * Helper class to retrieve information about the operating system.
  *
- * @since 6.1
+ * @since 7.0
  */
 class OSUtils {
 

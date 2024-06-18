@@ -28,7 +28,7 @@ import net.jsign.script.PowerShellScript;
 /**
  * {@link SignableProvider} for PowerShell scripts.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices(SignableProvider.class)
 public class PowerShellSignableProvider extends ExtensionBasedSignableProvider {

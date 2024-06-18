@@ -25,29 +25,24 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.poi.util.IOUtils;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
 
 import net.jsign.ChannelUtils;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
+import net.jsign.SignatureUtils;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
@@ -167,11 +162,25 @@ public class APPXFile extends ZipFile implements Signable {
         return new SpcIndirectDataContent(data, digestInfo);
     }
 
+    /**
+     * Normalize the X500 name specified.
+     */
+    private String normalize(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        // replace the non-standard S abbreviation used by Microsoft with ST for the stateOrProvinceName attribute
+        name = name.replaceAll(",\\s*S\\s*=", ",ST=");
+
+        return new X500Principal(name).getName(X500Principal.CANONICAL);
+    }
+
     @Override
     public void validate(Certificate certificate) throws IOException, IllegalArgumentException {
         String name = ((X509Certificate) certificate).getSubjectX500Principal().getName();
         String publisher = getPublisher();
-        if (!name.equals(publisher)) {
+        if (!normalize(name).equals(normalize(publisher))) {
             throw new IllegalArgumentException("The app manifest publisher name (" + publisher + ") must match the subject name of the signing certificate (" + name + ")");
         }
     }
@@ -197,38 +206,15 @@ public class APPXFile extends ZipFile implements Signable {
 
     @Override
     public List<CMSSignedData> getSignatures() throws IOException {
-        List<CMSSignedData> signatures = new ArrayList<>();
-
         if (centralDirectory.entries.containsKey(SIGNATURE_ENTRY)) {
             InputStream in = getInputStream(SIGNATURE_ENTRY, 1024 * 1024 /* 1MB */);
             // skip the "PKCX" header
             in.skip(4);
-            byte[] signatureBytes = IOUtils.toByteArray(in);
 
-            try {
-                CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
-                signatures.add(signedData);
-
-                // look for nested signatures
-                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
-                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-
-                if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-                    if (nestedSignatures != null) {
-                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
-                        }
-                    }
-                }
-            } catch (UnsupportedOperationException e) {
-                // unsupported type, just skip
-            } catch (Exception | StackOverflowError e) {
-                e.printStackTrace();
-            }
+            return SignatureUtils.getSignatures(IOUtils.toByteArray(in));
         }
 
-        return signatures;
+        return Collections.emptyList();
     }
 
     @Override
@@ -256,7 +242,7 @@ public class APPXFile extends ZipFile implements Signable {
         if (!contentTypes.contains(override)) {
             contentTypes = contentTypes.replace("</Types>", "<Override PartName=\"" + partName + "\" ContentType=\"" + contentType + "\"/></Types>");
 
-            renameEntry("[Content_Types].xml", "[Content_Types].old");
+            removeEntry("[Content_Types].xml");
             addEntry("[Content_Types].xml", contentTypes.getBytes(), true);
         }
     }

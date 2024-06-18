@@ -32,7 +32,7 @@ import org.bouncycastle.util.encoders.Hex;
 /**
  * Simple HTTP client with resource caching.
  *
- * @since 6.1
+ * @since 7.0
  */
 class HttpClient {
 

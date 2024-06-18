@@ -171,7 +171,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("DIGICERTONE", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "0a50eb72-68d0-4730-96cb-fe648d2c2fd2", "");
+        testCustomProvider(provider, keystore, "353d4f18-5325-4b78-b17c-f92375cf40ec", "");
     }
 
     @Test

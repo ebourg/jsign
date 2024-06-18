@@ -28,7 +28,7 @@ import net.jsign.mscab.MSCabinetFile;
 /**
  * {@link SignableProvider} for Microsoft Cabinet files
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices
 public class MSCabinetSignableProvider implements SignableProvider {

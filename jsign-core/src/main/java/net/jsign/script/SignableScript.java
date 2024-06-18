@@ -34,22 +34,15 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
+import net.jsign.SignatureUtils;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
@@ -175,33 +168,9 @@ abstract class SignableScript implements Signable {
     }
 
     @Override
-    public List<CMSSignedData> getSignatures() {
-        List<CMSSignedData> signatures = new ArrayList<>();
-        
-        try {
-            CMSSignedData signedData = decodeSignatureBlock();
-            if (signedData != null) {
-                signatures.add(signedData);
-
-                // look for nested signatures
-                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
-                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-                if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-                    if (nestedSignatures != null) {
-                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
-                        }
-                    }
-                }
-            }
-        } catch (UnsupportedOperationException e) {
-            // unsupported type, just skip
-        } catch (Exception | StackOverflowError e) {
-            e.printStackTrace();
-        }
-        
-        return signatures;
+    public List<CMSSignedData> getSignatures() throws IOException {
+        byte[] data = decodeSignatureBlock();
+        return data != null ? SignatureUtils.getSignatures(decodeSignatureBlock()) : new ArrayList<>();
     }
 
     /**
@@ -218,7 +187,7 @@ abstract class SignableScript implements Signable {
         return matcher.group("signatureBlock");
     }
 
-    private CMSSignedData decodeSignatureBlock() throws CMSException {
+    private byte[] decodeSignatureBlock() {
         String signatureBlock = getSignatureBlock();
         if (signatureBlock == null) {
             return null;
@@ -228,13 +197,7 @@ abstract class SignableScript implements Signable {
         signatureBlock = signatureBlock.replace(getLineCommentEnd(), "");
         signatureBlock = signatureBlock.replaceAll("[\r\n]", "");
 
-        byte[] signatureBytes = Base64.getDecoder().decode(signatureBlock);
-
-        try {
-            return new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
-        } catch (IOException | StackOverflowError e) {
-            throw new IllegalArgumentException("Failed to construct ContentInfo from byte[]: ", e);
-        }
+        return Base64.getDecoder().decode(signatureBlock);
     }
 
     @Override

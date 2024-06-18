@@ -25,7 +25,7 @@ import org.apache.maven.plugin.logging.Log;
 /**
  * Log handler for Maven.
  *
- * @since 6.1
+ * @since 7.0
  */
 class MavenLogHandler extends Handler {
 

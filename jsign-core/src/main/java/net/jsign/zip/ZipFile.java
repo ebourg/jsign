@@ -34,6 +34,8 @@ import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.io.input.BoundedInputStream;
 
+import net.jsign.ChannelUtils;
+
 import static java.nio.charset.StandardCharsets.*;
 
 /**
@@ -188,6 +190,9 @@ public class ZipFile implements Closeable {
     }
 
     public void removeEntry(String name) throws IOException {
+        CentralDirectoryFileHeader centralDirectoryFileHeader = centralDirectory.entries.get(name);
+        ChannelUtils.delete(channel, centralDirectoryFileHeader.getLocalHeaderOffset(), centralDirectory.getEntrySize(name));
+
         centralDirectory.removeEntry(name);
 
         channel.position(centralDirectory.centralDirectoryOffset);

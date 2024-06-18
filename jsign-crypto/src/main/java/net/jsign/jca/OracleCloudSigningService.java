@@ -47,7 +47,7 @@ import net.jsign.DigestAlgorithm;
 /**
  * Signing service using the Oracle Cloud API.
  * 
- * @since 6.1
+ * @since 7.0
  */
 public class OracleCloudSigningService implements SigningService {
 

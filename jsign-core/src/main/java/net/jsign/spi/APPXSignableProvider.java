@@ -28,7 +28,7 @@ import net.jsign.appx.APPXFile;
 /**
  * {@link SignableProvider} for APPX files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices(SignableProvider.class)
 public class APPXSignableProvider extends ExtensionBasedSignableProvider {

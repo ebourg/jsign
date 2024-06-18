@@ -3,5 +3,4 @@ TODO
 - Verify signed files
 - GUI
 - Support private keys exported with PKCS#8 
-- Support unauthenticated blobs
 - Support generating MsiDigitalSignatureEx entries when signing MSI files (requires access to the streams metadata in POI)

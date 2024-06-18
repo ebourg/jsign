@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 /**
  * Scans a directory recursively and returns the files matching a pattern.
  *
- * @since 6.1
+ * @since 7.0
  */
 class DirectoryScanner {
 
