@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.KeyStore;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -52,24 +55,6 @@ public class MSCabinetFileTest {
             fail("Exception not thrown");
         } catch (IOException e) {
             assertEquals("message", "MSCabinet file too short", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testCabinetWithInvalidSignatureSize() {
-        CFHeader header = new CFHeader();
-        header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = 64;
-        header.abReserved = new byte[64];
-
-        byte[] data = new byte[128];
-        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
-
-        try {
-            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "MSCabinet file is corrupt: cabinet reserved area size is 64 instead of 20", e.getMessage());
         }
     }
 
@@ -159,6 +144,20 @@ public class MSCabinetFileTest {
             assertSigned(file, SHA256);
             file.setSignature(null);
             assertNotSigned(file);
+        }
+    }
+
+    @Test
+    public void testHasSignature() throws Exception {
+        try (SeekableByteChannel channel = Files.newByteChannel(new File("target/test-classes/mscab/sample1.cab").toPath(), StandardOpenOption.READ)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            assertFalse(header.hasSignature());
+        }
+        try (SeekableByteChannel channel = Files.newByteChannel(new File("target/test-classes/mscab/sample4.cab").toPath(), StandardOpenOption.READ)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            assertFalse(header.hasSignature());
         }
     }
 }

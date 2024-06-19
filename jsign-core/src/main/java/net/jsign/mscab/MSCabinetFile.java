@@ -106,11 +106,7 @@ public class MSCabinetFile implements Signable {
         channel.position(0);
         header.read(channel);
 
-        if (header.isReservePresent() && header.cbCFHeader > 0) {
-            if (header.cbCFHeader != CABSignature.SIZE) {
-                throw new IOException("MSCabinet file is corrupt: cabinet reserved area size is " + header.cbCFHeader + " instead of " + CABSignature.SIZE);
-            }
-
+        if (header.hasSignature()) {
             CABSignature cabsig = header.getSignature();
             if (cabsig.header != CABSignature.HEADER) {
                 throw new IOException("MSCabinet file is corrupt: signature header is " + cabsig.header);

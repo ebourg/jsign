@@ -277,7 +277,7 @@ class CFHeader {
     }
 
     public boolean hasSignature() {
-        return this.abReserved != null && this.abReserved.length > 0;
+        return this.abReserved != null && this.abReserved.length == CABSignature.SIZE;
     }
 
     public CABSignature getSignature() {

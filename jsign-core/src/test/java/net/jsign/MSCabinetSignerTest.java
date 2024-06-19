@@ -103,6 +103,25 @@ public class MSCabinetSignerTest {
     }
 
     @Test
+    public void testSignCabinetWithEmptyReservedArea() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample4.cab");
+        File targetFile = new File("target/test-classes/mscab/sample4-signed.cab");
+
+        targetFile.getParentFile().mkdirs();
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false);
+
+            signer.sign(cabFile);
+
+            SignatureAssert.assertSigned(cabFile, SHA256);
+        }
+    }
+
+    @Test
     public void testSignTwice() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample1.cab");
         File targetFile = new File("target/test-classes/mscab/sample1-signed-twice.cab");
