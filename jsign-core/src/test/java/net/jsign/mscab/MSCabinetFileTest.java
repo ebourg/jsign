@@ -129,6 +129,54 @@ public class MSCabinetFileTest {
     }
 
     @Test
+    public void testCabinetWithBadSignatureOffset() {
+        CFHeader header = new CFHeader();
+        header.cbCabinet = 4096;
+        header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        header.cbCFHeader = CABSignature.SIZE;
+        header.abReserve = new byte[CABSignature.SIZE];
+        CABSignature signature = header.getSignature();
+        signature.header = CABSignature.HEADER;
+        signature.offset = (int) header.cbCabinet - 123;
+        signature.length = 1024;
+        header.abReserve = signature.array();
+
+        byte[] data = new byte[(int) (header.cbCabinet + signature.length)];
+        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+
+        try {
+            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
+            fail("Exception not thrown");
+        } catch (IOException e) {
+            assertEquals("message", "MSCabinet file is corrupt: the declared size of the file (4096) doesn't match the offset of the signature (3973)", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCabinetWithBadSignatureLength() {
+        CFHeader header = new CFHeader();
+        header.cbCabinet = 4096;
+        header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        header.cbCFHeader = CABSignature.SIZE;
+        header.abReserve = new byte[CABSignature.SIZE];
+        CABSignature signature = header.getSignature();
+        signature.header = CABSignature.HEADER;
+        signature.offset = (int) header.cbCabinet;
+        signature.length = 1024;
+        header.abReserve = signature.array();
+
+        byte[] data = new byte[(int) (header.cbCabinet + signature.length) + 123];
+        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+
+        try {
+            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
+            fail("Exception not thrown");
+        } catch (IOException e) {
+            assertEquals("message", "MSCabinet file is corrupt: the declared size of the file (4096) and the size of the signature (1024) are inconsistent with the actual size of the file (5243)", e.getMessage());
+        }
+    }
+
+    @Test
     public void testRemoveSignature() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample1.cab");
         File targetFile = new File("target/test-classes/mscab/sample1-unsigned.cab");

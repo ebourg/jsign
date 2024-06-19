@@ -230,7 +230,7 @@ public class MSCabinetSignerTest {
                     .withDigestAlgorithm(SHA512);
 
             signer.sign(file);
-            data = channel.array();
+            data = Arrays.copyOf(channel.array(), (int) channel.size());
         }
 
         try (MSCabinetFile file = new MSCabinetFile(new SeekableInMemoryByteChannel(data))) {

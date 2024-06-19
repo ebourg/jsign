@@ -115,6 +115,14 @@ public class MSCabinetFile implements Signable {
             if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size() || cabsig.offset > channel.size()) {
                 throw new IOException("MSCabinet file is corrupt: signature data (offset=" + cabsig.offset + ", size=" + cabsig.length + ") after the end of the file");
             }
+
+            if (header.cbCabinet != cabsig.offset) {
+                throw new IOException("MSCabinet file is corrupt: the declared size of the file (" + header.cbCabinet + ") doesn't match the offset of the signature (" + cabsig.offset + ")");
+            }
+
+            if (header.cbCabinet + cabsig.length != channel.size()) {
+                throw new IOException("MSCabinet file is corrupt: the declared size of the file (" + header.cbCabinet + ") and the size of the signature (" + cabsig.length + ") are inconsistent with the actual size of the file (" + channel.size() + ")");
+            }
         }
     }
 
