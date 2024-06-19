@@ -196,9 +196,9 @@ public class MSCabinetFile implements Signable {
         int currentSize = header.getHeaderSize();
         int shift = currentSize - previousSize;
 
-        if (shift >= 0) {
+        if (shift > 0) {
             insert(channel, previousSize, new byte[shift]);
-        } else {
+        } else if (shift < 0) {
             delete(channel, previousSize + shift, -shift);
         }
 
@@ -209,14 +209,16 @@ public class MSCabinetFile implements Signable {
         buffer.flip();
         channel.write(buffer);
 
-        // shift the start offset of the CFFOLDER structures
-        for (int i = 0; i < header.cFolders; i++) {
-            long position = channel.position();
-            CFFolder folder = CFFolder.read(channel);
-            folder.coffCabStart += shift;
+        if (shift != 0) {
+            // shift the start offset of the CFFOLDER structures
+            for (int i = 0; i < header.cFolders; i++) {
+                long position = channel.position();
+                CFFolder folder = CFFolder.read(channel);
+                folder.coffCabStart += shift;
 
-            channel.position(position);
-            folder.write(channel);
+                channel.position(position);
+                folder.write(channel);
+            }
         }
 
         // write the signature
