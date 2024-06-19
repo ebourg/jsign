@@ -41,10 +41,10 @@ import static net.jsign.ChannelUtils.*;
  * flags                               2 bytes
  * set identifier                      2 bytes
  * cabinet sequential number           2 bytes
- * size of per-cabinet reserved area   2 bytes  (optional)
- * size of per-folder reserved area    1 byte   (optional)
- * size of per-datablock reserved area 1 byte   (optional)
- * reserved area                       (variable size, optional)
+ * size of per-cabinet reserve         2 bytes  (optional)
+ * size of per-folder reserve          1 byte   (optional)
+ * size of per-datablock reserve       1 byte   (optional)
+ * reserve                             (variable size, optional)
  * file name of the previous cabinet   (variable size, optional)
  * media with the previous cabinet     (variable size, optional)
  * file name of the next cabinet       (variable size, optional)
@@ -72,7 +72,7 @@ class CFHeader {
     public int cbCFHeader;      // u2
     public short cbCFFolder;    // u1
     public short cbCFData;      // u1
-    public byte[] abReserved;
+    public byte[] abReserve;
     public byte[] szCabinetPrev;
     public byte[] szDiskPrev;
     public byte[] szCabinetNext;
@@ -121,7 +121,7 @@ class CFHeader {
         this.cbCFHeader = header.cbCFHeader;
         this.cbCFFolder = header.cbCFFolder;
         this.cbCFData = header.cbCFData;
-        this.abReserved = header.abReserved != null ? header.abReserved.clone() : null;
+        this.abReserve = header.abReserve != null ? header.abReserve.clone() : null;
         this.szCabinetPrev = header.szCabinetPrev;
         this.szDiskPrev = header.szDiskPrev;
         this.szCabinetNext = header.szCabinetNext;
@@ -153,7 +153,7 @@ class CFHeader {
         this.flags = buffer.getShort() & 0xFFFF;          // u2 H
         this.setID = buffer.getShort();                   // u2 H
         this.iCabinet = buffer.getShort() & 0xFFFF;       // u2
-        this.abReserved = null;
+        this.abReserve = null;
 
         if (isReservePresent()) {
             buffer.clear();
@@ -165,8 +165,8 @@ class CFHeader {
             this.cbCFFolder = (short) (buffer.get() & 0xFF); // u1
             this.cbCFData = (short) (buffer.get() & 0xFF);   // u1
             if (this.cbCFHeader > 0) {
-                this.abReserved = new byte[this.cbCFHeader];
-                channel.read(ByteBuffer.wrap(this.abReserved));
+                this.abReserve = new byte[this.cbCFHeader];
+                channel.read(ByteBuffer.wrap(this.abReserve));
             }
         }
 
@@ -200,7 +200,7 @@ class CFHeader {
             buffer.put((byte) this.cbCFFolder);
             buffer.put((byte) this.cbCFData);
             if (this.cbCFHeader > 0) {
-                buffer.put(this.abReserved);
+                buffer.put(this.abReserve);
             }
         }
         if (hasPreviousCabinet()) {
@@ -249,8 +249,8 @@ class CFHeader {
         buffer.flip();
         digest.update(buffer);
 
-        if (this.abReserved != null && this.abReserved.length > 0) {
-            digest.update(abReserved, 0, 2); // 0x0000
+        if (this.abReserve != null && this.abReserve.length > 0) {
+            digest.update(abReserve, 0, 2); // 0x0000
         }
 
         if (hasPreviousCabinet()) {
@@ -277,17 +277,17 @@ class CFHeader {
     }
 
     public boolean hasSignature() {
-        return this.abReserved != null && this.abReserved.length == CABSignature.SIZE;
+        return this.abReserve != null && this.abReserve.length == CABSignature.SIZE;
     }
 
     public CABSignature getSignature() {
-        return hasSignature() ? new CABSignature(abReserved) : null;
+        return hasSignature() ? new CABSignature(abReserve) : null;
     }
 
     public void setReserve(byte[] reserve) {
         int previousSize = getHeaderSize();
 
-        this.abReserved = reserve;
+        this.abReserve = reserve;
         this.cbCFHeader = reserve.length;
 
         // update the reserve flag

@@ -20,7 +20,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * CABSignature structure found in the per-cabinet reserved area.
+ * CABSignature structure found in the per-cabinet reserve.
  *
  * <pre>
  * header                              4 bytes  (0x00100000)
@@ -36,7 +36,7 @@ class CABSignature {
     /** Size of the CABSignature structure */
     public static final int SIZE = 20;
 
-    /** Header of the signature in the per-cabinet reserved area (two zero bytes + size of the signature) */
+    /** Header of the signature in the per-cabinet reserve (two zero bytes + size of the signature) */
     public static final int HEADER = 0x00100000;
 
     /** Actual header of the structure */

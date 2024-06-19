@@ -84,7 +84,7 @@ public class MSCabinetSignerTest {
     }
 
     @Test
-    public void testSignCabinetWithPerFolderReservedAreaOnly() throws Exception {
+    public void testSignCabinetWithPerFolderReserveOnly() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample3.cab");
         File targetFile = new File("target/test-classes/mscab/sample3-signed.cab");
 
@@ -103,7 +103,7 @@ public class MSCabinetSignerTest {
     }
 
     @Test
-    public void testSignCabinetWithEmptyReservedArea() throws Exception {
+    public void testSignCabinetWithEmptyReserve() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample4.cab");
         File targetFile = new File("target/test-classes/mscab/sample4-signed.cab");
 

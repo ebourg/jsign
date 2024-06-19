@@ -63,11 +63,11 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = CABSignature.SIZE;
-        header.abReserved = new byte[CABSignature.SIZE];
-        header.abReserved[0] = 'C';
-        header.abReserved[1] = 'A';
-        header.abReserved[2] = 'F';
-        header.abReserved[3] = 'E';
+        header.abReserve = new byte[CABSignature.SIZE];
+        header.abReserve[0] = 'C';
+        header.abReserve[1] = 'A';
+        header.abReserve[2] = 'F';
+        header.abReserve[3] = 'E';
 
         byte[] data = new byte[128];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
@@ -86,12 +86,12 @@ public class MSCabinetFileTest {
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = CABSignature.SIZE;
-        header.abReserved = new byte[CABSignature.SIZE];
+        header.abReserve = new byte[CABSignature.SIZE];
         CABSignature signature = header.getSignature();
         signature.header = CABSignature.HEADER;
         signature.offset = (int) header.cbCabinet - 512;
         signature.length = 1024;
-        header.abReserved = signature.array();
+        header.abReserve = signature.array();
 
         byte[] data = new byte[(int) header.cbCabinet];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
@@ -110,12 +110,12 @@ public class MSCabinetFileTest {
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
         header.cbCFHeader = CABSignature.SIZE;
-        header.abReserved = new byte[CABSignature.SIZE];
+        header.abReserve = new byte[CABSignature.SIZE];
         CABSignature signature = header.getSignature();
         signature.header = CABSignature.HEADER;
         signature.offset = header.cbCabinet * 2;
         signature.length = 1024;
-        header.abReserved = signature.array();
+        header.abReserve = signature.array();
 
         byte[] data = new byte[512];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
