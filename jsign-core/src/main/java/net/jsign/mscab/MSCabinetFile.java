@@ -132,6 +132,9 @@ public class MSCabinetFile implements Signable {
 
         CFReserve modifiedReserve = new CFReserve();
         modifiedReserve.minSize = header.cbCFHeader;
+        if (header.reserve != null) {
+            modifiedReserve.structure1 = header.reserve.structure1;
+        }
         modifiedReserve.structure2 = new byte[CABSignature.SIZE];
 
         CFHeader modifiedHeader = new CFHeader(header);
@@ -194,9 +197,13 @@ public class MSCabinetFile implements Signable {
 
         int previousSize = header.getHeaderSize();
 
+        CFReserve reserve = new CFReserve();
+        reserve.minSize = header.cbCFHeader;
+        if (header.reserve != null) {
+            reserve.structure1 = header.reserve.structure1;
+        }
+
         if (content.length > 0) {
-            CFReserve reserve = new CFReserve();
-            reserve.minSize = header.cbCFHeader;
             reserve.structure2 = new byte[CABSignature.SIZE];
 
             header.setReserve(reserve);
@@ -207,8 +214,6 @@ public class MSCabinetFile implements Signable {
 
             reserve.structure2 = cabsig.array();
         } else {
-            CFReserve reserve = new CFReserve();
-            reserve.minSize = header.cbCFHeader;
             reserve.structure2 = new byte[0];
 
             header.setReserve(reserve);

@@ -232,6 +232,39 @@ public class MSCabinetFileTest {
     }
 
     @Test
+    public void testCabinetWithJunkInReserve() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample4.cab");
+        File targetFile = new File("target/test-classes/mscab/sample4-junk-in-reserve.cab");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        // inject junk in the reserve
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            header.reserve.structure1 = "Lorem ipsum".getBytes();
+            header.write(channel);
+        }
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+        }
+
+        // check if the junk is still there
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            assertEquals("junk length", "Lorem ipsum".length(), header.reserve.structure1.length);
+            assertEquals("junk content", "Lorem ipsum", new String(header.reserve.structure1));
+        }
+    }
+
+    @Test
     public void testRemoveSignature() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample1.cab");
         File targetFile = new File("target/test-classes/mscab/sample1-unsigned.cab");
