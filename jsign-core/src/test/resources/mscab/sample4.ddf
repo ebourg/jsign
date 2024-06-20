@@ -1,4 +1,4 @@
-; Cabinet file with a reserve per-cabinet of 6144 bytes
+; makecab directives generating a cabinet file with a reserve per-cabinet of 6144 bytes
 
 .OPTION EXPLICIT
 .Set CabinetFileCountThreshold=0
