@@ -183,6 +183,14 @@ class CFHeader {
         }
     }
 
+    public void write(SeekableByteChannel channel) throws IOException {
+        channel.position(0);
+        ByteBuffer buffer = ByteBuffer.allocate(getHeaderSize()).order(ByteOrder.LITTLE_ENDIAN);
+        write(buffer);
+        buffer.flip();
+        channel.write(buffer);
+    }
+
     public void write(ByteBuffer buffer) {
         buffer.putInt(SIGNATURE);
         buffer.putInt((int) this.csumHeader);
@@ -279,11 +287,7 @@ class CFHeader {
     }
 
     public boolean hasSignature() {
-        return this.reserve != null && this.reserve.structure2.length == CABSignature.SIZE;
-    }
-
-    public CABSignature getSignature() {
-        return hasSignature() ? new CABSignature(reserve.structure2) : null;
+        return this.reserve != null && this.reserve.structure2.length >= CABSignature.SIZE;
     }
 
     public void setReserve(CFReserve reserve) {

@@ -19,7 +19,6 @@ package net.jsign.mscab;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -106,8 +105,8 @@ public class MSCabinetFile implements Signable {
         channel.position(0);
         header.read(channel);
 
-        if (header.hasSignature()) {
-            CABSignature cabsig = header.getSignature();
+        if (header.hasSignature() && header.reserve.structure2.length == CABSignature.SIZE) {
+            CABSignature cabsig = new CABSignature(header.reserve.structure2);
             if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size() || cabsig.offset > channel.size()) {
                 throw new IOException("MSCabinet file is corrupt: signature data (offset=" + cabsig.offset + ", size=" + cabsig.length + ") after the end of the file");
             }
@@ -150,7 +149,7 @@ public class MSCabinetFile implements Signable {
             updateDigest(channel, digest, channel.position(), channel.position() + header.cbCFFolder);
         }
 
-        long endPosition = header.hasSignature() ? header.getSignature().offset : channel.size();
+        long endPosition = header.cbCabinet;
         updateDigest(channel, digest, channel.position(), endPosition);
 
         return digest.digest();
@@ -167,13 +166,19 @@ public class MSCabinetFile implements Signable {
 
     @Override
     public synchronized List<CMSSignedData> getSignatures() throws IOException {
-        CABSignature cabsig = header.getSignature();
-        if (cabsig != null && cabsig.offset > 0 && cabsig.length > 0 && cabsig.length < channel.size()) {
-            byte[] buffer = new byte[(int) cabsig.length];
-            channel.position(cabsig.offset);
-            channel.read(ByteBuffer.wrap(buffer));
+        if (header.hasSignature()) {
+            if (header.reserve.structure2.length == CABSignature.SIZE) {
+                CABSignature cabsig = new CABSignature(header.reserve.structure2);
+                if (cabsig.offset > 0 && cabsig.length > 0 && cabsig.length < channel.size()) {
+                    byte[] buffer = new byte[(int) cabsig.length];
+                    channel.position(cabsig.offset);
+                    channel.read(ByteBuffer.wrap(buffer));
 
-            return SignatureUtils.getSignatures(buffer);
+                    return SignatureUtils.getSignatures(buffer);
+                }
+            } else {
+                return SignatureUtils.getSignatures(header.reserve.structure2);
+            }
         }
 
         return Collections.emptyList();
@@ -219,11 +224,7 @@ public class MSCabinetFile implements Signable {
         }
 
         // rewrite the header
-        channel.position(0);
-        ByteBuffer buffer = ByteBuffer.allocate(header.getHeaderSize()).order(ByteOrder.LITTLE_ENDIAN);
-        header.write(buffer);
-        buffer.flip();
-        channel.write(buffer);
+        header.write(channel);
 
         if (shift != 0) {
             // shift the start offset of the CFFOLDER structures

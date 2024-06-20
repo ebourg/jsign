@@ -191,6 +191,47 @@ public class MSCabinetFileTest {
     }
 
     @Test
+    public void testCabinetWithSignatureInReserve() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample4.cab");
+        File targetFile = new File("target/test-classes/mscab/sample4-signature-in-reserve.cab");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+        }
+
+        // extract the signature
+        ByteBuffer signature = ByteBuffer.allocate((int) (targetFile.length() - sourceFile.length()));
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ)) {
+            channel.position(sourceFile.length());
+            channel.read(signature);
+            signature.flip();
+        }
+
+        // reset the signed file
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        // inject the signature in the reserve
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            header.reserve.structure2 = signature.array();
+            header.write(channel);
+        }
+
+        // now check if the signature is found
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            assertSigned(file, SHA256);
+        }
+    }
+
+    @Test
     public void testRemoveSignature() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample1.cab");
         File targetFile = new File("target/test-classes/mscab/sample1-unsigned.cab");
