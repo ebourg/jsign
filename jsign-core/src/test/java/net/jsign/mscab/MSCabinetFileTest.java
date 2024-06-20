@@ -59,24 +59,26 @@ public class MSCabinetFileTest {
     }
 
     @Test
-    public void testCabinetWithInvalidSignatureHeader() {
+    public void testCabinetWithInvalidReserveHeader() {
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = new byte[CABSignature.SIZE];
+
         CFHeader header = new CFHeader();
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserve = new byte[CABSignature.SIZE];
-        header.abReserve[0] = 'C';
-        header.abReserve[1] = 'A';
-        header.abReserve[2] = 'F';
-        header.abReserve[3] = 'E';
+        header.setReserve(reserve);
 
         byte[] data = new byte[128];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+        data[0x28] = 'C';
+        data[0x29] = 'A';
+        data[0x2A] = 'F';
+        data[0x2B] = 'E';
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
             fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("message", "MSCabinet file is corrupt: signature header is 1162232131", e.getMessage());
+            assertEquals("message", "Invalid data in the header reserve", e.getMessage());
         }
     }
 
@@ -85,13 +87,16 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserve = new byte[CABSignature.SIZE];
-        CABSignature signature = header.getSignature();
-        signature.header = CABSignature.HEADER;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
         signature.offset = (int) header.cbCabinet - 512;
         signature.length = 1024;
-        header.abReserve = signature.array();
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
 
         byte[] data = new byte[(int) header.cbCabinet];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
@@ -109,13 +114,16 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserve = new byte[CABSignature.SIZE];
-        CABSignature signature = header.getSignature();
-        signature.header = CABSignature.HEADER;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
         signature.offset = header.cbCabinet * 2;
         signature.length = 1024;
-        header.abReserve = signature.array();
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
 
         byte[] data = new byte[512];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
@@ -133,13 +141,16 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserve = new byte[CABSignature.SIZE];
-        CABSignature signature = header.getSignature();
-        signature.header = CABSignature.HEADER;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
         signature.offset = (int) header.cbCabinet - 123;
         signature.length = 1024;
-        header.abReserve = signature.array();
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
 
         byte[] data = new byte[(int) (header.cbCabinet + signature.length)];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
@@ -157,13 +168,16 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserve = new byte[CABSignature.SIZE];
-        CABSignature signature = header.getSignature();
-        signature.header = CABSignature.HEADER;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
         signature.offset = (int) header.cbCabinet;
         signature.length = 1024;
-        header.abReserve = signature.array();
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
 
         byte[] data = new byte[(int) (header.cbCabinet + signature.length) + 123];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));

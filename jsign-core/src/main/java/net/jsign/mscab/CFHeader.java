@@ -72,7 +72,7 @@ class CFHeader {
     public int cbCFHeader;      // u2
     public short cbCFFolder;    // u1
     public short cbCFData;      // u1
-    public byte[] abReserve;
+    public CFReserve reserve;
     public byte[] szCabinetPrev;
     public byte[] szDiskPrev;
     public byte[] szCabinetNext;
@@ -121,7 +121,7 @@ class CFHeader {
         this.cbCFHeader = header.cbCFHeader;
         this.cbCFFolder = header.cbCFFolder;
         this.cbCFData = header.cbCFData;
-        this.abReserve = header.abReserve != null ? header.abReserve.clone() : null;
+        this.reserve = header.reserve != null ? new CFReserve(header.reserve) : null;
         this.szCabinetPrev = header.szCabinetPrev;
         this.szDiskPrev = header.szDiskPrev;
         this.szCabinetNext = header.szCabinetNext;
@@ -153,7 +153,7 @@ class CFHeader {
         this.flags = buffer.getShort() & 0xFFFF;          // u2 H
         this.setID = buffer.getShort();                   // u2 H
         this.iCabinet = buffer.getShort() & 0xFFFF;       // u2
-        this.abReserve = null;
+        this.reserve = null;
 
         if (isReservePresent()) {
             buffer.clear();
@@ -165,8 +165,10 @@ class CFHeader {
             this.cbCFFolder = (short) (buffer.get() & 0xFF); // u1
             this.cbCFData = (short) (buffer.get() & 0xFF);   // u1
             if (this.cbCFHeader > 0) {
-                this.abReserve = new byte[this.cbCFHeader];
-                channel.read(ByteBuffer.wrap(this.abReserve));
+                byte[] abReserve = new byte[this.cbCFHeader];
+                channel.read(ByteBuffer.wrap(abReserve));
+                reserve = new CFReserve();
+                reserve.read(abReserve);
             }
         }
 
@@ -200,7 +202,7 @@ class CFHeader {
             buffer.put((byte) this.cbCFFolder);
             buffer.put((byte) this.cbCFData);
             if (this.cbCFHeader > 0) {
-                buffer.put(this.abReserve);
+                buffer.put(reserve.toBuffer());
             }
         }
         if (hasPreviousCabinet()) {
@@ -249,8 +251,8 @@ class CFHeader {
         buffer.flip();
         digest.update(buffer);
 
-        if (this.abReserve != null && this.abReserve.length > 0) {
-            digest.update(abReserve, 0, 2); // 0x0000
+        if (reserve != null && !reserve.isEmpty()) {
+            reserve.digest(digest);
         }
 
         if (hasPreviousCabinet()) {
@@ -277,18 +279,18 @@ class CFHeader {
     }
 
     public boolean hasSignature() {
-        return this.abReserve != null && this.abReserve.length == CABSignature.SIZE;
+        return this.reserve != null && this.reserve.structure2.length == CABSignature.SIZE;
     }
 
     public CABSignature getSignature() {
-        return hasSignature() ? new CABSignature(abReserve) : null;
+        return hasSignature() ? new CABSignature(reserve.structure2) : null;
     }
 
-    public void setReserve(byte[] reserve) {
+    public void setReserve(CFReserve reserve) {
         int previousSize = getHeaderSize();
 
-        this.abReserve = reserve;
-        this.cbCFHeader = reserve.length;
+        this.reserve = reserve;
+        this.cbCFHeader = reserve != null ? reserve.size() : 0;
 
         // update the reserve flag
         if (cbCFHeader != 0 || cbCFFolder != 0 || cbCFData != 0) {

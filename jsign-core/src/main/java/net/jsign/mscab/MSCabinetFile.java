@@ -108,10 +108,6 @@ public class MSCabinetFile implements Signable {
 
         if (header.hasSignature()) {
             CABSignature cabsig = header.getSignature();
-            if (cabsig.header != CABSignature.HEADER) {
-                throw new IOException("MSCabinet file is corrupt: signature header is " + cabsig.header);
-            }
-
             if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size() || cabsig.offset > channel.size()) {
                 throw new IOException("MSCabinet file is corrupt: signature data (offset=" + cabsig.offset + ", size=" + cabsig.length + ") after the end of the file");
             }
@@ -135,8 +131,11 @@ public class MSCabinetFile implements Signable {
     public synchronized byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
         MessageDigest digest = digestAlgorithm.getMessageDigest();
 
+        CFReserve modifiedReserve = new CFReserve();
+        modifiedReserve.structure2 = new byte[CABSignature.SIZE];
+
         CFHeader modifiedHeader = new CFHeader(header);
-        modifiedHeader.setReserve(new byte[CABSignature.SIZE]);
+        modifiedHeader.setReserve(modifiedReserve);
         modifiedHeader.headerDigestUpdate(digest);
 
         int shift = modifiedHeader.getHeaderSize() - header.getHeaderSize();
@@ -190,15 +189,18 @@ public class MSCabinetFile implements Signable {
         int previousSize = header.getHeaderSize();
 
         if (content.length > 0) {
-            header.setReserve(new byte[CABSignature.SIZE]);
+            CFReserve reserve = new CFReserve();
+            reserve.structure2 = new byte[CABSignature.SIZE];
+
+            header.setReserve(reserve);
 
             CABSignature cabsig = new CABSignature();
             cabsig.offset = header.cbCabinet;
             cabsig.length = content.length;
 
-            header.setReserve(cabsig.array());
+            reserve.structure2 = cabsig.array();
         } else {
-            header.setReserve(new byte[0]);
+            header.setReserve(null);
         }
 
         int currentSize = header.getHeaderSize();
