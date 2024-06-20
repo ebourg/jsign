@@ -206,6 +206,7 @@ public class MSCabinetFileTest {
             assertSigned(file, SHA256);
             file.setSignature(null);
             assertNotSigned(file);
+            assertEquals("file size", sourceFile.length() + 24, targetFile.length());
         }
     }
 

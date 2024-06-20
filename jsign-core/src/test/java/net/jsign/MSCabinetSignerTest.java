@@ -17,6 +17,10 @@
 package net.jsign;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.List;
@@ -118,6 +122,16 @@ public class MSCabinetSignerTest {
             signer.sign(cabFile);
 
             SignatureAssert.assertSigned(cabFile, SHA256);
+        }
+
+        // check if the reserve was resized
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath())) {
+            ByteBuffer buffer = ByteBuffer.allocate(40).order(ByteOrder.LITTLE_ENDIAN);
+            channel.read(buffer);
+            buffer.flip();
+
+            int cbCFHeader = buffer.getShort(36) & 0xFFFF;
+            assertEquals("cbCFHeader", 6 * 1024, cbCFHeader);
         }
     }
 
@@ -235,32 +249,6 @@ public class MSCabinetSignerTest {
 
         try (MSCabinetFile file = new MSCabinetFile(new SeekableInMemoryByteChannel(data))) {
             SignatureAssert.assertSigned(file, SHA512);
-        }
-    }
-
-    @Test
-    public void testRemoveSignature() throws Exception {
-        File sourceFile = new File("target/test-classes/mscab/sample1.cab");
-        File targetFile = new File("target/test-classes/mscab/sample1-unsigned.cab");
-
-        targetFile.getParentFile().mkdirs();
-
-        FileUtils.copyFile(sourceFile, targetFile);
-
-        try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
-            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
-                    .withTimestamping(false);
-
-            signer.sign(cabFile);
-
-            SignatureAssert.assertSigned(cabFile, SHA256);
-
-            cabFile.setSignature(null);
-
-            SignatureAssert.assertNotSigned(cabFile);
-
-            assertEquals("file size", sourceFile.length(), targetFile.length());
-            assertEquals("CRC", FileUtils.checksumCRC32(sourceFile), FileUtils.checksumCRC32(targetFile));
         }
     }
 }

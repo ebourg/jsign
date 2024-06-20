@@ -37,6 +37,7 @@ class CFReserve {
 
     public byte[] structure1 = new byte[0];
     public byte[] structure2 = new byte[0];
+    public int minSize = -1;
 
     public CFReserve() {
     }
@@ -61,7 +62,7 @@ class CFReserve {
     }
 
     public int size() {
-        return 4 + structure1.length + structure2.length;
+        return Math.max(minSize, 4 + structure1.length + structure2.length);
     }
 
     /**
@@ -77,6 +78,7 @@ class CFReserve {
         buffer.putShort((short) structure2.length);
         buffer.put(structure1);
         buffer.put(structure2);
+        buffer.position(buffer.capacity());
         buffer.flip();
 
         return buffer;
