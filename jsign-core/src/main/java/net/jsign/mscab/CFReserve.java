@@ -48,6 +48,9 @@ class CFReserve {
     }
 
     public void read(byte[] abReserve) throws IOException {
+        if (abReserve.length < 4) {
+            throw new IOException("Invalid size of the header reserve");
+        }
         ByteBuffer buffer = ByteBuffer.wrap(abReserve).order(ByteOrder.LITTLE_ENDIAN);
         int length1 = buffer.getShort() & 0xFFFF;
         int length2 = buffer.getShort() & 0xFFFF;
