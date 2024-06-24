@@ -132,10 +132,6 @@ public class HashiCorpVaultSigningService implements SigningService {
                 logger.log(Level.WARNING, String.format("Vault responded with warnings: %s", response.get("warnings")));
             }
 
-            if (response.containsKey("error")) {
-                throw new IllegalArgumentException(String.format("Vault responded with error: %s", response.get("error")));
-            }
-
             Map<String, String> data;
             try {
                 data = (Map<String, String>) response.get("data");
@@ -213,7 +209,7 @@ public class HashiCorpVaultSigningService implements SigningService {
 
             request.put("input", Base64.getEncoder().encodeToString(data));
             request.put("prehashed", true);
-            request.put("hash_algorithm", String.format("sha2-%s", shaType));
+            request.put("hash_algorithm", !"1".equals(shaType) ? "sha2-%s" + shaType : "sha1");
 
             // By default, RSA sign in HashiCorp Vault Transit uses RSA-PSS.
             if (privateKey.getAlgorithm().equals("RSA")) {
@@ -230,10 +226,6 @@ public class HashiCorpVaultSigningService implements SigningService {
 
             if (response.containsKey("warnings") && response.get("warnings") != null) {
                 logger.log(Level.WARNING, String.format("Vault responded with warnings: %s", response.get("warnings")));
-            }
-
-            if (response.containsKey("error")) {
-                throw new IllegalArgumentException(String.format("Vault responded with error: %s", response.get("error")));
             }
 
             @SuppressWarnings("unchecked") Map<String, String> response_data = (Map<String, String>) response.get("data");
@@ -268,7 +260,6 @@ public class HashiCorpVaultSigningService implements SigningService {
             logger.log(Level.SEVERE, "Invalid response format: ", e.getMessage());
             throw new GeneralSecurityException("Invalid response format.", e);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "IO Exception during signing: ", e.getMessage());
             throw new GeneralSecurityException("IO Exception during signing.", e);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected exception: ", e.getMessage());
