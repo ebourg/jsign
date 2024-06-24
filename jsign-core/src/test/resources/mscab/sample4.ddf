@@ -1,4 +1,4 @@
-; makecab directives generating a
+; makecab directives generating a cabinet file with a reserve per-cabinet of 6144 bytes
 
 .OPTION EXPLICIT
 .Set CabinetFileCountThreshold=0
@@ -10,9 +10,9 @@
 .Set CompressionType=MSZIP
 .Set Cabinet=on
 .Set Compress=on
-.Set CabinetNameTemplate=sample1.cab
+.Set CabinetNameTemplate=sample4.cab
 .Set DiskDirectoryTemplate=
 .Set DestinationDir=
+.Set ReservePerCabinetSize=6144
 
 MORE.exe
-wineyes.exe

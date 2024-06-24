@@ -20,10 +20,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * CABSignature structure found in the per-cabinet reserved area.
+ * CABSignature structure found in the per-cabinet reserve.
  *
  * <pre>
- * header                              4 bytes  (0x00100000)
  * position of the signature           4 bytes
  * size of the signature               4 bytes
  * unused                              8 bytes
@@ -34,13 +33,7 @@ import java.nio.ByteOrder;
 class CABSignature {
 
     /** Size of the CABSignature structure */
-    public static final int SIZE = 20;
-
-    /** Header of the signature in the per-cabinet reserved area (two zero bytes + size of the signature) */
-    public static final int HEADER = 0x00100000;
-
-    /** Actual header of the structure */
-    public int header = HEADER;
+    public static final int SIZE = 16;
 
     /** Position of the signature in the file (u4) */
     public long offset;
@@ -57,7 +50,6 @@ class CABSignature {
     public CABSignature(byte[] array) {
         ByteBuffer buffer = ByteBuffer.wrap(array).order(ByteOrder.LITTLE_ENDIAN);
         buffer.rewind();
-        header = buffer.getInt();
         offset = buffer.getInt() & 0xFFFFFFFFL;
         length = buffer.getInt() & 0xFFFFFFFFL;
         filler = buffer.getLong();
@@ -66,7 +58,6 @@ class CABSignature {
 
     public byte[] array() {
         ByteBuffer buffer = ByteBuffer.allocate(SIZE).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt(header);
         buffer.putInt((int) offset);
         buffer.putInt((int) length);
         buffer.putLong(filler);
