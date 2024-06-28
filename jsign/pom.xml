@@ -196,10 +196,7 @@
                 <option>-keepclassmembers class * extends java.lang.Enum { *; }</option>
               </options>
               <injar>${project.build.finalName}.jar</injar>
-              <includeDependency>false</includeDependency>
-              <libs>
-                <lib>${proguard.bootclasspath}</lib>
-              </libs>
+              <includeDependency>true</includeDependency>
             </configuration>
           </execution>
         </executions>
@@ -207,7 +204,7 @@
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-base</artifactId>
-            <version>7.4.2</version>
+            <version>7.5.0</version>
           </dependency>
           <dependency>
             <groupId>com.guardsquare</groupId>
@@ -357,9 +354,24 @@
       <activation>
         <jdk>(,1.8]</jdk>
       </activation>
-      <properties>
-        <proguard.bootclasspath>${java.home}/lib/rt.jar</proguard.bootclasspath>
-      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.wvengen</groupId>
+            <artifactId>proguard-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>proguard-minimizing</id>
+                <configuration>
+                  <libs>
+                    <lib>${java.home}/lib/rt.jar</lib>
+                  </libs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
     <profile>
@@ -367,9 +379,29 @@
       <activation>
         <jdk>[9,)</jdk>
       </activation>
-      <properties>
-        <proguard.bootclasspath>${java.home}/jmods/java.base.jmod</proguard.bootclasspath>
-      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.wvengen</groupId>
+            <artifactId>proguard-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>proguard-minimizing</id>
+                <configuration>
+                  <libs>
+                    <lib>${java.home}/jmods/java.base.jmod</lib>
+                    <lib>${java.home}/jmods/java.logging.jmod</lib>
+                    <lib>${java.home}/jmods/java.smartcardio.jmod</lib>
+                    <lib>${java.home}/jmods/java.sql.jmod</lib>
+                    <lib>${java.home}/jmods/java.xml.jmod</lib>
+                    <lib>${java.home}/jmods/jdk.crypto.cryptoki.jmod</lib>
+                  </libs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
     <profile>
