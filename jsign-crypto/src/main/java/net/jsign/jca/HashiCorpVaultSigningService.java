@@ -1,5 +1,6 @@
 /**
  * Copyright 2023 Maria Merkel
+ * Copyright 2024 Eatay Mizrachi
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +32,10 @@ import java.util.function.Function;
 import net.jsign.DigestAlgorithm;
 
 /**
- * Signing service using the HashiCorp Vault API. It supports the Google Cloud KMS secrets engine only.
+ * Signing service using the HashiCorp Vault API. It supports the Google Cloud KMS and Transit secrets engines.
  *
  * @see <a href="https://developer.hashicorp.com/vault/api-docs/secret/gcpkms">HashiCorp Vault API - Google Cloud KMS Secrets Engine</a>
+ * @see <a href="https://developer.hashicorp.com/vault/api-docs/secret/transit">HashiCorp Vault API - Transit Secrets Engine</a>
  * @since 5.0
  */
 public class HashiCorpVaultSigningService implements SigningService {
@@ -44,6 +46,11 @@ public class HashiCorpVaultSigningService implements SigningService {
     private final Map<String, SigningServicePrivateKey> keys = new HashMap<>();
 
     private final RESTClient client;
+
+    /** The type of secret engine */
+    private VaultEngine engine;
+
+    private enum VaultEngine { GCPKMS, TRANSIT }
 
     /**
      * Creates a new HashiCorp Vault signing service.
@@ -101,19 +108,31 @@ public class HashiCorpVaultSigningService implements SigningService {
         }
 
         if (!alias.contains(":")) {
-            throw new UnrecoverableKeyException("Unable to fetch HashiCorp Vault Google Cloud private key '" + alias + "' (missing key version)");
+            throw new UnrecoverableKeyException("Unable to fetch HashiCorp Vault private key '" + alias + "' (missing key version)");
         }
 
         String algorithm;
 
         try {
             Map<String, ?> response = client.get("keys/" + alias.substring(0, alias.indexOf(":")));
-            algorithm = ((Map<String, String>) response.get("data")).get("algorithm");
-        } catch (IOException e) {
-            throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch HashiCorp Vault Google Cloud private key '" + alias + "'").initCause(e);
-        }
+            Map<String, String> data = (Map<String, String>) response.get("data");
 
-        algorithm = algorithm.substring(0, algorithm.indexOf("_")).toUpperCase();
+            if (data.containsKey("algorithm")) {
+                engine = VaultEngine.GCPKMS;
+                // GCPKMS key type format : 'rsa_sign_pkcs1_<BITS>_<DIGEST_ALGORITHM>'
+                algorithm = data.get("algorithm");
+                algorithm = algorithm.substring(0, algorithm.indexOf("_")).toUpperCase();
+            } else if (data.containsKey("type")) {
+                engine = VaultEngine.TRANSIT;
+                // Transit key type format : 'rsa-<BITS>'
+                algorithm = data.get("type");
+                algorithm = algorithm.substring(0, algorithm.indexOf("-")).toUpperCase();
+            } else {
+                throw new UnrecoverableKeyException("Unsupported secret engine");
+            }
+        } catch (IOException e) {
+            throw (UnrecoverableKeyException) new UnrecoverableKeyException("Unable to fetch HashiCorp Vault private key '" + alias + "'").initCause(e);
+        }
 
         SigningServicePrivateKey key = new SigningServicePrivateKey(alias, algorithm, this);
         keys.put(alias, key);
@@ -131,15 +150,53 @@ public class HashiCorpVaultSigningService implements SigningService {
 
         Map<String, Object> request = new HashMap<>();
         request.put("key_version", keyVersion);
-        request.put("digest", Base64.getEncoder().encodeToString(data));
+
+        if (engine == VaultEngine.GCPKMS) {
+            request.put("digest", Base64.getEncoder().encodeToString(data));
+        } else {
+            request.put("input", Base64.getEncoder().encodeToString(data));
+            request.put("prehashed", true);
+            request.put("hash_algorithm", getHashAlgorithm(digestAlgorithm));
+
+            if ("RSA".equals(privateKey.getAlgorithm())) {
+                // RSA signatures in HashiCorp Vault Transit use RSA-PSS by default
+                request.put("signature_algorithm", "pkcs1v15");
+            }
+        }
 
         try {
             Map<String, ?> response = client.post("sign/" + keyName, JsonWriter.format(request));
-            String signature = ((Map<String, String>) response.get("data")).get("signature");
+
+            Map<String, String> response_data = (Map<String, String>) response.get("data");
+
+            String signature;
+            if (engine == VaultEngine.GCPKMS) {
+                // Google Cloud KMS signature format: '<BASE64>'
+                signature = response_data.get("signature");
+            } else {
+                // Transit signature format: 'vault:v<KEY_VERSION>:<BASE64>'
+                String[] fields = response_data.get("signature").split(":");
+                signature = fields[2];
+            }
 
             return Base64.getDecoder().decode(signature);
         } catch (IOException e) {
             throw new GeneralSecurityException(e);
+        }
+    }
+
+    private String getHashAlgorithm(DigestAlgorithm digestAlgorithm) {
+        switch (digestAlgorithm) {
+            case SHA1:
+                return "sha1";
+            case SHA256:
+                return "sha2-256";
+            case SHA384:
+                return "sha2-384";
+            case SHA512:
+                return "sha2-512";
+            default:
+                throw new IllegalArgumentException("Unsupported digest algorithm: " + digestAlgorithm);
         }
     }
 }
