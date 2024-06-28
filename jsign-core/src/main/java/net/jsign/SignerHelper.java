@@ -30,7 +30,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.security.AuthProvider;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
@@ -45,9 +44,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.login.LoginException;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -469,23 +465,6 @@ class SignerHelper {
             } else {
                 if (signer == null) {
                     signer = build();
-                }
-
-                // logout and login again to avoid the CKR_USER_NOT_LOGGED_IN error with the Yubikey PKCS#11 provider
-                Provider provider = ksparams.provider();
-                if (provider instanceof AuthProvider) {
-                    try {
-                        ((AuthProvider) provider).logout();
-                        ((AuthProvider) provider).login(null, callbacks -> {
-                            for (Callback callback : callbacks) {
-                                if (callback instanceof PasswordCallback) {
-                                    ((PasswordCallback) callback).setPassword(ksparams.storepass().toCharArray());
-                                }
-                            }
-                        });
-                    } catch (LoginException e) {
-                        // ignore the CKR_USER_NOT_LOGGED_IN error thrown when the user isn't logged in
-                    }
                 }
 
                 log.info("Adding Authenticode signature to " + file);

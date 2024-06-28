@@ -17,7 +17,10 @@
 package net.jsign;
 
 import java.io.File;
+import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.Signature;
 
 import org.junit.Assume;
 import org.junit.Test;
@@ -46,5 +49,36 @@ public class YubikeyTest {
         File library = YubiKey.getYkcs11Library();
         assertNotNull("native library", library);
         assertTrue("native library not found", library.exists());
+    }
+
+    @Test
+    public void testAutoLogin() throws Exception {
+        assumeYubikey();
+
+        Provider provider = YubiKey.getProvider();
+        KeyStore keystore = KeyStore.getInstance("PKCS11", provider);
+        keystore.load(() -> new KeyStore.PasswordProtection("123456".toCharArray()));
+
+        String alias = keystore.aliases().nextElement();
+
+        PrivateKey key = (PrivateKey) keystore.getKey(alias, "123456".toCharArray());
+
+        // first signature
+        Signature signature = Signature.getInstance("SHA256withRSA", provider);
+        signature.initSign(key);
+        signature.update("Hello World".getBytes());
+        byte[] s1 = signature.sign();
+
+        assertNotNull("signature null", s1);
+
+        key = (PrivateKey) keystore.getKey(alias, "123456".toCharArray());
+
+        // second signature
+        signature = Signature.getInstance("SHA256withRSA", provider);
+        signature.initSign(key);
+        signature.update("Hello World".getBytes());
+        byte[] s2 = signature.sign();
+
+        assertArrayEquals("signature", s1, s2);
     }
 }

@@ -16,11 +16,14 @@
 
 package net.jsign.jca;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.Key;
 import java.security.KeyStoreSpi;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -100,6 +103,6 @@ abstract class AbstractKeyStoreSpi extends KeyStoreSpi {
     }
 
     @Override
-    public void engineLoad(InputStream stream, char[] password) {
+    public void engineLoad(InputStream stream, char[] password) throws IOException, NoSuchAlgorithmException, CertificateException {
     }
 }

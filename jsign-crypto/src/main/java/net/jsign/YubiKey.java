@@ -18,6 +18,7 @@ package net.jsign;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AuthProvider;
 import java.security.Provider;
 import java.security.ProviderException;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ import java.util.logging.Logger;
 
 import sun.security.pkcs11.wrapper.PKCS11;
 import sun.security.pkcs11.wrapper.PKCS11Exception;
+
+import net.jsign.jca.AutoLoginProvider;
 
 /**
  * Helper class for working with YubiKeys.
@@ -42,7 +45,7 @@ class YubiKey {
      * @since 4.0
      */
     static Provider getProvider() {
-        return ProviderUtils.createSunPKCS11Provider(getSunPKCS11Configuration());
+        return new AutoLoginProvider((AuthProvider) ProviderUtils.createSunPKCS11Provider(getSunPKCS11Configuration()));
     }
 
     /**
