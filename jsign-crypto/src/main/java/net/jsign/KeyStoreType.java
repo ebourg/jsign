@@ -410,10 +410,10 @@ public enum KeyStoreType {
     },
 
     /**
-     * HashiCorp Vault secrets engine (GCP only). Since Google Cloud KMS stores only the private key, the certificate
-     * must be provided separately. The keystore parameter references the URL of the HashiCorp Vault secrets engine
-     * (<code>https://vault.example.com/v1/gcpkms</code>). The alias specifies the name of the key in Vault and the key version
-     * in Google Cloud separated by a colon character (<code>mykey:1</code>).
+     * HashiCorp Vault secrets engine (Transit or GCPKMS). The certificate must be provided separately. The keystore
+     * parameter references the URL of the HashiCorp Vault secrets engine (<code>https://vault.example.com/v1/gcpkms</code>).
+     * The alias parameter specifies the name of the key in Vault. For the Google Cloud KMS secrets engine, the version
+     * of the Google Cloud key is appended to the key name, separated by a colon character. (<code>mykey:1</code>).
      */
     HASHICORPVAULT(false, false, false) {
         @Override

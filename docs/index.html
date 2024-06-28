@@ -226,7 +226,7 @@ invalidating the signature:</p>
           <li><code>ESIGNER</code>: SSL.com eSigner</li>
           <li><code>GARASIGN</code>: Garantir Remote Signing</li>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
-          <li><code>HASHICORPVAULT</code>: Google Cloud KMS via HashiCorp Vault</li>
+          <li><code>HASHICORPVAULT</code>: HashiCorp Vault</li>
           <li><code>ORACLECLOUD</code>: Oracle Cloud Key Management Service</li>
           <li><code>TRUSTEDSIGNING</code>: Azure Trusted Signing</li>
         </ul>
@@ -547,7 +547,7 @@ are the same as those described above for the Ant task.</p>
                              - ESIGNER: SSL.com eSigner
                              - GARASIGN: Garantir Remote Signing
                              - GOOGLECLOUD: Google Cloud KMS
-                             - HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
+                             - HASHICORPVAULT: HashiCorp Vault
                              - ORACLECLOUD: Oracle Cloud Key Management Service
                              - TRUSTEDSIGNING: Azure Trusted Signing
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore
@@ -858,12 +858,16 @@ or RSA with PKCS#1 v1.5 padding and SHA digest. Keys with PSS padding or raw RSA
 <p>These permissions are covered by the <em>Cloud KMS CryptoKey Signer</em> and <em>Cloud KMS Viewer</em>
 <a href="https://cloud.google.com/kms/docs/reference/permissions-and-roles#predefined">roles</a>.</p>
 
-<h4 id="example-hashicorpvault">Signing with Google Cloud KMS via HashiCorp Vault</h4>
+<h4 id="example-hashicorpvault">Signing with HashiCorp Vault</h4>
 
-<p>Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
-references the URL of the HashiCorp Vault secrets engine, consisting of the Vault server URL, the API version v1 and
-the secrets engine path. The alias specifies the name of the key in Vault and the key version in Google Cloud separated
-by a colon character.</p>
+<p><a href="https://developer.hashicorp.com/vault">HashiCorp Vault</a> exposes keys through secrets engines. Jsign
+supports the <a href="https://developer.hashicorp.com/vault/docs/secrets/gcpkms">Google Cloud KMS</a> and
+<a href="https://developer.hashicorp.com/vault/docs/secrets/transit">Transit</a> secrets engines. The <code>keystore</code>
+parameter references the endpoint of the secrets engine, which is typically the Vault server URL and the API version
+<code>v1</code> followed by the secrets engine path. The certificate must be provided separately using the
+<code>certfile</code> parameter. The <code>alias</code> parameter specifies the name of the key in Vault. For the
+Google Cloud KMS secrets engine, the version of the Google Cloud key is appended to the key name, separated by a colon
+character.</p>
 
 <pre>
  jsign --storetype HASHICORPVAULT \
@@ -1038,7 +1042,8 @@ The syntax looks like this:</p>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
 MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
-<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås, Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy and Sebastian Stamm.</p>
+<p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås,
+Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy, Sebastian Stamm and Eatay Mizrachi.</p>
 
 <h3 id="contacts">Contact</h3>
 

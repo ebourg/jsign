@@ -95,7 +95,7 @@ Cloud key management systems:
 .br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
-- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault
+- HASHICORPVAULT: HashiCorp Vault
 .br
 - ORACLECLOUD   : Oracle Cloud Key Management Service
 .br
@@ -493,12 +493,13 @@ These permissions are covered by the 'Cloud KMS CryptoKey Signer' and 'Cloud KMS
 
 .TP
 
-Signing with Google Cloud KMS via HashiCorp Vault:
+Signing with HashiCorp Vault:
 
-Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
-references the URL of the HashiCorp Vault secrets engine, consisting of the Vault server URL, the API version v1
-and the secrets engine path. The alias specifies the name of the key in Vault and the key version in Google Cloud
-separated by a colon character.
+HashiCorp Vault exposes keys through secrets engines. Jsign supports the Google Cloud KMS and Transit secrets engines.
+The keystore parameter references the endpoint of the secrets engine, which is typically the Vault server URL and the
+API version 'v1' followed by the secrets engine path. The certificate must be provided separately using the certfile
+parameter. The alias parameter specifies the name of the key in Vault. For the Google Cloud KMS secrets engine, the
+version of the Google Cloud key is appended to the key name, separated by a colon character.
 
 jsign --storetype HASHICORPVAULT \\
       --keystore https://vault.example.com/v1/gcpkms \\

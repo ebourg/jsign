@@ -93,7 +93,7 @@ public class JsignCLI {
                         + "- ESIGNER: SSL.com eSigner\n"
                         + "- GARASIGN: Garantir Remote Signing\n"
                         + "- GOOGLECLOUD: Google Cloud KMS\n"
-                        + "- HASHICORPVAULT: Google Cloud KMS via HashiCorp Vault\n"
+                        + "- HASHICORPVAULT: HashiCorp Vault\n"
                         + "- ORACLECLOUD: Oracle Cloud Key Management Service\n"
                         + "- TRUSTEDSIGNING: Azure Trusted Signing\n").build());
         options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore").build());

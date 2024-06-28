@@ -54,7 +54,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.0 (in development)
 
-* New signing services: Azure Trusted Signing, Oracle Cloud and GaraSign
+* New signing services: HashiCorp Vault Transit (contributed by Eatay Mizrachi), Azure Trusted Signing, Oracle Cloud and GaraSign
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
 * Commands have been added:
   * `timestamp`: timestamps the signatures of a file
