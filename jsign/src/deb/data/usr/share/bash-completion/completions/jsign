@@ -1,6 +1,5 @@
 # jsign completion
 
-have jsign &&
 _jsign()
 {
     COMPREPLY=()
