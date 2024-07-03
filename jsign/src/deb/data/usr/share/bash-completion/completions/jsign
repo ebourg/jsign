@@ -6,8 +6,29 @@ _jsign()
     local cur prev
     _get_comp_words_by_ref cur prev
 
-    local opts="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h --replace -e --encoding --detached --quiet --verbose --debug --format --value --help"
+    local commands="sign timestamp extract remove tag"
 
+    declare -A opts
+    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h --replace -e --encoding --detached --quiet --verbose --debug --help"
+    opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait"
+    opts["extract"]="--format"
+    opts["remove"]=""
+    opts["tag"]="--value"
+
+    # completion of the first token (either a command or a sign option)
+    if [[ $COMP_CWORD == 1 ]]; then
+        COMPREPLY=( $(compgen -W "${commands} ${opts[sign]}" -- "$cur") )
+        return 0
+    fi
+
+    local command="${COMP_WORDS[1]}"
+    if [[ $command == -* ]]; then
+        command="sign"
+    fi
+
+    local opts="${opts[$command]}"
+
+    # completion for the command options
     if [[ "$cur" == -* ]]; then
         COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
         return 0
