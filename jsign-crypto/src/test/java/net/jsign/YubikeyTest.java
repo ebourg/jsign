@@ -57,6 +57,7 @@ public class YubikeyTest {
 
         Provider provider = YubiKey.getProvider();
         KeyStore keystore = KeyStore.getInstance("PKCS11", provider);
+        assertEquals("provider", provider, keystore.getProvider());
         keystore.load(() -> new KeyStore.PasswordProtection("123456".toCharArray()));
 
         String alias = keystore.aliases().nextElement();

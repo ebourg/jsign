@@ -80,7 +80,7 @@ public class AutoLoginProvider extends Provider {
         private final Service service;
 
         public PasswordInterceptorService(Service service) {
-            super(provider, service.getType(), service.getAlgorithm(), service.getClassName(), null, null);
+            super(AutoLoginProvider.this, service.getType(), service.getAlgorithm(), service.getClassName(), null, null);
             this.service = service;
         }
 
