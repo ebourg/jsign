@@ -9,8 +9,8 @@ _jsign()
     local commands="sign timestamp extract remove tag"
 
     declare -A opts
-    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h --replace -e --encoding --detached --quiet --verbose --debug --help"
-    opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait"
+    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --replace -e --encoding --detached --quiet --verbose --debug -h --help"
+    opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass"
     opts["extract"]="--format"
     opts["remove"]=""
     opts["tag"]="--value"
@@ -45,7 +45,7 @@ _jsign()
             COMPREPLY=( $( compgen -W 'JKS JCEKS PKCS12 PKCS11 AWS AZUREKEYVAULT DIGICERTONE ESIGNER ETOKEN GARASIGN GOOGLECLOUD HASHICORPVAULT ORACLECLOUD TRUSTEDSIGNING YUBIKEY NITROKEY OPENPGP OPENSC PIV' -- "$cur" ) )
             return 0
             ;;
-        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|--value)
+        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|--proxyUrl|--proxyUser|--proxyPass|--value)
             # argument required but no completions available
             return 0
             ;;
