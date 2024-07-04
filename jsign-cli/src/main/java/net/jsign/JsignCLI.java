@@ -126,8 +126,9 @@ public class JsignCLI {
         options.addOption(Option.builder("m").hasArg().longOpt(PARAM_TSMODE).argName("MODE").desc("The timestamping mode (RFC3161 or Authenticode)").build());
         options.addOption(Option.builder("r").hasArg().longOpt(PARAM_TSRETRIES).argName("NUMBER").desc("The number of retries for timestamping").build());
         options.addOption(Option.builder("w").hasArg().longOpt(PARAM_TSRETRY_WAIT).argName("SECONDS").desc("The number of seconds to wait between timestamping retries").build());
-        options.addOption(Option.builder("n").hasArg().longOpt(PARAM_NAME).argName("NAME").desc("The name of the application").build());
-        options.addOption(Option.builder("u").hasArg().longOpt(PARAM_URL).argName("URL").desc("The URL of the application").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_URL).argName("URL").desc("The URL of the HTTP proxy").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If a user is needed").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If a user is needed").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous timestamps should be replaced").build());
 
         this.options.put("timestamp", options);

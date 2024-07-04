@@ -581,8 +581,9 @@ are the same as those described above for the Ant task.</p>
   -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
   -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
   -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
-  -n,--name &lt;NAME>           The name of the application
-  -u,--url &lt;URL>             The URL of the application
+     --proxyUrl &lt;URL>        The URL of the HTTP proxy
+     --proxyUser &lt;NAME>      The user for the HTTP proxy. If a user is needed
+     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If a user is needed
      --replace               Tells if the previous timestamps should be replaced
 
   extract:
