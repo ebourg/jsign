@@ -214,6 +214,24 @@
         </dependencies>
       </plugin>
       <plugin>
+        <groupId>io.github.zlika</groupId>
+        <artifactId>reproducible-build-maven-plugin</artifactId>
+        <version>0.16</version>
+        <executions>
+          <execution>
+            <id>reproducible-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>strip-jar</goal>
+            </goals>
+            <configuration>
+              <zipDateTime>${project.build.outputTimestamp}</zipDateTime>
+              <zipDateTimeFormatPattern>yyyy-MM-dd'T'HH:mm:ss'Z'</zipDateTimeFormatPattern>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>com.github.siom79.japicmp</groupId>
         <artifactId>japicmp-maven-plugin</artifactId>
         <version>0.21.2</version>
