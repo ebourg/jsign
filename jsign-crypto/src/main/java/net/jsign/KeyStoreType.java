@@ -603,7 +603,7 @@ public enum KeyStoreType {
                 ks.load(in, params.storepass() != null ? params.storepass().toCharArray() : null);
             }
         } catch (Exception e) {
-            throw new KeyStoreException("Unable to load the keystore " + params.keystore(), e);
+            throw new KeyStoreException("Unable to load the " + name() + " keystore" + (params.keystore() != null ? " " + params.keystore() : ""), e);
         }
 
         return ks;
