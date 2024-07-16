@@ -507,8 +507,10 @@ public class AuthenticodeSigner {
         SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));
         
-        SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
-        attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
+        if (programName != null || programURL != null) {
+            SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
+            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
+        }
 
         return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
     }
