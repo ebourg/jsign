@@ -391,7 +391,7 @@ public class AuthenticodeSigner {
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
         CMSTypedData contentInfo = file.createSignedContent(digestAlgorithm);
-        CMSSignedDataGenerator generator = createSignedDataGenerator(contentInfo);
+        CMSSignedDataGenerator generator = createSignedDataGenerator(file, contentInfo);
         CMSSignedData sigData = generator.generate(contentInfo, true);
         
         // verify the signature
@@ -419,19 +419,19 @@ public class AuthenticodeSigner {
         return sigData;
     }
 
-    private CMSSignedDataGenerator createSignedDataGenerator(CMSTypedData contentInfo) throws CMSException, OperatorCreationException, CertificateEncodingException {
+    private CMSSignedDataGenerator createSignedDataGenerator(Signable file, CMSTypedData contentInfo) throws CMSException, OperatorCreationException, CertificateEncodingException {
         List<X509Certificate> fullChain = CertificateUtils.getFullCertificateChain((Collection) Arrays.asList(chain));
         fullChain.removeIf(CertificateUtils::isSelfSigned);
 
         boolean authenticode = AuthenticodeObjectIdentifiers.isAuthenticode(contentInfo.getContentType().getId());
         CMSSignedDataGenerator generator = authenticode ? new AuthenticodeSignedDataGenerator() : new CMSSignedDataGenerator();
         generator.addCertificates(new JcaCertStore(fullChain));
-        generator.addSignerInfoGenerator(createSignerInfoGenerator());
+        generator.addSignerInfoGenerator(createSignerInfoGenerator(file, authenticode));
 
         return generator;
     }
 
-    private SignerInfoGenerator createSignerInfoGenerator() throws OperatorCreationException, CertificateEncodingException {
+    private SignerInfoGenerator createSignerInfoGenerator(Signable file, boolean authenticode) throws OperatorCreationException, CertificateEncodingException {
         // create content signer
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(getSignatureAlgorithm());
         if (signatureProvider != null) {
@@ -442,8 +442,14 @@ public class AuthenticodeSigner {
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
-        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
-        attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.signingTime, CMSAttributes.cmsAlgorithmProtect);
+        List<Attribute> attributes = new ArrayList<>(authenticode ? createAuthenticatedAttributes() : file.createSignedAttributes((X509Certificate) chain[0]));
+        AttributeTable attributeTable = new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
+        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(attributeTable);
+        if (authenticode) {
+            attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.cmsAlgorithmProtect, CMSAttributes.signingTime);
+        } else {
+            attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.cmsAlgorithmProtect);
+        }
         
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
@@ -501,7 +507,7 @@ public class AuthenticodeSigner {
      * 
      * @return the authenticated attributes
      */
-    private AttributeTable createAuthenticatedAttributes() {
+    private List<Attribute> createAuthenticatedAttributes() {
         List<Attribute> attributes = new ArrayList<>();
         
         SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);
@@ -512,7 +518,7 @@ public class AuthenticodeSigner {
             attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
         }
 
-        return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
+        return attributes;
     }
 
     /**

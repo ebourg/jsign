@@ -22,10 +22,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
 import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSTypedData;
@@ -98,6 +102,16 @@ public interface Signable extends Closeable {
      * @throws IOException if an I/O error occurs
      */
     ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException;
+
+    /**
+     * Creates the signed attributes to include in the signature.
+     *
+     * @param certificate the signing certificate
+     * @since 7.0
+     */
+    default List<Attribute> createSignedAttributes(X509Certificate certificate) throws CertificateEncodingException {
+        return new ArrayList<>();
+    }
 
     /**
      * Checks if the specified certificate is suitable for signing the file.
