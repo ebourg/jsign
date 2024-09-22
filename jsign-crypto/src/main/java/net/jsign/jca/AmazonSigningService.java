@@ -88,7 +88,7 @@ public class AmazonSigningService implements SigningService {
      * @return the endpoint URL
      */
     public static String getEndpointUrl(String region) {
-        String useFipsEndpoint = System.getenv("AWS_USE_FIPS_ENDPOINT");
+        String useFipsEndpoint = getenv("AWS_USE_FIPS_ENDPOINT");
         if (useFipsEndpoint != null && useFipsEndpoint.equalsIgnoreCase("true")) {
             return "https://kms-fips." + region + ".amazonaws.com";
         }
@@ -345,5 +345,9 @@ public class AmazonSigningService implements SigningService {
         MessageDigest digest =  DigestAlgorithm.SHA256.getMessageDigest();
         digest.update(data);
         return Hex.toHexString(digest.digest()).toLowerCase();
+    }
+
+    static String getenv(String name) {
+        return System.getenv(name);
     }
 }
