@@ -85,6 +85,22 @@ public class AmazonSigningServiceTest {
     }
 
     @Test
+    public void testGetEndpointUrl() throws Exception {
+        // Test default endpoint
+        String defaultEndpoint = AmazonSigningService.getEndpointUrl("us-west-2");
+        assertEquals("https://kms.us-west-2.amazonaws.com", defaultEndpoint);
+
+        // Test FIPS endpoint
+        try {
+            System.setProperty("AWS_USE_FIPS_ENDPOINT", "true");
+            String fipsEndpoint = AmazonSigningService.getEndpointUrl("us-west-2");
+            assertEquals("https://kms-fips.us-west-2.amazonaws.com", fipsEndpoint);
+        } finally {
+            System.clearProperty("AWS_USE_FIPS_ENDPOINT");
+        }
+    }
+
+    @Test
     public void testGetAliasesWithError() {
         onRequest()
                 .havingMethodEqualTo("POST")

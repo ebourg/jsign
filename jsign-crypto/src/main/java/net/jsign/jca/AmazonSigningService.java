@@ -81,6 +81,21 @@ public class AmazonSigningService implements SigningService {
         algorithmMapping.put("SHA512withRSA/PSS", "RSASSA_PSS_SHA_512");
     }
 
+     /**
+     * Generates the endpoint URL for the given AWS region.
+     *
+     * @param region the AWS region
+     * @return the endpoint URL
+     */
+    public static String getEndpointUrl(String region) {
+        String useFipsEndpoint = System.getenv("AWS_USE_FIPS_ENDPOINT");
+        if (useFipsEndpoint != null && useFipsEndpoint.equalsIgnoreCase("true")) {
+            return "https://kms-fips." + region + ".amazonaws.com";
+        }
+        
+        return "https://kms." + region + ".amazonaws.com";
+    }
+
     /**
      * Creates a new AWS signing service.
      *
@@ -90,7 +105,7 @@ public class AmazonSigningService implements SigningService {
      * @since 6.0
      */
     public AmazonSigningService(String region, Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore) {
-        this(credentials, certificateStore, "https://kms." + region + ".amazonaws.com");
+        this(credentials, certificateStore, getEndpointUrl(region));
     }
 
     /**
