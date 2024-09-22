@@ -274,7 +274,7 @@ public class AmazonSigningService implements SigningService {
         String host = endpoint.getHost();
         Matcher matcher = hostnamePattern.matcher(host);
         String regionName = matcher.matches() ? matcher.group(2) : "us-east-1";
-        String serviceName = matcher.matches() ? matcher.group(1) : "kms";
+        String serviceName = "kms";
 
         String credentialScope = dateFormat.format(date) + "/" + regionName + "/" + serviceName + "/" + "aws4_request";
 
