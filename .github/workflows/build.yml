@@ -59,6 +59,10 @@ jobs:
             !jsign-core/target/jsign-core-*-javadoc.jar
             !jsign-core/target/jsign-core-*-sources.jar
             !jsign-core/target/jsign-core-*-tests.jar
+            jsign-core/target/jsign-crypto-*.jar
+            !jsign-core/target/jsign-crypto-*-javadoc.jar
+            !jsign-core/target/jsign-crypto-*-sources.jar
+            !jsign-core/target/jsign-crypto-*-tests.jar
 
       - name: Coverage report
         if: ${{ matrix.java == '17' }}

@@ -59,13 +59,18 @@ class CertificateTableEntry {
         return size;
     }
 
+    public byte[] getContent() {
+        return content;
+    }
+
+    public boolean isSupported() {
+        return type == CertificateType.PKCS_SIGNED_DATA.getValue() && revision == 0x0200;
+    }
+
+    @Deprecated
     public CMSSignedData getSignature() throws CMSException {
-        if (type != CertificateType.PKCS_SIGNED_DATA.getValue()) {
-            throw new UnsupportedOperationException("Unsupported certificate type: " + type);
-        }
-        
-        if (revision != 0x0200) {
-            throw new UnsupportedOperationException("Unsupported certificate revision: " + revision);
+        if (!isSupported()) {
+            throw new UnsupportedOperationException("Unsupported certificate type: " + type + " revision: " + revision);
         }
         
         if (signature == null) {

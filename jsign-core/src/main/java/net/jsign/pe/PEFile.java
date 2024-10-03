@@ -27,20 +27,15 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
+import net.jsign.SignatureUtils;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
@@ -301,26 +296,9 @@ public class PEFile implements Signable {
     public synchronized List<CMSSignedData> getSignatures() throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
         
-        for (CertificateTableEntry entry : getCertificateTable()) {
-            try {
-                CMSSignedData signedData = entry.getSignature();
-                signatures.add(signedData);
-                
-                // look for nested signatures
-                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
-                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-                if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-                    if (nestedSignatures != null) {
-                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
-                        }
-                    }
-                }
-            } catch (UnsupportedOperationException e) {
-                // unsupported type, just skip
-            } catch (Exception | StackOverflowError e) {
-                e.printStackTrace();
+        for (CertificateTableEntry certificate : getCertificateTable()) {
+            if (certificate.isSupported()) {
+                signatures.addAll(SignatureUtils.getSignatures(certificate.getContent()));
             }
         }
         

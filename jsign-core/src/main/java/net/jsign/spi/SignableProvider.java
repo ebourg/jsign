@@ -25,7 +25,7 @@ import net.jsign.Signable;
 /**
  * Service Provider Interface for {@link Signable} implementations
  *
- * @since 6.1
+ * @since 7.0
  */
 public interface SignableProvider {
 

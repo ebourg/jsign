@@ -2,19 +2,35 @@
 .TH man 1 "25 Mar 2021" "@VERSION@" "jsign man page"
 
 .SH NAME
-jsign \- sign and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
+jsign \- code signing tool for Windows executable files, installer packages and scripts
 
 .SH SYNOPSIS
 .B jsign
-[OPTIONS] [FILE]...
+[OPTIONS] [FILE] [PATTERN] [@FILELIST]...
 
 .SH DESCRIPTION
-Jsign is a Java implementation of Microsoft Authenticode that lets you sign
-and timestamp executable files for Windows, Microsoft Installers (MSI), Cabinet
-files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft
-Dynamics 365 extension packages, NuGet packages and scripts. Jsign is platform
-independent and provides an alternative to native tools like signcode/signtool
-on Windows or the Mono development tools on Unix systems.
+Jsign is a versatile code signing tool that allows you to sign and timestamp
+Windows executable files, installer packages and scripts. Jsign is platform
+independent and provides an alternative to native tools like signtool on Windows
+or the Mono development tools on Unix systems.
+
+It supports the following file formats:
+.br
+- Windows executable files (.exe) and libraries (.dll)
+.br
+- Microsoft Installers (.msi)
+.br
+- Cabinet files (.cab)
+.br
+- Catalog files (.cat)
+.br
+- Windows packages (.appx, .msix)
+.br
+- Microsoft Dynamics 365 extension packages
+.br
+- NuGet packages
+.br
+- Windows scripts (PowerShell, VBScript, JScript, WSF)
 
 Jsign can use private keys and certificates in various formats, either Java keystores,
 PKCS#12 keystores, PKCS#11 hardware tokens, SPC/PVK files or from cloud key management
@@ -40,12 +56,16 @@ by using the env: prefix followed by the name of the variable.
 .TP
 .B --storetype <TYPE>
 The type of the keystore:
+
+File based:
 .br
 - JKS           : Java keystore (.jks files)
 .br
 - JCEKS         : SunJCE keystore (.jceks files)
 .br
 - PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
+
+Hardware tokens;
 .br
 - PKCS11        : PKCS#11 hardware token
 .br
@@ -60,6 +80,8 @@ The type of the keystore:
 - PIV           : PIV card
 .br
 - YUBIKEY       : YubiKey security key (requires ykcs11)
+
+Cloud key management systems:
 .br
 - AWS           : AWS Key Management Service
 .br
@@ -69,12 +91,16 @@ The type of the keystore:
 .br
 - ESIGNER       : SSL.com eSigner
 .br
+- GARASIGN      : Garantir Remote Signing
+.br
 - GOOGLECLOUD   : Google Cloud KMS
 .br
-- HASHICORPVAULT : Google Cloud KMS via HashiCorp Vault
+- HASHICORPVAULT: HashiCorp Vault
 .br
 - ORACLECLOUD   : Oracle Cloud Key Management Service
 .br
+- TRUSTEDSIGNING: Azure Trusted Signing
+
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
 .TP
@@ -97,8 +123,12 @@ is used in combination with the certfile option.
 
 .TP
 .B -c, --certfile <FILE>
-The file containing the PKCS#7 certificate chain (.p7b or .spc files). This
-option is used in combination with the keyfile option.
+The file containing the PKCS#7 certificate chain, in PEM or DER format (.p7b or .spc files).
+This parameter is required if --keystore isn't specified, or if the keystore used contains
+only the key and not the certificate chain. It may be specified if the keystore holds only
+the signing certificate and not the full certificate chain, otherwise Jsign will attempt
+to download the missing certificates from the URL specified in the Authority Information
+Access field of the certificates.
 
 .TP
 .B -d, --alg <ALGORITHM>
@@ -141,11 +171,11 @@ The URL of the HTTP proxy.
 
 .TP
 .B --proxyUser <NAME>
-The user for the HTTP proxy. If an user is needed.
+The user for the HTTP proxy. If a user is needed.
 
 .TP
 .B --proxyPass <PASSWORD>
-The password for the HTTP proxy user. If an user is needed.
+The password for the HTTP proxy user. If a user is needed.
 
 .TP
 .B --replace
@@ -169,8 +199,39 @@ If the signature exists it is attached to the file, replacing any existing signa
 .RE
 
 .TP
+.B --value
+The value of the unsigned attribute when tagging a file. The value is either:
+.br
+- a string (such as a user id, a license key or a JWT token)
+.br
+- the name of the file to include, prefixed with file:
+.br
+- a binary value in hexadecimal format, prefixed with 0x
+
+If no value is specified a default 1KB template is used, filled with zeros and delimited by
+-----BEGIN TAG----- and -----END TAG----- markers.
+
+.TP
+.B --quiet
+Print only error messages
+
+.TP
+.B --verbose
+Print more information
+
+.TP
+.B --debug
+Print debugging information
+
+.TP
 .B -h, --help
 Print the help
+
+After the options Jsign accepts one or more files to sign as arguments. The arguments may contain '*' or '**'
+wildcards to match multiple files and scan through directories recursively. For example using "build/*.exe" will
+sign the executables in the build directory, and "installdir/**/*.dll" will scan the installdir directory
+recursively and sign all the DLLs found. If an argument starts with @ it is considered as a text file containing
+a list of files to sign, one per line.
 
 
 .SH EXAMPLES
@@ -222,8 +283,7 @@ it doesn't require OpenSC and any key can be used by providing an external certi
 
 Signing with a SafeNet eToken:
 
-Signing with a SafeNet eToken requires the installation of the SafeNet Authentication Client
-<a href="https://knowledge.digicert.com/general-information/how-to-download-safenet-authentication-client"></a>.</p>
+Signing with a SafeNet eToken requires the installation of the SafeNet Authentication Client.
 
 jsign --storetype ETOKEN --storepass <PIN> --certfile full-chain.pem application.exe
 
@@ -315,11 +375,38 @@ The Azure account used must have the "Key Vault Crypto User" and "Key Vault Cert
 
 .TP
 
-Signing with DigiCert ONE:
+Signing with Azure Trusted Signing
+
+With the Azure Trusted Signing service the keystore parameter specifies the endpoint URI, and the alias combines
+the account name and the certificate profile. The Azure API access token is used as the keystore password.
+
+jsign --storetype TRUSTEDSIGNING \
+      --keystore weu.codesigning.azure.net \
+      --storepass <api-access-token> \
+      --alias <account>/<profile> application.exe
+
+The access token can be obtained with the Azure CLI:
+
+az account get-access-token --resource https://codesigning.azure.net
+
+The Azure account used must have the "Code Signing Certificate Profile Signer" role.
+
+The certificates issued by Azure Trusted Signing have a lifetime of 3 days only, and timestamping is necessary to
+ensure the long term validity of the signature. For this reason timestamping is automatically enabled when signing
+with this service.
+
+Implementation note: Jsign performs an extra call to the signing API to retrieve the current certificate chain before
+signing. When signing multiple files it's recommended to invoke Jsign only once with the list of files to avoid doubling
+the quota usage.
+
+.TP
+
+Signing with DigiCert ONE / DigiCert KeyLocker:
 
 Certificates and keys stored in the DigiCert ONE Secure Software Manager can be used directly without installing
 the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding a client certificate for the
-authentication.
+authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com) but a different
+host can be specified with the --keystore parameter.
 
 jsign --storetype DIGICERTONE \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
@@ -340,6 +427,32 @@ jsign --storetype ESIGNER \\
 
 SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
 "--keystore https://cs-try.ssl.com".
+
+
+.TP
+
+Signing with GaraSign:
+
+GaraSign is a remote signing service provided by Garantir. The authentication is performed by specifying
+the username/password or the TLS client certificate in the storepass parameter. If the TLS client certificate
+is stored in a password protected keystore, the password is specified in the keypass parameter. The keystore
+parameter references the URL of the GaraSign REST API (https://garasign.com:8443/CodeSigningRestService/ by default).
+
+Authenticating with a username and a password:
+
+jsign --storetype GARASIGN \\
+      --storepass "<username>|<password>" \\
+      --alias test \\
+      application.exe
+
+Authenticating with a TLS client certificate and a non-default endpoint:
+
+jsign --storetype GARASIGN \\
+      --keystore https://demo.garantir.io/CodeSigningRestService \\
+      --storepass "/path/to/client-certificate.p12" \\
+      --keypass <client-certificate-password> \\
+      --alias test \\
+      application.exe
 
 
 .TP
@@ -380,12 +493,13 @@ These permissions are covered by the 'Cloud KMS CryptoKey Signer' and 'Cloud KMS
 
 .TP
 
-Signing with Google Cloud KMS via HashiCorp Vault:
+Signing with HashiCorp Vault:
 
-Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
-references the URL of the HashiCorp Vault secrets engine, consisting of the Vault server URL, the API version v1
-and the secrets engine path. The alias specifies the name of the key in Vault and the key version in Google Cloud
-separated by a colon character.
+HashiCorp Vault exposes keys through secrets engines. Jsign supports the Google Cloud KMS and Transit secrets engines.
+The keystore parameter references the endpoint of the secrets engine, which is typically the Vault server URL and the
+API version 'v1' followed by the secrets engine path. The certificate must be provided separately using the certfile
+parameter. The alias parameter specifies the name of the key in Vault. For the Google Cloud KMS secrets engine, the
+version of the Google Cloud key is appended to the key name, separated by a colon character.
 
 jsign --storetype HASHICORPVAULT \\
       --keystore https://vault.example.com/v1/gcpkms \\
@@ -402,16 +516,18 @@ Signing with the Oracle Cloud Infrastructure Key Management Service requires the
 the environment variables used by the OCI CLI. The OCI CLI isn't required for signing, but it may be used
 to initialize the configuration file with 'oci setup bootstrap'.
 
-The keystore parameter specifies the profile used in the configuration file (the default value is DEFAULT),
-and the storepass parameter specifies the path to the configuration file (~/.oci/config by default).
+The storepass parameter specifies the path to the configuration file (~/.oci/config by default). If the
+configuration file contains multiple profiles, the name of the non-default profile to use is appended
+to the storepass (for example ~/.oci/config|PROFILE).
+The keypass parameter may be used to specify the passphrase of the key file used for signing the requests
+to the OCI API if it isn't set in the configuration file.
 
 The certificate must be provided separately using the certfile parameter. The alias specifies the OCID of the key.
 
 The general syntax looks like this:
 
 jsign --storetype ORACLECLOUD \\
-      --keystore <profile> \\
-      --storepass <oci-config-file> \\
+      --storepass "<oci-config-file>|<profile>" \\
       --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
       --certfile full-chain.pem application.exe
 
@@ -433,8 +549,32 @@ The configuration file can be replaced (or overridden) by environment variables.
 \- OCI_CLI_KEY_FILE    : The path to the private key signing the API requests in PEM format
 .br
 \- OCI_CLI_PASS_PHRASE : The pass phrase of the private key
-.br
-\- OCI_CLI_FINGERPRINT : The fingerprint of the private key
+
+
+.TP
+
+Tagging
+
+A signed file can be modified to include additional data without invalidating the signature. This feature is useful
+for embedding user identification data, such as a licence key or a session token, within a signed installer when the
+file is downloaded. Upon installation, the installer extracts this data, enabling the application to automatically
+authenticate the user without requiring credentials.
+
+For example, to tag a signed installer with a licence key:
+
+jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
+
+For an executable file, the tag can be found next to the timestamp of the signature, in the last few kilobytes
+of the file.
+
+A common pattern consist in embedding a default template at build time, providing enough space for the data
+to be inserted when the file is downloaded. This allows a simple search-and-replace operation to be performed
+on the download server without needing Jsign to be installed. For example:
+
+jsign tag --value "<TEMPLATE>XXXXXXXXXXXXXXXXXXXXXXXXXXX</TEMPLATE>" installer.exe
+
+If the value parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
+-----BEGIN TAG----- and -----END TAG----- markers.
 
 
 .SH REPORTING BUGS

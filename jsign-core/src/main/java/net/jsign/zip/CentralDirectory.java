@@ -21,13 +21,12 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * Central directory of a ZIP file.
@@ -146,15 +145,42 @@ public class CentralDirectory {
     public void removeEntry(String name) {
         if (entries.containsKey(name)) {
             CentralDirectoryFileHeader centralDirectoryFileHeader = entries.get(name);
+            long size = getEntrySize(name);
 
-            CentralDirectoryFileHeader lastCentralDirectoryFileHeader = new ArrayList<>(entries.values()).get(entries.size() - 1);
-            if (centralDirectoryFileHeader != lastCentralDirectoryFileHeader) {
-                throw new IllegalArgumentException("The entry " + name + " is not the last one and cannot be removed");
-            }
-
+            // remove the entry
             entries.remove(name);
-            centralDirectoryOffset = centralDirectoryFileHeader.getLocalHeaderOffset();
+
+            // shift the central directory offset
+            centralDirectoryOffset = centralDirectoryOffset - size;
+
+            // shift the local header offset of the following entries
+            for (CentralDirectoryFileHeader entry : entries.values()) {
+                if (entry.getLocalHeaderOffset() > centralDirectoryFileHeader.getLocalHeaderOffset()) {
+                    entry.setLocalHeaderOffset(entry.getLocalHeaderOffset() - size);
+                }
+            }
         }
+    }
+
+    /**
+     * Returns the size of the specified entry (local header + compressed data).
+     *
+     * @param name the name of the entry
+     * @since 7.0
+     */
+    public long getEntrySize(String name) {
+        CentralDirectoryFileHeader centralDirectoryFileHeader = entries.get(name);
+
+        // the size is the smallest strictly positive distance between the offset and the entry and the others
+        long size = centralDirectoryOffset - centralDirectoryFileHeader.getLocalHeaderOffset();
+        for (CentralDirectoryFileHeader entry : entries.values()) {
+            long distance = entry.getLocalHeaderOffset() - centralDirectoryFileHeader.getLocalHeaderOffset();
+            if (distance > 0 && distance < size) {
+                size = distance;
+            }
+        }
+
+        return size;
     }
 
     /**
@@ -165,7 +191,7 @@ public class CentralDirectory {
         tmp.deleteOnExit();
         try (RandomAccessFile raf = new RandomAccessFile(tmp, "rw")) {
             write(raf.getChannel(), centralDirectoryOffset);
-            return FileUtils.readFileToByteArray(tmp);
+            return Files.readAllBytes(tmp.toPath());
         } finally {
             tmp.delete();
         }

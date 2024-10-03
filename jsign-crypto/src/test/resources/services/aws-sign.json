@@ -1,0 +1,6 @@
+{
+  "KeyId": "arn:aws:kms:eu-west-3:829022948260:key/2d9ca5b0-6d51-4727-9dfc-186e62e4c5e2",
+  "KeyOrigin": "AWS_KMS",
+  "Signature": "MiZ/YXfluqyuMfR3cnChG7+K7JmU2b8SzBAc6+WOpWQwIV4GfkLcRe0A68H45Lf+XPiMPPLrs7EqOv1EAnkYDFx5AqZBTWBfoaBeqKpy30OBvNbxIsaTLsaJYGypwmHOUTP+Djz7FxQUyM0uWVfUnHUDT564gQLz0cta6PKE/oMUo9fZhpv5VQcgfrbdUlPaD/cSAOb833ZSRzPWbnqztWO6py5sUugvqGFHKhsEXesx5yrPvJTKu5HVF3QM3E8YrgnVfFK14W8oyTJmXIWQxfYpwm/CW037UmolDMqwc3mjx1758kR+9lOcf8c/LSmD/SVD18SDSK4FyLQWOmn16A==",
+  "SigningAlgorithm": "RSASSA_PKCS1_V1_5_SHA_256"
+}

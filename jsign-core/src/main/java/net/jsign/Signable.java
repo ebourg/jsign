@@ -22,10 +22,14 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
 import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSTypedData;
@@ -47,7 +51,7 @@ public interface Signable extends Closeable {
      * @param digestAlgorithm the digest algorithm to use
      * @return the ContentInfo or EncapsulatedContentInfo structure
      * @throws IOException if an I/O error occurs
-     * @since 6.1
+     * @since 7.0
      */
     default CMSTypedData createSignedContent(DigestAlgorithm digestAlgorithm) throws IOException {
         return new PKCS7ProcessableObject(AuthenticodeObjectIdentifiers.SPC_INDIRECT_DATA_OBJID, createIndirectData(digestAlgorithm));
@@ -100,12 +104,22 @@ public interface Signable extends Closeable {
     ASN1Object createIndirectData(DigestAlgorithm digestAlgorithm) throws IOException;
 
     /**
+     * Creates the signed attributes to include in the signature.
+     *
+     * @param certificate the signing certificate
+     * @since 7.0
+     */
+    default List<Attribute> createSignedAttributes(X509Certificate certificate) throws CertificateEncodingException {
+        return new ArrayList<>();
+    }
+
+    /**
      * Checks if the specified certificate is suitable for signing the file.
      *
      * @param certificate the certificate to validate
      * @throws IOException if an I/O error occurs
      * @throws IllegalArgumentException if the certificate doesn't match the publisher identity
-     * @since 6.1
+     * @since 7.0
      */
     default void validate(Certificate certificate) throws IOException, IllegalArgumentException {
     }

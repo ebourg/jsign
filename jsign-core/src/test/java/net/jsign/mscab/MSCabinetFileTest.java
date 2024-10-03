@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.security.KeyStore;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -49,49 +52,33 @@ public class MSCabinetFileTest {
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file too short", e.getMessage());
+            assertEquals("message", "MSCabinet file too short", e.getMessage());
         }
     }
 
     @Test
-    public void testCabinetWithInvalidSignatureSize() {
+    public void testCabinetWithInvalidReserveHeader() {
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = new byte[CABSignature.SIZE];
+
         CFHeader header = new CFHeader();
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = 64;
-        header.abReserved = new byte[64];
+        header.setReserve(reserve);
 
         byte[] data = new byte[128];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+        data[0x28] = 'C';
+        data[0x29] = 'A';
+        data[0x2A] = 'F';
+        data[0x2B] = 'E';
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: cabinet reserved area size is 64 instead of 20", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testCabinetWithInvalidSignatureHeader() {
-        CFHeader header = new CFHeader();
-        header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserved = new byte[CABSignature.SIZE];
-        header.abReserved[0] = 'C';
-        header.abReserved[1] = 'A';
-        header.abReserved[2] = 'F';
-        header.abReserved[3] = 'E';
-
-        byte[] data = new byte[128];
-        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
-
-        try {
-            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
-        } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: signature header is 1162232131", e.getMessage());
+            assertEquals("message", "Invalid data in the header reserve", e.getMessage());
         }
     }
 
@@ -100,22 +87,25 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserved = new byte[CABSignature.SIZE];
-        CABSignature signature = header.getSignature();
-        signature.header = CABSignature.HEADER;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
         signature.offset = (int) header.cbCabinet - 512;
         signature.length = 1024;
-        header.abReserved = signature.array();
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
 
         byte[] data = new byte[(int) header.cbCabinet];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: signature data (offset=3584, size=1024) after the end of the file", e.getMessage());
+            assertEquals("message", "MSCabinet file is corrupt: signature data (offset=3584, size=1024) after the end of the file", e.getMessage());
         }
     }
 
@@ -124,22 +114,153 @@ public class MSCabinetFileTest {
         CFHeader header = new CFHeader();
         header.cbCabinet = 4096;
         header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        header.cbCFHeader = CABSignature.SIZE;
-        header.abReserved = new byte[CABSignature.SIZE];
-        CABSignature signature = header.getSignature();
-        signature.header = CABSignature.HEADER;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
         signature.offset = header.cbCabinet * 2;
         signature.length = 1024;
-        header.abReserved = signature.array();
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
 
         byte[] data = new byte[512];
         header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
 
         try {
             new MSCabinetFile(new SeekableInMemoryByteChannel(data));
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("MSCabinet file is corrupt: signature data (offset=8192, size=1024) after the end of the file", e.getMessage());
+            assertEquals("message", "MSCabinet file is corrupt: signature data (offset=8192, size=1024) after the end of the file", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCabinetWithBadSignatureOffset() {
+        CFHeader header = new CFHeader();
+        header.cbCabinet = 4096;
+        header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
+        signature.offset = (int) header.cbCabinet - 123;
+        signature.length = 1024;
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
+
+        byte[] data = new byte[(int) (header.cbCabinet + signature.length)];
+        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+
+        try {
+            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
+            fail("Exception not thrown");
+        } catch (IOException e) {
+            assertEquals("message", "MSCabinet file is corrupt: the declared size of the file (4096) doesn't match the offset of the signature (3973)", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCabinetWithBadSignatureLength() {
+        CFHeader header = new CFHeader();
+        header.cbCabinet = 4096;
+        header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        header.cbCFHeader = CABSignature.SIZE + 4;
+
+        CABSignature signature = new CABSignature();
+        signature.offset = (int) header.cbCabinet;
+        signature.length = 1024;
+
+        CFReserve reserve = new CFReserve();
+        reserve.structure2 = signature.array();
+
+        header.reserve = reserve;
+
+        byte[] data = new byte[(int) (header.cbCabinet + signature.length) + 123];
+        header.write(ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN));
+
+        try {
+            new MSCabinetFile(new SeekableInMemoryByteChannel(data));
+            fail("Exception not thrown");
+        } catch (IOException e) {
+            assertEquals("message", "MSCabinet file is corrupt: the declared size of the file (4096) and the size of the signature (1024) are inconsistent with the actual size of the file (5243)", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCabinetWithSignatureInReserve() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample4.cab");
+        File targetFile = new File("target/test-classes/mscab/sample4-signature-in-reserve.cab");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+        }
+
+        // extract the signature
+        ByteBuffer signature = ByteBuffer.allocate((int) (targetFile.length() - sourceFile.length()));
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ)) {
+            channel.position(sourceFile.length());
+            channel.read(signature);
+            signature.flip();
+        }
+
+        // reset the signed file
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        // inject the signature in the reserve
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            header.reserve.structure2 = signature.array();
+            header.write(channel);
+        }
+
+        // now check if the signature is found
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            assertSigned(file, SHA256);
+        }
+    }
+
+    @Test
+    public void testCabinetWithJunkInReserve() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample4.cab");
+        File targetFile = new File("target/test-classes/mscab/sample4-junk-in-reserve.cab");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        // inject junk in the reserve
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            header.reserve.structure1 = "Lorem ipsum".getBytes();
+            header.write(channel);
+        }
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        try (MSCabinetFile file = new MSCabinetFile(targetFile)) {
+            file.setSignature(null);
+            signer.sign(file);
+            assertSigned(file, SHA256);
+        }
+
+        // check if the junk is still there
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            assertEquals("junk length", "Lorem ipsum".length(), header.reserve.structure1.length);
+            assertEquals("junk content", "Lorem ipsum", new String(header.reserve.structure1));
         }
     }
 
@@ -159,6 +280,21 @@ public class MSCabinetFileTest {
             assertSigned(file, SHA256);
             file.setSignature(null);
             assertNotSigned(file);
+            assertEquals("file size", sourceFile.length() + 24, targetFile.length());
+        }
+    }
+
+    @Test
+    public void testHasSignature() throws Exception {
+        try (SeekableByteChannel channel = Files.newByteChannel(new File("target/test-classes/mscab/sample1.cab").toPath(), StandardOpenOption.READ)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            assertFalse(header.hasSignature());
+        }
+        try (SeekableByteChannel channel = Files.newByteChannel(new File("target/test-classes/mscab/sample4.cab").toPath(), StandardOpenOption.READ)) {
+            CFHeader header = new CFHeader();
+            header.read(channel);
+            assertFalse(header.hasSignature());
         }
     }
 }

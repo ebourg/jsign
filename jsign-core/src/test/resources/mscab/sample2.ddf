@@ -1,3 +1,5 @@
+; makecab directives generating a multi-disk cabinet file
+
 .OPTION EXPLICIT
 .Set CabinetFileCountThreshold=0
 .Set FolderFileCountThreshold=0

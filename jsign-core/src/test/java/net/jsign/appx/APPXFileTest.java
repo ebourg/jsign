@@ -100,14 +100,14 @@ public class APPXFileTest {
     @Test
     public void testGetPackagePublisher() throws Exception {
         try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.msix"))) {
-            assertEquals("Publisher", "CN=Jsign Code Signing Test Certificate 2022 (RSA)", file.getPublisher());
+            assertEquals("Publisher", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", file.getPublisher());
         }
     }
 
     @Test
     public void testGetBundlePublisher() throws Exception {
         try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.appxbundle"))) {
-            assertEquals("Publisher", "CN=Jsign Code Signing Test Certificate 2022 (RSA)", file.getPublisher());
+            assertEquals("Publisher", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", file.getPublisher());
         }
     }
 }

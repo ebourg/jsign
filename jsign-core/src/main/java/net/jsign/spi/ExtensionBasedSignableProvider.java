@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * {@link SignableProvider} for files matching a specific extension.
  *
- * @since 6.1
+ * @since 7.0
  */
 public abstract class ExtensionBasedSignableProvider implements SignableProvider {
 

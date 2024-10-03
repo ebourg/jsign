@@ -1,20 +1,40 @@
 # jsign completion
 
-have jsign &&
 _jsign()
 {
     COMPREPLY=()
     local cur prev
     _get_comp_words_by_ref cur prev
 
-    local opts="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url -h --replace -e --encoding --help"
+    local commands="sign timestamp extract remove tag"
 
+    declare -A opts
+    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --replace -e --encoding --detached --quiet --verbose --debug -h --help"
+    opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass"
+    opts["extract"]="--format"
+    opts["remove"]=""
+    opts["tag"]="--value"
+
+    # completion of the first token (either a command or a sign option)
+    if [[ $COMP_CWORD == 1 ]]; then
+        COMPREPLY=( $(compgen -W "${commands} ${opts[sign]}" -- "$cur") )
+        return 0
+    fi
+
+    local command="${COMP_WORDS[1]}"
+    if [[ $command == -* ]]; then
+        command="sign"
+    fi
+
+    local opts="${opts[$command]}"
+
+    # completion for the command options
     if [[ "$cur" == -* ]]; then
         COMPREPLY=( $(compgen -W "${opts}" -- "$cur") )
         return 0
     fi
 
-    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv|ps1|psm1|psd1|msi|msp|cab|cat|appx|appxbundle|msix|msixbundle|navx|app|nupkg)"
+    local pattern="!*.@(exe|dll|cpl|ocx|sys|scr|drv|efi|ps1|psm1|psd1|vbs|vbe|js|jse|ps1xml|wsf|msi|msp|cab|cat|appx|appxbundle|msix|msixbundle|navx|app|nupkg)"
 
     case $prev in
         -s|--keystore|--keyfile|-c|--certfile)
@@ -22,11 +42,19 @@ _jsign()
             return 0
             ;;
         --storetype)
-            COMPREPLY=( $( compgen -W 'JKS JCEKS PKCS12 PKCS11 AWS AZUREKEYVAULT DIGICERTONE ESIGNER ETOKEN GOOGLECLOUD HASHICORPVAULT ORACLECLOUD YUBIKEY NITROKEY OPENPGP OPENSC PIV' -- "$cur" ) )
+            COMPREPLY=( $( compgen -W 'JKS JCEKS PKCS12 PKCS11 AWS AZUREKEYVAULT DIGICERTONE ESIGNER ETOKEN GARASIGN GOOGLECLOUD HASHICORPVAULT ORACLECLOUD TRUSTEDSIGNING YUBIKEY NITROKEY OPENPGP OPENSC PIV' -- "$cur" ) )
             return 0
             ;;
-        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|-e|--encoding)
+        --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|--proxyUrl|--proxyUser|--proxyPass|--value)
             # argument required but no completions available
+            return 0
+            ;;
+        --encoding|-e)
+            COMPREPLY=( $( compgen -W 'UTF-8 UTF-16 UTF-16LE UTF-16BE ISO-8859-1 ISO-8859-15 Windows-1252' -- "$cur" ) )
+            return 0
+            ;;
+        --format)
+            COMPREPLY=( $( compgen -W 'PEM DER' -- "$cur" ) )
             return 0
             ;;
         -h|--help)

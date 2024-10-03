@@ -17,6 +17,10 @@
 package net.jsign;
 
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +32,7 @@ import org.junit.Test;
 import net.jsign.mscab.MSCabinetFile;
 
 import static net.jsign.DigestAlgorithm.*;
+import static org.junit.Assert.*;
 
 public class MSCabinetSignerTest {
 
@@ -83,7 +88,7 @@ public class MSCabinetSignerTest {
     }
 
     @Test
-    public void testSignCabinetWithPerFolderReservedAreaOnly() throws Exception {
+    public void testSignCabinetWithPerFolderReserveOnly() throws Exception {
         File sourceFile = new File("target/test-classes/mscab/sample3.cab");
         File targetFile = new File("target/test-classes/mscab/sample3-signed.cab");
 
@@ -98,6 +103,35 @@ public class MSCabinetSignerTest {
             signer.sign(cabFile);
 
             SignatureAssert.assertSigned(cabFile, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignCabinetWithEmptyReserve() throws Exception {
+        File sourceFile = new File("target/test-classes/mscab/sample4.cab");
+        File targetFile = new File("target/test-classes/mscab/sample4-signed.cab");
+
+        targetFile.getParentFile().mkdirs();
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (MSCabinetFile cabFile = new MSCabinetFile(targetFile)) {
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                    .withTimestamping(false);
+
+            signer.sign(cabFile);
+
+            SignatureAssert.assertSigned(cabFile, SHA256);
+        }
+
+        // check if the reserve was resized
+        try (SeekableByteChannel channel = Files.newByteChannel(targetFile.toPath())) {
+            ByteBuffer buffer = ByteBuffer.allocate(40).order(ByteOrder.LITTLE_ENDIAN);
+            channel.read(buffer);
+            buffer.flip();
+
+            int cbCFHeader = buffer.getShort(36) & 0xFFFF;
+            assertEquals("cbCFHeader", 6 * 1024, cbCFHeader);
         }
     }
 
@@ -210,7 +244,7 @@ public class MSCabinetSignerTest {
                     .withDigestAlgorithm(SHA512);
 
             signer.sign(file);
-            data = channel.array();
+            data = Arrays.copyOf(channel.array(), (int) channel.size());
         }
 
         try (MSCabinetFile file = new MSCabinetFile(new SeekableInMemoryByteChannel(data))) {

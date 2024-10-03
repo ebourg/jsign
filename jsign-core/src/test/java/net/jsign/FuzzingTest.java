@@ -58,7 +58,7 @@ public class FuzzingTest {
             }
 
             try (Signable signable = Signable.of(extracted)) {
-                KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.p12").storepass("password").build();
+                KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore-2022.p12").storepass("password").build();
                 AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
                 signer.sign(signable);
             }

@@ -29,7 +29,7 @@ import java.security.MessageDigest;
  * offset of the first CFDATA block    4 bytes
  * number of CFDATA blocks             2 bytes
  * compression method                  2 bytes
- * reserved area                       (variable size, optional)
+ * reserve                             (variable size, optional)
  * </pre>
  *
  * @since 4.0
@@ -38,7 +38,7 @@ class CFFolder {
 
     private final ByteBuffer buffer = ByteBuffer.allocate(BASE_SIZE).order(ByteOrder.LITTLE_ENDIAN);
 
-    /** Base size of the CFFOLDER structure (with no optional per-folder reserved area) */
+    /** Base size of the CFFOLDER structure (with no optional per-folder reserve) */
     public static final int BASE_SIZE = 8;
 
     /** Offset of the first CFDATA block in this folder */

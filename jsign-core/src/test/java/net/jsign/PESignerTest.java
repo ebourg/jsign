@@ -26,9 +26,10 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
@@ -76,14 +77,12 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = peFile.getSignatures().get(0);
 
-            assertNotNull(signature);
-            assertNull(signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+            assertNotNull("signature", signature);
+            assertNull("signingTime attribute found", signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
         }
     }
 
@@ -91,7 +90,7 @@ public class PESignerTest {
     public void testSignWithUnknownKeyStoreEntry() throws Exception {
         try {
             new PESigner(getKeyStore(), "unknown", PRIVATE_KEY_PASSWORD);
-            fail("No exception thrown");
+            fail("Exception not thrown");
         } catch (IllegalArgumentException e) {
             assertEquals("message", "No certificate found in the keystore with the alias 'unknown'", e.getMessage());
         }
@@ -121,19 +120,17 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = peFile.getSignatures().get(0);
 
-            assertNotNull(signature);
+            assertNotNull("signature", signature);
 
             // check the signer id
             SignerId signerId = signature.getSignerInfos().iterator().next().getSID();
             X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
             String commonName = certificate.getSubject().getRDNs(X509ObjectIdentifiers.commonName)[0].getFirst().getValue().toString();
-            assertEquals("signer", "Jsign Code Signing Test Certificate 2022 (RSA)", commonName);
+            assertEquals("signer", "Jsign Code Signing Test Certificate 2024 (RSA)", commonName);
         }
     }
 
@@ -192,7 +189,7 @@ public class PESignerTest {
 
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
-            fail("No exception thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
+            fail("Exception not thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
         } catch (Exception e) {
             // expected
         }
@@ -380,7 +377,7 @@ public class PESignerTest {
         
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
-            fail("IOException not thrown");
+            fail("TimestampingException not thrown");
         } catch (TimestampingException e) {
             assertTrue("Missing suppressed IOException", e.getSuppressed() != null && e.getSuppressed().length > 0 && e.getSuppressed()[0].getClass().equals(IOException.class));
             // expected
@@ -519,12 +516,10 @@ public class PESignerTest {
 
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signedData = signatures.get(0);
-            assertNotNull(signedData);
+            CMSSignedData signedData = peFile.getSignatures().get(0);
+            assertNotNull("signature", signedData);
 
             // Check the signature algorithm
             SignerInformation si = signedData.getSignerInfos().getSigners().iterator().next();
@@ -550,9 +545,47 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignWithEd25519Key() throws Exception {
+        Assume.assumeTrue("EdDSA requires Java 15 or higher", SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_15));
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore-ed25519.p12").storepass("password").build();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-ed25519.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, ALIAS, PRIVATE_KEY_PASSWORD).withTimestamping(false);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
+    public void testSignWithEd448Key() throws Exception {
+        Assume.assumeTrue("EdDSA requires Java 15 or higher", SystemUtils.isJavaVersionAtLeast(JavaVersion.JAVA_15));
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore-ed448.p12").storepass("password").build();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-ed448.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, ALIAS, PRIVATE_KEY_PASSWORD).withTimestamping(false);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
         }
     }
 
@@ -571,14 +604,39 @@ public class PESignerTest {
         try (PEFile peFile = new PEFile(targetFile)) {
             signer.sign(peFile);
 
-            List<CMSSignedData> signatures = peFile.getSignatures();
-            assertNotNull(signatures);
-            assertEquals(1, signatures.size());
+            SignatureAssert.assertSigned(peFile, SHA256);
 
-            CMSSignedData signature = signatures.get(0);
+            CMSSignedData signature = peFile.getSignatures().get(0);
             AlgorithmIdentifier ai = signature.getDigestAlgorithmIDs().iterator().next();
             assertEquals("Algorithm identifier", signer.digestAlgorithm.oid, ai.getAlgorithm());
             assertEquals("Algorithm parameters", DERNull.INSTANCE, ai.getParameters());
+        }
+    }
+
+    @Test
+    public void testSignWithIncompleteChain() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-completed-chain.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
+                .withTimestamping(false);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+
+            CMSSignedData signature = peFile.getSignatures().get(0);
+
+            Collection<X509CertificateHolder> certificates = signature.getCertificates().getMatches(null);
+            assertEquals("Number of certificates", 2, certificates.size());
+            for (X509CertificateHolder certificate : certificates) {
+                if (certificate.getSubject().toString().equals(certificate.getIssuer().toString())) {
+                    fail("Root certificate found: " + certificate.getSubject());
+                }
+            }
         }
     }
 }

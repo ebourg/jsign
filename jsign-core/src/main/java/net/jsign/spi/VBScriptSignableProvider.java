@@ -28,7 +28,7 @@ import net.jsign.script.VBScript;
 /**
  * {@link SignableProvider} for VBScript files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices(SignableProvider.class)
 public class VBScriptSignableProvider extends ExtensionBasedSignableProvider {

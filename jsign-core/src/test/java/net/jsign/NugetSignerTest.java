@@ -21,6 +21,8 @@ import java.security.KeyStore;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.junit.Test;
 
 import net.jsign.nuget.NugetFile;
@@ -51,6 +53,11 @@ public class NugetSignerTest {
             signer.sign(file);
 
             SignatureAssert.assertSigned(file, SHA256);
+
+            // verify the signed attributes
+            SignatureAssert.assertSignedAttribute("commitment type indication", file, PKCSObjectIdentifiers.id_aa_ets_commitmentType);
+            SignatureAssert.assertSignedAttribute("signing certificate v2", file, PKCSObjectIdentifiers.id_aa_signingCertificateV2);
+            SignatureAssert.assertSignedAttribute("signing time", file, CMSAttributes.signingTime);
         }
     }
 

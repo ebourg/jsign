@@ -1,0 +1,25 @@
+{
+  "KeyMetadata": {
+    "AWSAccountId": "829022948260",
+    "Arn": "arn:aws:kms:eu-west-3:829022948260:key/935ecb66-5c06-495b-babe-5798b1c0e1a8",
+    "CreationDate": 1.714575694075E9,
+    "CustomerMasterKeySpec": "RSA_2048",
+    "Description": "",
+    "Enabled": false,
+    "KeyId": "935ecb66-5c06-495b-babe-5798b1c0e1a8",
+    "KeyManager": "CUSTOMER",
+    "KeySpec": "RSA_2048",
+    "KeyState": "PendingImport",
+    "KeyUsage": "SIGN_VERIFY",
+    "MultiRegion": false,
+    "Origin": "EXTERNAL",
+    "SigningAlgorithms": [
+      "RSASSA_PKCS1_V1_5_SHA_256",
+      "RSASSA_PKCS1_V1_5_SHA_384",
+      "RSASSA_PKCS1_V1_5_SHA_512",
+      "RSASSA_PSS_SHA_256",
+      "RSASSA_PSS_SHA_384",
+      "RSASSA_PSS_SHA_512"
+    ]
+  }
+}

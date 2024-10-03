@@ -55,7 +55,7 @@ public class ZipFileTest {
 
     @Test
     public void getGetInputStreamWithLimit() {
-        try (ZipFile file = new ZipFile(new File("target/test-classes/minimal.msix"))) {
+        try (ZipFile file = new ZipFile(new File("target/test-classes/minimal.zip"))) {
             file.getInputStream("AppxManifest.xml", 128);
             fail("Exception not thrown");
         } catch (IOException e) {
@@ -113,28 +113,29 @@ public class ZipFileTest {
 
     @Test
     public void testRemoveEntry() throws Exception {
-        File original = new File("target/test-classes/minimal.msix");
-        File modified = new File("target/test-classes/minimal-with-entry-removed.msix.zip");
+        File original = new File("target/test-classes/minimal.zip");
+        File modified = new File("target/test-classes/minimal-with-entries-removed.zip");
 
         FileUtils.copyFile(original, modified);
 
         try (ZipFile file = new ZipFile(modified)) {
-            // attempt to remove the first entry
-            try {
-                file.removeEntry("Registry.dat");
-                fail("Exception not thrown");
-            } catch (IllegalArgumentException e) {
-                assertEquals("message", "The entry Registry.dat is not the last one and cannot be removed", e.getMessage());
-            }
-            assertTrue(file.centralDirectory.entries.containsKey("Registry.dat"));
+            // first entry
+            file.removeEntry("Registry.dat");
+            assertFalse(file.centralDirectory.entries.containsKey("Registry.dat"));
 
-            // remove the last entry
+            // middle entry
+            file.removeEntry("Resources.pri");
+            assertFalse(file.centralDirectory.entries.containsKey("Resources.pri"));
+
+            // last entry
             file.removeEntry("[Content_Types].xml");
             assertFalse(file.centralDirectory.entries.containsKey("[Content_Types].xml"));
         }
 
         try (java.util.zip.ZipFile file = new java.util.zip.ZipFile(modified)) {
-            assertNull("entry not removed", file.getEntry("[Content_Types].xml"));
+            assertNull("Registry.dat entry not removed", file.getEntry("Registry.dat"));
+            assertNull("Resources.pri entry not removed", file.getEntry("Resources.pri"));
+            assertNull("[Content_Types].xml entry not removed", file.getEntry("[Content_Types].xml"));
         }
     }
 

@@ -28,7 +28,7 @@ import net.jsign.script.WindowsScript;
 /**
  * {@link SignableProvider} for Windows Script files.
  *
- * @since 6.1
+ * @since 7.0
  */
 @MetaInfServices(SignableProvider.class)
 public class WindowsScriptSignableProvider extends ExtensionBasedSignableProvider {

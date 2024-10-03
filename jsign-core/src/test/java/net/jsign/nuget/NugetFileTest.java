@@ -48,7 +48,7 @@ public class NugetFileTest {
         try (NugetFile file = new NugetFile(targetFile)) {
             fail("Exception not thrown");
         } catch (IOException e) {
-            assertEquals("Invalid NuGet package, [Content_Types].xml is missing", e.getMessage());
+            assertEquals("message", "Invalid NuGet package, [Content_Types].xml is missing", e.getMessage());
         }
     }
 

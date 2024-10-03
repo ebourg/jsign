@@ -22,14 +22,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.poi.util.IOUtils;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.esf.CommitmentTypeIndication;
+import org.bouncycastle.asn1.ess.ESSCertIDv2;
+import org.bouncycastle.asn1.ess.SigningCertificateV2;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.IssuerSerial;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.CMSTypedData;
@@ -37,6 +46,7 @@ import org.bouncycastle.cms.CMSTypedData;
 import net.jsign.ChannelUtils;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
+import net.jsign.SignatureUtils;
 import net.jsign.zip.CentralDirectory;
 import net.jsign.zip.ZipFile;
 
@@ -44,9 +54,10 @@ import net.jsign.zip.ZipFile;
  * A NuGet package.
  * 
  * @see <a href="https://github.com/NuGet/Home/wiki/Package-Signatures-Technical-Details">NuGet Package Signatures Technical Specification</a>
+ * @see <a href="https://github.com/NuGet/Home/wiki/Repository-Signatures-and-Countersignatures-Technical-Specification">NuGet Repository Signatures and Countersignatures Technical Specification</a>
  *
  * @author Sebastian Stamm
- * @since 6.1
+ * @since 7.0
  */
 public class NugetFile extends ZipFile implements Signable {
 
@@ -118,20 +129,31 @@ public class NugetFile extends ZipFile implements Signable {
     }
 
     @Override
-    public List<CMSSignedData> getSignatures() throws IOException {
-        List<CMSSignedData> signatures = new ArrayList<>();
+    public List<Attribute> createSignedAttributes(X509Certificate certificate) throws CertificateEncodingException {
+        List<Attribute> attributes = new ArrayList<>();
 
+        CommitmentTypeIndication commitmentTypeIndication = new CommitmentTypeIndication(PKCSObjectIdentifiers.id_cti_ets_proofOfOrigin);
+        attributes.add(new Attribute(PKCSObjectIdentifiers.id_aa_ets_commitmentType, new DERSet(commitmentTypeIndication)));
+        // todo use the id-cti-ets-proofOfReceipt type for repository signatures
+
+        // todo add the nuget-v3-service-index-url and nuget-package-owners attributes for repository signatures
+
+        byte[] certHash = DigestAlgorithm.SHA256.getMessageDigest().digest(certificate.getEncoded());
+        IssuerSerial issuerSerial = new IssuerSerial(X500Name.getInstance(certificate.getIssuerX500Principal().getEncoded()), certificate.getSerialNumber());
+        SigningCertificateV2 signingCertificateV2 = new SigningCertificateV2(new ESSCertIDv2(certHash, issuerSerial));
+        attributes.add(new Attribute(PKCSObjectIdentifiers.id_aa_signingCertificateV2, new DERSet(signingCertificateV2)));
+
+        return attributes;
+    }
+
+    @Override
+    public List<CMSSignedData> getSignatures() throws IOException {
         if (centralDirectory.entries.containsKey(SIGNATURE_ENTRY)) {
             InputStream in = getInputStream(SIGNATURE_ENTRY, 1024 * 1024 /* 1MB */);
-            byte[] signatureBytes = IOUtils.toByteArray(in);
-
-            try {
-                signatures.add(new CMSSignedData(new ASN1InputStream(signatureBytes)));
-            } catch (Exception | StackOverflowError e) {
-                e.printStackTrace();
-            }
+            return SignatureUtils.getSignatures(IOUtils.toByteArray(in));
+        } else {
+            return Collections.emptyList();
         }
-        return signatures;
     }
 
     @Override

@@ -30,7 +30,7 @@ public class EndOfCentralDirectoryRecordTest {
 
     @Test
     public void testLocate() throws Exception {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
 
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             EndOfCentralDirectoryRecord record = new EndOfCentralDirectoryRecord();
@@ -51,7 +51,7 @@ public class EndOfCentralDirectoryRecordTest {
 
     @Test
     public void testLoad() throws Exception {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             EndOfCentralDirectoryRecord record = new EndOfCentralDirectoryRecord();
             record.load(channel);
@@ -80,7 +80,7 @@ public class EndOfCentralDirectoryRecordTest {
 
     @Test
     public void testReadWrongRecord() {
-        File file = new File("target/test-classes/minimal.msix");
+        File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             new EndOfCentralDirectoryRecord().read(channel);
             fail("Exception not thrown");

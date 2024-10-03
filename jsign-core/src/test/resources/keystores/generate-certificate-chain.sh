@@ -19,6 +19,7 @@ keyUsage = keyCertSign,cRLSign
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid:always,issuer
+authorityInfoAccess = caIssuers;URI:http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-root-ca.cer
 
 [ final ]
 basicConstraints = CA:FALSE
@@ -26,18 +27,21 @@ keyUsage = digitalSignature
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid,issuer
+authorityInfoAccess = caIssuers;URI:http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-code-signing-ca.cer
 EOF
 
-CERT_OPTS="-days 7300 -text -sha256"
+CERT_OPTS="-days 7305 -text -sha256"
 YEAR=$(date +'%Y')
 
 # Generate the root certificate
 openssl req -new -newkey rsa:4096 -nodes -keyout jsign-root-ca.key -x509 -extensions v3_ca -subj "/CN=Jsign Root Certificate Authority $YEAR" -out jsign-root-ca.pem $CERT_OPTS
+openssl x509 -in jsign-root-ca.pem -out jsign-root-ca.cer -outform DER
 
 # Generate the intermediate certificate
 openssl req -new -newkey rsa:2048 -nodes -keyout jsign-code-signing-ca.key -subj "/CN=Jsign Code Signing CA $YEAR" -out jsign-code-signing-ca.csr
 openssl x509 -req -in jsign-code-signing-ca.csr -CA jsign-root-ca.pem -CAkey jsign-root-ca.key -CAcreateserial \
              -out jsign-code-signing-ca.pem $CERT_OPTS -extfile extensions.cnf -extensions intermediate
+openssl x509 -in jsign-code-signing-ca.pem -out jsign-code-signing-ca.cer -outform DER
 
 # Generate the test certificates (reusing the existing keys)
 openssl req -new -key privatekey.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (RSA)" -out jsign-test-certificate.csr
@@ -47,6 +51,14 @@ openssl x509 -req -in jsign-test-certificate.csr -CA jsign-code-signing-ca.pem -
 openssl req -new -key privatekey-ec-p384.pkcs1.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (EC)" -out jsign-test-certificate-ec.csr
 openssl x509 -req -in jsign-test-certificate-ec.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
              -out jsign-test-certificate-ec.pem $CERT_OPTS -extfile extensions.cnf -extensions final
+
+openssl req -new -key privatekey-ed25519.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (Ed25519)" -out jsign-test-certificate-ed25519.csr
+openssl x509 -req -in jsign-test-certificate-ed25519.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
+             -out jsign-test-certificate-ed25519.pem $CERT_OPTS -extfile extensions.cnf -extensions final
+
+openssl req -new -key privatekey-ed448.pem -subj "/CN=Jsign Code Signing Test Certificate $YEAR (Ed448)" -out jsign-test-certificate-ed448.csr
+openssl x509 -req -in jsign-test-certificate-ed448.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
+             -out jsign-test-certificate-ed448.pem $CERT_OPTS -extfile extensions.cnf -extensions final
 
 # Generate the certificate chains
 cat jsign-root-ca.pem jsign-code-signing-ca.pem jsign-test-certificate.pem > jsign-test-certificate-full-chain-reversed.pem
@@ -65,6 +77,12 @@ openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate.pem            -out keys
 
 OPENSSL_OPTS="-export -inkey privatekey-ec-p384.pkcs1.pem -name test -passout pass:password"
 openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ec.pem         -out keystore-ec.p12
+
+OPENSSL_OPTS="-export -inkey privatekey-ed25519.pem -name test -passout pass:password"
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ed25519.pem    -out keystore-ed25519.p12
+
+OPENSSL_OPTS="-export -inkey privatekey-ed448.pem -name test -passout pass:password"
+openssl pkcs12 $OPENSSL_OPTS -in jsign-test-certificate-ed448.pem      -out keystore-ed448.p12
 
 # Generate the Java keystores
 KEYTOOL_OPTS="-importkeystore -srcstoretype pkcs12 -srcstorepass password -srcalias test -deststoretype jks -deststorepass password -destalias test"

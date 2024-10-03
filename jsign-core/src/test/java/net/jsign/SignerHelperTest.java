@@ -20,12 +20,19 @@ import java.io.File;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
 import org.junit.Assume;
 import org.junit.Test;
 
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.jca.AWS;
 import net.jsign.jca.Azure;
 import net.jsign.jca.DigiCertONE;
@@ -33,11 +40,17 @@ import net.jsign.jca.GoogleCloud;
 import net.jsign.jca.OracleCloudCredentials;
 import net.jsign.jca.PIVCardTest;
 import net.jsign.pe.PEFile;
+import net.jsign.timestamp.TimestampingMode;
 
 import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
 
 public class SignerHelperTest {
+
+    static {
+        Logger.getLogger("net.jsign").setUseParentHandlers(false);
+        Logger.getLogger("net.jsign").addHandler(new StdOutLogHandler());
+    }
 
     @Test
     public void testDetachedSignature() throws Exception {
@@ -49,17 +62,17 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password");
 
         // sign and detach
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         assertFalse("Signature was detached", detachedSignatureFile.exists());
 
         signer.alg("SHA-512").detached(true);
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         assertTrue("Signature wasn't detached", detachedSignatureFile.exists());
 
@@ -70,8 +83,8 @@ public class SignerHelperTest {
         detachedSignatureFile2.delete();
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
-        signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
-        signer.sign(targetFile2);
+        signer = new SignerHelper("parameter").detached(true);
+        signer.execute(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
     }
@@ -95,13 +108,13 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password")
                 .detached(true);
 
         // sign and detach
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         assertTrue("Signature wasn't detached", detachedSignatureFile.exists());
 
@@ -112,8 +125,8 @@ public class SignerHelperTest {
         detachedSignatureFile2.delete();
         detachedSignatureFile.renameTo(detachedSignatureFile2);
 
-        signer = new SignerHelper(new StdOutConsole(2), "parameter").detached(true);
-        signer.sign(targetFile2);
+        signer = new SignerHelper("parameter").detached(true);
+        signer.execute(targetFile2);
 
         assertEquals(FileUtils.checksum(targetFile, new CRC32()).getValue(), FileUtils.checksum(targetFile2, new CRC32()).getValue());
     }
@@ -127,11 +140,11 @@ public class SignerHelperTest {
 
         Files.write(new File("target/test-classes/storepass.txt").toPath(), "password".getBytes());
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("file:target/test-classes/storepass.txt");
 
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -143,12 +156,12 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("file:/path/to/missing/file");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
         } catch (SignerException e) {
             assertEquals("message", "Failed to read the keypass parameter from the file '/path/to/missing/file'", e.getMessage());
         }
@@ -163,11 +176,11 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("env:STOREPASS");
 
-        signer.sign(targetFile);
+        signer.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -181,12 +194,12 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("env:MISSING_VAR");
 
         try {
-            signer.sign(targetFile);
+            signer.execute(targetFile);
         } catch (SignerException e) {
             assertEquals("message", "Failed to read the keypass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
         }
@@ -199,7 +212,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("AWS")
                 .keystore("eu-west-3")
                 .storepass(AWS.getAccessKey() + "|" + AWS.getSecretKey())
@@ -207,7 +220,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -219,14 +232,14 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("AZUREKEYVAULT")
-                .keystore("jsigntestkeyvault")
+                .keystore("jsignvault")
                 .storepass(Azure.getAccessToken())
                 .alias("jsign")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -238,7 +251,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("GOOGLECLOUD")
                 .keystore("projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring")
                 .storepass(GoogleCloud.getAccessToken())
@@ -246,7 +259,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain-reversed.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -260,13 +273,13 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("DIGICERTONE")
                 .storepass(apikey + "|" + DigiCertONE.getClientCertificateFile() + "|" + DigiCertONE.getClientCertificatePassword())
                 .alias("Tomcat-PMC-cert-2021-11")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -278,7 +291,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("ESIGNER")
                 .keystore("https://cs-try.ssl.com")
                 .storepass("esigner_demo|esignerDemo#1")
@@ -286,7 +299,7 @@ public class SignerHelperTest {
                 .keypass("RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -300,15 +313,36 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("ORACLECLOUD")
                 .alias("ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza")
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testTrustedSigning() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-azure-trusted-signing.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper("option")
+                .storetype("TRUSTEDSIGNING")
+                .keystore("weu.codesigning.azure.net")
+                .storepass(Azure.getAccessToken("https://codesigning.azure.net"))
+                .alias("MyAccount/MyProfile")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        Signable signable = Signable.of(targetFile);
+        SignatureAssert.assertSigned(signable, SHA256);
+        SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
     }
 
     @Test
@@ -320,7 +354,7 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper helper = new SignerHelper(new StdOutConsole(1), "option")
+        SignerHelper helper = new SignerHelper("option")
                 .storetype("PIV")
                 .keystore("Yubikey")
                 .storepass("123456")
@@ -328,7 +362,7 @@ public class SignerHelperTest {
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
                 .alg("SHA-256");
 
-        helper.sign(targetFile);
+        helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
     }
@@ -340,14 +374,14 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keyfile("target/test-classes/keystores/privatekey-ec-p384.pkcs1.pem")
                 .keypass("password")
                 .certfile("target/test-classes/keystores/jsign-test-certificate-full-chain.pem");
 
         try {
-            signer.sign(targetFile);
-            fail("No exception thrown");
+            signer.execute(targetFile);
+            fail("Exception not thrown");
         } catch (SignerException e) {
             assertEquals("message", "Signature verification failed, the private key doesn't match the certificate", e.getCause().getMessage());
         }
@@ -362,16 +396,16 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
                 .keypass("password")
                 .certfile("target/test-classes/keystores/jsign-root-ca.pem");
 
         try {
-            signer.sign(targetFile);
-            fail("No exception thrown");
+            signer.execute(targetFile);
+            fail("Exception not thrown");
         } catch (SignerException e) {
-            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2022)", e.getCause().getMessage());
+            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Root Certificate Authority 2024)", e.getCause().getMessage());
         }
 
         SignatureAssert.assertSigned(Signable.of(targetFile));
@@ -384,16 +418,16 @@ public class SignerHelperTest {
 
         FileUtils.copyFile(sourceFile, targetFile);
 
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter")
+        SignerHelper signer = new SignerHelper("parameter")
                 .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
                 .keypass("password")
                 .certfile("target/test-classes/keystores/jsign-test-certificate-partial-chain.pem");
 
         try {
-            signer.sign(targetFile);
-            fail("No exception thrown");
+            signer.execute(targetFile);
+            fail("Exception not thrown");
         } catch (SignerException e) {
-            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2022)", e.getCause().getMessage());
+            assertEquals("message", "Signature verification failed, the certificate is a root or intermediate CA certificate (CN=Jsign Code Signing CA 2024)", e.getCause().getMessage());
         }
 
         SignatureAssert.assertSigned(Signable.of(targetFile));
@@ -401,13 +435,436 @@ public class SignerHelperTest {
 
     @Test
     public void testMissingPKCS12KeyStorePassword() {
-        SignerHelper signer = new SignerHelper(new StdOutConsole(2), "parameter");
+        SignerHelper signer = new SignerHelper("parameter");
         signer.keystore("target/test-classes/keystores/keystore.p12");
         signer.alias("test");
         try {
             signer.sign("target/test-classes/wineyes.exe");
         } catch (SignerException e) {
             assertEquals("message", "The keystore password must be specified", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUnknownCommand() {
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("unsign");
+        try {
+            signer.execute("target/test-classes/wineyes.exe");
+        } catch (SignerException e) {
+            assertEquals("message", "Unknown command 'unsign'", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testExtractDER() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("extract");
+        signer.execute(targetFile);
+
+        File signatureFile = new File("target/test-classes/wineyes-signed.exe.sig");
+        assertTrue("Signature not extracted", signatureFile.exists());
+    }
+
+    @Test
+    public void testExtractPEM() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("extract");
+        signer.format("PEM");
+        signer.execute(targetFile);
+
+        File signatureFile = new File("target/test-classes/wineyes-signed.exe.sig.pem");
+        assertTrue("Signature not extracted", signatureFile.exists());
+    }
+
+    @Test
+    public void testExtractWithInvalidFormat() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("extract");
+        signer.format("TXT");
+
+        try {
+            signer.execute(targetFile);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Unknown output format 'TXT'", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testExtractFromUnsignedFile() {
+        File file = new File("target/test-classes/wineyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("extract");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testExtractFromMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("extract");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testRemove() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+
+        signer.command("remove");
+        signer.execute(targetFile);
+
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
+    }
+
+    @Test
+    public void testRemoveFromUnsignedFile() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("remove");
+        signer.execute(targetFile);
+
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
+    }
+
+    @Test
+    public void testRemoveFromMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("remove");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTagWithString() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("tag");
+        signer.value("userid:1234-ABCD-5678-EFGH");
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            CMSSignedData signature = signable.getSignatures().get(0);
+            SignerInformation signerInfo = signature.getSignerInfos().getSigners().iterator().next();
+            Attribute attribute = signerInfo.getUnsignedAttributes().get(AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID);
+            assertNotNull("Unsigned attribute not found", attribute);
+            assertEquals("Unsigned attribute value", "userid:1234-ABCD-5678-EFGH", attribute.getAttrValues().getObjectAt(0).toString());
+        }
+    }
+
+    @Test
+    public void testTagWithBinaryData() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .tsaurl("http://timestamp.digicert.com");
+
+        signer.execute(targetFile);
+
+        signer.command("tag");
+        signer.value("0x414243444546");
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            CMSSignedData signature = signable.getSignatures().get(0);
+            SignerInformation signerInfo = signature.getSignerInfos().getSigners().iterator().next();
+            Attribute attribute = signerInfo.getUnsignedAttributes().get(AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID);
+
+            assertNotNull("Unsigned attribute not found", attribute);
+            assertArrayEquals("Unsigned attribute value", "ABCDEF".getBytes(), ((DEROctetString) attribute.getAttrValues().getObjectAt(0)).getOctets());
+        }
+    }
+
+    @Test
+    public void testTagWithFileContent() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        File template = new File("target/test-classes/template.bin");
+        Files.write(template.toPath(), "0123456".getBytes());
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("tag");
+        signer.value("file:" + template.getAbsolutePath());
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            CMSSignedData signature = signable.getSignatures().get(0);
+            SignerInformation signerInfo = signature.getSignerInfos().getSigners().iterator().next();
+            Attribute attribute = signerInfo.getUnsignedAttributes().get(AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID);
+
+            assertNotNull("Unsigned attribute not found", attribute);
+            assertArrayEquals("Unsigned attribute value", "0123456".getBytes(), ((DEROctetString) attribute.getAttrValues().getObjectAt(0)).getOctets());
+        }
+    }
+
+    @Test
+    public void testTagWithMissingFile() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("tag");
+        signer.value("file:missing-template.bin");
+        try {
+            signer.execute(targetFile);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't modify the signature of target/test-classes/wineyes-signed-tagged.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTagWithDefaultTemplate() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("tag");
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            CMSSignedData signature = signable.getSignatures().get(0);
+            SignerInformation signerInfo = signature.getSignerInfos().getSigners().iterator().next();
+            Attribute attribute = signerInfo.getUnsignedAttributes().get(AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID);
+
+            assertNotNull("Unsigned attribute not found", attribute);
+
+            String value = new String(((DEROctetString) attribute.getAttrValues().getObjectAt(0)).getOctets());
+            assertTrue("Unsigned attribute value", value.startsWith("-----BEGIN TAG-----"));
+            assertTrue("Unsigned attribute value", value.endsWith("-----END TAG-----"));
+        }
+    }
+
+    @Test
+    public void testTagUnsignedFile() {
+        File file = new File("target/test-classes/wineyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("tag");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTagMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("tag");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTimestamp() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-then-timestamped.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .tsmode(TimestampingMode.AUTHENTICODE.name());
+
+        signer.execute(targetFile);
+
+        signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.execute(targetFile);
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+            SignatureAssert.assertNotTimestamped("Unexpected timestamp", signable.getSignatures().get(1));
+            SignatureAssert.assertNotTimestamped("Unexpected timestamp", signable.getSignatures().get(2));
+        }
+
+        signer.command("timestamp");
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(1));
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(2));
+        }
+    }
+
+    @Test
+    public void testReplaceTimestamp() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-timestamp-replaced.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .tsaurl("http://timestamp.sectigo.com")
+                .tsmode(TimestampingMode.AUTHENTICODE.name());
+
+        signer.execute(targetFile);
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+        }
+
+        signer = new SignerHelper("parameter");
+        signer.command("timestamp");
+        signer.tsaurl("http://timestamp.sectigo.com");
+        signer.tsmode(TimestampingMode.AUTHENTICODE.name());
+        signer.replace(true);
+        signer.execute(targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            CMSSignedData signature = signable.getSignatures().get(0);
+            SignatureAssert.assertTimestamped("Invalid timestamp", signature);
+            SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
+            assertNull("old timestamp not removed", signerInformation.getUnsignedAttributes().get(AuthenticodeObjectIdentifiers.SPC_RFC3161_OBJID));
+            assertNotNull("missing new timestamp", signerInformation.getUnsignedAttributes().get(CMSAttributes.counterSignature));
+        }
+    }
+
+    @Test
+    public void testTimestampUnsignedFile() {
+        File file = new File("target/test-classes/wineyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("timestamp");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", e.getMessage().replace('\\', '/'));
+        }
+    }
+
+    @Test
+    public void testTimestampMissingFile() {
+        File file = new File("target/test-classes/xeyes.exe");
+
+        SignerHelper signer = new SignerHelper("parameter");
+        signer.command("timestamp");
+
+        try {
+            signer.execute(file);
+            fail("Exception not thrown");
+        } catch (SignerException e) {
+            assertEquals("message", "Couldn't find target/test-classes/xeyes.exe", e.getMessage().replace('\\', '/'));
         }
     }
 }

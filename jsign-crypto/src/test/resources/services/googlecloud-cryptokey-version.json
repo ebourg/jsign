@@ -1,0 +1,8 @@
+{
+  "name": "projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-2048/cryptoKeyVersions/2",
+  "state": "ENABLED",
+  "createTime": "2023-09-13T16:53:04.889148776Z",
+  "protectionLevel": "SOFTWARE",
+  "algorithm": "RSA_SIGN_RAW_PKCS1_2048",
+  "generateTime": "2023-09-13T16:53:05.592538096Z"
+}

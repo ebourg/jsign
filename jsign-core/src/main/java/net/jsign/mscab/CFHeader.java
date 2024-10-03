@@ -22,6 +22,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
 
+import static net.jsign.ChannelUtils.*;
+
 /**
  * Cabinet File Header structure (CFHEADER):
  *
@@ -39,10 +41,10 @@ import java.security.MessageDigest;
  * flags                               2 bytes
  * set identifier                      2 bytes
  * cabinet sequential number           2 bytes
- * size of per-cabinet reserved area   2 bytes  (optional)
- * size of per-folder reserved area    1 byte   (optional)
- * size of per-datablock reserved area 1 byte   (optional)
- * reserved area                       (variable size, optional)
+ * size of per-cabinet reserve         2 bytes  (optional)
+ * size of per-folder reserve          1 byte   (optional)
+ * size of per-datablock reserve       1 byte   (optional)
+ * reserve                             (variable size, optional)
  * file name of the previous cabinet   (variable size, optional)
  * media with the previous cabinet     (variable size, optional)
  * file name of the next cabinet       (variable size, optional)
@@ -70,7 +72,11 @@ class CFHeader {
     public int cbCFHeader;      // u2
     public short cbCFFolder;    // u1
     public short cbCFData;      // u1
-    public byte[] abReserved;
+    public CFReserve reserve;
+    public byte[] szCabinetPrev;
+    public byte[] szDiskPrev;
+    public byte[] szCabinetNext;
+    public byte[] szDiskNext;
 
     /**
      * FLAG_PREV_CABINET is set if this cabinet file is not the first in a set
@@ -115,7 +121,11 @@ class CFHeader {
         this.cbCFHeader = header.cbCFHeader;
         this.cbCFFolder = header.cbCFFolder;
         this.cbCFData = header.cbCFData;
-        this.abReserved = header.abReserved != null ? header.abReserved.clone() : null;
+        this.reserve = header.reserve != null ? new CFReserve(header.reserve) : null;
+        this.szCabinetPrev = header.szCabinetPrev;
+        this.szDiskPrev = header.szDiskPrev;
+        this.szCabinetNext = header.szCabinetNext;
+        this.szDiskNext = header.szDiskNext;
     }
 
     public void read(SeekableByteChannel channel) throws IOException {
@@ -143,7 +153,7 @@ class CFHeader {
         this.flags = buffer.getShort() & 0xFFFF;          // u2 H
         this.setID = buffer.getShort();                   // u2 H
         this.iCabinet = buffer.getShort() & 0xFFFF;       // u2
-        this.abReserved = null;
+        this.reserve = null;
 
         if (isReservePresent()) {
             buffer.clear();
@@ -155,10 +165,30 @@ class CFHeader {
             this.cbCFFolder = (short) (buffer.get() & 0xFF); // u1
             this.cbCFData = (short) (buffer.get() & 0xFF);   // u1
             if (this.cbCFHeader > 0) {
-                this.abReserved = new byte[this.cbCFHeader];
-                channel.read(ByteBuffer.wrap(this.abReserved));
+                byte[] abReserve = new byte[this.cbCFHeader];
+                channel.read(ByteBuffer.wrap(abReserve));
+                reserve = new CFReserve();
+                reserve.read(abReserve);
             }
         }
+
+        if (hasPreviousCabinet()) {
+            szCabinetPrev = readNullTerminatedString(channel);
+            szDiskPrev = readNullTerminatedString(channel);
+        }
+
+        if (hasNextCabinet()) {
+            szCabinetNext = readNullTerminatedString(channel);
+            szDiskNext = readNullTerminatedString(channel);
+        }
+    }
+
+    public void write(SeekableByteChannel channel) throws IOException {
+        channel.position(0);
+        ByteBuffer buffer = ByteBuffer.allocate(getHeaderSize()).order(ByteOrder.LITTLE_ENDIAN);
+        write(buffer);
+        buffer.flip();
+        channel.write(buffer);
     }
 
     public void write(ByteBuffer buffer) {
@@ -180,17 +210,33 @@ class CFHeader {
             buffer.put((byte) this.cbCFFolder);
             buffer.put((byte) this.cbCFData);
             if (this.cbCFHeader > 0) {
-                buffer.put(this.abReserved);
+                buffer.put(reserve.toBuffer());
             }
+        }
+        if (hasPreviousCabinet()) {
+            buffer.put(szCabinetPrev);
+            buffer.put(szDiskPrev);
+        }
+        if (hasNextCabinet()) {
+            buffer.put(szCabinetNext);
+            buffer.put(szDiskNext);
         }
     }
 
     public int getHeaderSize() {
+        int size = BASE_SIZE;
         if (isReservePresent()) {
-            return BASE_SIZE + 4 + this.cbCFHeader;
-        } else {
-            return BASE_SIZE;
+            size += 4 + this.cbCFHeader;
         }
+        if (hasPreviousCabinet()) {
+            size += szCabinetPrev.length;
+            size += szDiskPrev.length;
+        }
+        if (hasNextCabinet()) {
+            size += szCabinetNext.length;
+            size += szDiskNext.length;
+        }
+        return size;
     }
 
     public void headerDigestUpdate(MessageDigest digest) {
@@ -213,8 +259,18 @@ class CFHeader {
         buffer.flip();
         digest.update(buffer);
 
-        if (this.abReserved != null) {
-            digest.update(abReserved, 0, 2); // 0x0000
+        if (reserve != null && !reserve.isEmpty()) {
+            reserve.digest(digest);
+        }
+
+        if (hasPreviousCabinet()) {
+            digest.update(szCabinetPrev);
+            digest.update(szDiskPrev);
+        }
+
+        if (hasNextCabinet()) {
+            digest.update(szCabinetNext);
+            digest.update(szDiskNext);
         }
     }
 
@@ -231,10 +287,26 @@ class CFHeader {
     }
 
     public boolean hasSignature() {
-        return this.abReserved != null;
+        return this.reserve != null && this.reserve.structure2.length >= CABSignature.SIZE;
     }
 
-    public CABSignature getSignature() {
-        return abReserved != null ? new CABSignature(abReserved) : null;
+    public void setReserve(CFReserve reserve) {
+        int previousSize = getHeaderSize();
+
+        this.reserve = reserve;
+        this.cbCFHeader = reserve != null ? reserve.size() : 0;
+
+        // update the reserve flag
+        if (cbCFHeader != 0 || cbCFFolder != 0 || cbCFData != 0) {
+            this.flags |= FLAG_RESERVE_PRESENT;
+        } else {
+            this.flags &= ~FLAG_RESERVE_PRESENT;
+        }
+
+        // adjust the size of the cabinet and the offset of the first file
+        int currentSize = getHeaderSize();
+        int shift = currentSize - previousSize;
+        this.cbCabinet += shift;
+        this.coffFiles += shift;
     }
 }

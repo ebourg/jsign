@@ -29,10 +29,11 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERNull;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -52,8 +53,6 @@ import org.bouncycastle.cms.DefaultCMSSignatureEncryptionAlgorithmFinder;
 import org.bouncycastle.cms.DefaultSignedAttributeTableGenerator;
 import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.SignerInfoGeneratorBuilder;
-import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.ContentSigner;
@@ -300,9 +299,18 @@ public class AuthenticodeSigner {
             return signatureAlgorithm;
         } else if ("EC".equals(privateKey.getAlgorithm())) {
             return digestAlgorithm + "withECDSA";
-        } else {
-            return digestAlgorithm + "with" + privateKey.getAlgorithm();
+        } else if ("EdDSA".equals(privateKey.getAlgorithm())) {
+            X509Certificate certificate = (X509Certificate) chain[0];
+            PublicKey publicKey = certificate.getPublicKey();
+            if (publicKey.toString().contains("Ed25519")) {
+                return "Ed25519";
+            } else if (publicKey.toString().contains("Ed448")) {
+                return "Ed448";
+            }
+            // return ((EdECKey) publicKey).getParams().getName(); // todo with Java 15+
         }
+
+        return digestAlgorithm + "with" + privateKey.getAlgorithm();
     }
 
     /**
@@ -365,7 +373,7 @@ public class AuthenticodeSigner {
             List<CMSSignedData> signatures = file.getSignatures();
             if (!signatures.isEmpty()) {
                 // append the nested signature
-                sigData = addNestedSignature(signatures.get(0), sigData);
+                sigData = SignatureUtils.addNestedSignature(signatures.get(0), false, sigData);
             }
         }
         
@@ -383,7 +391,7 @@ public class AuthenticodeSigner {
     protected CMSSignedData createSignedData(Signable file) throws Exception {
         // compute the signature
         CMSTypedData contentInfo = file.createSignedContent(digestAlgorithm);
-        CMSSignedDataGenerator generator = createSignedDataGenerator(contentInfo);
+        CMSSignedDataGenerator generator = createSignedDataGenerator(file, contentInfo);
         CMSSignedData sigData = generator.generate(contentInfo, true);
         
         // verify the signature
@@ -411,16 +419,19 @@ public class AuthenticodeSigner {
         return sigData;
     }
 
-    private CMSSignedDataGenerator createSignedDataGenerator(CMSTypedData contentInfo) throws CMSException, OperatorCreationException, CertificateEncodingException {
+    private CMSSignedDataGenerator createSignedDataGenerator(Signable file, CMSTypedData contentInfo) throws CMSException, OperatorCreationException, CertificateEncodingException {
+        List<X509Certificate> fullChain = CertificateUtils.getFullCertificateChain((Collection) Arrays.asList(chain));
+        fullChain.removeIf(CertificateUtils::isSelfSigned);
+
         boolean authenticode = AuthenticodeObjectIdentifiers.isAuthenticode(contentInfo.getContentType().getId());
         CMSSignedDataGenerator generator = authenticode ? new AuthenticodeSignedDataGenerator() : new CMSSignedDataGenerator();
-        generator.addCertificates(new JcaCertStore(removeRoot(chain)));
-        generator.addSignerInfoGenerator(createSignerInfoGenerator());
+        generator.addCertificates(new JcaCertStore(fullChain));
+        generator.addSignerInfoGenerator(createSignerInfoGenerator(file, authenticode));
 
         return generator;
     }
 
-    private SignerInfoGenerator createSignerInfoGenerator() throws OperatorCreationException, CertificateEncodingException {
+    private SignerInfoGenerator createSignerInfoGenerator(Signable file, boolean authenticode) throws OperatorCreationException, CertificateEncodingException {
         // create content signer
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder(getSignatureAlgorithm());
         if (signatureProvider != null) {
@@ -431,8 +442,14 @@ public class AuthenticodeSigner {
         DigestCalculatorProvider digestCalculatorProvider = new JcaDigestCalculatorProviderBuilder().build();
         
         // prepare the authenticated attributes
-        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(createAuthenticatedAttributes());
-        attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.signingTime, CMSAttributes.cmsAlgorithmProtect);
+        List<Attribute> attributes = new ArrayList<>(authenticode ? createAuthenticatedAttributes() : file.createSignedAttributes((X509Certificate) chain[0]));
+        AttributeTable attributeTable = new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
+        CMSAttributeTableGenerator attributeTableGenerator = new DefaultSignedAttributeTableGenerator(attributeTable);
+        if (authenticode) {
+            attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.cmsAlgorithmProtect, CMSAttributes.signingTime);
+        } else {
+            attributeTableGenerator = new FilteredAttributeTableGenerator(attributeTableGenerator, CMSAttributes.cmsAlgorithmProtect);
+        }
         
         // fetch the signing certificate
         X509CertificateHolder certificate = new JcaX509CertificateHolder((X509Certificate) chain[0]);
@@ -454,32 +471,6 @@ public class AuthenticodeSigner {
         signerInfoGeneratorBuilder.setSignedAttributeGenerator(attributeTableGenerator);
         signerInfoGeneratorBuilder.setContentDigest(createContentDigestAlgorithmIdentifier(shaSigner.getAlgorithmIdentifier()));
         return signerInfoGeneratorBuilder.build(shaSigner, certificate);
-    }
-
-    /**
-     * Remove the root certificate from the chain, unless the chain consists in a single self signed certificate.
-     * 
-     * @param certificates the certificate chain to process
-     * @return the certificate chain without the root certificate
-     */
-    private List<Certificate> removeRoot(Certificate[] certificates) {
-        List<Certificate> list = new ArrayList<>();
-        
-        if (certificates.length == 1) {
-            list.add(certificates[0]);
-        } else {
-            for (Certificate certificate : certificates) {
-                if (!isSelfSigned((X509Certificate) certificate)) {
-                    list.add(certificate);
-                }
-            }
-        }
-        
-        return list;
-    }
-
-    private boolean isSelfSigned(X509Certificate certificate) {
-        return certificate.getSubjectDN().equals(certificate.getIssuerDN());
     }
 
     private void verify(CMSSignedData signedData) throws SignatureException, OperatorCreationException {
@@ -516,52 +507,18 @@ public class AuthenticodeSigner {
      * 
      * @return the authenticated attributes
      */
-    private AttributeTable createAuthenticatedAttributes() {
+    private List<Attribute> createAuthenticatedAttributes() {
         List<Attribute> attributes = new ArrayList<>();
         
         SpcStatementType spcStatementType = new SpcStatementType(AuthenticodeObjectIdentifiers.SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID);
         attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_STATEMENT_TYPE_OBJID, new DERSet(spcStatementType)));
         
-        SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
-        attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
-
-        return new AttributeTable(new DERSet(attributes.toArray(new ASN1Encodable[0])));
-    }
-
-    /**
-     * Embed a signature as an unsigned attribute of an existing signature.
-     * 
-     * @param primary   the root signature hosting the nested secondary signature
-     * @param secondary the additional signature to nest inside the primary one
-     * @return the signature combining the specified signatures
-     */
-    protected CMSSignedData addNestedSignature(CMSSignedData primary, CMSSignedData secondary) {
-        SignerInformation signerInformation = primary.getSignerInfos().getSigners().iterator().next();
-        
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        if (unsignedAttributes == null) {
-            unsignedAttributes = new AttributeTable(new DERSet());
+        if (programName != null || programURL != null) {
+            SpcSpOpusInfo spcSpOpusInfo = new SpcSpOpusInfo(programName, programURL);
+            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_SP_OPUS_INFO_OBJID, new DERSet(spcSpOpusInfo)));
         }
-        Attribute nestedSignaturesAttribute = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-        if (nestedSignaturesAttribute == null) {
-            // first nested signature
-            unsignedAttributes = unsignedAttributes.add(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, secondary.toASN1Structure());
-        } else {
-            // append the signature to the previous nested signatures
-            ASN1EncodableVector nestedSignatures = new ASN1EncodableVector();
-            for (ASN1Encodable nestedSignature : nestedSignaturesAttribute.getAttrValues()) {
-                nestedSignatures.add(nestedSignature);
-            }
-            nestedSignatures.add(secondary.toASN1Structure());
-            
-            ASN1EncodableVector attributes = unsignedAttributes.remove(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID).toASN1EncodableVector();
-            attributes.add(new Attribute(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID, new DERSet(nestedSignatures)));
-            
-            unsignedAttributes = new AttributeTable(attributes);
-        }
-        
-        signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
-        return CMSSignedData.replaceSigners(primary, new SignerInformationStore(signerInformation));
+
+        return attributes;
     }
 
     /**
@@ -574,6 +531,11 @@ public class AuthenticodeSigner {
      * @return an AlgorithmIdentifier for the digestAlgorithm and including parameters
      */
     protected AlgorithmIdentifier createContentDigestAlgorithmIdentifier(AlgorithmIdentifier signatureAlgorithm) {
+        if ("1.3.101.112".equals(signatureAlgorithm.getAlgorithm().getId()) // Ed25519
+            || "1.3.101.113".equals(signatureAlgorithm.getAlgorithm().getId())) { // Ed448
+            return new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE);
+        }
+
         AlgorithmIdentifier ai = new DefaultDigestAlgorithmIdentifierFinder().find(signatureAlgorithm);
         if (ai.getParameters() == null) {
             // Always include parameters to align with what signtool does

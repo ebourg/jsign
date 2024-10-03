@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -28,23 +29,43 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERSet;
+import org.bouncycastle.asn1.DERUTF8String;
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerId;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
+import org.bouncycastle.util.encoders.Hex;
 
+import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 
 /**
@@ -55,6 +76,7 @@ import net.jsign.timestamp.TimestampingMode;
  * @since 2.0
  */
 class SignerHelper {
+    public static final String PARAM_COMMAND = "command";
     public static final String PARAM_KEYSTORE = "keystore";
     public static final String PARAM_STOREPASS = "storepass";
     public static final String PARAM_STORETYPE = "storetype";
@@ -75,11 +97,16 @@ class SignerHelper {
     public static final String PARAM_REPLACE = "replace";
     public static final String PARAM_ENCODING = "encoding";
     public static final String PARAM_DETACHED = "detached";
+    public static final String PARAM_FORMAT = "format";
+    public static final String PARAM_VALUE = "value";
 
-    private final Console console;
+    private final Logger log = Logger.getLogger(getClass().getName());
 
     /** The name used to refer to a configuration parameter */
     private final String parameterName;
+
+    /** The command to execute */
+    private String command = "sign";
 
     private final KeyStoreBuilder ksparams;
     private String alias;
@@ -96,13 +123,19 @@ class SignerHelper {
     private boolean replace;
     private Charset encoding;
     private boolean detached;
+    private String format;
+    private String value;
 
     private AuthenticodeSigner signer;
 
-    public SignerHelper(Console console, String parameterName) {
-        this.console = console;
+    public SignerHelper(String parameterName) {
         this.parameterName = parameterName;
         this.ksparams = new KeyStoreBuilder(parameterName);
+    }
+
+    public SignerHelper command(String command) {
+        this.command = command;
+        return this;
     }
 
     public SignerHelper keystore(String keystore) {
@@ -215,12 +248,23 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper format(String format) {
+        this.format = format;
+        return this;
+    }
+
+    public SignerHelper value(String value) {
+        this.value = value;
+        return this;
+    }
+
     public SignerHelper param(String key, String value) {
         if (value == null) {
             return this;
         }
         
         switch (key) {
+            case PARAM_COMMAND:    return command(value);
             case PARAM_KEYSTORE:   return keystore(value);
             case PARAM_STOREPASS:  return storepass(value);
             case PARAM_STORETYPE:  return storetype(value);
@@ -241,6 +285,8 @@ class SignerHelper {
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
             case PARAM_ENCODING:   return encoding(value);
             case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
+            case PARAM_FORMAT:     return format(value);
+            case PARAM_VALUE:      return value(value);
             default:
                 throw new IllegalArgumentException("Unknown " + parameterName + ": " + key);
         }
@@ -248,6 +294,32 @@ class SignerHelper {
 
     void setBaseDir(File basedir) {
         ksparams.setBaseDir(basedir);
+    }
+
+    public void execute(String file) throws SignerException {
+        execute(ksparams.createFile(file));
+    }
+
+    public void execute(File file) throws SignerException {
+        switch (command) {
+            case "sign":
+                sign(file);
+                break;
+            case "timestamp":
+                timestamp(file);
+                break;
+            case "extract":
+                extract(file);
+                break;
+            case "remove":
+                remove(file);
+                break;
+            case "tag":
+                tag(file);
+                break;
+            default:
+                throw new SignerException("Unknown command '" + command + "'");
+        }
     }
 
     private AuthenticodeSigner build() throws SignerException {
@@ -346,6 +418,13 @@ class SignerHelper {
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
+
+        // enable timestamping with Azure Trusted Signing
+        if (tsaurl == null && storetype == KeyStoreType.TRUSTEDSIGNING) {
+            tsaurl = "http://timestamp.acs.microsoft.com/";
+            tsmode = TimestampingMode.RFC3161.name();
+            tsretries = 3;
+        }
         
         // configure the signer
         return new AuthenticodeSigner(chain, privateKey)
@@ -377,9 +456,7 @@ class SignerHelper {
             File detachedSignature = getDetachedSignature(file);
             if (detached && detachedSignature.exists()) {
                 try {
-                    if (console != null) {
-                        console.info("Attaching Authenticode signature to " + file);
-                    }
+                    log.info("Attaching Authenticode signature to " + file);
                     attach(signable, detachedSignature);
                 } catch (Exception e) {
                     throw new SignerException("Couldn't attach the signature to " + file, e);
@@ -390,9 +467,7 @@ class SignerHelper {
                     signer = build();
                 }
 
-                if (console != null) {
-                    console.info("Adding Authenticode signature to " + file);
-                }
+                log.info("Adding Authenticode signature to " + file);
                 signer.sign(signable);
 
                 if (detached) {
@@ -410,7 +485,7 @@ class SignerHelper {
     }
 
     private void attach(Signable signable, File detachedSignature) throws IOException, CMSException {
-        byte[] signatureBytes = FileUtils.readFileToByteArray(detachedSignature);
+        byte[] signatureBytes = Files.readAllBytes(detachedSignature.toPath());
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
         signable.setSignature(signedData);
@@ -421,12 +496,198 @@ class SignerHelper {
     private void detach(Signable signable, File detachedSignature) throws IOException {
         CMSSignedData signedData = signable.getSignatures().get(0);
         byte[] content = signedData.toASN1Structure().getEncoded("DER");
-
-        FileUtils.writeByteArrayToFile(detachedSignature, content);
+        if (format == null || "DER".equalsIgnoreCase(format)) {
+            Files.write(detachedSignature.toPath(), content);
+        } else if ("PEM".equalsIgnoreCase(format)) {
+            try (FileWriter out = new FileWriter(detachedSignature)) {
+                String encoded = Base64.getEncoder().encodeToString(content);
+                out.write("-----BEGIN PKCS7-----\n");
+                for (int i = 0; i < encoded.length(); i += 64) {
+                    out.write(encoded.substring(i, Math.min(i + 64, encoded.length())));
+                    out.write('\n');
+                }
+                out.write("-----END PKCS7-----\n");
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown output format '" + format + "'");
+        }
     }
 
     private File getDetachedSignature(File file) {
         return new File(file.getParentFile(), file.getName() + ".sig");
+    }
+
+    private void extract(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                throw new SignerException("No signature found in " + file);
+            }
+
+            File detachedSignature = getDetachedSignature(file);
+            if ("PEM".equalsIgnoreCase(format)) {
+                detachedSignature = new File(detachedSignature.getParentFile(), detachedSignature.getName() + ".pem");
+            }
+            log.info("Extracting signature to " + detachedSignature);
+            detach(signable, detachedSignature);
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            throw new SignerException(e.getMessage());
+        } catch (SignerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SignerException("Couldn't extract the signature from " + file, e);
+        }
+    }
+
+    private void remove(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                log.severe("No signature found in " + file);
+                return;
+            }
+
+            log.info("Removing signature from " + file);
+            signable.setSignature(null);
+            signable.save();
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            throw new SignerException(e.getMessage());
+        } catch (Exception e) {
+            throw new SignerException("Couldn't remove the signature from " + file, e);
+        }
+    }
+
+    private void tag(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                throw new SignerException("No signature found in " + file);
+            }
+
+            log.info("Adding tag to " + file);
+            CMSSignedData signature = signatures.get(0);
+            signature = addUnsignedAttribute(signature, AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue());
+            signable.setSignature(signature);
+        } catch (SignerException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new SignerException("Couldn't modify the signature of " + file, e);
+        }
+    }
+
+    private CMSSignedData addUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid, ASN1Encodable value) {
+        SignerInformationStore store = signature.getSignerInfos();
+        Collection<SignerInformation> signers = store.getSigners();
+        SignerInformation signer = signers.iterator().next();
+
+        AttributeTable attributes = signer.getUnsignedAttributes();
+        if (attributes == null) {
+            attributes = new AttributeTable(new DERSet());
+        }
+        attributes = attributes.add(oid, value);
+
+        signers.remove(signer);
+        signers.add(SignerInformation.replaceUnsignedAttributes(signer, attributes));
+        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signers));
+    }
+
+    private ASN1Encodable getTagValue() throws IOException {
+        if (value == null) {
+            byte[] array = new byte[1024];
+            String begin = "-----BEGIN TAG-----";
+            System.arraycopy(begin.getBytes(), 0, array, 0, begin.length());
+            String end = "-----END TAG-----";
+            System.arraycopy(end.getBytes(), 0, array, array.length - end.length(), end.length());
+            return new DEROctetString(array);
+
+        } else if (value.startsWith("0x")) {
+            byte[] array = Hex.decode(value.substring(2));
+            return new DEROctetString(array);
+
+        } else if (value.startsWith("file:")) {
+            byte[] array = Files.readAllBytes(new File(value.substring("file:".length())).toPath());
+            return new DEROctetString(array);
+
+        } else {
+            return new DERUTF8String(value);
+        }
+    }
+
+    private void timestamp(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try {
+            initializeProxy(proxyUrl, proxyUser, proxyPass);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't initialize proxy", e);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            if (signable.getSignatures().isEmpty()) {
+                throw new SignerException("No signature found in " + file);
+            }
+
+            Timestamper timestamper = Timestamper.create(tsmode != null ? TimestampingMode.of(tsmode) : TimestampingMode.AUTHENTICODE);
+            timestamper.setRetries(tsretries);
+            timestamper.setRetryWait(tsretrywait);
+            if (tsaurl != null) {
+                timestamper.setURLs(tsaurl.split(","));
+            }
+            DigestAlgorithm digestAlgorithm = alg != null ? DigestAlgorithm.of(alg) : DigestAlgorithm.getDefault();
+
+            List<CMSSignedData> signatures = new ArrayList<>();
+            for (CMSSignedData signature : signable.getSignatures()) {
+                SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
+                SignerId signerId = signerInformation.getSID();
+                X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
+
+                String digestAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(signerInformation.getDigestAlgorithmID()); 
+                String keyAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(new ASN1ObjectIdentifier(signerInformation.getEncryptionAlgOID()));
+                String name = digestAlgorithmName + "/" + keyAlgorithmName + " signature from '" + certificate.getSubject() + "'";
+
+                if (SignatureUtils.isTimestamped(signature) && !replace) {
+                    log.fine(name + " already timestamped");
+                    signatures.add(signature);
+                    continue;
+                }
+
+                boolean expired = certificate.getNotAfter().before(new Date());
+                if (expired) {
+                    log.fine(name + " is expired, skipping");
+                    signatures.add(signature);
+                    continue;
+                }
+
+                log.info("Adding timestamp to " + name);
+                signature = SignatureUtils.removeTimestamp(signature);
+                signature = timestamper.timestamp(digestAlgorithm, signature);
+
+                signatures.add(signature);
+            }
+
+            CMSSignedData signature = signatures.get(0);
+            if (signatures.size() > 1) {
+                Collection<CMSSignedData> nestedSignatures = signatures.subList(1, signatures.size());
+                signature = SignatureUtils.addNestedSignature(signature, true, nestedSignatures.toArray(new CMSSignedData[0]));
+            }
+            signable.setSignature(signature);
+        } catch (IOException | CMSException e) {
+            throw new SignerException("Couldn't timestamp " + file, e);
+        }
     }
 
     /**
@@ -453,9 +714,7 @@ class SignerHelper {
                     } else {
                         proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port));
                     }
-                    if (console != null) {
-                        console.debug("Proxy selected for " + uri + " : " + proxy);
-                    }
+                    log.fine("Proxy selected for " + uri + " : " + proxy);
                     return Collections.singletonList(proxy);
                 }
 

@@ -19,31 +19,22 @@ package net.jsign.mscab;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.cms.SignerInformation;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
+import net.jsign.SignatureUtils;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.asn1.authenticode.SpcAttributeTypeAndOptionalValue;
 import net.jsign.asn1.authenticode.SpcIndirectDataContent;
@@ -114,18 +105,18 @@ public class MSCabinetFile implements Signable {
         channel.position(0);
         header.read(channel);
 
-        if (header.isReservePresent() && header.cbCFHeader > 0) {
-            if (header.cbCFHeader != CABSignature.SIZE) {
-                throw new IOException("MSCabinet file is corrupt: cabinet reserved area size is " + header.cbCFHeader + " instead of " + CABSignature.SIZE);
-            }
-
-            CABSignature cabsig = header.getSignature();
-            if (cabsig.header != CABSignature.HEADER) {
-                throw new IOException("MSCabinet file is corrupt: signature header is " + cabsig.header);
-            }
-
+        if (header.hasSignature() && header.reserve.structure2.length == CABSignature.SIZE) {
+            CABSignature cabsig = new CABSignature(header.reserve.structure2);
             if (cabsig.offset < channel.size() && (cabsig.offset + cabsig.length) > channel.size() || cabsig.offset > channel.size()) {
                 throw new IOException("MSCabinet file is corrupt: signature data (offset=" + cabsig.offset + ", size=" + cabsig.length + ") after the end of the file");
+            }
+
+            if (header.cbCabinet != cabsig.offset) {
+                throw new IOException("MSCabinet file is corrupt: the declared size of the file (" + header.cbCabinet + ") doesn't match the offset of the signature (" + cabsig.offset + ")");
+            }
+
+            if (header.cbCabinet + cabsig.length != channel.size()) {
+                throw new IOException("MSCabinet file is corrupt: the declared size of the file (" + header.cbCabinet + ") and the size of the signature (" + cabsig.length + ") are inconsistent with the actual size of the file (" + channel.size() + ")");
             }
         }
     }
@@ -139,37 +130,20 @@ public class MSCabinetFile implements Signable {
     public synchronized byte[] computeDigest(DigestAlgorithm digestAlgorithm) throws IOException {
         MessageDigest digest = digestAlgorithm.getMessageDigest();
 
+        CFReserve modifiedReserve = new CFReserve();
+        modifiedReserve.minSize = header.cbCFHeader;
+        if (header.reserve != null) {
+            modifiedReserve.structure1 = header.reserve.structure1;
+        }
+        modifiedReserve.structure2 = new byte[CABSignature.SIZE];
+
         CFHeader modifiedHeader = new CFHeader(header);
-        int shift = 0;
-        if (!header.isReservePresent()) {
-            shift = 4;
-            modifiedHeader.flags |= CFHeader.FLAG_RESERVE_PRESENT;
-        }
-
-        if (header.cbCFHeader == 0) {
-            modifiedHeader.cbCFHeader = CABSignature.SIZE;
-            shift += CABSignature.SIZE;
-            modifiedHeader.cbCabinet += shift;
-            modifiedHeader.coffFiles += shift;
-
-            CABSignature cabsig = new CABSignature();
-            cabsig.offset = (int) modifiedHeader.cbCabinet;
-
-            modifiedHeader.abReserved = cabsig.array();
-        }
+        modifiedHeader.setReserve(modifiedReserve);
         modifiedHeader.headerDigestUpdate(digest);
 
+        int shift = modifiedHeader.getHeaderSize() - header.getHeaderSize();
+
         channel.position(header.getHeaderSize());
-
-        if (header.hasPreviousCabinet()) {
-            digest.update(readNullTerminatedString(channel)); // szCabinetPrev
-            digest.update(readNullTerminatedString(channel)); // szDiskPrev
-        }
-
-        if (header.hasNextCabinet()) {
-            digest.update(readNullTerminatedString(channel)); // szCabinetNext
-            digest.update(readNullTerminatedString(channel)); // szDiskNext
-        }
 
         for (int i = 0; i < header.cFolders; i++) {
             CFFolder folder = CFFolder.read(channel);
@@ -178,7 +152,7 @@ public class MSCabinetFile implements Signable {
             updateDigest(channel, digest, channel.position(), channel.position() + header.cbCFFolder);
         }
 
-        long endPosition = header.hasSignature() ? header.getSignature().offset : channel.size();
+        long endPosition = header.cbCabinet;
         updateDigest(channel, digest, channel.position(), endPosition);
 
         return digest.digest();
@@ -195,33 +169,22 @@ public class MSCabinetFile implements Signable {
 
     @Override
     public synchronized List<CMSSignedData> getSignatures() throws IOException {
-        List<CMSSignedData> signatures = new ArrayList<>();
-        try {
-            CABSignature cabsig = header.getSignature();
-            if (cabsig != null && cabsig.offset > 0 && cabsig.length > 0 && cabsig.length < channel.size()) {
-                byte[] buffer = new byte[(int) cabsig.length];
-                channel.position(cabsig.offset);
-                channel.read(ByteBuffer.wrap(buffer));
+        if (header.hasSignature()) {
+            if (header.reserve.structure2.length == CABSignature.SIZE) {
+                CABSignature cabsig = new CABSignature(header.reserve.structure2);
+                if (cabsig.offset > 0 && cabsig.length > 0 && cabsig.length < channel.size()) {
+                    byte[] buffer = new byte[(int) cabsig.length];
+                    channel.position(cabsig.offset);
+                    channel.read(ByteBuffer.wrap(buffer));
 
-                CMSSignedData signedData;
-                signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(buffer).readObject()));
-                signatures.add(signedData);
-
-                SignerInformation signerInformation = signedData.getSignerInfos().getSigners().iterator().next();
-                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-                if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(AuthenticodeObjectIdentifiers.SPC_NESTED_SIGNATURE_OBJID);
-                    if (nestedSignatures != null) {
-                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
-                        }
-                    }
+                    return SignatureUtils.getSignatures(buffer);
                 }
+            } else {
+                return SignatureUtils.getSignatures(header.reserve.structure2);
             }
-        } catch (CMSException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException | StackOverflowError e) {
-            throw new IOException(e);
         }
-        return signatures;
+
+        return Collections.emptyList();
     }
 
     @Override
@@ -232,61 +195,56 @@ public class MSCabinetFile implements Signable {
 
         byte[] content = signature != null ? signature.toASN1Structure().getEncoded("DER") : new byte[0];
 
-        int shift = 0;
+        int previousSize = header.getHeaderSize();
 
-        if (!header.isReservePresent()) {
-            shift = 4;
-            header.flags |= CFHeader.FLAG_RESERVE_PRESENT;
+        CFReserve reserve = new CFReserve();
+        reserve.minSize = header.cbCFHeader;
+        if (header.reserve != null) {
+            reserve.structure1 = header.reserve.structure1;
         }
 
-        if (header.cbCFHeader == 0) {
-            shift += CABSignature.SIZE;
-            header.cbCFHeader = CABSignature.SIZE;
-            header.abReserved = new byte[CABSignature.SIZE];
+        if (content.length > 0) {
+            reserve.structure2 = new byte[CABSignature.SIZE];
+
+            header.setReserve(reserve);
+
+            CABSignature cabsig = new CABSignature();
+            cabsig.offset = header.cbCabinet;
+            cabsig.length = content.length;
+
+            reserve.structure2 = cabsig.array();
+        } else {
+            reserve.structure2 = new byte[0];
+
+            header.setReserve(reserve);
         }
+
+        int currentSize = header.getHeaderSize();
+        int shift = currentSize - previousSize;
 
         if (shift > 0) {
-            insert(channel, CFHeader.BASE_SIZE, new byte[shift]);
-            header.cbCabinet += shift;
-            header.coffFiles += shift;
+            insert(channel, previousSize, new byte[shift]);
+        } else if (shift < 0) {
+            delete(channel, previousSize + shift, -shift);
         }
-
-        CABSignature cabsig = new CABSignature(header.abReserved);
-        cabsig.header = CABSignature.HEADER;
-        cabsig.offset = header.cbCabinet;
-        cabsig.length = content.length;
-        header.abReserved = cabsig.array();
 
         // rewrite the header
-        channel.position(0);
-        ByteBuffer buffer = ByteBuffer.allocate(header.getHeaderSize()).order(ByteOrder.LITTLE_ENDIAN);
-        header.write(buffer);
-        buffer.flip();
-        channel.write(buffer);
+        header.write(channel);
 
-        // skip the previous/next cabinet names
-        if (header.hasPreviousCabinet()) {
-            readNullTerminatedString(channel); // szCabinetPrev
-            readNullTerminatedString(channel); // szDiskPrev
-        }
+        if (shift != 0) {
+            // shift the start offset of the CFFOLDER structures
+            for (int i = 0; i < header.cFolders; i++) {
+                long position = channel.position();
+                CFFolder folder = CFFolder.read(channel);
+                folder.coffCabStart += shift;
 
-        if (header.hasNextCabinet()) {
-            readNullTerminatedString(channel); // szCabinetNext
-            readNullTerminatedString(channel); // szDiskNext
-        }
-
-        // shift the start offset of the CFFOLDER structures
-        for (int i = 0; i < header.cFolders; i++) {
-            long position = channel.position();
-            CFFolder folder = CFFolder.read(channel);
-            folder.coffCabStart += shift;
-
-            channel.position(position);
-            folder.write(channel);
+                channel.position(position);
+                folder.write(channel);
+            }
         }
 
         // write the signature
-        channel.position(cabsig.offset);
+        channel.position(header.cbCabinet);
         channel.write(ByteBuffer.wrap(content));
 
         // shrink the file if the new signature is shorter

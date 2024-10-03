@@ -19,7 +19,7 @@ package net.jsign;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DEROctetString;
@@ -29,6 +29,7 @@ import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.util.encoders.Hex;
 
 import static net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers.*;
 import static org.junit.Assert.*;
@@ -90,7 +91,9 @@ public class SignatureAssert {
             assertEquals("Digest algorithm of signature " + i, algorithms[i].oid, si.getDigestAlgorithmID().getAlgorithm());
 
             // Check if the signingTime attribute is present
-            assertNull("signingTime attribute found in signature " + i, signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+            if (isAuthenticode(signature.getSignedContentTypeOID())) {
+                assertNull("signingTime attribute found in signature " + i, signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
+            }
         }
     }
 
@@ -106,6 +109,16 @@ public class SignatureAssert {
         ASN1Sequence spcSipInfo = (ASN1Sequence) spcAttributeTypeAndOptionalValue.getObjectAt(1);
         DEROctetString uuid = (DEROctetString) spcSipInfo.getObjectAt(1);
 
-        assertEquals("Authenticode UUID", expected.toUpperCase().replaceAll("-", ""), Hex.encodeHexString(uuid.getOctets()).toUpperCase());
+        assertEquals("Authenticode UUID", expected.toUpperCase().replaceAll("-", ""), Hex.toHexString(uuid.getOctets()).toUpperCase());
+    }
+
+    public static void assertSignedAttribute(String message, Signable signable, ASN1ObjectIdentifier oid) throws IOException {
+        SignerInformation signerInformation = signable.getSignatures().get(0).getSignerInfos().getSigners().iterator().next();
+
+        AttributeTable attributes = signerInformation.getSignedAttributes();
+        assertNotNull(message + " (missing signed attributes)", attributes);
+
+        Attribute attribute = attributes.get(oid);
+        assertNotNull(message + " (missing " + oid + " attribute)", attribute);
     }
 }

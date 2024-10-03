@@ -17,6 +17,9 @@
 package net.jsign;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -51,6 +54,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter
     private FileSet fileset;
 
+    /** The operation to execute */
+    @Parameter( property = "jsign.command", defaultValue = "sign" )
+    private String command = "sign";
+
     /** The program name embedded in the signature. */
     @Parameter( property = "jsign.name" )
     private String name;
@@ -83,7 +90,7 @@ public class JsignMojo extends AbstractMojo {
 
     /**
      * The type of the keystore (JKS, JCEKS, PKCS12, PKCS11, ETOKEN, NITROKEY, OPENPGP, OPENSC, PIV, YUBIKEY, AWS,
-     * AZUREKEYVAULT, DIGICERTONE, ESIGNER, GOOGLECLOUD, HASHICORPVAULT or ORACLECLOUD).
+     * AZUREKEYVAULT, DIGICERTONE, ESIGNER, GARASIGN, GOOGLECLOUD, HASHICORPVAULT, ORACLECLOUD or TRUSTEDSIGNING).
      */
     @Parameter( property = "jsign.storetype" )
     private String storetype;
@@ -159,6 +166,13 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.detached", defaultValue = "false")
     private boolean detached;
 
+    /** The value of the unsigned attribute */
+    @Parameter( property = "jsign.value")
+    private String value;
+
+    @Parameter( property = "jsign.verbose", defaultValue = "false" )
+    private boolean verbose;
+
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
 
@@ -186,9 +200,17 @@ public class JsignMojo extends AbstractMojo {
             throw new MojoExecutionException("file of fileset must be set");
         }
 
-        SignerHelper helper = new SignerHelper(new MavenConsole(getLog()), "element");
+        // configure the logging
+        Logger log = Logger.getLogger("net.jsign");
+        log.setLevel(getLog().isDebugEnabled() ? Level.FINEST : verbose ? Level.FINE : Level.INFO);
+        log.setUseParentHandlers(false);
+        Stream.of(log.getHandlers()).forEach(log::removeHandler);
+        log.addHandler(new MavenLogHandler(getLog()));
+
+        SignerHelper helper = new SignerHelper("element");
         helper.setBaseDir(project.getBasedir());
         
+        helper.command(command);
         helper.name(name);
         helper.url(url);
         helper.alg(algorithm);
@@ -206,6 +228,7 @@ public class JsignMojo extends AbstractMojo {
         helper.replace(replace);
         helper.encoding(encoding);
         helper.detached(detached);
+        helper.value(value);
 
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {
@@ -216,13 +239,13 @@ public class JsignMojo extends AbstractMojo {
 
         try {
             if (file != null) {
-                helper.sign(file);
+                helper.execute(file);
             }
 
             if (fileset != null) {
                 for (String filename : new FileSetManager().getIncludedFiles(fileset)) {
                     File file = new File(fileset.getDirectory(), filename);
-                    helper.sign(file);
+                    helper.execute(file);
                 }
             }
         } catch (SignerException e) {
