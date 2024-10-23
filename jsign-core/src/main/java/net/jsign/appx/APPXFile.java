@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.util.IOUtils;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
@@ -201,7 +202,7 @@ public class APPXFile extends ZipFile implements Signable {
 
         Pattern pattern = Pattern.compile("Publisher\\s*=\\s*\"([^\"]+)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(manifest);
-        return matcher.find() ? matcher.group(1) : null;
+        return matcher.find() ? StringEscapeUtils.unescapeXml(matcher.group(1)) : null;
     }
 
     @Override
