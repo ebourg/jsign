@@ -90,7 +90,7 @@ public class AmazonSigningService implements SigningService {
      * @since 6.0
      */
     public AmazonSigningService(String region, Supplier<AmazonCredentials> credentials, Function<String, Certificate[]> certificateStore) {
-        this(credentials, certificateStore, "https://kms." + region + ".amazonaws.com");
+        this(credentials, certificateStore, getEndpointUrl(region));
     }
 
     /**
@@ -121,6 +121,17 @@ public class AmazonSigningService implements SigningService {
     @Deprecated
     public AmazonSigningService(String region, String credentials, Function<String, Certificate[]> certificateStore) {
         this(region, AmazonCredentials.parse(credentials), certificateStore);
+    }
+
+    /**
+     * Returns the endpoint URL for the given AWS region.
+     *
+     * @param region the AWS region
+     * @return the endpoint URL
+     */
+    static String getEndpointUrl(String region) {
+        String domain = "true".equalsIgnoreCase(getenv("AWS_USE_FIPS_ENDPOINT")) ? "kms-fips" : "kms";
+        return "https://" + domain + "." + region + ".amazonaws.com";
     }
 
     @Override
@@ -259,7 +270,7 @@ public class AmazonSigningService implements SigningService {
         String host = endpoint.getHost();
         Matcher matcher = hostnamePattern.matcher(host);
         String regionName = matcher.matches() ? matcher.group(2) : "us-east-1";
-        String serviceName = matcher.matches() ? matcher.group(1) : "kms";
+        String serviceName = matcher.matches() ? matcher.group(1).replace("-fips", "") : "kms";
 
         String credentialScope = dateFormat.format(date) + "/" + regionName + "/" + serviceName + "/" + "aws4_request";
 
@@ -330,5 +341,9 @@ public class AmazonSigningService implements SigningService {
         MessageDigest digest =  DigestAlgorithm.SHA256.getMessageDigest();
         digest.update(data);
         return Hex.toHexString(digest.digest()).toLowerCase();
+    }
+
+    static String getenv(String name) {
+        return System.getenv(name);
     }
 }

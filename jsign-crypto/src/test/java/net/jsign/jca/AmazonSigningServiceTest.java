@@ -38,9 +38,11 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import static net.jadler.Jadler.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class AmazonSigningServiceTest {
 
@@ -329,5 +331,20 @@ public class AmazonSigningServiceTest {
         AccessibleObject.setAccessible(new Field[]{delegate, requests}, true);
         sun.net.www.MessageHeader headers = (sun.net.www.MessageHeader) requests.get(delegate.get(conn));
         return headers.findValue("Authorization");
+    }
+
+    @Test
+    public void testGetEndpointUrl() {
+        // Test default endpoint
+        try (MockedStatic<?> mock = mockStatic(AmazonSigningService.class, CALLS_REAL_METHODS)) {
+            when(AmazonSigningService.getenv("AWS_USE_FIPS_ENDPOINT")).thenReturn("false");
+            assertEquals("https://kms.us-west-2.amazonaws.com", AmazonSigningService.getEndpointUrl("us-west-2"));
+        }
+
+        // Test FIPS endpoint
+        try (MockedStatic<?> mock = mockStatic(AmazonSigningService.class, CALLS_REAL_METHODS)) {
+            when(AmazonSigningService.getenv("AWS_USE_FIPS_ENDPOINT")).thenReturn("true");
+            assertEquals("https://kms-fips.us-west-2.amazonaws.com", AmazonSigningService.getEndpointUrl("us-west-2"));
+        }
     }
 }

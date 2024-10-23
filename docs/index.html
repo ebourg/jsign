@@ -696,7 +696,9 @@ the name of the one to use.</p>
 <h4 id="example-awskms">Signing with AWS Key Management Service</h4>
 
 <p><a href="https://aws.amazon.com/kms/">AWS Key Management Service</a> (KMS) stores only the private key,
-the certificate must be provided separately. The <code>keystore</code> parameter references the AWS region.</p>
+the certificate must be provided separately. The <code>keystore</code> parameter references the AWS region.
+Setting the <code>AWS_USE_FIPS_ENDPOINT</code> environment variable to <code>true</code> will ensure the FIPS
+endpoint is used.</p>
 
 <p>The AWS access key, secret key, and optionally the session token, are concatenated
 and used as the <code>storepass</code> parameter; if the latter is not provided, Jsign attempts to fetch the credentials
@@ -1044,7 +1046,8 @@ PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/
 MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
 <p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås,
-Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy, Sebastian Stamm and Eatay Mizrachi.</p>
+Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy, Sebastian Müller, Sebastian Stamm
+and Eatay Mizrachi.</p>
 
 <h3 id="contacts">Contact</h3>
 

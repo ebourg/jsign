@@ -76,6 +76,7 @@ See https://ebourg.github.io/jsign for more information.
 * The value of the `storetype` parameter is now case insensitive
 * The Azure Key Vault account no longer needs the permission to list the keys when signing with jarsigner
 * The DigiCert ONE host can now be specified with the `keystore` parameter
+* The `AWS_USE_FIPS_ENDPOINT` environment variable is now supported to use the AWS KMS FIPS endpoints (contributed by Sebastian Müller)
 * On Windows the YubiKey library path is automatically added to the PATH of the command line tool
 * Signing more than one file with the `YUBIKEY` storetype no longer triggers a `CKR_USER_NOT_LOGGED_IN` error
 * MS Cabinet files with a pre-allocated reserve are now supported
