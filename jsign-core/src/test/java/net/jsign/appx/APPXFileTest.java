@@ -17,7 +17,14 @@
 package net.jsign.appx;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -31,6 +38,7 @@ import static java.nio.charset.StandardCharsets.*;
 import static net.jsign.DigestAlgorithm.*;
 import static net.jsign.SignatureAssert.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class APPXFileTest {
 
@@ -108,6 +116,56 @@ public class APPXFileTest {
     public void testGetBundlePublisher() throws Exception {
         try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.appxbundle"))) {
             assertEquals("Publisher", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", file.getPublisher());
+        }
+    }
+
+    public static Certificate getCertificate() throws IOException, CertificateException {
+        try (FileInputStream in = new FileInputStream("target/test-classes/keystores/jsign-test-certificate.pem")) {
+            return CertificateFactory.getInstance("X.509").generateCertificates(in).iterator().next();
+        }
+    }
+
+    @Test
+    public void testValidateWithMatchingPublisher() throws Exception {
+        try (APPXFile file = new APPXFile(new File("target/test-classes/minimal.msix"))) {
+            file.validate(getCertificate());
+        }
+    }
+
+    @Test
+    public void testValidateWithMismatchingPublisher() throws Exception {
+        try (APPXFile file = spy(new APPXFile(new File("target/test-classes/minimal.msix")))) {
+            when(file.getPublisher()).thenReturn("CN=Jsign Code Signing Test Certificate 1977 (RSA)");
+            try {
+                file.validate(getCertificate());
+                fail("Exception not thrown");
+            } catch (IllegalArgumentException e) {
+                assertEquals("message", "The app manifest publisher name (CN=Jsign Code Signing Test Certificate 1977 (RSA)) must match the subject name of the signing certificate (CN=Jsign Code Signing Test Certificate 2024 (RSA))", e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void testValidateWithReorderedPublisher() throws Exception {
+        try (APPXFile file = spy(new APPXFile(new File("target/test-classes/minimal.msix")))) {
+            when(file.getPublisher()).thenReturn("C=US, S=New York,  L=New York, O=\"COMPANY, INC.\",CN=\"COMPANY, INC.\"");
+
+            X509Certificate certificate = spy((X509Certificate) getCertificate());
+            when(certificate.getSubjectX500Principal()).thenReturn(new X500Principal("CN=\"COMPANY, INC.\",O=\"COMPANY, INC.\",L=New York,ST=New York,C=US"));
+            file.validate(certificate);
+        }
+    }
+
+    @Test
+    public void testValidateWithMissingPublisher() throws Exception {
+        try (APPXFile file = spy(new APPXFile(new File("target/test-classes/minimal.msix")))) {
+            when(file.getPublisher()).thenReturn(null);
+            try {
+                file.validate(getCertificate());
+                fail("Exception not thrown");
+            } catch (IllegalArgumentException e) {
+                assertEquals("message", "The app manifest publisher name (null) must match the subject name of the signing certificate (CN=Jsign Code Signing Test Certificate 2024 (RSA))", e.getMessage());
+            }
         }
     }
 }

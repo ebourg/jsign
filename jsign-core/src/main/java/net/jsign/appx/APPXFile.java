@@ -29,13 +29,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.util.IOUtils;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cms.CMSSignedData;
@@ -167,21 +167,20 @@ public class APPXFile extends ZipFile implements Signable {
      * Normalize the X500 name specified.
      */
     private String normalize(String name) {
-        if (name == null) {
-            return null;
+        if (name != null) {
+            // replace the non-standard S abbreviation used by Microsoft with ST for the stateOrProvinceName attribute
+            name = name.replaceAll(",\\s*S\\s*=", ",ST=");
         }
 
-        // replace the non-standard S abbreviation used by Microsoft with ST for the stateOrProvinceName attribute
-        name = name.replaceAll(",\\s*S\\s*=", ",ST=");
-
-        return new X500Principal(name).getName(X500Principal.CANONICAL);
+        return name;
     }
 
     @Override
     public void validate(Certificate certificate) throws IOException, IllegalArgumentException {
-        String name = ((X509Certificate) certificate).getSubjectX500Principal().getName();
+        X500Name name = X500Name.getInstance(((X509Certificate) certificate).getSubjectX500Principal().getEncoded());
         String publisher = getPublisher();
-        if (!normalize(name).equals(normalize(publisher))) {
+
+        if (publisher == null || !name.equals(new X500Name(normalize(publisher)))) {
             throw new IllegalArgumentException("The app manifest publisher name (" + publisher + ") must match the subject name of the signing certificate (" + name + ")");
         }
     }
