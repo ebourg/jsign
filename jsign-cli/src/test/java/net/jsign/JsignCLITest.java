@@ -55,7 +55,7 @@ public class JsignCLITest {
     private JsignCLI cli;
     private File sourceFile = new File("target/test-classes/wineyes.exe");
     private File targetFile = new File("target/test-classes/wineyes-signed-with-cli.exe");
-    
+
     private String keystore = "keystore.jks";
     private String alias    = "test";
     private String keypass  = "password";
@@ -65,12 +65,12 @@ public class JsignCLITest {
     @Before
     public void setUp() throws Exception {
         cli = new JsignCLI();
-        
+
         // remove the files signed previously
         if (targetFile.exists()) {
             assertTrue("Unable to remove the previously signed file", targetFile.delete());
         }
-        
+
         assertEquals("Source file CRC32", SOURCE_FILE_CRC32, FileUtils.checksumCRC32(sourceFile));
         Thread.sleep(100);
         FileUtils.copyFile(sourceFile, targetFile);
@@ -219,7 +219,7 @@ public class JsignCLITest {
     public void testSigningMultipleFilesWithListFile() throws Exception {
         File listFile = new File("target/test-classes/files.txt");
         Files.write(listFile.toPath(), Arrays.asList("# first file", '"' + targetFile.getPath() + '"', " ", "# second file", targetFile.getAbsolutePath()));
-        
+
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-1", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "@" + listFile);
 
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
@@ -271,7 +271,7 @@ public class JsignCLITest {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");
         FileUtils.copyFile(sourceFile, targetFile);
-        
+
         cli.execute("--alg=SHA-1", "--replace", "--encoding=ISO-8859-1", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
 
         PowerShellScript script = new PowerShellScript(targetFile);
@@ -284,7 +284,7 @@ public class JsignCLITest {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-cli.ps1");
         FileUtils.copyFile(sourceFile, targetFile);
-        
+
         cli.execute("--alg=SHA-1", "--replace", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
 
         PowerShellScript script = new PowerShellScript(targetFile);
@@ -297,7 +297,7 @@ public class JsignCLITest {
         File sourceFile = new File("target/test-classes/minimal.msi");
         File targetFile = new File("target/test-classes/minimal-signed-with-cli.msi");
         FileUtils.copyFile(sourceFile, targetFile);
-        
+
         cli.execute("--alg=SHA-1", "--replace", "--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile);
 
         try (MSIFile file = new MSIFile(targetFile)) {
@@ -308,7 +308,7 @@ public class JsignCLITest {
     @Test
     public void testSigningPKCS12() throws Exception {
         cli.execute("--name=WinEyes", "--url=http://www.steelblue.com/WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystores/keystore.p12", "--alias=test", "--storepass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -341,7 +341,7 @@ public class JsignCLITest {
     @Test
     public void testSigningPVKSPC() throws Exception {
         cli.execute("--url=http://www.steelblue.com/WinEyes", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/keystores/privatekey-encrypted.pvk", "--storepass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -352,7 +352,7 @@ public class JsignCLITest {
     @Test
     public void testSigningPEM() throws Exception {
         cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate.pem", "--keyfile=target/test-classes/keystores/privatekey.pkcs8.pem", "--keypass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -363,7 +363,7 @@ public class JsignCLITest {
     @Test
     public void testSigningEncryptedPEM() throws Exception {
         cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate.pem", "--keyfile=target/test-classes/keystores/privatekey-encrypted.pkcs1.pem", "--keypass=password", "" + targetFile);
-        
+
         assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -373,7 +373,7 @@ public class JsignCLITest {
 
     @Test
     public void testSigningWithYubikey() throws Exception {
-        Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
+        Assume.assumeTrue("No Yubikey detected", YubiKeyKeyStore.isPresent());
 
         cli.execute("--storetype=YUBIKEY", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--storepass=123456", "--alias=X.509 Certificate for Digital Signature", "" + targetFile, "" + targetFile);
     }
@@ -383,7 +383,7 @@ public class JsignCLITest {
         File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-authenticode.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
         cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--tsaurl=http://timestamp.sectigo.com", "--tsmode=authenticode", "" + targetFile2);
-        
+
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
 
         try (PEFile peFile = new PEFile(targetFile2)) {
@@ -416,7 +416,7 @@ public class JsignCLITest {
                     }
                 })
                 .start();
-        
+
         try {
             File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161-proxy-unauthenticated.exe");
             FileUtils.copyFile(sourceFile, targetFile2);
@@ -424,10 +424,10 @@ public class JsignCLITest {
                         "--tsaurl=http://timestamp.sectigo.com", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
                         "--proxyUrl=localhost:" + proxy.getListenAddress().getPort(),
                         "" + targetFile2);
-            
+
             assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
             assertTrue("The proxy wasn't used", proxyUsed.get());
-    
+
             try (PEFile peFile = new PEFile(targetFile2)) {
                 SignatureAssert.assertSigned(peFile, SHA256);
             }
@@ -469,10 +469,10 @@ public class JsignCLITest {
                         "--proxyUser=jsign",
                         "--proxyPass=jsign",
                         "" + targetFile2);
-            
+
             assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
             assertTrue("The proxy wasn't used", proxyUsed.get());
-    
+
             try (PEFile peFile = new PEFile(targetFile2)) {
                 SignatureAssert.assertSigned(peFile, SHA256);
             }
@@ -486,11 +486,11 @@ public class JsignCLITest {
         File targetFile2 = new File("target/test-classes/wineyes-re-signed.exe");
         FileUtils.copyFile(sourceFile, targetFile2);
         cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "" + targetFile2);
-        
+
         assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
-        
+
         cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass, "--alg=SHA-512", "--replace", "" + targetFile2);
-        
+
         try (PEFile peFile = new PEFile(targetFile2)) {
             SignatureAssert.assertSigned(peFile, SHA512);
         }
@@ -526,7 +526,7 @@ public class JsignCLITest {
         }
 
         public void checkPermission(Permission perm) { }
-        
+
         public void checkPermission(Permission perm, Object context) { }
 
         public void checkExit(int status) {
