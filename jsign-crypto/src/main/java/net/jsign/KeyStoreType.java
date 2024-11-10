@@ -48,6 +48,8 @@ import net.jsign.jca.OpenPGPCardSigningService;
 import net.jsign.jca.OracleCloudCredentials;
 import net.jsign.jca.OracleCloudSigningService;
 import net.jsign.jca.PIVCardSigningService;
+import net.jsign.jca.SignServerCredentials;
+import net.jsign.jca.SignServerSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
 
 /**
@@ -542,6 +544,34 @@ public enum KeyStoreType {
 
             GaraSignCredentials credentials = new GaraSignCredentials(username, password, certificate, params.keypass());
             return new SigningServiceJcaProvider(new GaraSignSigningService(params.keystore(), credentials));
+        }
+    },
+
+    SIGNSERVER(false, false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() != null && params.storepass().split("\\|").length > 2) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the SignServer username/password or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            String username = null;
+            String password = null;
+            String certificate = null;
+            if (params.storepass() != null) {
+                String[] elements = params.storepass().split("\\|");
+                if (elements.length == 1) {
+                    certificate = elements[0];
+                } else if (elements.length == 2) {
+                    username = elements[0];
+                    password = elements[1];
+                }
+            }
+
+            SignServerCredentials credentials = new SignServerCredentials(username, password, certificate, params.keypass());
+            return new SigningServiceJcaProvider(new SignServerSigningService(params.keystore(), credentials));
         }
     };
 
