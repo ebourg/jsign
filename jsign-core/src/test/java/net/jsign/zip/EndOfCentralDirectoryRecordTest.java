@@ -67,24 +67,19 @@ public class EndOfCentralDirectoryRecordTest {
     }
 
     @Test
-    public void testLoadInvalid() {
+    public void testLoadInvalid() throws Exception {
         File file = new File("target/test-classes/minimal.msi");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            EndOfCentralDirectoryRecord record = new EndOfCentralDirectoryRecord();
-            record.load(channel);
-            fail("Exception not thrown");
-        } catch (IOException e) {
+            Exception e = assertThrows(IOException.class, () -> new EndOfCentralDirectoryRecord().load(channel));
             assertEquals("message", "End of Central Directory Record not found", e.getMessage());
         }
     }
 
     @Test
-    public void testReadWrongRecord() {
+    public void testReadWrongRecord() throws Exception {
         File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            new EndOfCentralDirectoryRecord().read(channel);
-            fail("Exception not thrown");
-        } catch (IOException e) {
+            Exception e = assertThrows(IOException.class, () -> new EndOfCentralDirectoryRecord().read(channel));
             assertEquals("message", "Invalid End of Central Directory Record signature 0x4034b50", e.getMessage());
         }
     }

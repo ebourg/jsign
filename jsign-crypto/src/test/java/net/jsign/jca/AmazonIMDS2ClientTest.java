@@ -49,16 +49,12 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:" + port());
 
-        try {
-            client.getCredentials();
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "IMDSv2 host did not respond as expected; are you in AWS cloud?", e.getMessage());
-        }
+        Exception e = assertThrows(IOException.class, client::getCredentials);
+        assertEquals("message", "IMDSv2 host did not respond as expected; are you in AWS cloud?", e.getMessage());
     }
 
     @Test
-    public void testDisabled() throws Exception {
+    public void testDisabled() {
         onRequest()
                 .havingMethodEqualTo("PUT")
                 .havingPathEqualTo("/latest/api/token")
@@ -68,12 +64,8 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:" + port());
 
-        try {
-            client.getCredentials();
-            fail("Exception not thrown");
-        } catch (UnknownServiceException e) {
-            assertEquals("message", "IMDSv2 is possibly disabled on this host", e.getMessage());
-        }
+        Exception e = assertThrows(UnknownServiceException.class, client::getCredentials);
+        assertEquals("message", "IMDSv2 is possibly disabled on this host", e.getMessage());
     }
 
     @Test
@@ -81,12 +73,8 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:31457");
 
-        try {
-            client.getCredentials();
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "IMDSv2 host was unreachable; check the hop limit if containerized", e.getMessage());
-        }
+        Exception e = assertThrows(IOException.class, client::getCredentials);
+        assertEquals("message", "IMDSv2 host was unreachable; check the hop limit if containerized", e.getMessage());
     }
 
     @Test
@@ -100,16 +88,12 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:" + port());
 
-        try {
-            client.getCredentials();
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertTrue("message", e.getMessage().startsWith("HTTP Error 503 - Service Unavailable"));
-        }
+        Exception e = assertThrows(IOException.class, client::getCredentials);
+        assertTrue("message", e.getMessage().startsWith("HTTP Error 503 - Service Unavailable"));
     }
 
     @Test
-    public void testNoInstanceProfile() throws Exception {
+    public void testNoInstanceProfile() {
         onRequest()
                 .havingMethodEqualTo("PUT")
                 .havingPathEqualTo("/latest/api/token")
@@ -120,12 +104,8 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:" + port());
 
-        try {
-            client.getCredentials();
-            fail("Exception not thrown");
-        } catch (RuntimeException e) {
-            assertEquals("message", "This EC2 instance seems not to be associated with an instance profile", e.getMessage());
-        }
+        Exception e = assertThrows(RuntimeException.class, () -> client.getCredentials());
+        assertEquals("message", "This EC2 instance seems not to be associated with an instance profile", e.getMessage());
     }
 
     @Test
@@ -173,12 +153,8 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:" + port());
 
-        try {
-            client.getInstanceProfileName();
-            fail("Exception not thrown");
-        } catch (RuntimeException e) {
-            assertEquals("message", "Unable to read the instance profile name", e.getMessage());
-        }
+        Exception e = assertThrows(RuntimeException.class, client::getInstanceProfileName);
+        assertEquals("message", "Unable to read the instance profile name", e.getMessage());
     }
 
     @Test

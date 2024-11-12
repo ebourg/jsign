@@ -136,12 +136,8 @@ public class APPXFileTest {
     public void testValidateWithMismatchingPublisher() throws Exception {
         try (APPXFile file = spy(new APPXFile(new File("target/test-classes/minimal.msix")))) {
             when(file.getPublisher()).thenReturn("CN=Jsign Code Signing Test Certificate 1977 (RSA)");
-            try {
-                file.validate(getCertificate());
-                fail("Exception not thrown");
-            } catch (IllegalArgumentException e) {
-                assertEquals("message", "The app manifest publisher name (CN=Jsign Code Signing Test Certificate 1977 (RSA)) must match the subject name of the signing certificate (CN=Jsign Code Signing Test Certificate 2024 (RSA))", e.getMessage());
-            }
+            Exception e = assertThrows(IllegalArgumentException.class, () -> file.validate(getCertificate()));
+            assertEquals("message", "The app manifest publisher name (CN=Jsign Code Signing Test Certificate 1977 (RSA)) must match the subject name of the signing certificate (CN=Jsign Code Signing Test Certificate 2024 (RSA))", e.getMessage());
         }
     }
 
@@ -160,12 +156,8 @@ public class APPXFileTest {
     public void testValidateWithMissingPublisher() throws Exception {
         try (APPXFile file = spy(new APPXFile(new File("target/test-classes/minimal.msix")))) {
             when(file.getPublisher()).thenReturn(null);
-            try {
-                file.validate(getCertificate());
-                fail("Exception not thrown");
-            } catch (IllegalArgumentException e) {
-                assertEquals("message", "The app manifest publisher name (null) must match the subject name of the signing certificate (CN=Jsign Code Signing Test Certificate 2024 (RSA))", e.getMessage());
-            }
+            Exception e = assertThrows(IllegalArgumentException.class, () -> file.validate(getCertificate()));
+            assertEquals("message", "The app manifest publisher name (null) must match the subject name of the signing certificate (CN=Jsign Code Signing Test Certificate 2024 (RSA))", e.getMessage());
         }
     }
 }

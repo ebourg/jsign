@@ -109,12 +109,9 @@ public class OracleCloudSigningServiceTest {
         OracleCloudCredentials credentials = getCredentials();
         OracleCloudSigningService service = new OracleCloudSigningService(credentials, alias -> null);
         String keyId = "ocid1.tenancy.oc1..abcdefghijk";
-        try {
-            service.getKeyEndpoint(keyId);
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Invalid key id: ocid1.tenancy.oc1..abcdefghijk", e.getMessage());
-        }
+
+        Exception e = assertThrows(IllegalArgumentException.class, () -> service.getKeyEndpoint(keyId));
+        assertEquals("message", "Invalid key id: ocid1.tenancy.oc1..abcdefghijk", e.getMessage());
     }
 
     @Test
@@ -152,7 +149,7 @@ public class OracleCloudSigningServiceTest {
                 "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljr7tub2mmyv5x2w6hwdlbpa3l567vih67yypquqkm4pjgk4cx7rkpa"), aliases);
     }
 
-    @Test(expected = KeyStoreException.class)
+    @Test
     public void testGetAliasesWithError() throws Exception {
         onRequest()
                 .havingMethodEqualTo("GET")
@@ -164,7 +161,8 @@ public class OracleCloudSigningServiceTest {
                 .withBody("{\"code\":\"InvalidParameter\", \"message\":\"The compartmentId must be an ocid.\"}");
 
         SigningService service = getTestService();
-        service.aliases();
+
+        assertThrows(KeyStoreException.class, service::aliases);
     }
 
     @Test
@@ -193,23 +191,17 @@ public class OracleCloudSigningServiceTest {
                 .withBody(new FileReader("target/test-classes/services/oraclecloud-error.json"));
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("ocid1.key.oc1.eu-paris-2.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "NotAuthorizedOrNotFound: resource does not exist or you are not authorized to access it.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "NotAuthorizedOrNotFound: resource does not exist or you are not authorized to access it.", e.getCause().getMessage());
     }
 
     @Test
     public void testSignWithInvalidAlgorithm() throws Exception {
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", null);
-        try {
-            service.sign(privateKey, "SHA1withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA1withRSA", "Hello".getBytes()));
+        assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
     }
 }

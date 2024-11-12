@@ -66,11 +66,8 @@ public class GaraSignCredentialsTest {
                 .withBody("{\"requestId\": \"auth\", \"status\": \"FAILED\", \"message\": \"Error authenticating user\"}");
 
         GaraSignCredentials credentials = new GaraSignCredentials("ebourg", "123456", null, null);
-        try {
-            credentials.getSessionToken("http://localhost:" + port());
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getMessage());
-        }
+
+        Exception e = assertThrows(IOException.class, () -> credentials.getSessionToken("http://localhost:" + port()));
+        assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getMessage());
     }
 }

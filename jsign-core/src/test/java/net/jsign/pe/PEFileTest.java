@@ -54,12 +54,8 @@ public class PEFileTest {
 
     @Test
     public void testLoadNonExecutable() {
-        try {
-            new PEFile(new File("pom.xml"));
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "DOS header signature not found", e.getMessage());
-        }
+        Exception e = assertThrows(IOException.class, () -> new PEFile(new File("pom.xml")));
+        assertEquals("message", "DOS header signature not found", e.getMessage());
     }
 
     /**
@@ -67,13 +63,10 @@ public class PEFileTest {
      */
     @Test
     public void testDosExecutable() throws Exception {
-        try {
-            new PEFile(new File("target/test-classes/MORE.EXE")); // MORE.EXE comes from FreeDOS and is GPL licensed
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            if (!e.getMessage().contains("PE signature not found as expected")) {
-                throw e;
-            }
+        // MORE.EXE comes from FreeDOS and is GPL licensed
+        Exception e = assertThrows(IOException.class, () -> new PEFile(new File("target/test-classes/MORE.EXE")));
+        if (!e.getMessage().contains("PE signature not found as expected")) {
+            throw e;
         }
     }
 
@@ -133,7 +126,7 @@ public class PEFileTest {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testComputeDigestInvalidCertificateTableNegativeAddress() throws Exception {
         File srcFile = new File("target/test-classes/wineyes.exe");
         File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
@@ -142,11 +135,11 @@ public class PEFileTest {
         try (PEFile file = new PEFile(destFile)) {
             DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
             certificateTable.write(Integer.MIN_VALUE, 1024);
-            file.computeDigest(SHA1);
+            assertThrows(IOException.class, () -> file.computeDigest(SHA1));
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testComputeDigestInvalidCertificateTableNegativeSize() throws Exception {
         File srcFile = new File("target/test-classes/wineyes.exe");
         File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
@@ -155,11 +148,11 @@ public class PEFileTest {
         try (PEFile file = new PEFile(destFile)) {
             DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
             certificateTable.write(1024, Integer.MIN_VALUE);
-            file.computeDigest(SHA1);
+            assertThrows(IOException.class, () -> file.computeDigest(SHA1));
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testComputeDigestInvalidCertificateTableAfterEndOfFile() throws Exception {
         File srcFile = new File("target/test-classes/wineyes.exe");
         File destFile = new File("target/test-classes/wineyes-fuzzed.exe");
@@ -168,7 +161,7 @@ public class PEFileTest {
         try (PEFile file = new PEFile(destFile)) {
             DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
             certificateTable.write(Integer.MAX_VALUE, Integer.MAX_VALUE);
-            file.computeDigest(SHA1);
+            assertThrows(IOException.class, () -> file.computeDigest(SHA1));
         }
     }
 

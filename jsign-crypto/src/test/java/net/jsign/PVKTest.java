@@ -81,29 +81,23 @@ public class PVKTest {
         assertEquals("private key", key1, key2);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidFile() throws Exception {
-        PVK.parse(new File("target/test-classes/keystores/keystore.jks"), null);
+    @Test
+    public void testInvalidFile() {
+        assertThrows(IllegalArgumentException.class, () -> PVK.parse(new File("target/test-classes/keystores/keystore.jks"), null));
     }
 
     @Test
-    public void testInvalidPassword() throws Exception {
-        try {
-            PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "secret");
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
-        }
+    public void testInvalidPassword() {
+        Exception e = assertThrows(IllegalArgumentException.class,
+                () -> PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "secret"));
+        assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
     }
 
     @Test
-    public void testMissingPassword() throws Exception {
-        try {
-            PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), null);
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
-        }
+    public void testMissingPassword() {
+        Exception e = assertThrows(IllegalArgumentException.class,
+                () -> PVK.parse(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), null));
+        assertEquals("message", "Unable to decrypt the PVK key, please verify the password", e.getMessage());
     }
 
     @Test
@@ -118,11 +112,7 @@ public class PVKTest {
         channel.write(ByteBuffer.wrap("RSA3".getBytes()));
         channel.close();
 
-        try {
-            PVK.parse(modified, null);
-            fail("IllegalArgumentException expected");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Unable to parse the PVK key, unsupported key format: RSA3", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, () -> PVK.parse(modified, null));
+        assertEquals("message", "Unable to parse the PVK key, unsupported key format: RSA3", e.getMessage());
     }
 }

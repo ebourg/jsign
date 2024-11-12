@@ -94,12 +94,9 @@ public class AzureTrustedSigningServiceTest {
                 .withStatus(403);
 
         SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
-        try {
-            service.getCertificateChain("MyAccount/MyProfile");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve the certificate chain 'MyAccount/MyProfile'", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("MyAccount/MyProfile"));
+        assertEquals("message", "Unable to retrieve the certificate chain 'MyAccount/MyProfile'", e.getMessage());
     }
 
     @Test
@@ -163,12 +160,9 @@ public class AzureTrustedSigningServiceTest {
         AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         service.setTimeout(2);
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "java.io.IOException: Signing operation 1f234bd9-16cf-4283-9ee6-a460d31207bb timed out", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: Signing operation 1f234bd9-16cf-4283-9ee6-a460d31207bb timed out", e.getMessage());
     }
 
     @Test
@@ -190,24 +184,18 @@ public class AzureTrustedSigningServiceTest {
 
         AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "java.io.IOException: Signing operation 1f234bd9-16cf-4283-9ee6-a460d31207bb failed: Failed", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: Signing operation 1f234bd9-16cf-4283-9ee6-a460d31207bb failed: Failed", e.getMessage());
     }
 
     @Test
     public void testSignWithInvalidAlgorithm() throws Exception {
         SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
-        try {
-            service.sign(privateKey, "SHA1withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA1withRSA", "Hello".getBytes()));
+        assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
     }
 
     @Test
@@ -224,11 +212,7 @@ public class AzureTrustedSigningServiceTest {
         AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
 
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "InternalError - Response status code does not indicate success: 403 (Forbidden).", e.getCause().getMessage());
-        }
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "InternalError - Response status code does not indicate success: 403 (Forbidden).", e.getCause().getMessage());
     }
 }

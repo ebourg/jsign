@@ -112,12 +112,8 @@ public class GaraSignSigningServiceTest {
 
         SigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
 
-        try {
-            service.getCertificateChain("jsign");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve GaraSign certificate 'jsign'", e.getMessage());
-        }
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("jsign"));
+        assertEquals("message", "Unable to retrieve GaraSign certificate 'jsign'", e.getMessage());
     }
 
     @Test
@@ -136,12 +132,9 @@ public class GaraSignSigningServiceTest {
                 .withBody("{\"requestId\": \"keystore_request\", \"status\": \"FAILURE\", \"message\": \"Keystore not found\", \"sessionToken\": null}");
 
         SigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
-        try {
-            service.getCertificateChain("java_keystore_rsa_key");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve the GaraSign keystore: Keystore not found", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("java_keystore_rsa_key"));
+        assertEquals("message", "Unable to retrieve the GaraSign keystore: Keystore not found", e.getMessage());
     }
 
     @Test
@@ -160,12 +153,9 @@ public class GaraSignSigningServiceTest {
                 .withBody("Bad Gateway");
 
         SigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
-        try {
-            service.getCertificateChain("java_keystore_rsa_key");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve the GaraSign keystore", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("java_keystore_rsa_key"));
+        assertEquals("message", "Unable to retrieve the GaraSign keystore", e.getMessage());
     }
 
     @Test
@@ -208,12 +198,8 @@ public class GaraSignSigningServiceTest {
 
         SigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
 
-        try {
-            service.getPrivateKey("jsign", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch GaraSign private key for the certificate 'jsign'", e.getMessage());
-        }
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign", null));
+        assertEquals("message", "Unable to fetch GaraSign private key for the certificate 'jsign'", e.getMessage());
     }
 
     @Test
@@ -327,12 +313,9 @@ public class GaraSignSigningServiceTest {
         GaraSignSigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
         service.setTimeout(5);
         SigningServicePrivateKey privateKey = service.getPrivateKey("java_keystore_rsa_key", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "java.io.IOException: Signing operation 60 timed out", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: Signing operation 60 timed out", e.getMessage());
     }
 
     @Test
@@ -358,12 +341,9 @@ public class GaraSignSigningServiceTest {
 
         SigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
         SigningServicePrivateKey privateKey = service.getPrivateKey("java_keystore_rsa_key", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "java.io.IOException: Signing operation failed: Internal server error", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: Signing operation failed: Internal server error", e.getMessage());
     }
 
     @Test
@@ -392,11 +372,8 @@ public class GaraSignSigningServiceTest {
 
         SigningService service = new GaraSignSigningService("http://localhost:" + port(), new GaraSignCredentials("username", "password", null));
         SigningServicePrivateKey privateKey = service.getPrivateKey("java_keystore_rsa_key", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "java.io.IOException: Signing operation 60 failed: Internal server error", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: Signing operation 60 failed: Internal server error", e.getMessage());
     }
 }

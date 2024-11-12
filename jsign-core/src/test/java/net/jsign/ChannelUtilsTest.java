@@ -36,25 +36,25 @@ public class ChannelUtilsTest {
         assertEquals(s, new String(ChannelUtils.readNullTerminatedString(channel)));
     }
 
-    @Test(expected = IOException.class)
-    public void testReadNullTerminatedStringInvalid() throws Exception {
+    @Test
+    public void testReadNullTerminatedStringInvalid() {
         String s = "ABCD";
         SeekableByteChannel channel = new SeekableInMemoryByteChannel((s).getBytes(StandardCharsets.UTF_8));
-        ChannelUtils.readNullTerminatedString(channel);
+        assertThrows(IOException.class, () -> ChannelUtils.readNullTerminatedString(channel));
     }
 
-    @Test(expected = IOException.class)
-    public void testDeleteAfterEOF() throws Exception {
+    @Test
+    public void testDeleteAfterEOF() {
         byte[] data = new byte[1024];
         SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
-        ChannelUtils.delete(channel, 2048, 512);
+        assertThrows(IOException.class, () -> ChannelUtils.delete(channel, 2048, 512));
     }
 
-    @Test(expected = IOException.class)
-    public void testDeleteAcrossEOF() throws Exception {
+    @Test
+    public void testDeleteAcrossEOF() {
         byte[] data = new byte[1024];
         SeekableByteChannel channel = new SeekableInMemoryByteChannel(data);
-        ChannelUtils.delete(channel, 1024 - 256, 512);
+        assertThrows(IOException.class, () -> ChannelUtils.delete(channel, 1024 - 256, 512));
     }
 
     @Test

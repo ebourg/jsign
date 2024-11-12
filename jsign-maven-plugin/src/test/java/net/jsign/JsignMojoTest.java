@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.util.Collections;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
@@ -29,6 +30,8 @@ import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
+
+import static org.junit.Assert.*;
 
 public class JsignMojoTest extends AbstractMojoTestCase {
 
@@ -50,12 +53,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
     public void testMojo() throws Exception {
         JsignMojo mojo = getMojo();
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            assertEquals("Either keystore, or keyfile and certfile, or storetype elements must be set", e.getCause().getMessage());
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("Either keystore, or keyfile and certfile, or storetype elements must be set", e.getCause().getMessage());
     }
 
     public void testFileSet() throws Exception {
@@ -67,12 +66,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "file", null);
         setVariableValueToObject(mojo, "fileset", fileset);
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            assertEquals("Either keystore, or keyfile and certfile, or storetype elements must be set", e.getCause().getMessage());
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("Either keystore, or keyfile and certfile, or storetype elements must be set", e.getCause().getMessage());
     }
 
     public void testMissingFileAndFileSet() throws Exception {
@@ -80,12 +75,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "file", null);
         setVariableValueToObject(mojo, "fileset", null);
 
-        try {
-            mojo.execute();
-        } catch (MojoExecutionException e) {
-            // expected
-            assertEquals("file of fileset must be set", e.getMessage());
-        }
+        Exception e = assertThrows(MojoExecutionException.class, mojo::execute);
+        assertEquals("file or fileset must be set", e.getMessage());
     }
 
     public void testInvalidProxyId() throws Exception {
@@ -103,12 +94,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "settings", settings);
         setVariableValueToObject(mojo, "proxyId", "proxima");
 
-        try {
-            mojo.execute();
-        } catch (MojoExecutionException e) {
-            // expected
-            assertEquals("Configured proxy with id=proxima not found", e.getMessage());
-        }
+        Exception e = assertThrows(MojoExecutionException.class, mojo::execute);
+        assertEquals("Configured proxy with id=proxima not found", e.getMessage());
     }
 
     public void testValidProxyId() throws Exception {
@@ -135,16 +122,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "tsretrywait", 1);
         setVariableValueToObject(mojo, "proxyId", "proxima");
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            Throwable rootCause = e;
-            while (rootCause.getCause() != null) {
-                rootCause = rootCause.getCause();
-            }
-            assertEquals("Unable to complete the timestamping after 1 attempt", rootCause.getMessage());
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("Unable to complete the timestamping after 1 attempt", ExceptionUtils.getRootCause(e).getMessage());
     }
 
     public void testInvalidProxyProtocol() throws Exception {
@@ -169,12 +148,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "keypass", "password");
         setVariableValueToObject(mojo, "proxyId", "proxima");
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            assertEquals("Couldn't initialize proxy", e.getMessage());
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("Couldn't initialize proxy", e.getMessage());
     }
 
     public void testActiveProxy() throws Exception {
@@ -200,16 +175,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "tsretries", 1);
         setVariableValueToObject(mojo, "tsretrywait", 1);
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            Throwable rootCause = e;
-            while (rootCause.getCause() != null) {
-                rootCause = rootCause.getCause();
-            }
-            assertEquals("Unable to complete the timestamping after 1 attempt", rootCause.getMessage());
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("Unable to complete the timestamping after 1 attempt", ExceptionUtils.getRootCause(e).getMessage());
     }
 
     public void testBrokenSecurityDispatcher() throws Exception {
@@ -222,12 +189,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
 
-        try {
-            mojo.execute();
-        } catch (MojoExecutionException e) {
-            // expected
-            assertEquals("error using security dispatcher: null", e.getMessage());
-        }
+        Exception e = assertThrows(MojoExecutionException.class, mojo::execute);
+        assertEquals("error using security dispatcher: null", e.getMessage());
     }
 
     public void testSignUnsupportedFile() throws Exception {
@@ -238,12 +201,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            assertEquals("Unsupported file: pom.xml", e.getMessage());
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("Unsupported file: pom.xml", e.getMessage());
     }
 
     public void testDetachedSignature() throws Exception {
@@ -346,12 +305,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
 
-        try {
-            mojo.execute();
-        } catch (MojoExecutionException e) {
-            // expected
-            assertEquals("Server 'jsign' not found in settings.xml", e.getMessage());
-        }
+        Exception e = assertThrows(MojoExecutionException.class, mojo::execute);
+        assertEquals("Server 'jsign' not found in settings.xml", e.getMessage());
     }
 
     public void testMissingPasswordFromSettings() throws Exception {
@@ -370,12 +325,8 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
 
-        try {
-            mojo.execute();
-        } catch (MojoExecutionException e) {
-            // expected
-            assertEquals("No password or passphrase found for server 'jsign' in settings.xml", e.getMessage());
-        }
+        Exception e = assertThrows(MojoExecutionException.class, mojo::execute);
+        assertEquals("No password or passphrase found for server 'jsign' in settings.xml", e.getMessage());
     }
 
     public void testTag() throws Exception {
@@ -384,15 +335,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
         setVariableValueToObject(mojo, "command", "tag");
         setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
 
-        try {
-            mojo.execute();
-        } catch (MojoFailureException e) {
-            // expected
-            Throwable rootCause = e;
-            while (rootCause.getCause() != null) {
-                rootCause = rootCause.getCause();
-            }
-            assertEquals("message", "No signature found in target/test-classes/wineyes.exe", rootCause.getMessage().replace('\\', '/'));
-        }
+        Exception e = assertThrows(MojoFailureException.class, mojo::execute);
+        assertEquals("message", "No signature found in target/test-classes/wineyes.exe", ExceptionUtils.getRootCause(e).getMessage().replace('\\', '/'));
     }
 }

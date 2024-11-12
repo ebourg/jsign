@@ -42,14 +42,14 @@ public class AmazonCredentialsTest {
         assertNull("session token", credentials.getSessionToken());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testParseIncomplete() {
-        AmazonCredentials.parse("accessKey");
+        assertThrows(IllegalArgumentException.class, () -> AmazonCredentials.parse("accessKey"));
     }
 
-    @Test(expected = UnknownServiceException.class)
-    public void testGetDefault() throws Exception {
-        AmazonCredentials.getDefault();
+    @Test
+    public void testGetDefault() {
+        assertThrows(UnknownServiceException.class, AmazonCredentials::getDefault);
     }
 
     @Test

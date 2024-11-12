@@ -52,13 +52,11 @@ public class LocalFileHeaderTest {
     }
 
     @Test
-    public void testReadWrongRecord() {
+    public void testReadWrongRecord() throws Exception {
         File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
             channel.position(1);
-            new LocalFileHeader().read(channel);
-            fail("Exception not thrown");
-        } catch (IOException e) {
+            Exception e = assertThrows(IOException.class, () -> new LocalFileHeader().read(channel));
             assertEquals("message", "Invalid Local File Header signature 0x2d04034b", e.getMessage());
         }
     }

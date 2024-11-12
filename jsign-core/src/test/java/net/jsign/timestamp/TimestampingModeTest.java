@@ -32,18 +32,7 @@ public class TimestampingModeTest {
         assertEquals(TimestampingMode.RFC3161, TimestampingMode.of("rfc3161"));
         assertEquals(TimestampingMode.RFC3161, TimestampingMode.of("tsp"));
 
-        try {
-            TimestampingMode.of(null);
-            fail("IllegalArgumentException not thrown on null value");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
-        
-        try {
-            TimestampingMode.of("foo");
-            fail("IllegalArgumentException not thrown on invalid value");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
+        assertThrows("IllegalArgumentException not thrown on null value", IllegalArgumentException.class, () -> TimestampingMode.of(null));
+        assertThrows("IllegalArgumentException not thrown on invalid value", IllegalArgumentException.class, () -> TimestampingMode.of("foo"));
     }
 }

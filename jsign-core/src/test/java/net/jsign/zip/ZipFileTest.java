@@ -46,19 +46,15 @@ public class ZipFileTest {
     @Test
     public void getGetInputStreamWithUnknownEntry() throws Exception {
         try (ZipFile file = new ZipFile(new File("target/test-classes/minimal.msix"))) {
-            InputStream in = file.getInputStream("META-INF/MANIFEST.MF");
-            fail("Exception not thrown");
-        } catch (IOException e) {
+            Exception e = assertThrows(IOException.class, () -> file.getInputStream("META-INF/MANIFEST.MF"));
             assertEquals("message", "Entry not found: META-INF/MANIFEST.MF", e.getMessage());
         }
     }
 
     @Test
-    public void getGetInputStreamWithLimit() {
+    public void getGetInputStreamWithLimit() throws Exception {
         try (ZipFile file = new ZipFile(new File("target/test-classes/minimal.zip"))) {
-            file.getInputStream("AppxManifest.xml", 128);
-            fail("Exception not thrown");
-        } catch (IOException e) {
+            Exception e = assertThrows(IOException.class, () -> file.getInputStream("AppxManifest.xml", 128));
             assertEquals("message", "The entry AppxManifest.xml is too large to be read (1224 bytes)", e.getMessage());
         }
     }
@@ -97,12 +93,7 @@ public class ZipFileTest {
             assertFalse(file.centralDirectory.entries.containsKey("[Content_Types].xml"));
             assertTrue(file.centralDirectory.entries.containsKey("[Content_Types].old"));
 
-            try {
-                file.renameEntry("[Content_Types].old", "[Content_Types].xml.old");
-                fail("Exception not thrown");
-            } catch (IllegalArgumentException e) {
-                // expected
-            }
+            assertThrows(IllegalArgumentException.class, () -> file.renameEntry("[Content_Types].old", "[Content_Types].xml.old"));
         }
 
         try (ZipFile file = new ZipFile(modified)) {

@@ -26,6 +26,7 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class JsignGradlePluginTest {
@@ -41,7 +42,7 @@ public class JsignGradlePluginTest {
         Assert.assertNotNull("jsign extension not found", container.getByName("jsign"));
     }
 
-    @Test(expected = SignerException.class)
+    @Test
     public void testCall() {
         Project project = mock(Project.class);
         ExtensionContainer container = new DefaultConvention();
@@ -54,6 +55,6 @@ public class JsignGradlePluginTest {
         params.put("name", "WinEyes");
 
         Closure closure = (Closure) container.getByName("jsign");
-        closure.call(params);
+        assertThrows(SignerException.class, () -> closure.call(params));
     }
 }

@@ -98,12 +98,9 @@ public class AmazonSigningServiceTest {
                 .withBody("{\"__type\":\"UnrecognizedClientException\",\"message\":\"The security token included in the request is invalid.\"}");
 
         SigningService service = getTestService();
-        try {
-            service.aliases();
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "UnrecognizedClientException: The security token included in the request is invalid.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, service::aliases);
+        assertEquals("message", "UnrecognizedClientException: The security token included in the request is invalid.", e.getCause().getMessage());
     }
 
     @Test
@@ -173,12 +170,8 @@ public class AmazonSigningServiceTest {
 
         SigningService service = getTestService();
 
-        try {
-            service.getPrivateKey("jsign-rsa-2048", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "The key 'jsign-rsa-2048' is not enabled (PendingImport)", e.getMessage());
-        }
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign-rsa-2048", null));
+        assertEquals("message", "The key 'jsign-rsa-2048' is not enabled (PendingImport)", e.getMessage());
     }
 
     @Test
@@ -194,12 +187,8 @@ public class AmazonSigningServiceTest {
 
         SigningService service = getTestService();
 
-        try {
-            service.getPrivateKey("jsign-rsa-2048", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "The key 'jsign-rsa-2048' is not a signing key", e.getMessage());
-        }
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign-rsa-2048", null));
+        assertEquals("message", "The key 'jsign-rsa-2048' is not a signing key", e.getMessage());
     }
 
     @Test
@@ -215,12 +204,8 @@ public class AmazonSigningServiceTest {
 
         SigningService service = getTestService();
 
-        try {
-            service.getPrivateKey("jsign-rsa-2048", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "NotFoundException: Alias arn:aws:kms:eu-west-3:829022948260:alias/jsign-rsa-2048 is not found.", e.getCause().getMessage());
-        }
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign-rsa-2048", null));
+        assertEquals("message", "NotFoundException: Alias arn:aws:kms:eu-west-3:829022948260:alias/jsign-rsa-2048 is not found.", e.getCause().getMessage());
     }
 
     @Test
@@ -261,12 +246,9 @@ public class AmazonSigningServiceTest {
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("jsign-rsa-2048", null);
-        try {
-            service.sign(privateKey, "SHA1withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA1withRSA", "Hello".getBytes()));
+        assertEquals("message", "Unsupported signing algorithm: SHA1withRSA", e.getMessage());
     }
 
     @Test
@@ -290,12 +272,9 @@ public class AmazonSigningServiceTest {
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("jsign-rsa-2048", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "KMSInvalidStateException: arn:aws:kms:eu-west-3:829022948260:key/935ecb66-5c06-495b-babe-5798b1c0e1a8 is pending deletion.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "KMSInvalidStateException: arn:aws:kms:eu-west-3:829022948260:key/935ecb66-5c06-495b-babe-5798b1c0e1a8 is pending deletion.", e.getCause().getMessage());
     }
 
     @Test

@@ -45,12 +45,10 @@ public class Zip64EndOfCentralDirectoryLocatorTest {
     }
 
     @Test
-    public void testReadWrongRecord() {
+    public void testReadWrongRecord() throws Exception {
         File file = new File("target/test-classes/minimal.zip");
         try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
-            new Zip64EndOfCentralDirectoryLocator().read(channel);
-            fail("Exception not thrown");
-        } catch (IOException e) {
+            Exception e = assertThrows(IOException.class, () -> new Zip64EndOfCentralDirectoryLocator().read(channel));
             assertEquals("message", "Invalid ZIP64 End of Central Directory Locator signature 0x4034b50", e.getMessage());
         }
     }

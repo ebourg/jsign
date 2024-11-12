@@ -88,21 +88,19 @@ public class HashiCorpVaultSigningServiceTest {
         assertEquals("aliases", Arrays.asList("key1", "key2", "key3"), aliases);
     }
 
-    @Test(expected = KeyStoreException.class)
-    public void testGetAliasesError() throws Exception {
+    @Test
+    public void testGetAliasesError() {
         SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
-        service.aliases();
+
+        assertThrows(KeyStoreException.class, service::aliases);
     }
 
     @Test
     public void testMissingKeyVersion() {
         SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
-        try {
-            service.getPrivateKey("key1", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1' (missing key version)", e.getMessage());
-        }
+
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("key1", null));
+        assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1' (missing key version)", e.getMessage());
     }
 
     @Test
@@ -159,12 +157,9 @@ public class HashiCorpVaultSigningServiceTest {
     @Test
     public void testGetPrivateKeyError() {
         SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
-        try {
-            service.getPrivateKey("key1:7", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1:7'", e.getMessage());
-        }
+
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("key1:7", null));
+        assertEquals("message", "Unable to fetch HashiCorp Vault private key 'key1:7'", e.getMessage());
     }
 
     @Test
@@ -243,7 +238,7 @@ public class HashiCorpVaultSigningServiceTest {
         assertNotNull("signature", signature);
     }
 
-    @Test(expected = GeneralSecurityException.class)
+    @Test
     public void testSignErrorGCPKMS() throws Exception {
         byte[] data = "0123456789ABCDEF0123456789ABCDEF".getBytes();
 
@@ -263,10 +258,10 @@ public class HashiCorpVaultSigningServiceTest {
         SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
         SigningServicePrivateKey privateKey = service.getPrivateKey("key1:7", null);
 
-        service.sign(privateKey, "SHA256withRSA", data);
+        assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", data));
     }
 
-    @Test (expected = GeneralSecurityException.class)
+    @Test
     public void testSignErrorTransit() throws Exception {
         byte[] data = "0123456789ABCDEF0123456789ABCDEF".getBytes();
 
@@ -285,6 +280,6 @@ public class HashiCorpVaultSigningServiceTest {
         SigningService service = new HashiCorpVaultSigningService("http://localhost:" + port(), "token", null);
         SigningServicePrivateKey privateKey = service.getPrivateKey("key1:7", null);
 
-        service.sign(privateKey, "SHA256withRSA", data);
+        assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", data));
     }
 }

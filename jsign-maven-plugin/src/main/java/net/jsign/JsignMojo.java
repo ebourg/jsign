@@ -197,7 +197,7 @@ public class JsignMojo extends AbstractMojo {
         }
 
         if (file == null && fileset == null) {
-            throw new MojoExecutionException("file of fileset must be set");
+            throw new MojoExecutionException("file or fileset must be set");
         }
 
         // configure the logging

@@ -70,13 +70,8 @@ public class PrivateKeyUtilsTest {
 
     @Test
     public void testLoadWrongPEMObject() {
-        try {
-            PrivateKeyUtils.load(new File("target/test-classes/keystores/jsign-test-certificate.pem"), null);
-            fail("Exception not thrown");
-        } catch (KeyException e) {
-            Throwable cause = e.getCause();
-            assertEquals("message", "Unsupported PEM object: X509CertificateHolder", cause.getMessage());
-        }
+        Exception e = assertThrows(KeyException.class, () -> PrivateKeyUtils.load(new File("target/test-classes/keystores/jsign-test-certificate.pem"), null));
+        assertEquals("message", "Unsupported PEM object: X509CertificateHolder", e.getCause().getMessage());
     }
 
     @Test
@@ -86,13 +81,8 @@ public class PrivateKeyUtilsTest {
         writer.write("");
         writer.close();
 
-        try {
-            PrivateKeyUtils.load(file, null);
-            fail("Exception not thrown");
-        } catch (KeyException e) {
-            Throwable cause = e.getCause();
-            assertTrue(cause.getMessage().startsWith("No key found in"));
-        }
+        Exception e = assertThrows(KeyException.class, () -> PrivateKeyUtils.load(file, null));
+        assertTrue(e.getCause().getMessage().startsWith("No key found in"));
     }
 
     @Test

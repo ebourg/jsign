@@ -85,7 +85,7 @@ public class GoogleCloudSigningServiceTest {
     }
 
     @Test
-    public void testGetAliasesWithError() throws Exception {
+    public void testGetAliasesWithError() {
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys")
@@ -95,12 +95,9 @@ public class GoogleCloudSigningServiceTest {
                 .withBody("{\"error\": {\"code\": 404,\"message\": \"KeyRing projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring not found.\", \"status\": \"NOT_FOUND\"}}");
 
         SigningService service = getTestService();
-        try {
-            service.aliases();
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "404 - NOT_FOUND: KeyRing projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring not found.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, service::aliases);
+        assertEquals("message", "404 - NOT_FOUND: KeyRing projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring not found.", e.getCause().getMessage());
     }
 
     @Test
@@ -175,13 +172,10 @@ public class GoogleCloudSigningServiceTest {
                 .withBody("{\"error\": {\"code\": 404, \"message\": \"CryptoKey projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign not found.\", \"status\": \"NOT_FOUND\"}}");
 
         SigningService service = getTestService();
-        try {
-            service.getPrivateKey("jsign", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch Google Cloud private key 'projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign'", e.getMessage());
-            assertEquals("root cause", "404 - NOT_FOUND: CryptoKey projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign not found.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign", null));
+        assertEquals("message", "Unable to fetch Google Cloud private key 'projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign'", e.getMessage());
+        assertEquals("root cause", "404 - NOT_FOUND: CryptoKey projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign not found.", e.getCause().getMessage());
     }
 
     @Test
@@ -195,12 +189,9 @@ public class GoogleCloudSigningServiceTest {
                 .withBody("{}");
 
         SigningService service = getTestService();
-        try {
-            service.getPrivateKey("jsign", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch Google Cloud private key 'projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign', no version found", e.getMessage());
-        }
+
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign", null));
+        assertEquals("message", "Unable to fetch Google Cloud private key 'projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign', no version found", e.getMessage());
     }
 
     @Test
@@ -231,11 +222,8 @@ public class GoogleCloudSigningServiceTest {
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = service.getPrivateKey("jsign-rsa-2048/cryptoKeyVersions/2:RSA", null);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "400 - FAILED_PRECONDITION: projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-2048/cryptoKeyVersions/2 is not enabled, current state is: DESTROYED.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "400 - FAILED_PRECONDITION: projects/fifth-glider-316809/locations/global/keyRings/jsignkeyring/cryptoKeys/jsign-rsa-2048/cryptoKeyVersions/2 is not enabled, current state is: DESTROYED.", e.getCause().getMessage());
     }
 }

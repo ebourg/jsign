@@ -224,11 +224,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("GARASIGN", provider);
         keystore.load(null, "".toCharArray());
 
-        try {
-            testCustomProvider(provider, keystore, "windows_codesign", "");
-            fail("Exception not thrown");
-        } catch (Exception e) {
-            assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getCause().getMessage());
-        }
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "windows_codesign", ""));
+        assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getCause().getMessage());
     }
 }

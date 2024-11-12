@@ -79,94 +79,94 @@ public class JsignTaskTest {
         project.addBuildListener(logger);
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testMissingKeyStore() {
-        project.executeTarget("missing-keystore");
+        assertThrows(BuildException.class, () -> project.executeTarget("missing-keystore"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testUnsupportedKeyStoreType() {
-        project.executeTarget("unsupported-keystore");
+        assertThrows(BuildException.class, () -> project.executeTarget("unsupported-keystore"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testKeyStoreNotFound() {
-        project.executeTarget("keystore-not-found");
+        assertThrows(BuildException.class, () -> project.executeTarget("keystore-not-found"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testCorruptedKeyStore() {
-        project.executeTarget("corrupted-keystore");
+        assertThrows(BuildException.class, () -> project.executeTarget("corrupted-keystore"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testMissingAlias() {
-        project.executeTarget("missing-alias");
+        assertThrows(BuildException.class, () -> project.executeTarget("missing-alias"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testAliasNotFound() {
-        project.executeTarget("alias-not-found");
+        assertThrows(BuildException.class, () -> project.executeTarget("alias-not-found"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testCertificateNotFound() {
-        project.executeTarget("certificate-not-found");
+        assertThrows(BuildException.class, () -> project.executeTarget("certificate-not-found"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testMissingFile() {
-        project.executeTarget("missing-file");
+        assertThrows(BuildException.class, () -> project.executeTarget("missing-file"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testFileNotFound() {
-        project.executeTarget("file-not-found");
+        assertThrows(BuildException.class, () -> project.executeTarget("file-not-found"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testCorruptedFile() {
-        project.executeTarget("corrupted-file");
+        assertThrows(BuildException.class, () -> project.executeTarget("corrupted-file"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testConflictingAttributes() {
-        project.executeTarget("conflicting-attributes");
+        assertThrows(BuildException.class, () -> project.executeTarget("conflicting-attributes"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testMissingCertFile() {
-        project.executeTarget("missing-certfile");
+        assertThrows(BuildException.class, () -> project.executeTarget("missing-certfile"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testMissingKeyFile() {
-        project.executeTarget("missing-keyfile");
+        assertThrows(BuildException.class, () -> project.executeTarget("missing-keyfile"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testCertFileNotFound() {
-        project.executeTarget("certfile-not-found");
+        assertThrows(BuildException.class, () -> project.executeTarget("certfile-not-found"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testKeyFileNotFound() {
-        project.executeTarget("keyfile-not-found");
+        assertThrows(BuildException.class, () -> project.executeTarget("keyfile-not-found"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testCorruptedCertFile() {
-        project.executeTarget("corrupted-certfile");
+        assertThrows(BuildException.class, () -> project.executeTarget("corrupted-certfile"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testCorruptedKeyFile() {
-        project.executeTarget("corrupted-keyfile");
+        assertThrows(BuildException.class, () -> project.executeTarget("corrupted-keyfile"));
     }
 
-    @Test(expected = BuildException.class)
+    @Test
     public void testUnsupportedDigestAlgorithm() {
-        project.executeTarget("unsupported-digest-algorithm");
+        assertThrows(BuildException.class, () -> project.executeTarget("unsupported-digest-algorithm"));
     }
 
     @Test
@@ -297,11 +297,7 @@ public class JsignTaskTest {
 
     @Test
     public void testTag() {
-        try {
-            project.executeTarget("tag-unsigned-file");
-            fail("No exception thrown");
-        } catch (BuildException e) {
-            assertTrue("message", e.getMessage().startsWith("No signature found in"));
-        }
+        BuildException e = assertThrows( BuildException.class, () -> project.executeTarget( "tag-unsigned-file" ) );
+        assertTrue("message", e.getMessage().startsWith("No signature found in"));
     }
 }

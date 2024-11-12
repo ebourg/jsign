@@ -78,12 +78,9 @@ public class DigiCertOneSigningServiceTest {
                 .withStatus(500);
 
         SigningService service = getTestService();
-        try {
-            service.aliases();
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve DigiCert ONE certificate aliases", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, service::aliases);
+        assertEquals("message", "Unable to retrieve DigiCert ONE certificate aliases", e.getMessage());
     }
 
     @Test
@@ -117,12 +114,9 @@ public class DigiCertOneSigningServiceTest {
                 .withBody("{\"total\":0,\"offset\":0,\"limit\":20,\"items\":[]}");
 
         SigningService service = getTestService();
-        try {
-            service.getCertificateChain("jsign-1977-cert");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1977-cert'", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("jsign-1977-cert"));
+        assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1977-cert'", e.getMessage());
     }
 
     @Test
@@ -134,12 +128,9 @@ public class DigiCertOneSigningServiceTest {
                 .withStatus(500);
 
         SigningService service = getTestService();
-        try {
-            service.getCertificateChain("jsign-1995-cert");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("jsign-1995-cert"));
+        assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
     }
 
     @Test
@@ -152,13 +143,10 @@ public class DigiCertOneSigningServiceTest {
                 .withBody("{\"errors\":[{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"Path not found\"}]}");
 
         SigningService service = getTestService();
-        try {
-            service.getCertificateChain("jsign-1995-cert");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
-            assertEquals("message", "{\"errors\":[{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"Path not found\"}]}", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("jsign-1995-cert"));
+        assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
+        assertEquals("message", "{\"errors\":[{\"code\":\"INTERNAL_SERVER_ERROR\",\"message\":\"Path not found\"}]}", e.getCause().getMessage());
     }
 
     @Test
@@ -205,13 +193,10 @@ public class DigiCertOneSigningServiceTest {
                 .withBody("{\"error\":{\"status\":\"invalid_input_field\",\"message\":\"Keypair not present for given keypairId ea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.\"}}");
 
         SigningService service = getTestService();
-        try {
-            service.getPrivateKey("jsign-2022-cert", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch DigiCert ONE private key for the certificate 'jsign-2022-cert'", e.getMessage());
-            assertEquals("root cause", "invalid_input_field: Keypair not present for given keypairId ea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.", e.getCause().getMessage());
-        }
+
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("jsign-2022-cert", null));
+        assertEquals("message", "Unable to fetch DigiCert ONE private key for the certificate 'jsign-2022-cert'", e.getMessage());
+        assertEquals("root cause", "invalid_input_field: Keypair not present for given keypairId ea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.", e.getCause().getMessage());
     }
 
     @Test
@@ -244,11 +229,8 @@ public class DigiCertOneSigningServiceTest {
 
         SigningService service = getTestService();
         SigningServicePrivateKey privateKey = new SigningServicePrivateKey("ea936a8f-446d-8bab-b782-c01e8612bf1e", "RSA", service);
-        try {
-            service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
-            fail("Exception not thrown");
-        } catch (GeneralSecurityException e) {
-            assertEquals("message", "java.io.IOException: invalid_input_field: Keypair not present for given keypairId aea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.", e.getMessage());
-        }
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: invalid_input_field: Keypair not present for given keypairId aea936a8f-b782-446d-8bab-c01e8612bf1e. Please provide correct keypairId.", e.getMessage());
     }
 }

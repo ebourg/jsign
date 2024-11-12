@@ -89,12 +89,9 @@ public class OracleCloudCredentialsTest {
         File config = getMultiProfileConfiguration();
 
         OracleCloudCredentials credentials = new OracleCloudCredentials();
-        try {
-            credentials.load(config, "JSIGN");
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertTrue("message", e.getMessage().contains("Profile 'JSIGN' not found"));
-        }
+
+        Exception e = assertThrows(IOException.class, () -> credentials.load(config, "JSIGN"));
+        assertTrue("message", e.getMessage().contains("Profile 'JSIGN' not found"));
     }
 
     @Test

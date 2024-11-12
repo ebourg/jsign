@@ -70,12 +70,9 @@ public class AzureKeyVaultSigningServiceTest {
     @Test
     public void testGetAliasesError() {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
-        try {
-            service.aliases();
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve Azure Key Vault certificate aliases", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, service::aliases);
+        assertEquals("message", "Unable to retrieve Azure Key Vault certificate aliases", e.getMessage());
     }
 
     @Test
@@ -129,14 +126,11 @@ public class AzureKeyVaultSigningServiceTest {
     }
 
     @Test
-    public void testGetCertificateChainError() throws Exception {
+    public void testGetCertificateChainError() {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
-        try {
-            service.getCertificateChain("test1");
-            fail("Exception not thrown");
-        } catch (KeyStoreException e) {
-            assertEquals("message", "Unable to retrieve Azure Key Vault certificate 'test1'", e.getMessage());
-        }
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("test1"));
+        assertEquals("message", "Unable to retrieve Azure Key Vault certificate 'test1'", e.getMessage());
     }
 
     @Test
@@ -160,12 +154,9 @@ public class AzureKeyVaultSigningServiceTest {
     @Test
     public void testGetPrivateKeyError() {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
-        try {
-            service.getPrivateKey("test1", null);
-            fail("Exception not thrown");
-        } catch (UnrecoverableKeyException e) {
-            assertEquals("message", "Unable to fetch Azure Key Vault private key for the certificate 'test1'", e.getMessage());
-        }
+
+        Exception e = assertThrows(UnrecoverableKeyException.class, () -> service.getPrivateKey("test1", null));
+        assertEquals("message", "Unable to fetch Azure Key Vault private key for the certificate 'test1'", e.getMessage());
     }
 
     @Test
@@ -249,15 +240,11 @@ public class AzureKeyVaultSigningServiceTest {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
 
-        try {
-            service.sign(privateKey, "MD5withRSA", new byte[0]);
-            fail("Exception not thrown");
-        } catch (InvalidAlgorithmParameterException e) {
-            assertEquals("message", "Unsupported signing algorithm: MD5withRSA", e.getMessage());
-        }
+        Exception e = assertThrows(InvalidAlgorithmParameterException.class, () -> service.sign(privateKey, "MD5withRSA", new byte[0]));
+        assertEquals("message", "Unsupported signing algorithm: MD5withRSA", e.getMessage());
     }
 
-    @Test(expected = GeneralSecurityException.class)
+    @Test
     public void testSignError() throws Exception {
         onRequest()
                 .havingMethodEqualTo("GET")
@@ -271,8 +258,8 @@ public class AzureKeyVaultSigningServiceTest {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("test1", null);
         String keyId = privateKey.getId().replace("https://jsigntestkeyvault.vault.azure.net", "http://localhost:" + port());
-        privateKey = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm(), service);
+        SigningServicePrivateKey privateKey2 = new SigningServicePrivateKey(keyId, privateKey.getAlgorithm(), service);
 
-        service.sign(privateKey, "SHA256withRSA", new byte[0]);
+        assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey2, "SHA256withRSA", new byte[0]));
     }
 }

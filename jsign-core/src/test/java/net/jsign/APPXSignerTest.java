@@ -190,12 +190,8 @@ public class APPXSignerTest {
         AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "jsign", "").withTimestamping(false);
 
         try (Signable file = Signable.of(targetFile)) {
-            try {
-                signer.sign(file);
-                fail("Exception not thrown");
-            } catch (Exception e) {
-                MatcherAssert.assertThat(e.getMessage(), matchesPattern("The app manifest publisher name (.*) must match the subject name of the signing certificate (.*)"));
-            }
+            Exception e = assertThrows(Exception.class, () -> signer.sign(file));
+            MatcherAssert.assertThat(e.getMessage(), matchesPattern("The app manifest publisher name (.*) must match the subject name of the signing certificate (.*)"));
         }
     }
 }

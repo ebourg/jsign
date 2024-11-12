@@ -73,12 +73,8 @@ public class KeyStoreBuilderTest {
 
         KeyStoreBuilder builder = new KeyStoreBuilder().storepass("env:MISSING_VAR");
 
-        try {
-            builder.storepass();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Failed to read the storepass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::storepass);
+        assertEquals("message", "Failed to read the storepass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
     }
 
     @Test
@@ -94,43 +90,27 @@ public class KeyStoreBuilderTest {
     public void testReadPasswordFromFileFailed() {
         KeyStoreBuilder builder = new KeyStoreBuilder().storepass("file:/path/to/missing/file");
 
-        try {
-            builder.storepass();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Failed to read the storepass parameter from the file '/path/to/missing/file'", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::storepass);
+        assertEquals("message", "Failed to read the storepass parameter from the file '/path/to/missing/file'", e.getMessage());
     }
 
     @Test
     public void testBuildAWS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(AWS);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must specify the AWS region", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the AWS region", e.getMessage());
 
         builder.keystore("eu-west-1");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "certfile parameter must be set", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "certfile parameter must be set", e.getMessage());
 
         builder.certfile("keystores/jsign-test-certificate.pem");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertTrue("message", e.getMessage().matches(
-                    "storepass parameter must specify the AWS credentials\\: \\<accessKey\\>\\|\\<secretKey\\>\\[\\|\\<sessionToken\\>\\], when not running from an EC2 instance \\(.*\\)"));
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertTrue("message", e.getMessage().matches(
+                "storepass parameter must specify the AWS credentials\\: \\<accessKey\\>\\|\\<secretKey\\>\\[\\|\\<sessionToken\\>\\], when not running from an EC2 instance \\(.*\\)"));
 
         builder.storepass("<accessKey>|<secretKey>|<sessionToken>");
 
@@ -142,21 +122,13 @@ public class KeyStoreBuilderTest {
     public void testBuildAzureKeyVault() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(AZUREKEYVAULT);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must specify the Azure vault name", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the Azure vault name", e.getMessage());
 
         builder.keystore("jsigntestkeyvault");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 
@@ -168,30 +140,18 @@ public class KeyStoreBuilderTest {
     public void testBuildDigiCertONE() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(DIGICERTONE);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the DigiCert ONE API key and the client certificate: <apikey>|<keystore>|<password>", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the DigiCert ONE API key and the client certificate: <apikey>|<keystore>|<password>", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the DigiCert ONE API key and the client certificate: <apikey>|<keystore>|<password>", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the DigiCert ONE API key and the client certificate: <apikey>|<keystore>|<password>", e.getMessage());
 
         builder.storepass("APIKEY|keystore.p12|password");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (Exception e) {
-            assertEquals("message", "Failed to load the client certificate for DigiCert ONE", e.getMessage());
-        }
+        e = assertThrows(RuntimeException.class, builder::build);
+        assertEquals("message", "Failed to load the client certificate for DigiCert ONE", e.getMessage());
 
         builder.keystore("https://clientauth.demo.one.digicert.com");
         builder.storepass("APIKEY|target/test-classes/keystores/keystore.p12|password");
@@ -205,30 +165,18 @@ public class KeyStoreBuilderTest {
     public void testBuildESigner() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(ESIGNER);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the SSL.com username and password: <username>|<password>", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the SSL.com username and password: <username>|<password>", e.getMessage());
 
         builder.storepass("password");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the SSL.com username and password: <username>|<password>", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the SSL.com username and password: <username>|<password>", e.getMessage());
 
         builder.storepass("esigner_test|esignerTest#1");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalStateException e) {
-            assertEquals("message", "Authentication failed with SSL.com", e.getMessage());
-        }
+        e = assertThrows(IllegalStateException.class, builder::build);
+        assertEquals("message", "Authentication failed with SSL.com", e.getMessage());
 
         builder.storepass("esigner_demo|esignerDemo#1");
         builder.keystore("https://cs-try.ssl.com");
@@ -241,39 +189,23 @@ public class KeyStoreBuilderTest {
     public void testBuildGoogleCloud() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(GOOGLECLOUD);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must specify the Goole Cloud keyring", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the Goole Cloud keyring", e.getMessage());
 
         builder.keystore("projects/first-rain-123/locations/global/keyRings/mykeyring/cryptoKeys/jsign");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must specify the path of the keyring (projects/{projectName}/locations/{location}/keyRings/{keyringName})", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the path of the keyring (projects/{projectName}/locations/{location}/keyRings/{keyringName})", e.getMessage());
 
         builder.keystore("projects/first-rain-123/locations/global/keyRings/mykeyring");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the Goole Cloud API access token", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the Goole Cloud API access token", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "certfile parameter must be set", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "certfile parameter must be set", e.getMessage());
 
         builder.certfile("keystores/jsign-test-certificate.pem");
 
@@ -285,30 +217,18 @@ public class KeyStoreBuilderTest {
     public void testBuildHashiCorpVault() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(HASHICORPVAULT);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must specify the HashiCorp Vault secrets engine URL", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the HashiCorp Vault secrets engine URL", e.getMessage());
 
         builder.keystore("https://vault.example.com:8200/v1/gcpkms/");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the HashiCorp Vault token", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the HashiCorp Vault token", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "certfile parameter must be set", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "certfile parameter must be set", e.getMessage());
 
         builder.certfile("keystores/jsign-test-certificate.pem");
 
@@ -320,12 +240,8 @@ public class KeyStoreBuilderTest {
     public void testBuildOracleCloud() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(ORACLECLOUD);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "certfile parameter must be set", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "certfile parameter must be set", e.getMessage());
 
         builder.certfile("keystores/jsign-test-certificate.pem");
 
@@ -343,21 +259,13 @@ public class KeyStoreBuilderTest {
     public void testBuildTrustedSigning() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(TRUSTEDSIGNING);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must specify the Azure endpoint (<region>.codesigning.azure.net)", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the Azure endpoint (<region>.codesigning.azure.net)", e.getMessage());
 
         builder.keystore("https://weu.codesigning.azure.net");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 
@@ -369,21 +277,13 @@ public class KeyStoreBuilderTest {
     public void testBuildGaraSign() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(GARASIGN);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
 
         builder.storepass("username|password|keystore.p12|storepass");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the GaraSign username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
 
         builder.storepass("username|password");
 
@@ -409,12 +309,8 @@ public class KeyStoreBuilderTest {
     public void testBuildJKS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(JKS);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must be set", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must be set", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.jks");
 
@@ -426,12 +322,8 @@ public class KeyStoreBuilderTest {
     public void testBuildJCEKS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(JCEKS);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must be set", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must be set", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.jceks");
 
@@ -443,12 +335,8 @@ public class KeyStoreBuilderTest {
     public void testBuildPKCS12() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(PKCS12);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must be set", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must be set", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.p12");
 
@@ -460,21 +348,13 @@ public class KeyStoreBuilderTest {
     public void testBuildWithoutStoreType() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder();
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Either keystore, or keyfile and certfile, or storetype parameters must be set", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "Either keystore, or keyfile and certfile, or storetype parameters must be set", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.error");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "Keystore file 'target/test-classes/keystores/keystore.error' not found", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "Keystore file 'target/test-classes/keystores/keystore.error' not found", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.p12");
 
@@ -485,45 +365,29 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
-    public void testBuildPKCS11() throws Exception {
+    public void testBuildPKCS11() {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(PKCS11);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter must be set", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must be set", e.getMessage());
 
         builder.keystore("target/test-classes/pkcs11-missing.cfg");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "keystore parameter should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security", e.getMessage());
-        }
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.p12");
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (ProviderException e) {
-            assertEquals("message", "Failed to create a SunPKCS11 provider from the configuration target/test-classes/keystores/keystore.p12", e.getMessage());
-        }
+        e = assertThrows(ProviderException.class, builder::build);
+        assertEquals("message", "Failed to create a SunPKCS11 provider from the configuration target/test-classes/keystores/keystore.p12", e.getMessage());
     }
 
     @Test
     public void testBuildOpenPGP() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(OPENPGP);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the PIN", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the PIN", e.getMessage());
 
         OpenPGPCardTest.assumeCardPresent();
 
@@ -537,12 +401,8 @@ public class KeyStoreBuilderTest {
     public void testBuildPIV() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(PIV);
 
-        try {
-            builder.build();
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "storepass parameter must specify the PIN", e.getMessage());
-        }
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the PIN", e.getMessage());
 
         PIVCardTest.assumeCardPresent();
 

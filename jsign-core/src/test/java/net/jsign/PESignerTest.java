@@ -87,13 +87,9 @@ public class PESignerTest {
     }
 
     @Test
-    public void testSignWithUnknownKeyStoreEntry() throws Exception {
-        try {
-            new PESigner(getKeyStore(), "unknown", PRIVATE_KEY_PASSWORD);
-            fail("Exception not thrown");
-        } catch (IllegalArgumentException e) {
-            assertEquals("message", "No certificate found in the keystore with the alias 'unknown'", e.getMessage());
-        }
+    public void testSignWithUnknownKeyStoreEntry() {
+        Exception e = assertThrows(IllegalArgumentException.class, () -> new PESigner(getKeyStore(), "unknown", PRIVATE_KEY_PASSWORD));
+        assertEquals("message", "No certificate found in the keystore with the alias 'unknown'", e.getMessage());
     }
 
     @Test
@@ -154,16 +150,16 @@ public class PESignerTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptyChain() throws Exception {
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
-        new PESigner(new Certificate[0], key);
+        assertThrows(IllegalArgumentException.class, () -> new PESigner(new Certificate[0], key));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullChain() throws Exception {
         PrivateKey key = PrivateKeyUtils.load(new File("target/test-classes/keystores/privatekey-encrypted.pvk"), "password");
-        new PESigner(null, key);
+        assertThrows(IllegalArgumentException.class, () -> new PESigner(null, key));
     }
 
     @Test
@@ -188,10 +184,8 @@ public class PESignerTest {
                 .withProgramURL("http://www.steelblue.com/WinEyes");
 
         try (PEFile peFile = new PEFile(targetFile)) {
-            signer.sign(peFile);
-            fail("Exception not thrown"); // todo investigate why no exception is thrown when the mismatched keys have the same length
-        } catch (Exception e) {
-            // expected
+            // todo investigate why no exception is thrown when the mismatched keys have the same length
+            assertThrows(Exception.class, () -> signer.sign(peFile));
         }
     }
 
@@ -376,11 +370,8 @@ public class PESignerTest {
         signer.withTimestampingRetries(1);
         
         try (PEFile peFile = new PEFile(targetFile)) {
-            signer.sign(peFile);
-            fail("TimestampingException not thrown");
-        } catch (TimestampingException e) {
+            Exception e = assertThrows(TimestampingException.class, () -> signer.sign(peFile));
             assertTrue("Missing suppressed IOException", e.getSuppressed() != null && e.getSuppressed().length > 0 && e.getSuppressed()[0].getClass().equals(IOException.class));
-            // expected
         }
 
         SignatureAssert.assertNotSigned(new PEFile(targetFile));
@@ -410,16 +401,13 @@ public class PESignerTest {
         signer.withTimestampingRetries(1);
         
         try (PEFile peFile = new PEFile(targetFile)) {
-            signer.sign(peFile);
-            fail("TimestampingException not thrown");
-        } catch (TimestampingException e) {
-            // expected
+            assertThrows(TimestampingException.class, () -> signer.sign(peFile));
         }
 
         SignatureAssert.assertNotSigned(new PEFile(targetFile));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInvalidTimestampingURL() throws Exception {
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
@@ -429,7 +417,7 @@ public class PESignerTest {
         signer.withTimestampingRetries(1);
 
         try (PEFile peFile = new PEFile(new File("target/test-classes/wineyes.exe"))) {
-            signer.sign(peFile);
+            assertThrows(IllegalArgumentException.class, () -> signer.sign(peFile));
         }
     }
 
