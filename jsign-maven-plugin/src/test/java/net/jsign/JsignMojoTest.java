@@ -19,6 +19,7 @@ package net.jsign;
 import java.io.File;
 import java.util.Collections;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -206,9 +207,14 @@ public class JsignMojoTest extends AbstractMojoTestCase {
     }
 
     public void testDetachedSignature() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-maven.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
         JsignMojo mojo = getMojo();
 
-        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "file", targetFile);
         setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "password");
@@ -216,7 +222,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         mojo.execute();
 
-        assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes.exe.sig").exists());
+        assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes-signed-with-maven.exe.sig").exists());
     }
 
     public void testSkip() throws Exception {
@@ -240,6 +246,11 @@ public class JsignMojoTest extends AbstractMojoTestCase {
     }
 
     public void testPasswordFromSettings() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-maven.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
         File detachedSignature = new File("target/test-classes/wineyes.exe.sig");
         if (detachedSignature.exists()) {
             assertTrue(detachedSignature.delete());
@@ -256,7 +267,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         setVariableValueToObject(mojo, "settings", settings);
 
-        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "file", targetFile);
         setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
@@ -264,10 +275,15 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         mojo.execute();
 
-        assertTrue("File wasn't signed", new File("target/test-classes/wineyes.exe.sig").exists());
+        assertTrue("File wasn't signed", new File("target/test-classes/wineyes-signed-with-maven.exe.sig").exists());
     }
 
     public void testPassphraseFromSettings() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-maven.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
         File detachedSignature = new File("target/test-classes/wineyes.exe.sig");
         if (detachedSignature.exists()) {
             assertTrue(detachedSignature.delete());
@@ -284,7 +300,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         setVariableValueToObject(mojo, "settings", settings);
 
-        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "file", targetFile);
         setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
         setVariableValueToObject(mojo, "alias", "test");
         setVariableValueToObject(mojo, "keypass", "mvn:jsign");
@@ -292,7 +308,7 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         mojo.execute();
 
-        assertTrue("File wasn't signed", new File("target/test-classes/wineyes.exe.sig").exists());
+        assertTrue("File wasn't signed", new File("target/test-classes/wineyes-signed-with-maven.exe.sig").exists());
     }
 
     public void testMissingServerFromSettings() throws Exception {
