@@ -550,8 +550,11 @@ public enum KeyStoreType {
     SIGNSERVER(false, false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
+            if (params.keystore() == null) {
+                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the SignServer API endpoint (e.g. https://example.com/signserver/)");
+            }
             if (params.storepass() != null && params.storepass().split("\\|").length > 2) {
-                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the SignServer username/password or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>");
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the SignServer username/password or the path to the keystore containing the TLS client certificate: <username>|<password> or <certificate>");
             }
         }
 

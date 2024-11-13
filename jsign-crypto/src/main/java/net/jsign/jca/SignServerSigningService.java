@@ -37,7 +37,6 @@ import javax.net.ssl.SSLContext;
 import net.jsign.DigestAlgorithm;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Objects.requireNonNull;
 
 /**
  * Signing service using the Keyfactor SignServer REST API.
@@ -58,9 +57,7 @@ public class SignServerSigningService implements SigningService {
      * @param credentials      the SignServer credentials
      */
     public SignServerSigningService(String endpoint, SignServerCredentials credentials) {
-        this.client = new RESTClient(
-                requireNonNull(endpoint, "You need to provide the SignServer endpoint URL as keystore parameter")
-                        + (endpoint.endsWith("/") ? "" : "/"))
+        this.client = new RESTClient(endpoint)
                 .authentication(conn -> {
                     if (conn instanceof HttpsURLConnection && credentials.keystore != null) {
                         try {
