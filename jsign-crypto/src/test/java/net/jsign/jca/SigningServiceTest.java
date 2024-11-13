@@ -227,4 +227,15 @@ public class SigningServiceTest {
         Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "windows_codesign", ""));
         assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getCause().getMessage());
     }
+
+    @Test
+    public void testSignServerProvider() throws Exception {
+        SignServerCredentials credentials = new SignServerCredentials("username", "password", "target/test-classes/keystores/keystore.p12", "password");
+        Provider provider = new SigningServiceJcaProvider(new SignServerSigningService("https://example.com/signserver", credentials));
+        KeyStore keystore = KeyStore.getInstance("SIGNSERVER", provider);
+        keystore.load(null, "".toCharArray());
+
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", ""));
+        assertEquals("message", "Unable to retrieve the certificate chain 'default'", e.getMessage());
+    }
 }

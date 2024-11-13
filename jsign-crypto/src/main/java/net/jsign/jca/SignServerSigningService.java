@@ -87,8 +87,8 @@ public class SignServerSigningService implements SigningService {
                         .getInstance("X.509")
                         .generateCertificate(new ByteArrayInputStream(certificateBytes));
                 certificates.put(alias, new Certificate[]{certificate});
-            } catch (IOException | CertificateException e) {
-                throw new KeyStoreException(e);
+            } catch (Exception e) {
+                throw new KeyStoreException("Unable to retrieve the certificate chain '" + alias + "'", e);
             }
         }
 

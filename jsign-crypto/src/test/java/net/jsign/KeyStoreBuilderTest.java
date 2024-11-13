@@ -306,6 +306,31 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildSignServer() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(SIGNSERVER);
+
+        Exception e = assertThrows(NullPointerException.class, builder::build);
+        assertEquals("message", "You need to provide the SignServer endpoint URL as keystore parameter", e.getMessage());
+
+        builder.keystore("https://example.com/signserver");
+
+        builder.storepass("username|password|certificate.p12");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the SignServer username/password or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>", e.getMessage());
+
+        builder.storepass("username|password");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+
+        builder.storepass(null);
+
+        keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildJKS() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(JKS);
 
