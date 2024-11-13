@@ -37,6 +37,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [GaraSign](https://garantir.io/garasign/)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)
+    * [Keyfactor SignServer](https://www.signserver.org)
     * [Oracle Cloud KMS](https://www.oracle.com/security/cloud-security/key-management/)
     * [SSL.com eSigner](https://www.ssl.com/esigner/)
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
@@ -54,7 +55,12 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.0 (in development)
 
-* New signing services: HashiCorp Vault Transit (contributed by Eatay Mizrachi), Azure Trusted Signing, Oracle Cloud and GaraSign
+* New signing services:
+  * Azure Trusted Signing
+  * Oracle Cloud
+  * GaraSign
+  * HashiCorp Vault Transit (contributed by Eatay Mizrachi)
+  * Keyfactor SignServer (contributed by Björn Kautler)
 * Signing of NuGet packages has been implemented (contributed by Sebastian Stamm)
 * Commands have been added:
   * `timestamp`: timestamps the signatures of a file

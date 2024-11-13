@@ -95,6 +95,7 @@ public class JsignCLI {
                         + "- GOOGLECLOUD: Google Cloud KMS\n"
                         + "- HASHICORPVAULT: HashiCorp Vault\n"
                         + "- ORACLECLOUD: Oracle Cloud Key Management Service\n"
+                        + "- SIGNSERVER: Keyfactor SignServer\n"
                         + "- TRUSTEDSIGNING: Azure Trusted Signing\n").build());
         options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS).argName("PASSWORD").desc("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password").build());

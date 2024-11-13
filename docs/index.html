@@ -70,6 +70,7 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
           <li><a href="https://garantir.io/garasign/">GaraSign</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
+          <li><a href="https://www.signserver.org">Keyfactor SignServer</a></li>
           <li><a href="https://www.oracle.com/security/cloud-security/key-management/">Oracle Cloud KMS</a></li>
           <li><a href="https://www.ssl.com/esigner/">SSL.com eSigner</a></li>
         </ul>
@@ -228,6 +229,7 @@ invalidating the signature:</p>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
           <li><code>HASHICORPVAULT</code>: HashiCorp Vault</li>
           <li><code>ORACLECLOUD</code>: Oracle Cloud Key Management Service</li>
+          <li><code>SIGNSERVER</code>: Keyfactor SignServer</li>
           <li><code>TRUSTEDSIGNING</code>: Azure Trusted Signing</li>
         </ul>
       </td>
@@ -549,6 +551,7 @@ are the same as those described above for the Ant task.</p>
                              - GOOGLECLOUD: Google Cloud KMS
                              - HASHICORPVAULT: HashiCorp Vault
                              - ORACLECLOUD: Oracle Cloud Key Management Service
+                             - SIGNSERVER: Keyfactor SignServer
                              - TRUSTEDSIGNING: Azure Trusted Signing
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
@@ -879,6 +882,43 @@ character.</p>
        --alias test:1 \
        --certfile full-chain.pem application.exe
 </pre>
+
+
+<h4 id="example-signserver">Signing with Keyfactor SignServer</h4>
+
+<p><a href="https://www.signserver.org">SignServer</a> is an on-premises open source signing service developed by Keyfactor.
+SignServer supports various signing operations handled by signer workers. Jsign requires a
+<a href="https://doc.primekey.com/signserver/signserver-reference/signserver-workers/signserver-signers/plain-signer">Plain Signer</a>
+worker configured with the <code>CLIENTSIDEHASHING</code> or <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> properties
+set to <code>true</code>, and the <code>SIGNATUREALGORITHM</code> property set to <code>NONEwithRSA</code> or
+<code>NONEwithECDSA</code>.</p>
+
+<p>The authentication is performed by specifying the username/password or the TLS client certificate in the
+<code>storepass</code> parameter. If the TLS client certificate is stored in a password protected keystore, the password
+is specified in the <code>keypass</code> parameter. The <code>keystore</code> parameter references the URL of the
+SignServer REST API. The <code>alias</code> parameter specifies the id or the name of the worker. </p>
+
+<p>Authenticating with a username and a password:</p>
+
+<pre>
+ jsign --storetype SIGNSERVER \
+       --keystore https://example.com/signserver \
+       --storepass "&lt;username&gt;|&lt;password&gt;" \
+       --alias test \
+       application.exe
+</pre>
+
+<p>Authenticating with a TLS client certificate:</p>
+
+<pre>
+ jsign --storetype SIGNSERVER \
+       --keystore https://example.com/signserver \
+       --storepass "/path/to/client-certificate.p12" \
+       --keypass &lt;client-certificate-password&gt; \
+       --alias test \
+       application.exe
+</pre>
+
 
 <h4 id="example-oraclecloud">Signing with Oracle Cloud Key Management Service</h4>
 
