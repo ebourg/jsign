@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2024 Björn Kautler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,6 @@
 
 package net.jsign.jca;
 
-import net.jsign.DigestAlgorithm;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -29,25 +24,29 @@ import java.security.KeyStoreException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+
+import net.jsign.DigestAlgorithm;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Signing service using the SignServer REST interface.
+ * Signing service using the Keyfactor SignServer REST API.
  *
  * @since 7.0
  */
 public class SignServerSigningService implements SigningService {
-    /** Cache of certificates indexed by id or alias */
+
+    /** Cache of certificates indexed by alias (worker id or name) */
     private final Map<String, Certificate[]> certificates = new HashMap<>();
 
     private final RESTClient client;
@@ -55,15 +54,33 @@ public class SignServerSigningService implements SigningService {
     /**
      * Creates a new SignServer signing service.
      *
-     * @param endpoint         the SignServer API endpoint (for example <tt>https://signserver.company.com/signserver/</tt>)
+     * @param endpoint         the SignServer API endpoint (for example <tt>https://example.com/signserver</tt>)
      * @param credentials      the SignServer credentials
      */
     public SignServerSigningService(String endpoint, SignServerCredentials credentials) {
         this.client = new RESTClient(
                 requireNonNull(endpoint, "You need to provide the SignServer endpoint URL as keystore parameter")
                         + (endpoint.endsWith("/") ? "" : "/"))
-                .authentication(credentials::addAuthentication)
-                .errorHandler(response -> response.get("error").toString());
+                .authentication(conn -> {
+                    if (conn instanceof HttpsURLConnection && credentials.keystore != null) {
+                        try {
+                            KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                            kmf.init(credentials.keystore.getKeyStore(), ((KeyStore.PasswordProtection) credentials.keystore.getProtectionParameter("")).getPassword());
+
+                            SSLContext context = SSLContext.getInstance("TLS");
+                            context.init(kmf.getKeyManagers(), null, new SecureRandom());
+                            ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
+                        } catch (GeneralSecurityException e) {
+                            throw new RuntimeException("Unable to load the SignServer client certificate", e);
+                        }
+                    }
+
+                    if (credentials.username != null) {
+                        String httpCredentials = credentials.username + ":" + (credentials.password == null ? "" : credentials.password);
+                        conn.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(httpCredentials.getBytes(UTF_8)));
+                    }
+                })
+                .errorHandler(response -> (String) response.get("error"));
     }
 
     @Override
@@ -72,19 +89,18 @@ public class SignServerSigningService implements SigningService {
     }
 
     @Override
-    public List<String> aliases() {
-        return emptyList();
+    public List<String> aliases() throws KeyStoreException {
+        return Collections.emptyList();
     }
 
     @Override
     public Certificate[] getCertificateChain(String alias) throws KeyStoreException {
         if (!certificates.containsKey(alias)) {
             try {
-                Map<String, ?> response = client.post(getResourcePath(alias), "{\"data\":\"\"}");
+                Map<String, ?> response = client.post("/rest/v1/workers/" + alias + "/process", "{\"data\":\"\"}");
                 String encodedCertificate = response.get("signerCertificate").toString();
                 byte[] certificateBytes = Base64.getDecoder().decode(encodedCertificate);
-                Certificate certificate = CertificateFactory
-                        .getInstance("X.509")
+                Certificate certificate = CertificateFactory.getInstance("X.509")
                         .generateCertificate(new ByteArrayInputStream(certificateBytes));
                 certificates.put(alias, new Certificate[]{certificate});
             } catch (Exception e) {
@@ -113,21 +129,16 @@ public class SignServerSigningService implements SigningService {
         Map<String, Object> request = new HashMap<>();
         request.put("data", Base64.getEncoder().encodeToString(data));
         request.put("encoding", "BASE64");
-        Map<String, Object> metaData = new HashMap<>();
-        metaData.put("USING_CLIENTSUPPLIED_HASH", true);
-        metaData.put("CLIENTSIDE_HASHDIGESTALGORITHM", digestAlgorithm.id);
-        request.put("metaData", metaData);
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("USING_CLIENTSUPPLIED_HASH", "true");
+        metadata.put("CLIENTSIDE_HASHDIGESTALGORITHM", digestAlgorithm.id);
+        request.put("metaData", metadata);
 
         try {
-            Map<String, ?> response = client.post(getResourcePath(privateKey.getId()), JsonWriter.format(request));
-            String value = response.get("data").toString();
-            return Base64.getDecoder().decode(value);
+            Map<String, ?> response = client.post("/rest/v1/workers/" + privateKey.getId() + "/process", JsonWriter.format(request));
+            return Base64.getDecoder().decode((String) response.get("data"));
         } catch (IOException e) {
             throw new GeneralSecurityException(e);
         }
-    }
-
-    private String getResourcePath(String alias) {
-        return "rest/v1/workers/" + alias + "/process";
     }
 }

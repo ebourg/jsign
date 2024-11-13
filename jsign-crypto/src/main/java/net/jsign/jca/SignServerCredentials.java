@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2024 Björn Kautler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,29 +16,20 @@
 
 package net.jsign.jca;
 
+import java.security.KeyStore;
+
 import net.jsign.KeyStoreBuilder;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import java.net.HttpURLConnection;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
-import java.util.Base64;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 /**
- * Credentials for the SignServer REST interface.
+ * Credentials for the Keyfactor SignServer REST API.
  *
  * @since 7.0
  */
 public class SignServerCredentials {
 
-    public String username;
-    public String password;
-    public KeyStore.Builder keystore;
+    public final String username;
+    public final String password;
+    public final KeyStore.Builder keystore;
 
     public SignServerCredentials(String username, String password, String keystore, String storepass) {
         this(username, password, keystore == null ? null : new KeyStoreBuilder().keystore(keystore).storepass(storepass).builder());
@@ -48,26 +39,5 @@ public class SignServerCredentials {
         this.username = username;
         this.password = password;
         this.keystore = keystore;
-    }
-
-    void addAuthentication(HttpURLConnection conn) {
-        if (conn instanceof HttpsURLConnection && keystore != null) {
-            try {
-                KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                kmf.init(keystore.getKeyStore(), ((KeyStore.PasswordProtection) keystore.getProtectionParameter("")).getPassword());
-
-                SSLContext context = SSLContext.getInstance("TLS");
-                context.init(kmf.getKeyManagers(), null, new SecureRandom());
-                ((HttpsURLConnection) conn).setSSLSocketFactory(context.getSocketFactory());
-            } catch (GeneralSecurityException e) {
-                throw new RuntimeException("Unable to load the SignServer client certificate", e);
-            }
-        }
-
-        if (username != null) {
-            conn.setRequestProperty(
-                    "Authorization",
-                    "Basic " + Base64.getEncoder().encodeToString((username + ":" + (password == null ? "" : password)).getBytes(UTF_8)));
-        }
     }
 }
