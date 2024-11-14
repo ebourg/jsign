@@ -100,9 +100,6 @@ public enum KeyStoreType {
             try {
                 ks.load(null, null);
                 String keypass = params.keypass();
-                if (keypass == null) {
-                    keypass = params.storepass();
-                }
                 ks.setKeyEntry("jsign", privateKey, keypass != null ? keypass.toCharArray() : new char[0], chain);
             } catch (Exception e) {
                 throw new KeyStoreException(e);
@@ -122,6 +119,10 @@ public enum KeyStoreType {
             if (!params.createFile(params.keystore()).exists()) {
                 throw new IllegalArgumentException("The keystore " + params.keystore() + " couldn't be found");
             }
+            if (params.keypass() == null && params.storepass() != null) {
+                // reuse the storepass as the keypass
+                params.keypass(params.storepass());
+            }
         }
     },
 
@@ -135,6 +136,10 @@ public enum KeyStoreType {
             if (!params.createFile(params.keystore()).exists()) {
                 throw new IllegalArgumentException("The keystore " + params.keystore() + " couldn't be found");
             }
+            if (params.keypass() == null && params.storepass() != null) {
+                // reuse the storepass as the keypass
+                params.keypass(params.storepass());
+            }
         }
     },
 
@@ -147,6 +152,10 @@ public enum KeyStoreType {
             }
             if (!params.createFile(params.keystore()).exists()) {
                 throw new IllegalArgumentException("The keystore " + params.keystore() + " couldn't be found");
+            }
+            if (params.keypass() == null && params.storepass() != null) {
+                // reuse the storepass as the keypass
+                params.keypass(params.storepass());
             }
         }
     },
@@ -384,11 +393,6 @@ public enum KeyStoreType {
             } catch (IOException e) {
                 throw new IllegalStateException("Authentication failed with SSL.com", e);
             }
-        }
-
-        @Override
-        boolean reuseKeyStorePassword() {
-            return false;
         }
     },
 
@@ -654,13 +658,6 @@ public enum KeyStoreType {
      */
     Set<String> getAliases(KeyStore keystore) throws KeyStoreException {
         return new LinkedHashSet<>(Collections.list(keystore.aliases()));
-    }
-
-    /**
-     * Tells if the keystore password can be reused as the key password.
-     */
-    boolean reuseKeyStorePassword() {
-        return true;
     }
 
     /**

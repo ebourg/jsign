@@ -383,13 +383,8 @@ class SignerHelper {
             }
         }
 
-        String storepass = ksparams.storepass();
         String keypass = ksparams.keypass();
-        char[] password = keypass != null ? keypass.toCharArray() : null;
-        if (password == null && storepass != null && storetype.reuseKeyStorePassword()) {
-            // use the storepass as the keypass
-            password = storepass.toCharArray();
-        }
+        char[] password = keypass != null ? keypass.toCharArray() : new char[0];
 
         PrivateKey privateKey;
         try {
