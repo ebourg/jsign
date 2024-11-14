@@ -337,6 +337,11 @@ public class KeyStoreBuilderTest {
         Exception e = assertThrows(IllegalArgumentException.class, builder::build);
         assertEquals("message", "keystore parameter must be set", e.getMessage());
 
+        builder.keystore("target/test-classes/keystores/missing.jks");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "The keystore target/test-classes/keystores/missing.jks couldn't be found", e.getMessage());
+
         builder.keystore("target/test-classes/keystores/keystore.jks");
 
         KeyStore keystore = builder.build();
@@ -350,6 +355,11 @@ public class KeyStoreBuilderTest {
         Exception e = assertThrows(IllegalArgumentException.class, builder::build);
         assertEquals("message", "keystore parameter must be set", e.getMessage());
 
+        builder.keystore("target/test-classes/keystores/missing.jceks");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "The keystore target/test-classes/keystores/missing.jceks couldn't be found", e.getMessage());
+
         builder.keystore("target/test-classes/keystores/keystore.jceks");
 
         KeyStore keystore = builder.build();
@@ -362,6 +372,11 @@ public class KeyStoreBuilderTest {
 
         Exception e = assertThrows(IllegalArgumentException.class, builder::build);
         assertEquals("message", "keystore parameter must be set", e.getMessage());
+
+        builder.keystore("target/test-classes/keystores/missing.p12");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "The keystore target/test-classes/keystores/missing.p12 couldn't be found", e.getMessage());
 
         builder.keystore("target/test-classes/keystores/keystore.p12");
 

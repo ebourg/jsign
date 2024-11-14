@@ -119,6 +119,9 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must be set");
             }
+            if (!params.createFile(params.keystore()).exists()) {
+                throw new IllegalArgumentException("The keystore " + params.keystore() + " couldn't be found");
+            }
         }
     },
 
@@ -129,6 +132,9 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must be set");
             }
+            if (!params.createFile(params.keystore()).exists()) {
+                throw new IllegalArgumentException("The keystore " + params.keystore() + " couldn't be found");
+            }
         }
     },
 
@@ -138,6 +144,9 @@ public enum KeyStoreType {
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must be set");
+            }
+            if (!params.createFile(params.keystore()).exists()) {
+                throw new IllegalArgumentException("The keystore " + params.keystore() + " couldn't be found");
             }
         }
     },
@@ -627,10 +636,6 @@ public enum KeyStoreType {
             }
         } catch (KeyStoreException e) {
             throw new KeyStoreException("keystore type '" + name() + "' is not supported" + (provider != null ? " with security provider " + provider.getName() : ""), e);
-        }
-
-        if (fileBased && (params.keystore() == null || !params.createFile(params.keystore()).exists())) {
-            throw new KeyStoreException("The keystore " + params.keystore() + " couldn't be found");
         }
 
         try {
