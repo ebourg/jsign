@@ -374,21 +374,10 @@ class SignerHelper {
             }
             throw new SignerException(message);
         }
-        if (ksparams.certfile() != null && storetype.hasCertificate()) {
-            if (chain.length != 1) {
-                throw new SignerException("certfile " + parameterName + " can only be specified if the certificate from the keystore contains only one entry");
-            }
+        if (ksparams.certfile() != null) {
             // replace the certificate chain from the keystore with the complete chain from file
             try {
-                Certificate[] chainFromFile = CertificateUtils.loadCertificateChain(ksparams.certfile());
-                if (chainFromFile[0].equals(chain[0])) {
-                    // replace certificate with complete chain
-                    chain = chainFromFile;
-                } else {
-                    throw new SignerException("The certificate chain in " + ksparams.certfile() + " does not match the chain from the keystore");
-                }
-            } catch (SignerException e) {
-                throw e;
+                chain = CertificateUtils.loadCertificateChain(ksparams.certfile());
             } catch (Exception e) {
                 throw new SignerException("Failed to load the certificate from " + ksparams.certfile(), e);
             }

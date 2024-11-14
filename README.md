@@ -86,6 +86,7 @@ See https://ebourg.github.io/jsign for more information.
 * On Windows the YubiKey library path is automatically added to the PATH of the command line tool
 * Signing more than one file with the `YUBIKEY` storetype no longer triggers a `CKR_USER_NOT_LOGGED_IN` error
 * MS Cabinet files with a pre-allocated reserve are now supported
+* The `--certfile` parameter can now be used to replace the certificate chain from the keystore
 * API changes:
   * The keystore builder and the JCA provider are now in a separate `jsign-crypto` module
   * The PEFile class has been refactored to keep only the methods related to signing

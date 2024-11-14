@@ -32,6 +32,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.cms.CMSSignedData;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -547,15 +548,14 @@ public class JsignCLITest {
     }
 
     @Test
-    public void testExplicitCertificateChainOnlyOnSingleEntry() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "" + targetFile));
-        assertEquals("message", "certfile option can only be specified if the certificate from the keystore contains only one entry", e.getMessage());
-    }
+    public void testOverrideKeyStoreCertificate() throws Exception {
+        cli.execute("--keystore=target/test-classes/keystores/keystore-2022.p12", "--alias=test", "--storepass=password", "--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "" + targetFile);
 
-    @Test
-    public void testExplicitCertificateChainOnlyOnSingleEntryWhenFirst() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore-no-chain.jks", "--alias=test", "--keypass=password",  "--certfile=target/test-classes/keystores/jsign-test-certificate-partial-chain-reversed.pem", "" + targetFile));
-        assertEquals("message", "The certificate chain in target/test-classes/keystores/jsign-test-certificate-partial-chain-reversed.pem does not match the chain from the keystore", e.getMessage().replace('\\', '/'));
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA256);
+            CMSSignedData signature = signable.getSignatures().get(0);
+            assertEquals("issuer", "CN=Jsign Code Signing CA 2024", signature.getSignerInfos().iterator().next().getSID().getIssuer().toString());
+        }
     }
 
     @Test

@@ -60,7 +60,7 @@ import net.jsign.jca.SigningServiceJcaProvider;
 public enum KeyStoreType {
 
     /** Not a keystore, a private key file and a certificate file are provided separately and assembled into an in-memory keystore */
-    NONE(true, false, false) {
+    NONE(true, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keyfile() == null) {
@@ -113,7 +113,7 @@ public enum KeyStoreType {
     },
 
     /** Java keystore */
-    JKS(true, true, false) {
+    JKS(true, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -123,7 +123,7 @@ public enum KeyStoreType {
     },
 
     /** JCE keystore */
-    JCEKS(true, true, false) {
+    JCEKS(true, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -133,7 +133,7 @@ public enum KeyStoreType {
     },
 
     /** PKCS#12 keystore */
-    PKCS12(true, true, false) {
+    PKCS12(true, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -147,7 +147,7 @@ public enum KeyStoreType {
      * in <code>jre/lib/security/java.security</code> or the path to the
      * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration file</a>.
      */
-    PKCS11(false, true, true) {
+    PKCS11(false, true) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -180,7 +180,7 @@ public enum KeyStoreType {
      * the keystore parameter can be used to specify the name of the one to use. This keystore type doesn't require
      * any external library to be installed.
      */
-    OPENPGP(false, false, false) {
+    OPENPGP(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.storepass() == null) {
@@ -203,7 +203,7 @@ public enum KeyStoreType {
      * This keystore requires the installation of <a href="https://github.com/OpenSC/OpenSC">OpenSC</a>.
      * If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
      */
-    OPENSC(false, true, true) {
+    OPENSC(false, true) {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return OpenSC.getProvider(params.keystore());
@@ -217,7 +217,7 @@ public enum KeyStoreType {
      * signature key). If multiple devices are connected, the keystore parameter can be used to specify the name
      * of the one to use. This keystore type doesn't require any external library to be installed.
      */
-    PIV(false, false, false) {
+    PIV(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.storepass() == null) {
@@ -241,7 +241,7 @@ public enum KeyStoreType {
      * certificate must be imported into the Nitrokey (using the gnupg writecert command). Keys without certificates
      * are ignored. Otherwise the {@link #OPENPGP} type should be used.
      */
-    NITROKEY(false, true, true) {
+    NITROKEY(false, true) {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return OpenSC.getProvider(params.keystore() != null ? params.keystore() : "Nitrokey");
@@ -253,7 +253,7 @@ public enum KeyStoreType {
      * to be installed at the default location. On Windows, the path to the library must be specified in the
      * <code>PATH</code> environment variable.
      */
-    YUBIKEY(false, true, true) {
+    YUBIKEY(false, true) {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return YubiKey.getProvider();
@@ -280,7 +280,7 @@ public enum KeyStoreType {
      * <p>In any case, the credentials must allow the following actions: <code>kms:ListKeys</code>,
      * <code>kms:DescribeKey</code> and <code>kms:Sign</code>.</p>
      * */
-    AWS(false, false, false) {
+    AWS(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -317,7 +317,7 @@ public enum KeyStoreType {
      * (e.g. <code>myvault</code>), or the full URL (e.g. <code>https://myvault.vault.azure.net</code>).
      * The Azure API access token is used as the keystore password.
      */
-    AZUREKEYVAULT(false, true, false) {
+    AZUREKEYVAULT(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -339,7 +339,7 @@ public enum KeyStoreType {
      * without installing the DigiCert client tools. The API key, the PKCS#12 keystore holding the client certificate
      * and its password are combined to form the storepass parameter: <code>&lt;api-key&gt;|&lt;keystore&gt;|&lt;password&gt;</code>.
      */
-    DIGICERTONE(false, true, false) {
+    DIGICERTONE(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.storepass() == null || params.storepass().split("\\|").length != 3) {
@@ -358,7 +358,7 @@ public enum KeyStoreType {
      * SSL.com eSigner. The SSL.com username and password are used as the keystore password (<code>&lt;username&gt;|&lt;password&gt;</code>),
      * and the base64 encoded TOTP secret is used as the key password.
      */
-    ESIGNER(false, true, false) {
+    ESIGNER(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.storepass() == null || !params.storepass().contains("|")) {
@@ -388,7 +388,7 @@ public enum KeyStoreType {
      * The keystore parameter references the path of the keyring. The alias can specify either the full path of the key,
      * or only the short name. If the version is omitted the most recent one will be picked automatically.
      */
-    GOOGLECLOUD(false, false, false) {
+    GOOGLECLOUD(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -417,7 +417,7 @@ public enum KeyStoreType {
      * The alias parameter specifies the name of the key in Vault. For the Google Cloud KMS secrets engine, the version
      * of the Google Cloud key is appended to the key name, separated by a colon character. (<code>mykey:1</code>).
      */
-    HASHICORPVAULT(false, false, false) {
+    HASHICORPVAULT(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -441,7 +441,7 @@ public enum KeyStoreType {
      * SafeNet eToken
      * This keystore requires the installation of the SafeNet Authentication Client.
      */
-    ETOKEN(false, true, true) {
+    ETOKEN(false, true) {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return SafeNetEToken.getProvider();
@@ -460,7 +460,7 @@ public enum KeyStoreType {
      * <p>The certificate must be provided separately using the certfile parameter. The alias specifies the OCID
      * of the key.</p>
      */
-    ORACLECLOUD(false, false, false) {
+    ORACLECLOUD(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.certfile() == null) {
@@ -500,7 +500,7 @@ public enum KeyStoreType {
      *
      * <pre>  az account get-access-token --resource https://codesigning.azure.net</pre>
      */
-    TRUSTEDSIGNING(false, false, false) {
+    TRUSTEDSIGNING(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -517,7 +517,7 @@ public enum KeyStoreType {
         }
     },
 
-    GARASIGN(false, false, false) {
+    GARASIGN(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.storepass() == null || params.storepass().split("\\|").length > 3) {
@@ -557,7 +557,7 @@ public enum KeyStoreType {
      * specified in the keypass parameter. The keystore parameter references the URL of the SignServer REST API. The
      * alias parameter specifies the id or the name of the worker.</p>
      */
-    SIGNSERVER(false, false, false) {
+    SIGNSERVER(false, false) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -592,20 +592,12 @@ public enum KeyStoreType {
     /** Tells if the keystore is contained in a local file */
     private final boolean fileBased;
 
-    /** Tells if the keystore contains the certificate */
-    private final boolean certificate;
-
     /** Tells if the keystore is actually a PKCS#11 keystore */
     private final boolean pkcs11;
 
-    KeyStoreType(boolean fileBased, boolean certificate, boolean pkcs11) {
+    KeyStoreType(boolean fileBased, boolean pkcs11) {
         this.fileBased = fileBased;
-        this.certificate = certificate;
         this.pkcs11 = pkcs11;
-    }
-
-    boolean hasCertificate() {
-        return certificate;
     }
 
     /**
