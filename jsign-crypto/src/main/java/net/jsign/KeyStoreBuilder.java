@@ -25,9 +25,8 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.Provider;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static net.jsign.KeyStoreType.*;
+import static net.jsign.KeyStoreType.NONE;
 
 /**
  * Keystore builder.
@@ -47,7 +46,7 @@ public class KeyStoreBuilder {
 
     private String keystore;
     private String storepass;
-    private KeyStoreType storetype;
+    private JsignKeyStore storetype;
     private String keypass;
     private File keyfile;
     private File certfile;
@@ -64,7 +63,7 @@ public class KeyStoreBuilder {
         this.parameterName = parameterName;
     }
 
-    String parameterName() {
+    public String parameterName() {
         return parameterName;
     }
 
@@ -84,7 +83,7 @@ public class KeyStoreBuilder {
         return this;
     }
 
-    String keystore() {
+    public String keystore() {
         return keystore;
     }
 
@@ -98,7 +97,7 @@ public class KeyStoreBuilder {
         return this;
     }
 
-    String storepass() {
+    public String storepass() {
         storepass = readPassword("storepass", storepass);
         return storepass;
     }
@@ -106,8 +105,16 @@ public class KeyStoreBuilder {
     /**
      * Sets the type of the keystore.
      */
-    public KeyStoreBuilder storetype(KeyStoreType storetype) {
+    public KeyStoreBuilder storetype(JsignKeyStore storetype) {
         this.storetype = storetype;
+        return this;
+    }
+
+    /**
+     * Sets the type of the keystore.
+     */
+    public KeyStoreBuilder storetype(KeyStoreType storetype) {
+        this.storetype = storetype.getJsignKeyStore();
         return this;
     }
 
@@ -118,35 +125,57 @@ public class KeyStoreBuilder {
      * @throws IllegalArgumentException if the type is not recognized
      */
     public KeyStoreBuilder storetype(String storetype) {
-        try {
-            this.storetype = storetype != null ? KeyStoreType.valueOf(storetype.toUpperCase()) : null;
-        } catch (IllegalArgumentException e) {
-            String expectedTypes = Stream.of(KeyStoreType.values())
-                    .filter(type -> type != NONE).map(KeyStoreType::name)
-                    .collect(Collectors.joining(", "));
-            throw new IllegalArgumentException("Unknown keystore type '" + storetype + "' (expected types: " + expectedTypes + ")");
+        if (storetype == null) {
+            this.storetype = null;
+        } else {
+            this.storetype = JsignKeyStoreDiscovery.getKeyStore(storetype.toUpperCase());
+            if (this.storetype == null) {
+                String noneType = NONE.getJsignKeyStore().getType();
+                String expectedTypes = JsignKeyStoreDiscovery
+                        .getKeyStoreTypes()
+                        .stream()
+                        .filter(type -> !noneType.equals(type))
+                        .collect(Collectors.joining(", "));
+                throw new IllegalArgumentException("Unknown keystore type '" + storetype + "' (expected types: " + expectedTypes + ")");
+            }
         }
         return this;
     }
 
-    KeyStoreType storetype() {
+    public JsignKeyStore storetype() {
         if (storetype == null) {
             if (keystore == null) {
                 // no keystore specified, keyfile and certfile are expected
-                storetype = NONE;
+                storetype = NONE.getJsignKeyStore();
             } else {
                 // the keystore type wasn't specified, let's try to guess it
                 File file = createFile(keystore);
                 if (!file.isFile()) {
                     throw new IllegalArgumentException("Keystore file '" + keystore + "' not found");
                 }
-                storetype = KeyStoreType.of(file);
+                storetype = getType(file);
                 if (storetype == null) {
                     throw new IllegalArgumentException("Keystore type of '" + keystore + "' not recognized");
                 }
             }
         }
         return storetype;
+    }
+
+    /**
+     * Guess the type of the keystore from the header or the extension of the file.
+     *
+     * @param file the path to the keystore
+     */
+    static JsignKeyStore getType(File file) {
+        for (String type : JsignKeyStoreDiscovery.getKeyStoreTypes()) {
+            JsignKeyStore keyStore = JsignKeyStoreDiscovery.getKeyStore(type);
+            if (keyStore instanceof FileBasedKeyStore && ((FileBasedKeyStore) keyStore).isSupported(file)) {
+                return keyStore;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -159,7 +188,7 @@ public class KeyStoreBuilder {
         return this;
     }
 
-    String keypass() {
+    public String keypass() {
         keypass = readPassword("keypass", keypass);
         return keypass;
     }
@@ -179,7 +208,7 @@ public class KeyStoreBuilder {
         return this;
     }
 
-    File keyfile() {
+    public File keyfile() {
         return keyfile;
     }
 
@@ -198,7 +227,7 @@ public class KeyStoreBuilder {
         return this;
     }
 
-    File certfile() {
+    public File certfile() {
         return certfile;
     }
 
@@ -206,7 +235,7 @@ public class KeyStoreBuilder {
         this.basedir = basedir;
     }
 
-    File createFile(String file) {
+    public File createFile(String file) {
         if (file == null) {
             return null;
         }

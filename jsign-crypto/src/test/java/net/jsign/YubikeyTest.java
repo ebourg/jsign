@@ -25,6 +25,7 @@ import java.security.Signature;
 import org.junit.Assume;
 import org.junit.Test;
 
+import static net.jsign.KeyStoreType.YUBIKEY;
 import static org.junit.Assert.*;
 
 public class YubikeyTest {
@@ -33,20 +34,20 @@ public class YubikeyTest {
         Assume.assumeTrue("libykcs11 isn't installed",
                 new File(System.getenv("ProgramFiles") + "/Yubico/Yubico PIV Tool/bin/libykcs11.dll").exists()
              || new File("/usr/lib/x86_64-linux-gnu/libykcs11.so").exists());
-        Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
+        Assume.assumeTrue("No Yubikey detected", YubiKeyKeyStore.isPresent());
     }
 
     @Test
     public void testGetProvider() {
         assumeYubikey();
-        Provider provider = YubiKey.getProvider();
+        Provider provider = JsignKeyStoreDiscovery.getKeyStore(YUBIKEY).getProvider(null);
         assertNotNull("provider", provider);
     }
 
     @Test
     public void testGetLibrary() {
         assumeYubikey();
-        File library = YubiKey.getYkcs11Library();
+        File library = YubiKeyKeyStore.getYkcs11Library();
         assertNotNull("native library", library);
         assertTrue("native library not found", library.exists());
     }
@@ -55,7 +56,7 @@ public class YubikeyTest {
     public void testAutoLogin() throws Exception {
         assumeYubikey();
 
-        Provider provider = YubiKey.getProvider();
+        Provider provider = JsignKeyStoreDiscovery.getKeyStore(YUBIKEY).getProvider(null);
         KeyStore keystore = KeyStore.getInstance("PKCS11", provider);
         assertEquals("provider", provider, keystore.getProvider());
         keystore.load(() -> new KeyStore.PasswordProtection("123456".toCharArray()));

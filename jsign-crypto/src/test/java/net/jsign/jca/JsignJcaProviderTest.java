@@ -20,10 +20,10 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Signature;
 
+import net.jsign.JsignKeyStoreDiscovery;
 import org.junit.Test;
 
 import net.jsign.DigestAlgorithm;
-import net.jsign.KeyStoreType;
 import net.jsign.YubikeyTest;
 
 import static org.junit.Assert.*;
@@ -34,8 +34,8 @@ public class JsignJcaProviderTest {
     public void testServices() {
         JsignJcaProvider provider = new JsignJcaProvider();
 
-        for (KeyStoreType type : KeyStoreType.values()) {
-            assertNotNull("KeyStore " + type.name(), provider.getService("KeyStore", type.name()));
+        for (String type : JsignKeyStoreDiscovery.getKeyStoreTypes()) {
+            assertNotNull("KeyStore " + type, provider.getService("KeyStore", type));
         }
 
         for (String alg : new String[]{"RSA", "ECDSA"}) {

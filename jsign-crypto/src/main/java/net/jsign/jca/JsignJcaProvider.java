@@ -35,13 +35,14 @@ import java.util.Enumeration;
 
 import net.jsign.DigestAlgorithm;
 import net.jsign.KeyStoreBuilder;
-import net.jsign.KeyStoreType;
+import net.jsign.JsignKeyStore;
+import net.jsign.JsignKeyStoreDiscovery;
 
 /**
  * JCA provider using a Jsign keystore and compatible with jarsigner and apksigner.
  *
  * <p>The provider must be configured with the keystore parameter (the value depends on the keystore type).
- * The type of the keystore is one of the names from the {@link KeyStoreType} enum.</p>
+ * The type of the keystore is one of the types from the {@link JsignKeyStore} implementations.</p>
  *
  * <p>Example:</p>
  * <pre>
@@ -68,8 +69,8 @@ public class JsignJcaProvider extends Provider {
         super("Jsign", 1.0, "Jsign security provider");
 
         AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
-            for (KeyStoreType type : KeyStoreType.values()) {
-                putService(new ProviderService(this, "KeyStore", type.name(), JsignJcaKeyStore.class.getName(), () -> new JsignJcaKeyStore(type, keystore)));
+            for (String type : JsignKeyStoreDiscovery.getKeyStoreTypes()) {
+                putService(new ProviderService(this, "KeyStore", type, JsignJcaKeyStore.class.getName(), () -> new JsignJcaKeyStore(JsignKeyStoreDiscovery.getKeyStore(type), keystore)));
             }
             for (String alg : new String[]{"RSA", "ECDSA"}) {
                 for (DigestAlgorithm digest : DigestAlgorithm.values()) {
@@ -99,7 +100,7 @@ public class JsignJcaProvider extends Provider {
         private KeyStoreBuilder builder = new KeyStoreBuilder();
         private KeyStore keystore;
 
-        public JsignJcaKeyStore(KeyStoreType type, String keystore) {
+        public JsignJcaKeyStore(JsignKeyStore type, String keystore) {
             builder.storetype(type);
             builder.keystore(keystore);
             builder.certfile("");

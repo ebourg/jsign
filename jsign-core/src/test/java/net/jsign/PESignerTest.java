@@ -66,7 +66,7 @@ public class PESignerTest {
     public void testSign() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed.exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD)
@@ -96,7 +96,7 @@ public class PESignerTest {
     public void testSigningWithKeyAndChain() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-key-chain.exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         Certificate[] chain;
@@ -132,7 +132,7 @@ public class PESignerTest {
 
     @Test
     public void testSigningWithYubikey() throws Exception {
-        Assume.assumeTrue("No Yubikey detected", YubiKey.isPresent());
+        Assume.assumeTrue("No Yubikey detected", YubiKeyKeyStore.isPresent());
 
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-yubikey.exe");
@@ -166,7 +166,7 @@ public class PESignerTest {
     public void testSigningWithMismatchingKeyAndCertificate() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-mismatching-key-certificate.exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         Certificate[] chain;
@@ -202,7 +202,7 @@ public class PESignerTest {
     public void testTimestamp(TimestampingMode mode, DigestAlgorithm alg) throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-" + mode.name().toLowerCase() + ".exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
@@ -234,7 +234,7 @@ public class PESignerTest {
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestamper(new AuthenticodeTimestamper() {
-            
+
             @Override
             protected CMSSignedData timestamp(DigestAlgorithm algo, byte[] encryptedDigest) throws IOException, TimestampingException {
                 called.add(true);
@@ -257,7 +257,7 @@ public class PESignerTest {
     public void testSignTwice() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-twice.exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -286,7 +286,7 @@ public class PESignerTest {
     public void testSignThreeTimes() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-three-times.exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -323,7 +323,7 @@ public class PESignerTest {
     public void testReplaceSignature() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-re-signed.exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         try (PEFile peFile = new PEFile(targetFile)) {
@@ -359,16 +359,16 @@ public class PESignerTest {
     public void testInvalidTimestampingAuthority(TimestampingMode mode) throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-unavailable-" + mode.name().toLowerCase() + ".exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
-        
+
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingAuthority("http://www.google.com/" + mode.name().toLowerCase());
         signer.withTimestampingRetries(1);
-        
+
         try (PEFile peFile = new PEFile(targetFile)) {
             Exception e = assertThrows(TimestampingException.class, () -> signer.sign(peFile));
             assertTrue("Missing suppressed IOException", e.getSuppressed() != null && e.getSuppressed().length > 0 && e.getSuppressed()[0].getClass().equals(IOException.class));
@@ -390,16 +390,16 @@ public class PESignerTest {
     public void testBrokenTimestampingAuthority(TimestampingMode mode) throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-broken-" + mode.name().toLowerCase() + ".exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
-        
+
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
         signer.withDigestAlgorithm(SHA1);
         signer.withTimestamping(true);
         signer.withTimestampingMode(mode);
         signer.withTimestampingAuthority("http://github.com");
         signer.withTimestampingRetries(1);
-        
+
         try (PEFile peFile = new PEFile(targetFile)) {
             assertThrows(TimestampingException.class, () -> signer.sign(peFile));
         }
@@ -434,7 +434,7 @@ public class PESignerTest {
     public void testTimestampingFailover(TimestampingMode mode, String validURL) throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-timestamped-failover-" + mode.name().toLowerCase() + ".exe");
-        
+
         FileUtils.copyFile(sourceFile, targetFile);
 
         PESigner signer = new PESigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
@@ -490,7 +490,7 @@ public class PESignerTest {
     @Test
     public void testWithSignatureAlgorithmSHA256withRSAandMGF1() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
-        
+
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed.exe");
 

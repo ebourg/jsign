@@ -16,20 +16,40 @@
 
 package net.jsign;
 
+import net.jsign.jca.OpenPGPCardTest;
+import net.jsign.jca.PIVCardTest;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
+import org.junit.Test;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.ProviderException;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Assume;
-import org.junit.Test;
-
-import net.jsign.jca.OpenPGPCardTest;
-import net.jsign.jca.PIVCardTest;
-
-import static net.jsign.KeyStoreType.*;
-import static org.junit.Assert.*;
+import static net.jsign.KeyStoreType.AWS;
+import static net.jsign.KeyStoreType.AZUREKEYVAULT;
+import static net.jsign.KeyStoreType.DIGICERTONE;
+import static net.jsign.KeyStoreType.ESIGNER;
+import static net.jsign.KeyStoreType.GARASIGN;
+import static net.jsign.KeyStoreType.GOOGLECLOUD;
+import static net.jsign.KeyStoreType.HASHICORPVAULT;
+import static net.jsign.KeyStoreType.JCEKS;
+import static net.jsign.KeyStoreType.JKS;
+import static net.jsign.KeyStoreType.OPENPGP;
+import static net.jsign.KeyStoreType.ORACLECLOUD;
+import static net.jsign.KeyStoreType.PIV;
+import static net.jsign.KeyStoreType.PKCS11;
+import static net.jsign.KeyStoreType.PKCS12;
+import static net.jsign.KeyStoreType.SIGNSERVER;
+import static net.jsign.KeyStoreType.TRUSTEDSIGNING;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class KeyStoreBuilderTest {
 
@@ -398,7 +418,7 @@ public class KeyStoreBuilderTest {
 
         builder.keystore("target/test-classes/keystores/keystore.p12");
 
-        assertEquals("storetype", PKCS12, builder.storetype());
+        assertThat("storetype", builder.storetype(), isA(Pkcs12KeyStore.class));
 
         KeyStore keystore = builder.build();
         assertNotNull("keystore", keystore);
@@ -455,6 +475,47 @@ public class KeyStoreBuilderTest {
     @Test
     public void testLowerCaseStoreType() {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype("pkcs12");
-        assertEquals("storetype", PKCS12, builder.storetype());
+        assertThat("storetype", builder.storetype(), isA(Pkcs12KeyStore.class));
+    }
+
+    @Test
+    public void testGetType() {
+        assertThat(KeyStoreBuilder.getType(new File("keystore.p12")), isA(Pkcs12KeyStore.class));
+        assertThat(KeyStoreBuilder.getType(new File("keystore.pfx")), isA(Pkcs12KeyStore.class));
+        assertThat(KeyStoreBuilder.getType(new File("keystore.jceks")), isA(JceKeyStore.class));
+        assertThat(KeyStoreBuilder.getType(new File("keystore.jks")), isA(JavaKeyStore.class));
+        assertNull(KeyStoreBuilder.getType(new File("keystore.unknown")));
+    }
+
+    @Test
+    public void testGetTypePKCS12FromHeader() throws Exception {
+        File source = new File("target/test-classes/keystores/keystore.p12");
+        File target = new File("target/test-classes/keystores/keystore.p12.ext");
+        FileUtils.copyFile(source, target);
+
+        assertThat(KeyStoreBuilder.getType(target), isA(Pkcs12KeyStore.class));
+    }
+
+    @Test
+    public void testGetTypeJCEKSFromHeader() throws Exception {
+        File source = new File("target/test-classes/keystores/keystore.jceks");
+        File target = new File("target/test-classes/keystores/keystore.jceks.ext");
+        FileUtils.copyFile(source, target);
+
+        assertThat(KeyStoreBuilder.getType(target), isA(JceKeyStore.class));
+    }
+
+    @Test
+    public void testGetTypeJKSFromHeader() throws Exception {
+        File source = new File("target/test-classes/keystores/keystore.jks");
+        File target = new File("target/test-classes/keystores/keystore.jks.ext");
+        FileUtils.copyFile(source, target);
+
+        assertThat(KeyStoreBuilder.getType(target), isA(JavaKeyStore.class));
+    }
+
+    @Test
+    public void testGetTypeUnknown() {
+        assertNull(KeyStoreBuilder.getType(new File("target/test-classes/keystores/jsign-root-ca.pem")));
     }
 }
