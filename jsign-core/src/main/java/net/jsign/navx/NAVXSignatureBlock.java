@@ -65,8 +65,8 @@ class NAVXSignatureBlock {
         byte[] signatureBytes = new byte[size - 8];
         buffer.position(4);
         buffer.get(signatureBytes);
-        try {
-            signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
+        try (ASN1InputStream in = new ASN1InputStream(signatureBytes)) {
+            signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(in.readObject()));
         } catch (CMSException | StackOverflowError e) {
             throw new IOException("Invalid CMS signature", e);
         }

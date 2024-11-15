@@ -104,7 +104,7 @@ public class AmazonIMDS2ClientTest {
         AmazonIMDS2Client client = new AmazonIMDS2Client();
         client.setEndpoint("http://localhost:" + port());
 
-        Exception e = assertThrows(RuntimeException.class, () -> client.getCredentials());
+        Exception e = assertThrows(RuntimeException.class, client::getCredentials);
         assertEquals("message", "This EC2 instance seems not to be associated with an instance profile", e.getMessage());
     }
 
@@ -134,7 +134,7 @@ public class AmazonIMDS2ClientTest {
     }
 
     @Test
-    public void testInvalidInstanceProfileName() throws Exception {
+    public void testInvalidInstanceProfileName() {
         onRequest()
                 .havingMethodEqualTo("PUT")
                 .havingPathEqualTo("/latest/api/token")

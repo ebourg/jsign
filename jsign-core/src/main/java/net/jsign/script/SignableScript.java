@@ -220,14 +220,14 @@ abstract class SignableScript implements Signable {
         
         StringBuilder signatureBlock = new StringBuilder();
         signatureBlock.append("\r\n");
-        signatureBlock.append(getSignatureStart() + "\r\n");
+        signatureBlock.append(getSignatureStart()).append("\r\n");
         for (int start = 0, blobLength = signatureBlob.length(); start < blobLength; start += 64) {
             signatureBlock.append(getLineCommentStart());
             signatureBlock.append(signatureBlob, start, min(blobLength, start + 64));
             signatureBlock.append(getLineCommentEnd());
             signatureBlock.append("\r\n");
         }
-        signatureBlock.append(getSignatureEnd() + "\r\n");
+        signatureBlock.append(getSignatureEnd()).append("\r\n");
         
         return signatureBlock.toString();
     }

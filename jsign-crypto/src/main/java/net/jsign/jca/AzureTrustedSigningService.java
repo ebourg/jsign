@@ -25,9 +25,9 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +94,7 @@ public class AzureTrustedSigningService implements SigningService {
 
     @Override
     public List<String> aliases() throws KeyStoreException {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     @Override

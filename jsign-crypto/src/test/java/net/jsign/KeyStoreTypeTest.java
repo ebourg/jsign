@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class KeyStoreTypeTest {
 
     @Test
-    public void testGetType() throws Exception {
+    public void testGetType() {
         assertEquals(PKCS12, KeyStoreType.of(new File("keystore.p12")));
         assertEquals(PKCS12, KeyStoreType.of(new File("keystore.pfx")));
         assertEquals(JCEKS, KeyStoreType.of(new File("keystore.jceks")));
@@ -63,7 +63,7 @@ public class KeyStoreTypeTest {
     }
 
     @Test
-    public void testGetTypeUnknown() throws Exception {
+    public void testGetTypeUnknown() {
         assertNull(KeyStoreType.of(new File("target/test-classes/keystores/jsign-root-ca.pem")));
     }
 }

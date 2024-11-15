@@ -159,9 +159,8 @@ class CertificateUtils {
      * @since 7.0
      */
     public static List<X509Certificate> getFullCertificateChain(Collection<X509Certificate> chain) {
-        Set<String> issuerNames = chain.stream().map(c -> c.getIssuerX500Principal().getName()).collect(Collectors.toSet());
-
-        Set<String> missingIssuerNames = new LinkedHashSet<>(issuerNames);
+        Set<String> missingIssuerNames = chain.stream().map(c -> c.getIssuerX500Principal().getName())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         for (X509Certificate certificate : chain) {
             missingIssuerNames.remove(certificate.getSubjectX500Principal().getName());
         }

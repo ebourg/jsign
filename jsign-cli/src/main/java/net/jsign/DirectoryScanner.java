@@ -124,7 +124,7 @@ class DirectoryScanner {
                 ignoreNextSeparator = true;
             } else if (token.contains("*")) {
                 ignoreNextSeparator = false;
-                pattern.append("\\Q" + token.replaceAll("\\*", "\\\\E[^/]*\\\\Q") + "\\E");
+                pattern.append("\\Q").append(token.replaceAll("\\*", "\\\\E[^/]*\\\\Q")).append("\\E");
             } else {
                 ignoreNextSeparator = false;
                 pattern.append("\\Q").append(token).append("\\E");

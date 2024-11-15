@@ -32,7 +32,7 @@ import static org.junit.Assume.*;
 
 public class OpenPGPCardTest {
 
-    public static void assumeCardPresent() throws Exception {
+    public static void assumeCardPresent() {
         try {
             assumeTrue("OpenPGP card not found", SmartCard.getTerminal("Nitrokey") != null);
         } catch (CardException e) {

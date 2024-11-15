@@ -289,7 +289,7 @@ public class JsignTaskTest {
     }
 
     @Test
-    public void testDetachedSignature() throws Exception {
+    public void testDetachedSignature() {
         project.executeTarget("detach-signature");
 
         assertTrue("Signature wasn't detached", new File("target/test-classes/wineyes-signed-detached.exe.sig").exists());

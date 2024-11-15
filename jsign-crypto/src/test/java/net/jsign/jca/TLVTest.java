@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class TLVTest {
 
     @Test
-    public void testParseList() throws Exception {
+    public void testParseList() {
         byte[] data = Hex.decode("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
         TLV tlv = TLV.parse(ByteBuffer.wrap(data));
 
@@ -69,7 +69,7 @@ public class TLVTest {
     }
 
     @Test
-    public void testEncode() throws Exception {
+    public void testEncode() {
         byte[] data = Hex.decode("01 01 86 02 02 05 05 08 04 01 26 9A 33".replaceAll(" ", ""));
         TLV tlv = TLV.parse(ByteBuffer.wrap(data));
 

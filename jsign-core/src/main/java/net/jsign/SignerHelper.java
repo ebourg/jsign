@@ -53,7 +53,6 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.ContentInfo;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
@@ -683,7 +682,7 @@ class SignerHelper {
      */
     private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
         // Do nothing if there is no proxy url.
-        if (proxyUrl != null && proxyUrl.trim().length() > 0) {
+        if (proxyUrl != null && !proxyUrl.trim().isEmpty()) {
             if (!proxyUrl.trim().startsWith("http")) {
                 proxyUrl = "http://" + proxyUrl.trim();
             }
@@ -706,7 +705,7 @@ class SignerHelper {
                 }
             });
 
-            if (proxyUser != null && proxyUser.length() > 0 && proxyPassword != null) {
+            if (proxyUser != null && !proxyUser.isEmpty() && proxyPassword != null) {
                 Authenticator.setDefault(new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());

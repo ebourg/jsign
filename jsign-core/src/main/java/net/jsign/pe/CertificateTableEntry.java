@@ -74,8 +74,8 @@ class CertificateTableEntry {
         }
         
         if (signature == null) {
-            try {
-                signature = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(content).readObject()));
+            try (ASN1InputStream in = new ASN1InputStream(content)) {
+                signature = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(in.readObject()));
             } catch (IOException | StackOverflowError e) {
                 throw new IllegalArgumentException("Failed to construct ContentInfo from byte[]: ", e);
             }
