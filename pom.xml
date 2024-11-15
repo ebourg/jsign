@@ -208,6 +208,7 @@
           <sourceFileExcludes>
             <exclude>**/ChannelUtils.java</exclude>
             <exclude>**/?*SignableProvider.java</exclude>
+            <exclude>**/SignatureUtils.java</exclude>
           </sourceFileExcludes>
           <quiet>true</quiet>
           <notimestamp>true</notimestamp>
