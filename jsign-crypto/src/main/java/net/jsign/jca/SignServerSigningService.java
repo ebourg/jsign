@@ -94,7 +94,13 @@ public class SignServerSigningService implements SigningService {
     public Certificate[] getCertificateChain(String alias) throws KeyStoreException {
         if (!certificates.containsKey(alias)) {
             try {
-                Map<String, ?> response = client.post("/rest/v1/workers/" + alias + "/process", "{\"data\":\"\"}");
+                Map<String, Object> request = new HashMap<>();
+                request.put("data", "");
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("USING_CLIENTSUPPLIED_HASH", "false");
+                request.put("metaData", metadata);
+
+                Map<String, ?> response = client.post("/rest/v1/workers/" + alias + "/process", JsonWriter.format(request));
                 String encodedCertificate = response.get("signerCertificate").toString();
                 byte[] certificateBytes = Base64.getDecoder().decode(encodedCertificate);
                 Certificate certificate = CertificateFactory.getInstance("X.509")
@@ -120,15 +126,11 @@ public class SignServerSigningService implements SigningService {
 
     @Override
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
-        DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
-        data = digestAlgorithm.getMessageDigest().digest(data);
-
         Map<String, Object> request = new HashMap<>();
         request.put("data", Base64.getEncoder().encodeToString(data));
         request.put("encoding", "BASE64");
         Map<String, String> metadata = new HashMap<>();
-        metadata.put("USING_CLIENTSUPPLIED_HASH", "true");
-        metadata.put("CLIENTSIDE_HASHDIGESTALGORITHM", digestAlgorithm.id);
+        metadata.put("USING_CLIENTSUPPLIED_HASH", "false");
         request.put("metaData", metadata);
 
         try {

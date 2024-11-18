@@ -561,14 +561,17 @@ public enum KeyStoreType {
     },
 
     /**
-     * Keyfactor SignServer. This keystore requires a Plain Signer worker configured to allow client-side hashing (with
-     * the properties <code>CLIENTSIDEHASHING</code> or <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> set to true), and
-     * the <code>SIGNATUREALGORITHM</code> property set to <code>NONEwithRSA</code> or <code>NONEwithECDSA</code>.
+     * Keyfactor SignServer. This keystore requires a Plain Signer worker configured to allow server-side hashing (with
+     * the property <code>CLIENTSIDEHASHING</code> not set or set to <code>false</code> or
+     * <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> set to <code>true</code>), and the <code>SIGNATUREALGORITHM</code>
+     * property set to a supported algorithm that ends in <code>withRSA</code> or <code>withECDSA</code>.
+     * It is important that the hashing algorithm that is configured for the worker is consistent with the hashing
+     * algorithm configured for Jsign, otherwise the signature verification will fail.
      *
      * <p>The authentication is performed by specifying the username/password or the TLS client certificate in the
-     * storepass parameter. If the TLS client certificate is stored in a password protected keystore, the password is
-     * specified in the keypass parameter. The keystore parameter references the URL of the SignServer REST API. The
-     * alias parameter specifies the id or the name of the worker.</p>
+     * storepass parameter if authentication is necessary. If the TLS client certificate is stored in a password
+     * protected keystore, the password is specified in the keypass parameter. The keystore parameter references
+     * the URL of the SignServer REST API. The alias parameter specifies the id or the name of the worker.</p>
      */
     SIGNSERVER(false, false) {
         @Override
