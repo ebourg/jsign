@@ -160,11 +160,8 @@ public class SignerHelperTest {
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("file:/path/to/missing/file");
 
-        try {
-            signer.execute(targetFile);
-        } catch (SignerException e) {
-            assertEquals("message", "Failed to read the keypass parameter from the file '/path/to/missing/file'", e.getMessage());
-        }
+        Exception e = assertThrows(SignerException.class, () -> signer.execute(targetFile));
+        assertEquals("message", "Failed to read the keypass parameter from the file '/path/to/missing/file'", e.getMessage());
     }
 
     @Test
@@ -198,11 +195,8 @@ public class SignerHelperTest {
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("env:MISSING_VAR");
 
-        try {
-            signer.execute(targetFile);
-        } catch (SignerException e) {
-            assertEquals("message", "Failed to read the keypass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
-        }
+        Exception e = assertThrows(SignerException.class, () -> signer.execute(targetFile));
+        assertEquals("message", "Failed to read the keypass parameter, the 'MISSING_VAR' environment variable is not defined", e.getMessage());
     }
 
     @Test

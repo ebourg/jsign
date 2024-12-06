@@ -151,10 +151,7 @@ public class ZipFileTest {
             record.write(channel);
         }
 
-        try (ZipFile file = new ZipFile(modified)) {
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "Multi-volume archives are not supported", e.getMessage());
-        }
+        Exception e = assertThrows(IOException.class, () -> new ZipFile(modified));
+        assertEquals("message", "Multi-volume archives are not supported", e.getMessage());
     }
 }

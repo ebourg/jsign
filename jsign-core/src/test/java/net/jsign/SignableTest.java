@@ -29,12 +29,9 @@ import static org.junit.Assert.*;
 public class SignableTest {
 
     @Test
-    public void testOfWithUnsupportedFormat() throws Exception {
-        try (Signable signable = Signable.of(new File("pom.xml"))) {
-            fail("Exception not thrown");
-        } catch (UnsupportedOperationException e) {
-            assertEquals("message", "Unsupported file: pom.xml", e.getMessage());
-        }
+    public void testOfWithUnsupportedFormat() {
+        Exception e = assertThrows(UnsupportedOperationException.class, () -> Signable.of(new File("pom.xml")));
+        assertEquals("message", "Unsupported file: pom.xml", e.getMessage());
     }
 
     @Test

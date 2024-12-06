@@ -45,11 +45,8 @@ public class NugetFileTest {
             zip.renameEntry("[Content_Types].xml", "[Content_Types].old");
         }
 
-        try (NugetFile file = new NugetFile(targetFile)) {
-            fail("Exception not thrown");
-        } catch (IOException e) {
-            assertEquals("message", "Invalid NuGet package, [Content_Types].xml is missing", e.getMessage());
-        }
+        Exception e = assertThrows(IOException.class, () -> new NugetFile(targetFile));
+        assertEquals("message", "Invalid NuGet package, [Content_Types].xml is missing", e.getMessage());
     }
 
     @Test
