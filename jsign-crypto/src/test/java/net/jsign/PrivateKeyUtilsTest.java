@@ -19,6 +19,8 @@ package net.jsign;
 import java.io.File;
 import java.io.FileWriter;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyException;
 import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
@@ -55,6 +57,14 @@ public class PrivateKeyUtilsTest {
     }
 
     @Test
+    public void testLoadPKCS1PEMNonPEMExtension() throws Exception {
+        File targetFile = new File("target/test-classes/keystores/privatekey.pkcs1.pem.key");
+        Files.copy(new File("target/test-classes/keystores/privatekey.pkcs1.pem").toPath(), targetFile.toPath());
+
+        testLoadPEM(targetFile, null);
+    }
+
+    @Test
     public void testLoadEncryptedPKCS1PEM() throws Exception {
         testLoadPEM(new File("target/test-classes/keystores/privatekey-encrypted.pkcs1.pem"), "password");
     }
@@ -71,7 +81,7 @@ public class PrivateKeyUtilsTest {
     @Test
     public void testLoadWrongPEMObject() {
         Exception e = assertThrows(KeyException.class, () -> PrivateKeyUtils.load(new File("target/test-classes/keystores/jsign-test-certificate.pem"), null));
-        assertEquals("message", "Unsupported PEM object: X509CertificateHolder", e.getCause().getMessage());
+        assertEquals("message", "Unsupported PEM object: X509CertificateHolder", e.getSuppressed()[0].getMessage());
     }
 
     @Test
@@ -82,7 +92,7 @@ public class PrivateKeyUtilsTest {
         writer.close();
 
         Exception e = assertThrows(KeyException.class, () -> PrivateKeyUtils.load(file, null));
-        assertTrue(e.getCause().getMessage().startsWith("No key found in"));
+        assertTrue(e.getSuppressed()[0].getMessage().startsWith("No key found in"));
     }
 
     @Test

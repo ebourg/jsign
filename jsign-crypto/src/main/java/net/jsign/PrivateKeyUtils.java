@@ -54,26 +54,33 @@ public class PrivateKeyUtils {
 
     /**
      * Load the private key from the specified file. Supported formats are PVK and PEM,
-     * encrypted or not. The type of the file is inferred from its extension (<code>.pvk</code>
-     * for PVK files, <code>.pem</code> for PEM files).
-     * 
+     * encrypted or not. The type of the file is inferred by trying the supported formats
+     * in sequence until one parses successfully.
+     *
      * @param file     the file to load the key from
      * @param password the password protecting the key
      * @return the private key loaded
      * @throws KeyException if the key cannot be loaded
      */
     public static PrivateKey load(File file, String password) throws KeyException {
+        Exception pemParseException;
         try {
-            if (file.getName().endsWith(".pvk")) {
-                return PVK.parse(file, password);
-            } else if (file.getName().endsWith(".pem")) {
-                return readPrivateKeyPEM(file, password != null ? password.toCharArray() : null);
-            }
+            return readPrivateKeyPEM(file, password != null ? password.toCharArray() : null);
         } catch (Exception e) {
-            throw new KeyException("Failed to load the private key from " + file, e);
+            pemParseException = e;
         }
-        
-        throw new IllegalArgumentException("Unsupported private key format (PEM or PVK file expected");
+
+        Exception pvkParseException;
+        try {
+            return PVK.parse(file, password);
+        } catch (Exception e) {
+            pvkParseException = e;
+        }
+
+        KeyException keyException = new KeyException("Failed to load the private key from " + file + " (valid PEM or PVK file expected)");
+        keyException.addSuppressed(pemParseException);
+        keyException.addSuppressed(pvkParseException);
+        throw keyException;
     }
 
     /**
