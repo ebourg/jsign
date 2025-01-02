@@ -261,7 +261,7 @@ class SignerHelper {
         if (value == null) {
             return this;
         }
-        
+
         switch (key) {
             case PARAM_COMMAND:    return command(value);
             case PARAM_KEYSTORE:   return keystore(value);
@@ -328,7 +328,7 @@ class SignerHelper {
         } catch (KeyStoreException e) {
             throw new SignerException("Failed to load the keystore " + (ksparams.keystore() != null ? ksparams.keystore() : ""), e);
         }
-        KeyStoreType storetype = ksparams.storetype();
+        JsignKeyStore storetype = ksparams.storetype();
         Provider provider = ksparams.provider();
 
         Set<String> aliases = null;
@@ -403,12 +403,12 @@ class SignerHelper {
         }
 
         // enable timestamping with Azure Trusted Signing
-        if (tsaurl == null && storetype == KeyStoreType.TRUSTEDSIGNING) {
+        if ((tsaurl == null) && (storetype instanceof AzureTrustedSigningKeyStore)) {
             tsaurl = "http://timestamp.acs.microsoft.com/";
             tsmode = TimestampingMode.RFC3161.name();
             tsretries = 3;
         }
-        
+
         // configure the signer
         return new AuthenticodeSigner(chain, privateKey)
                 .withProgramName(name)
@@ -434,7 +434,7 @@ class SignerHelper {
         if (!file.exists()) {
             throw new SignerException("The file " + file + " couldn't be found");
         }
-        
+
         try (Signable signable = Signable.of(file, encoding)) {
             File detachedSignature = getDetachedSignature(file);
             if (detached && detachedSignature.exists()) {
@@ -638,7 +638,7 @@ class SignerHelper {
                 SignerId signerId = signerInformation.getSID();
                 X509CertificateHolder certificate = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
 
-                String digestAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(signerInformation.getDigestAlgorithmID()); 
+                String digestAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(signerInformation.getDigestAlgorithmID());
                 String keyAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(new ASN1ObjectIdentifier(signerInformation.getEncryptionAlgOID()));
                 String name = digestAlgorithmName + "/" + keyAlgorithmName + " signature from '" + certificate.getSubject() + "'";
 

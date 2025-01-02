@@ -23,6 +23,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Assume;
 import org.junit.Test;
 
+import static net.jsign.KeyStoreType.ETOKEN;
 import static org.junit.Assert.*;
 
 public class SafeNetETokenTest {
@@ -37,7 +38,7 @@ public class SafeNetETokenTest {
     public void testGetProvider() {
         assumeSafeNetEToken();
         try {
-            Provider provider = SafeNetEToken.getProvider();
+            Provider provider = JsignKeyStoreDiscovery.getKeyStore(ETOKEN).getProvider(null);
             assertNotNull("provider", provider);
         } catch (RuntimeException e) {
             assertEquals("message", "No PKCS11 token found", ExceptionUtils.getRootCause(e).getMessage());
@@ -47,7 +48,7 @@ public class SafeNetETokenTest {
     @Test
     public void testGetLibrary() {
         assumeSafeNetEToken();
-        File library = SafeNetEToken.getPKCS11Library();
+        File library = SafeNetETokenKeyStore.getPKCS11Library();
         assertNotNull("native library", library);
         assertTrue("native library not found", library.exists());
     }

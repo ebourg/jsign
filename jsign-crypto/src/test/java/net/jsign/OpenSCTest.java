@@ -37,7 +37,7 @@ public class OpenSCTest {
     public void testGetProvider() {
         assumeOpenSC();
         try {
-            Provider provider = OpenSC.getProvider(null);
+            Provider provider = OpenSCKeyStore.getProvider((String) null);
             assertNotNull("provider", provider);
         } catch (RuntimeException e) {
             assertEquals("message", "No PKCS11 token found", ExceptionUtils.getRootCause(e).getMessage());
@@ -47,7 +47,7 @@ public class OpenSCTest {
     @Test
     public void testGetLibrary() {
         assumeOpenSC();
-        File library = OpenSC.getOpenSCLibrary();
+        File library = OpenSCKeyStore.getOpenSCLibrary();
         assertNotNull("native library", library);
         assertTrue("native library not found", library.exists());
     }
