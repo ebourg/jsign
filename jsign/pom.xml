@@ -120,6 +120,7 @@
                     <include>**/JsignCLI</include>
                     <include>**/JsignTask</include>
                     <include>**/PESigner</include>
+                    <include>**/PESignerTask</include>
                     <include>**/KeyStoreUtils</include>
                     <include>**/JsignJcaProvider</include>
                     <include>**/jcajce/provider/symmetric/PBE*</include>
