@@ -43,7 +43,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.6.3</version>
+        <version>3.11.2</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -78,7 +78,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -216,7 +216,7 @@
       <plugin>
         <groupId>io.github.zlika</groupId>
         <artifactId>reproducible-build-maven-plugin</artifactId>
-        <version>0.16</version>
+        <version>0.17</version>
         <executions>
           <execution>
             <id>reproducible-jar</id>
@@ -234,7 +234,7 @@
       <plugin>
         <groupId>com.github.siom79.japicmp</groupId>
         <artifactId>japicmp-maven-plugin</artifactId>
-        <version>0.21.2</version>
+        <version>0.23.1</version>
         <executions>
           <execution>
             <phase>verify</phase>
@@ -336,7 +336,7 @@
       <plugin>
         <artifactId>jdeb</artifactId>
         <groupId>org.vafer</groupId>
-        <version>1.10</version>
+        <version>1.10</version> <!-- jdeb 1.11 requires Java 11 -->
         <executions>
           <execution>
             <phase>package</phase>
