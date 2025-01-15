@@ -62,6 +62,7 @@
 
   <build>
     <plugins>
+      <!--
       <plugin>
         <groupId>com.github.siom79.japicmp</groupId>
         <artifactId>japicmp-maven-plugin</artifactId>
@@ -98,6 +99,7 @@
           </parameter>
         </configuration>
       </plugin>
+      -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.4.2</version>

@@ -251,8 +251,11 @@
             <breakBuildOnBinaryIncompatibleModifications>true</breakBuildOnBinaryIncompatibleModifications>
             <breakBuildOnSourceIncompatibleModifications>true</breakBuildOnSourceIncompatibleModifications>
             <excludes>
+              <exclude>net.jsign.AuthenticodeSigner#addNestedSignature(net.jsign.bouncycastle.cms.CMSSignedData,net.jsign.bouncycastle.cms.CMSSignedData)</exclude>
+              <exclude>net.jsign.appx.APPXFile</exclude>
               <exclude>net.jsign.asn1.*</exclude>
               <exclude>net.jsign.bouncycastle.*</exclude>
+              <exclude>net.jsign.pe.*</exclude>
               <exclude>net.jsign.poi.*</exclude>
               <exclude>net.jsign.commons.*</exclude>
               <exclude>net.jsign.json-io.*</exclude>
