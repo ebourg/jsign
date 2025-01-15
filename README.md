@@ -75,6 +75,7 @@ See https://ebourg.github.io/jsign for more information.
 * The JCA provider now works with [apksigner](https://developer.android.com/tools/apksigner) for signing Android applications
 * RSA 4096 keys are supported with the `PIV` storetype (for Yubikeys with firmware version 5.7 or higher)
 * Certificates using an Ed25519 or Ed448 key are now supported (experimental)
+* Signatures on MSI files with gaps in the mini FAT are no longer invalid
 * The APPX/MSIX bundles are now signed with the correct Authenticode UUID
 * The signed APPX/MSIX files no longer contain a `[Content_Types].old` entry
 * The error message displayed when the password of a PKCS#12 keystore is missing has been fixed
