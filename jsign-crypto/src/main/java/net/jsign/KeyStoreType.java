@@ -565,9 +565,9 @@ public enum KeyStoreType {
      * the properties <code>CLIENTSIDEHASHING</code> or <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> set to true), and
      * the <code>SIGNATUREALGORITHM</code> property set to <code>NONEwithRSA</code> or <code>NONEwithECDSA</code>.
      *
-     * <p>The authentication is performed by specifying the username/password or the TLS client certificate in the
-     * storepass parameter. If the TLS client certificate is stored in a password protected keystore, the password is
-     * specified in the keypass parameter. The keystore parameter references the URL of the SignServer REST API. The
+     * <p>If necessary the authentication is performed by specifying the username/password or the TLS client certificate
+     * in the storepass parameter. If the TLS client certificate is stored in a password protected keystore, the password
+     * is specified in the keypass parameter. The keystore parameter references the URL of the SignServer REST API. The
      * alias parameter specifies the id or the name of the worker.</p>
      */
     SIGNSERVER(false, false) {

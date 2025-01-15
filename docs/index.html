@@ -887,17 +887,17 @@ character.</p>
 
 <h4 id="example-signserver">Signing with Keyfactor SignServer</h4>
 
-<p><a href="https://www.signserver.org">SignServer</a> is an on-premises open source signing service developed by Keyfactor.
-SignServer supports various signing operations handled by signer workers. Jsign requires a
+<p><a href="https://www.signserver.org">SignServer</a> is a cloud/on-premises open source signing service developed by
+Keyfactor. SignServer supports various signing operations handled by signer workers. Jsign requires a
 <a href="https://doc.primekey.com/signserver/signserver-reference/signserver-workers/signserver-signers/plain-signer">Plain Signer</a>
 worker configured with the <code>CLIENTSIDEHASHING</code> or <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> properties
 set to <code>true</code>, and the <code>SIGNATUREALGORITHM</code> property set to <code>NONEwithRSA</code> or
 <code>NONEwithECDSA</code>.</p>
 
-<p>The authentication is performed by specifying the username/password or the TLS client certificate in the
+<p>If necessary the authentication is performed by specifying the username/password or the TLS client certificate in the
 <code>storepass</code> parameter. If the TLS client certificate is stored in a password protected keystore, the password
 is specified in the <code>keypass</code> parameter. The <code>keystore</code> parameter references the URL of the
-SignServer REST API. The <code>alias</code> parameter specifies the id or the name of the worker. </p>
+SignServer REST API. The <code>alias</code> parameter specifies the id or the name of the worker.</p>
 
 <p>Authenticating with a username and a password:</p>
 
