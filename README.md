@@ -94,7 +94,7 @@ See https://ebourg.github.io/jsign for more information.
   * The java.util.logging API is now used to log debug messages under the `net.jsign` logger
   * `Signable` implementations are now discovered dynamically using the ServiceLoader mechanism
   * `Signable.createContentInfo()` has been replaced with `Signable.createSignedContent()`
-* Switched to BouncyCastle LTS 2.73.6
+* Switched to BouncyCastle LTS 2.73.7
 
 #### Version 6.0 (2024-01-17)
 
