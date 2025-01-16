@@ -512,13 +512,14 @@ jsign --storetype HASHICORPVAULT \\
 
 .TP
 
-
 Signing with Keyfactor SignServer:
 
 SignServer is a cloud/on-premises open source signing service developed by Keyfactor. SignServer supports various
-signing operations handled by signer workers. Jsign requires a Plain Signer worker configured with the CLIENTSIDEHASHING
-or ALLOW_CLIENTSIDEHASHING_OVERRIDE properties set to true, and the SIGNATUREALGORITHM property set to NONEwithRSA or
-NONEwithECDSA.
+signing operations handled by signer workers. Jsign requires a Plain Signer worker, preferably configured with the
+CLIENTSIDEHASHING or ALLOW_CLIENTSIDEHASHING_OVERRIDE properties set to true, and the SIGNATUREALGORITHM property
+set to NONEwithRSA or NONEwithECDSA. The worker may be configured with server-side hashing (i.e. with CLIENTSIDEHASHING
+and ALLOW_CLIENTSIDEHASHING_OVERRIDE set to false, and a proper SIGNATUREALGORITHM set), in this case the worker name
+or id in the alias has to be suffixed with '|serverside'.
 
 If necessary the authentication is performed by specifying the username/password or the TLS client certificate in the
 storepass parameter. If the TLS client certificate is stored in a password protected keystore, the password
@@ -542,6 +543,16 @@ jsign --storetype SIGNSERVER \
       --alias test \
       application.exe
 
+Using server-side hashing, the digest algorithm must match the one configured for the worker:
+
+jsign --storetype SIGNSERVER \
+      --keystore https://example.com/signserver \
+      --alias 'test|serverside' \
+      --alg SHA-512 \
+      application.exe
+
+
+.TP
 
 Signing with Oracle Cloud Key Management Service
 

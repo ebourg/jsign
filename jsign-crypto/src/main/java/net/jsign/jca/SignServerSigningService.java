@@ -94,7 +94,29 @@ public class SignServerSigningService implements SigningService {
     public Certificate[] getCertificateChain(String alias) throws KeyStoreException {
         if (!certificates.containsKey(alias)) {
             try {
-                Map<String, ?> response = client.post("/rest/v1/workers/" + alias + "/process", "{\"data\":\"\"}");
+                String worker = alias;
+                boolean serverside = false;
+                if (worker.endsWith("|serverside")) {
+                    worker = worker.substring(0, worker.length() - 11);
+                    serverside = true;
+                }
+
+                Map<String, Object> request = new HashMap<>();
+                if (serverside) {
+                    request.put("data", "");
+                    Map<String, String> metadata = new HashMap<>();
+                    metadata.put("USING_CLIENTSUPPLIED_HASH", "false");
+                    request.put("metaData", metadata);
+                } else {
+                    request.put("data", "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=");
+                    request.put("encoding", "BASE64");
+                    Map<String, String> metadata = new HashMap<>();
+                    metadata.put("USING_CLIENTSUPPLIED_HASH", "true");
+                    metadata.put("CLIENTSIDE_HASHDIGESTALGORITHM", "SHA-256");
+                    request.put("metaData", metadata);
+                }
+
+                Map<String, ?> response = client.post("/rest/v1/workers/" + worker + "/process", JsonWriter.format(request));
                 String encodedCertificate = response.get("signerCertificate").toString();
                 byte[] certificateBytes = Base64.getDecoder().decode(encodedCertificate);
                 Certificate certificate = CertificateFactory.getInstance("X.509")
@@ -120,19 +142,32 @@ public class SignServerSigningService implements SigningService {
 
     @Override
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
-        DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
-        data = digestAlgorithm.getMessageDigest().digest(data);
+        String worker = privateKey.getId();
+        boolean serverside = false;
+        if (worker.endsWith("|serverside")) {
+            worker = worker.substring(0, worker.length() - 11);
+            serverside = true;
+        }
 
         Map<String, Object> request = new HashMap<>();
-        request.put("data", Base64.getEncoder().encodeToString(data));
+        if (serverside) {
+            request.put("data", Base64.getEncoder().encodeToString(data));
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("USING_CLIENTSUPPLIED_HASH", "false");
+            request.put("metaData", metadata);
+        } else {
+            DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
+            data = digestAlgorithm.getMessageDigest().digest(data);
+            request.put("data", Base64.getEncoder().encodeToString(data));
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("USING_CLIENTSUPPLIED_HASH", "true");
+            metadata.put("CLIENTSIDE_HASHDIGESTALGORITHM", digestAlgorithm.id);
+            request.put("metaData", metadata);
+        }
         request.put("encoding", "BASE64");
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("USING_CLIENTSUPPLIED_HASH", "true");
-        metadata.put("CLIENTSIDE_HASHDIGESTALGORITHM", digestAlgorithm.id);
-        request.put("metaData", metadata);
 
         try {
-            Map<String, ?> response = client.post("/rest/v1/workers/" + privateKey.getId() + "/process", JsonWriter.format(request));
+            Map<String, ?> response = client.post("/rest/v1/workers/" + worker + "/process", JsonWriter.format(request));
             return Base64.getDecoder().decode((String) response.get("data"));
         } catch (IOException e) {
             throw new GeneralSecurityException(e);

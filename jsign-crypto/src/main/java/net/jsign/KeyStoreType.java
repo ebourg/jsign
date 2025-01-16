@@ -561,9 +561,12 @@ public enum KeyStoreType {
     },
 
     /**
-     * Keyfactor SignServer. This keystore requires a Plain Signer worker configured to allow client-side hashing (with
-     * the properties <code>CLIENTSIDEHASHING</code> or <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> set to true), and
-     * the <code>SIGNATUREALGORITHM</code> property set to <code>NONEwithRSA</code> or <code>NONEwithECDSA</code>.
+     * Keyfactor SignServer. This keystore requires a Plain Signer worker, preferably configured to allow client-side
+     * hashing (with the properties <code>CLIENTSIDEHASHING</code> or <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> set
+     * to true), and the <code>SIGNATUREALGORITHM</code> property set to <code>NONEwithRSA</code> or <code>NONEwithECDSA</code>.
+     * The worker may be configured with server-side hashing (i.e. with <code>CLIENTSIDEHASHING</code> and
+     * <code>ALLOW_CLIENTSIDEHASHING_OVERRIDE</code> set to <code>false</code>, and a proper <code>SIGNATUREALGORITHM</code>
+     * set), in this case the worker name or id in the alias has to be suffixed with <code>|serverside</code>.
      *
      * <p>If necessary the authentication is performed by specifying the username/password or the TLS client certificate
      * in the storepass parameter. If the TLS client certificate is stored in a password protected keystore, the password
