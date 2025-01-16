@@ -5,6 +5,8 @@ Release process
 
        mvn versions:set -DnewVersion=x.y -DgenerateBackupPoms=false
 
+   The version in the documentation and in the Gradle examples will be automatically updated by `mvn deploy`.
+
 1. Update the release date in `README.md`
 
 1. Upload the Maven artifacts to Nexus:
@@ -24,6 +26,10 @@ Release process
 1. Close the current milestone on GitHub and create a new one
 
 1. Publish the release on Chocolatey (see `jsign/src/choco/README.md`)
+
+1. Login to https://manage.fury.io/login and publish the Debian package
+
+1. Publish the Gradle plugin (see `jsign-gradle-plugin/README.md`)
 
 1. Update the Maven version to the next snapshot:
 

@@ -53,7 +53,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.0 (in development)
+#### Version 7.0 (2025-01-16)
 
 * New signing services:
   * Azure Trusted Signing
@@ -88,6 +88,7 @@ See https://ebourg.github.io/jsign for more information.
 * Signing more than one file with the `YUBIKEY` storetype no longer triggers a `CKR_USER_NOT_LOGGED_IN` error
 * MS Cabinet files with a pre-allocated reserve are now supported
 * The `--certfile` parameter can now be used to replace the certificate chain from the keystore
+* PVK and PEM key files are now properly loaded even if the extension is not recognized (contributed by Alejandro González)
 * API changes:
   * The keystore builder and the JCA provider are now in a separate `jsign-crypto` module
   * The PEFile class has been refactored to keep only the methods related to signing

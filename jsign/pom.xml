@@ -6,11 +6,11 @@
   <parent>
     <groupId>net.jsign</groupId>
     <artifactId>jsign-parent</artifactId>
-    <version>7.0-SNAPSHOT</version>
+    <version>7.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Jsign - Authenticode signing in Java (Distribution)</name>
-  <version>7.0-SNAPSHOT</version>
+  <version>7.0</version>
   <packaging>jar</packaging>
 
   <dependencies>
@@ -459,6 +459,7 @@
                     <replaceregexp file="../docs/index.html" flags="g"    match="version &quot;[\d.]+&quot;" replace="version &quot;${project.version}&quot;"/>
 
                     <!-- Gradle examples -->
+                    <replaceregexp file="../jsign-gradle-plugin/example.gradle"     match="net.jsign:jsign-gradle-plugin:[\d.]+(?:-SNAPSHOT)?" replace="net.jsign:jsign-gradle-plugin:${project.version}"/>
                     <replaceregexp file="../jsign-gradle-plugin/example.gradle.kts" match="net.jsign:jsign-gradle-plugin:[\d.]+(?:-SNAPSHOT)?" replace="net.jsign:jsign-gradle-plugin:${project.version}"/>
 
                   </target>
