@@ -190,7 +190,7 @@ public class KeyStoreBuilderTest {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(GOOGLECLOUD);
 
         Exception e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertEquals("message", "keystore parameter must specify the Goole Cloud keyring", e.getMessage());
+        assertEquals("message", "keystore parameter must specify the Google Cloud keyring", e.getMessage());
 
         builder.keystore("projects/first-rain-123/locations/global/keyRings/mykeyring/cryptoKeys/jsign");
 
@@ -200,7 +200,7 @@ public class KeyStoreBuilderTest {
         builder.keystore("projects/first-rain-123/locations/global/keyRings/mykeyring");
 
         e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertEquals("message", "storepass parameter must specify the Goole Cloud API access token", e.getMessage());
+        assertEquals("message", "storepass parameter must specify the Google Cloud API access token", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 

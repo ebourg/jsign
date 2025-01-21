@@ -405,13 +405,13 @@ public enum KeyStoreType {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
-                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the Goole Cloud keyring");
+                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the Google Cloud keyring");
             }
             if (!params.keystore().matches("projects/[^/]+/locations/[^/]+/keyRings/[^/]+")) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the path of the keyring (projects/{projectName}/locations/{location}/keyRings/{keyringName})");
             }
             if (params.storepass() == null) {
-                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Goole Cloud API access token");
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Google Cloud API access token");
             }
             if (params.certfile() == null) {
                 throw new IllegalArgumentException("certfile " + params.parameterName() + " must be set");
