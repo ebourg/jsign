@@ -53,6 +53,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 7.1 (in development)
+
+* The "Unsupported file" error when using the Ant task has been fixed
+
 #### Version 7.0 (2025-01-16)
 
 * New signing services:
