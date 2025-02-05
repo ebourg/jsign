@@ -67,6 +67,46 @@ public class JsignJcaProviderTest {
     }
 
     @Test
+    public void testJcaProviderWithKeyStoreAndCertFile() {
+        // Arrange
+        final String keystoreName = "/projects/projName/location/geoLocation/keyRings/keyRingName";
+        final String certFile = "/path/to/certfile";
+
+        // Act
+        final JsignJcaProvider provider = new JsignJcaProvider(keystoreName + "," + certFile);
+
+       // Assert
+        assertEquals(keystoreName, provider.getKeystore());
+        assertEquals(certFile, provider.getCertFile());
+    }
+
+    @Test
+    public void testJcaProviderWithKeyStore() {
+        // Arrange
+        final String keystoreName = "/projects/projName/location/geoLocation/keyRings/keyRingName";
+
+        // Act
+        final JsignJcaProvider provider = new JsignJcaProvider(keystoreName);
+
+        // Assert
+        assertEquals(keystoreName, provider.getKeystore());
+        assertNull("certfile is not null", provider.getCertFile());
+    }
+
+    @Test
+    public void testJcaProviderWithNullConfigArg() {
+        // Arrange
+        final JsignJcaProvider provider = new JsignJcaProvider();
+
+        // Act
+        provider.configure(null);
+
+        // Assert
+        assertNull("keystore is not null", provider.getKeystore());
+        assertNull("certfile is not null", provider.getCertFile());
+    }
+
+    @Test
     public void testKeyStorePKCS11() throws Exception {
         YubikeyTest.assumeYubikey();
 
