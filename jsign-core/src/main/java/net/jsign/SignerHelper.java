@@ -459,7 +459,7 @@ class SignerHelper {
             }
 
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            throw new SignerException(e.getMessage());
+            throw new SignerException(e.getMessage(), e);
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {
@@ -518,7 +518,7 @@ class SignerHelper {
             log.info("Extracting signature to " + detachedSignature);
             detach(signable, detachedSignature);
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            throw new SignerException(e.getMessage());
+            throw new SignerException(e.getMessage(), e);
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {
@@ -542,7 +542,7 @@ class SignerHelper {
             signable.setSignature(null);
             signable.save();
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            throw new SignerException(e.getMessage());
+            throw new SignerException(e.getMessage(), e);
         } catch (Exception e) {
             throw new SignerException("Couldn't remove the signature from " + file, e);
         }
