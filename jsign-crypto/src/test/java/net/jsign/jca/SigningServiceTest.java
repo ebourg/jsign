@@ -33,6 +33,7 @@ import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 public class SigningServiceTest {
 
@@ -237,5 +238,22 @@ public class SigningServiceTest {
 
         Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", ""));
         assertEquals("message", "Unable to retrieve the certificate chain 'default'", e.getMessage());
+    }
+
+    @Test
+    public void testSignPathProvider() throws Exception {
+        String organization = System.getenv("SIGNPATH_ORGANIZATION_ID");
+        String accessToken = System.getenv("SIGNPATH_API_TOKEN");
+        assumeNotNull("SIGNPATH_ORGANIZATION_ID environment variable not defined", organization);
+        assumeNotNull("SIGNPATH_API_TOKEN environment variable not defined", accessToken);
+
+        Provider provider = new SigningServiceJcaProvider(new SignPathSigningService(organization, accessToken));
+        KeyStore keystore = KeyStore.getInstance("SIGNPATH", provider);
+        keystore.load(null, "".toCharArray());
+
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", ""));
+        assertEquals("message", "Unable to retrieve SignPath signing policy 'default'", e.getMessage());
+
+        testCustomProvider(provider, keystore, "jsign/rsa-2048", "");
     }
 }

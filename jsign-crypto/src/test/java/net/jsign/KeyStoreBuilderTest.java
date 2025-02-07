@@ -306,6 +306,24 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildSignPath() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(SIGNPATH);
+
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "keystore parameter must specify the SignPath organization id (e.g. eacd4b78-6038-4450-9eec-4acd1c7ba6f1)", e.getMessage());
+
+        builder.keystore("eacd4b78-6038-4450-9eec-4acd1c7ba6f1");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the SignPath API access token", e.getMessage());
+
+        builder.storepass("AIk/65sl23lA1nVV/pgSqk96SvHFsSw3xitmp5Qhr+F/");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildSignServer() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(SIGNSERVER);
 

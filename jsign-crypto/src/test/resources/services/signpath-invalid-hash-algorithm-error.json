@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "": [
+      "The hash algorithm does not match the given hash."
+    ]
+  },
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-ba52ace98af88a3a8b70415c1f21b91f-9a92946dc4c53362-00"
+}
