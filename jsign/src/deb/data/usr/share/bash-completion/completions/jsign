@@ -42,7 +42,7 @@ _jsign()
             return 0
             ;;
         --storetype)
-            COMPREPLY=( $( compgen -W 'JKS JCEKS PKCS12 PKCS11 AWS AZUREKEYVAULT DIGICERTONE ESIGNER ETOKEN GARASIGN GOOGLECLOUD HASHICORPVAULT ORACLECLOUD SIGNSERVER TRUSTEDSIGNING YUBIKEY NITROKEY OPENPGP OPENSC PIV' -- "$cur" ) )
+            COMPREPLY=( $( compgen -W 'JKS JCEKS PKCS12 PKCS11 AWS AZUREKEYVAULT DIGICERTONE ESIGNER ETOKEN GARASIGN GOOGLECLOUD HASHICORPVAULT ORACLECLOUD SIGNSERVER VENAFI TRUSTEDSIGNING YUBIKEY NITROKEY OPENPGP OPENSC PIV' -- "$cur" ) )
             return 0
             ;;
         --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|--proxyUrl|--proxyUser|--proxyPass|--value)
