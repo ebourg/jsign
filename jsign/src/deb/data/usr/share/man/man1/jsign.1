@@ -99,6 +99,8 @@ Cloud key management systems:
 .br
 - ORACLECLOUD   : Oracle Cloud Key Management Service
 .br
+- SIGNPATH      : SignPath
+.br
 - SIGNSERVER    : Keyfactor SignServer
 .br
 - TRUSTEDSIGNING: Azure Trusted Signing
@@ -593,6 +595,22 @@ The configuration file can be replaced (or overridden) by environment variables.
 \- OCI_CLI_KEY_FILE    : The path to the private key signing the API requests in PEM format
 .br
 \- OCI_CLI_PASS_PHRASE : The pass phrase of the private key
+
+
+.TP
+
+Signing with SignPath
+
+Signing with SignPath requires an account entitled to use the code signing gateway and a signing policy configured
+for hash signing. The keystore parameter specifies the organization identifier, and the storepass parameter the API
+access token. The alias parameter is the concatenation of the project slug and the signing policy slug, separated
+by a slash character.
+
+jsign --storetype SIGNPATH \\
+      --kesytore <organizationId> \\
+      --storepass <accessToken> \\
+      --alias <projectSlug>/<signingPolicySlug> \\
+       application.exe
 
 
 .TP

@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -78,16 +79,46 @@ class RESTClient {
     }
 
     public Map<String, ?> post(String resource, Map<String, String> params) throws IOException {
-        StringBuilder body = new StringBuilder();
-        for (Map.Entry<String, String> param : params.entrySet()) {
-            if (body.length() > 0) {
-                body.append('&');
-            }
-            body.append(param.getKey()).append('=').append(URLEncoder.encode(param.getValue(), "UTF-8"));
-        }
+        return post(resource, params, false);
+    }
 
+    public Map<String, ?> post(String resource, Map<String, ?> params, boolean multipart) throws IOException {
         Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/x-www-form-urlencoded");
+        StringBuilder body = new StringBuilder();
+
+        if (multipart) {
+            String boundary = "------------------------" + Long.toHexString(new Random().nextLong());
+            headers.put("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+            for (String name : params.keySet()) {
+                Object value = params.get(name);
+
+                body.append("--" + boundary + "\r\n");
+                if (value instanceof byte[]) {
+                    body.append("Content-Type: application/octet-stream" + "\r\n");
+                    body.append("Content-Disposition: form-data; name=\"" + name + '"' + "; filename=\"" + name + ".data\"\r\n");
+                    body.append("\r\n");
+                    body.append(new String((byte[]) value, StandardCharsets.UTF_8));
+                } else {
+                    body.append("Content-Disposition: form-data; name=\"" + name + '"' + "\r\n");
+                    body.append("\r\n");
+                    body.append(params.get(name));
+                }
+                body.append("\r\n");
+            }
+
+            body.append("--" + boundary + "--");
+
+        } else {
+            headers.put("Content-Type", "application/x-www-form-urlencoded");
+
+            for (Map.Entry<String, ?> param : params.entrySet()) {
+                if (body.length() > 0) {
+                    body.append('&');
+                }
+                body.append(param.getKey()).append('=').append(URLEncoder.encode(param.getValue().toString(), "UTF-8"));
+            }
+        }
 
         return post(resource, body.toString(), headers);
     }

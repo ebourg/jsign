@@ -39,6 +39,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [HashiCorp Vault](https://www.vaultproject.io/)
     * [Keyfactor SignServer](https://www.signserver.org)
     * [Oracle Cloud KMS](https://www.oracle.com/security/cloud-security/key-management/)
+    * [SignPath](https://signpath.io)
     * [SSL.com eSigner](https://www.ssl.com/esigner/)
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
@@ -52,6 +53,11 @@ See https://ebourg.github.io/jsign for more information.
 
 
 ## Changes
+
+#### Version 7.1 (in development)
+
+* New signing service: SignPath
+* The "Unsupported file" error when using the Ant task has been fixed
 
 #### Version 7.0 (2025-01-16)
 

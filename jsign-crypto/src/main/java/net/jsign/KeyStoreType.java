@@ -48,6 +48,7 @@ import net.jsign.jca.OpenPGPCardSigningService;
 import net.jsign.jca.OracleCloudCredentials;
 import net.jsign.jca.OracleCloudSigningService;
 import net.jsign.jca.PIVCardSigningService;
+import net.jsign.jca.SignPathSigningService;
 import net.jsign.jca.SignServerCredentials;
 import net.jsign.jca.SignServerSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
@@ -629,8 +630,29 @@ public enum KeyStoreType {
             SignServerCredentials credentials = new SignServerCredentials(username, password, certificate, params.keypass());
             return new SigningServiceJcaProvider(new SignServerSigningService(params.keystore(), credentials));
         }
-    };
+    },
 
+    /**
+     * SignPath. The keystore parameter specifies the organization, and the storepass parameter the API access token.
+     * The alias parameter is the concatenation of the project slug and the signing policy slug, separated by a slash
+     * character (e.g. <code>myproject/mypolicy</code>).
+     */
+    SIGNPATH(false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.keystore() == null) {
+                throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the SignPath organization id (e.g. eacd4b78-6038-4450-9eec-4acd1c7ba6f1)");
+            }
+            if (params.storepass() == null) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the SignPath API access token");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            return new SigningServiceJcaProvider(new SignPathSigningService(params.keystore(), params.storepass()));
+        }
+    };
 
     /** Tells if the keystore is contained in a local file */
     private final boolean fileBased;

@@ -95,6 +95,7 @@ public class JsignCLI {
                         + "- GOOGLECLOUD: Google Cloud KMS\n"
                         + "- HASHICORPVAULT: HashiCorp Vault\n"
                         + "- ORACLECLOUD: Oracle Cloud Key Management Service\n"
+                        + "- SIGNPATH: SignPath\n"
                         + "- SIGNSERVER: Keyfactor SignServer\n"
                         + "- TRUSTEDSIGNING: Azure Trusted Signing\n"
                         + "- VENAFI: Venafi CodeSign Protect\n").build());

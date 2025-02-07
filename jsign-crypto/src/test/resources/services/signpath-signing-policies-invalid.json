@@ -1,0 +1,12 @@
+{
+  "signingPolicies": [
+    {
+      "signingPolicySlug": "rsa-2048",
+      "projectSlug": "jsign",
+      "keySizeInBits": 2048,
+      "signingPolicyId": "f009f8d9-f9bf-44c6-9e34-9a767129f450",
+      "certificateBytes": "invalid",
+      "certificateType": "X509"
+    }
+  ]
+}

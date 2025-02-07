@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "SigningPolicyId": [
+      "The selected signing policy has an approval process. Hash signing does not support approvals."
+    ]
+  },
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-5465009bbdf70c9565b1579c7fe05d70-5d5a3c8ca67e6844-00"
+}

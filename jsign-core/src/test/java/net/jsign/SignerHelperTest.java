@@ -44,6 +44,7 @@ import net.jsign.timestamp.TimestampingMode;
 
 import static net.jsign.DigestAlgorithm.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 public class SignerHelperTest {
 
@@ -337,6 +338,31 @@ public class SignerHelperTest {
         Signable signable = Signable.of(targetFile);
         SignatureAssert.assertSigned(signable, SHA256);
         SignatureAssert.assertTimestamped("Invalid timestamp", signable.getSignatures().get(0));
+    }
+
+    @Test
+    public void testSignPath() throws Exception {
+        String organization = System.getenv("SIGNPATH_ORGANIZATION_ID");
+        String accessToken = System.getenv("SIGNPATH_API_TOKEN");
+        assumeNotNull("SIGNPATH_ORGANIZATION_ID environment variable not defined", organization);
+        assumeNotNull("SIGNPATH_API_TOKEN environment variable not defined", accessToken);
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-signpath.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper("option")
+                .storetype("SIGNPATH")
+                .keystore(organization)
+                .storepass(accessToken)
+                .alias("jsign/rsa-2048")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        Signable signable = Signable.of(targetFile);
+        SignatureAssert.assertSigned(signable, SHA256);
     }
 
     @Test

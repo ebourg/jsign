@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "SigningPolicySlug": [
+      "There is no signing policy with slug 'rsa-2048-2022' in the project with slug 'jsign3'."
+    ]
+  },
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-f61d2098cc3dbe9d3ab0c206fac36ff2-fa0c0bbc91bf4385-00"
+}

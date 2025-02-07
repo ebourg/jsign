@@ -1,0 +1,11 @@
+{
+  "errors": {
+    "": [
+      "The file has an invalid format."
+    ]
+  },
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "traceId": "00-86053f40a6b6a300753783e0fee3565c-3a41be3de95bf49e-00"
+}

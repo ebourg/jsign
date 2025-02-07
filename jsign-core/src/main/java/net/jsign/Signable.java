@@ -25,8 +25,11 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
@@ -170,9 +173,15 @@ public interface Signable extends Closeable {
      * @throws UnsupportedOperationException if the file specified isn't supported
      */
     static Signable of(File file, Charset encoding) throws IOException {
-        for (SignableProvider provider : ServiceLoader.load(SignableProvider.class)) {
-            if (provider.isSupported(file)) {
-                return provider.create(file, encoding);
+        // look for SignableProvider implementations in the classloader that loaded the Jsign classes and in the current classloader
+        Supplier<ServiceLoader<SignableProvider>> loaders1 = () -> ServiceLoader.load(SignableProvider.class, Signable.class.getClassLoader());
+        Supplier<ServiceLoader<SignableProvider>> loaders2 = () -> ServiceLoader.load(SignableProvider.class);
+
+        for (Supplier<ServiceLoader<SignableProvider>> loaders : Arrays.asList(loaders1, loaders2)) {
+            for (SignableProvider provider : loaders.get()) {
+                if (provider.isSupported(file)) {
+                    return provider.create(file, encoding);
+                }
             }
         }
 

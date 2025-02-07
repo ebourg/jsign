@@ -72,6 +72,7 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
           <li><a href="https://www.signserver.org">Keyfactor SignServer</a></li>
           <li><a href="https://www.oracle.com/security/cloud-security/key-management/">Oracle Cloud KMS</a></li>
+          <li><a href="https://signpath.io">SignPath</a></li>
           <li><a href="https://www.ssl.com/esigner/">SSL.com eSigner</a></li>
         </ul>
       </li>
@@ -229,6 +230,7 @@ invalidating the signature:</p>
           <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
           <li><code>HASHICORPVAULT</code>: HashiCorp Vault</li>
           <li><code>ORACLECLOUD</code>: Oracle Cloud Key Management Service</li>
+          <li><code>SIGNPATH</code>: SignPath</li>
           <li><code>SIGNSERVER</code>: Keyfactor SignServer</li>
           <li><code>TRUSTEDSIGNING</code>: Azure Trusted Signing</li>
         </ul>
@@ -552,6 +554,7 @@ are the same as those described above for the Ant task.</p>
                              - GOOGLECLOUD: Google Cloud KMS
                              - HASHICORPVAULT: HashiCorp Vault
                              - ORACLECLOUD: Oracle Cloud Key Management Service
+                             - SIGNPATH: SignPath
                              - SIGNSERVER: Keyfactor SignServer
                              - TRUSTEDSIGNING: Azure Trusted Signing
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore
@@ -977,6 +980,23 @@ of the key.</p>
   <li><code>OCI_CLI_KEY_FILE</code>: The path to the private key signing the API requests in PEM format</li>
   <li><code>OCI_CLI_PASS_PHRASE</code>: The pass phrase of the private key</li>
 </ul>
+
+
+<h4 id="example-signpath">Signing with SignPath</h4>
+
+<p>Signing with <a href="https://signpath.io">SignPath</a> requires an account entitled to use the code signing gateway
+and a signing policy configured for hash signing. The <code>keystore</code> parameter specifies the organization
+identifier, and the <code>storepass</code> parameter the API access token. The <code>alias</code> parameter is the
+concatenation of the project slug and the signing policy slug, separated by a slash character.</p>
+
+<pre>
+ jsign --storetype SIGNPATH \
+       --kesytore &lt;organizationId&gt; \
+       --storepass &lt;accessToken&gt; \
+       --alias &lt;projectSlug&gt;/&lt;signingPolicySlug&gt; \
+       application.exe
+</pre>
+
 
 <br>
 
