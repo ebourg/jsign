@@ -58,6 +58,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * New signing service: SignPath
 * The "Unsupported file" error when using the Ant task has been fixed
+* The `timestamp` and `tag` commands have been fixed for MSI, catalog and script files
 * The `--debug`, `--verbose` and `--quiet` parameters now work for all commands
 
 #### Version 7.0 (2025-01-16)

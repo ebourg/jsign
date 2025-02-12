@@ -563,6 +563,7 @@ class SignerHelper {
             CMSSignedData signature = signatures.get(0);
             signature = addUnsignedAttribute(signature, AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue());
             signable.setSignature(signature);
+            signable.save();
         } catch (SignerException e) {
             throw e;
         } catch (Exception e) {
@@ -668,6 +669,7 @@ class SignerHelper {
                 signature = SignatureUtils.addNestedSignature(signature, true, nestedSignatures.toArray(new CMSSignedData[0]));
             }
             signable.setSignature(signature);
+            signable.save();
         } catch (IOException | CMSException e) {
             throw new SignerException("Couldn't timestamp " + file, e);
         }
