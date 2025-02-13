@@ -318,11 +318,13 @@
               <target>
                 <taskdef name="redline" classname="org.freecompany.redline.ant.RedlineTask" classpath="maven.plugin.classpath" />
                 
-                <redline destination="${project.build.directory}" group="Development/Tools" name="${project.artifactId}" version="${project.version}" url="${project.url}" preinstallscript="src/deb/control/preinst" postinstallscript="src/deb/control/postinst" preuninstallscript="src/deb/control/prerm">
-                  <tarfileset dir="${project.build.directory}/deb/data" />
+                <redline destination="${project.build.directory}" group="Development/Tools" name="${project.artifactId}" version="${project.version}" url="${project.url}">
+                  <tarfileset dir="${project.build.directory}/deb/data" excludes="**/*.sh"/>
+                  <tarfileset dir="${project.build.directory}/deb/data" includes="**/*.sh" filemode="755"/>
                   <tarfileset dir="${project.build.directory}" prefix="/usr/share/${project.artifactId}">
                     <include name="${project.build.finalName}.jar" />
                   </tarfileset>
+                  <link path="/usr/bin/jsign" target="/usr/share/jsign/jsign.sh"/>
                   <depends name="java" version="&gt;= 1.8" />
                 </redline>
               </target>
@@ -361,6 +363,22 @@
                 <data>
                   <type>directory</type>
                   <src>${project.build.directory}/deb/data</src>
+                  <excludes>**/*.sh</excludes>
+                </data>
+                <data>
+                  <type>directory</type>
+                  <src>${project.build.directory}/deb/data</src>
+                  <includes>**/*.sh</includes>
+                  <mapper>
+                    <type>perm</type>
+                    <filemode>755</filemode>
+                  </mapper>
+                </data>
+                <data>
+                  <type>link</type>
+                  <linkName>/usr/bin/jsign</linkName>
+                  <linkTarget>/usr/share/jsign/jsign.sh</linkTarget>
+                  <symlink>true</symlink>
                 </data>
               </dataSet>
             </configuration>
