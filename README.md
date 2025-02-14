@@ -54,10 +54,13 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.1 (in development)
+#### Version 7.1 (2025-02-14)
 
 * New signing service: SignPath
 * The "Unsupported file" error when using the Ant task has been fixed
+* The `timestamp` and `tag` commands have been fixed for MSI, catalog and script files
+* The RPM package no longer removes the installation directory when upgrading
+* The `--debug`, `--verbose` and `--quiet` parameters now work for all commands
 
 #### Version 7.0 (2025-01-16)
 

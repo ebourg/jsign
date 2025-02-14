@@ -6,11 +6,11 @@
   <parent>
     <groupId>net.jsign</groupId>
     <artifactId>jsign-parent</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Jsign - Authenticode signing in Java (Distribution)</name>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <dependencies>
@@ -205,12 +205,12 @@
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-base</artifactId>
-            <version>7.6.0</version>
+            <version>7.6.1</version>
           </dependency>
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-core</artifactId>
-            <version>9.1.6</version>
+            <version>9.1.7</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -316,13 +316,25 @@
             </goals>
             <configuration>
               <target>
-                <taskdef name="redline" classname="org.freecompany.redline.ant.RedlineTask" classpath="maven.plugin.classpath" />
-                
-                <redline destination="${project.build.directory}" group="Development/Tools" name="${project.artifactId}" version="${project.version}" url="${project.url}" preinstallscript="src/deb/control/preinst" postinstallscript="src/deb/control/postinst" preuninstallscript="src/deb/control/prerm">
-                  <tarfileset dir="${project.build.directory}/deb/data" />
+                <taskdef name="redline" classname="org.redline_rpm.ant.RedlineTask" classpath="maven.plugin.classpath" />
+
+                <loadresource property="rpm.version">
+                  <propertyresource name="project.version"/>
+                  <filterchain>
+                    <tokenfilter>
+                      <filetokenizer/>
+                      <replacestring from="-SNAPSHOT" to=".SNAPSHOT"/>
+                    </tokenfilter>
+                  </filterchain>
+                </loadresource>
+
+                <redline destination="${project.build.directory}" group="Development/Tools" name="${project.artifactId}" version="${rpm.version}" url="${project.url}">
+                  <tarfileset dir="${project.build.directory}/deb/data" excludes="**/*.sh"/>
+                  <tarfileset dir="${project.build.directory}/deb/data" includes="**/*.sh" filemode="755"/>
                   <tarfileset dir="${project.build.directory}" prefix="/usr/share/${project.artifactId}">
                     <include name="${project.build.finalName}.jar" />
                   </tarfileset>
+                  <link path="/usr/bin/jsign" target="/usr/share/jsign/jsign.sh"/>
                   <depends name="java" version="&gt;= 1.8" />
                 </redline>
               </target>
@@ -333,7 +345,7 @@
           <dependency>
             <groupId>org.redline-rpm</groupId>
             <artifactId>redline</artifactId>
-            <version>1.1.12</version>
+            <version>1.2.10</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -361,6 +373,22 @@
                 <data>
                   <type>directory</type>
                   <src>${project.build.directory}/deb/data</src>
+                  <excludes>**/*.sh</excludes>
+                </data>
+                <data>
+                  <type>directory</type>
+                  <src>${project.build.directory}/deb/data</src>
+                  <includes>**/*.sh</includes>
+                  <mapper>
+                    <type>perm</type>
+                    <filemode>755</filemode>
+                  </mapper>
+                </data>
+                <data>
+                  <type>link</type>
+                  <linkName>/usr/bin/jsign</linkName>
+                  <linkTarget>/usr/share/jsign/jsign.sh</linkTarget>
+                  <symlink>true</symlink>
                 </data>
               </dataSet>
             </configuration>

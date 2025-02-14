@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -577,13 +577,13 @@ public class JsignCLITest {
 
     @Test
     public void testExtract() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("extract", "" + targetFile));
+        Exception e = assertThrows(SignerException.class, () -> cli.execute("extract", "--verbose", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
     }
 
     @Test
     public void testRemove() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("remove", "xeyes.exe"));
+        Exception e = assertThrows(SignerException.class, () -> cli.execute("remove", "--debug", "xeyes.exe"));
         assertEquals("message", "Couldn't find xeyes.exe", e.getMessage());
     }
 
@@ -595,7 +595,7 @@ public class JsignCLITest {
 
     @Test
     public void testTimestamp() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("timestamp", "" + targetFile));
+        Exception e = assertThrows(SignerException.class, () -> cli.execute("timestamp", "--quiet", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
     }
 }

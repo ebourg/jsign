@@ -1,9 +1,0 @@
-#!/bin/sh
-#
-# Pre installation script for Jsign
-#
-
-set -e
-
-# Create the application directory
-mkdir -p /usr/share/jsign

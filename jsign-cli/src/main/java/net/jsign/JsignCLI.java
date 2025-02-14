@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2012 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,10 +65,12 @@ public class JsignCLI {
         }
     }
 
-    /** The options for each operation */
-    private final Map<String, Options> options = new LinkedHashMap<>();
+    /**
+     * Returns the options for each operation.
+     */
+    private Map<String, Options> getOptions() {
+        Map<String, Options> map = new LinkedHashMap<>();
 
-    JsignCLI() {
         Options options = new Options();
         options.addOption(Option.builder("s").hasArg().longOpt(PARAM_KEYSTORE).argName("FILE").desc("The keystore file, the SunPKCS11 configuration file, the cloud keystore name, or the card/token name").type(File.class).build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STOREPASS).argName("PASSWORD").desc("The password to open the keystore").build());
@@ -122,7 +124,7 @@ public class JsignCLI {
         options.addOption(Option.builder().longOpt("debug").desc("Print debugging information").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
 
-        this.options.put("sign", options);
+        map.put("sign", options);
 
         options = new Options();
         options.addOption(Option.builder("t").hasArg().longOpt(PARAM_TSAURL).argName("URL").desc("The URL of the timestamping authority").build());
@@ -134,21 +136,23 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If a user is needed").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous timestamps should be replaced").build());
 
-        this.options.put("timestamp", options);
+        map.put("timestamp", options);
 
         options = new Options();
         options.addOption(Option.builder().hasArg().longOpt(PARAM_FORMAT).argName("FORMAT").desc("      The output format of the signature (DER or PEM)").build());
 
-        this.options.put("extract", options);
+        map.put("extract", options);
 
         options = new Options();
 
-        this.options.put("remove", options);
+        map.put("remove", options);
 
         options = new Options();
         options.addOption(Option.builder().hasArg().longOpt(PARAM_VALUE).argName("VALUE").desc("        The value of the unsigned attribute").build());
 
-        this.options.put("tag", options);
+        map.put("tag", options);
+
+        return map;
     }
 
     void execute(String... args) throws SignerException, ParseException {
@@ -160,10 +164,13 @@ public class JsignCLI {
             args = Arrays.copyOfRange(args, 1, args.length);
         }
 
-        Options options = this.options.get(command);
+        Options options = getOptions().get(command);
         if (options == null) {
             throw new ParseException("Unknown command '" + command + "'");
         }
+        options.addOption(Option.builder().longOpt("quiet").build());
+        options.addOption(Option.builder().longOpt("verbose").build());
+        options.addOption(Option.builder().longOpt("debug").build());
 
         CommandLine cmd = parser.parse(options, args);
 
@@ -286,6 +293,7 @@ public class JsignCLI {
         out.println();
         formatter.printWrapped(out, formatter.getWidth(), header);
 
+        Map<String, Options> options = getOptions();
         out.println("commands: " + options.keySet().stream().map(s -> "sign".equals(s) ? s + " (default)" : s).collect(Collectors.joining(", ")));
 
         for (String command : options.keySet()) {
