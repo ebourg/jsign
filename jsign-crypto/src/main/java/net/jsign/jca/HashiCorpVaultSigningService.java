@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2023 Maria Merkel
  * Copyright 2024 Eatay Mizrachi
  *

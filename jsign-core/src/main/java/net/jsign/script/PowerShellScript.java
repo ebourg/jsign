@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2019 Björn Kautler
  * Copyright 2019 Emmanuel Bourg
  *

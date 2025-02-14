@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2024 Sebastian Stamm
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
