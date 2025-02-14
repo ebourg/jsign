@@ -582,8 +582,13 @@ public enum KeyStoreType {
                 password = elements[1];
             }
 
-            VenafiCredentials credentials = new VenafiCredentials(username, password, null, params.keypass());
-            return new SigningServiceJcaProvider(new VenafiSigningService(params.keystore(), credentials));
+            try {
+                VenafiCredentials credentials = new VenafiCredentials(username, password, null, params.keypass());
+                return new SigningServiceJcaProvider(new VenafiSigningService(params.keystore(), credentials));
+            } catch (IOException e) {
+                throw new IllegalStateException("Authentication failed with Venafi", e);
+
+            }
         }
     },
 

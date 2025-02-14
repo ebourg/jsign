@@ -53,10 +53,7 @@ public class VenafiCredentials {
     public String getSessionToken(String endpoint) throws IOException {
         if (sessionToken == null) {
             RESTClient client = new RESTClient(endpoint)
-                    .errorHandler(response -> {    
-                        String errors = JsonWriter.format(response.get("Error"));
-                        return errors;
-                    });
+                    .errorHandler(response -> response.get("error") + ": " + response.get("error_description"));
 
             Map<String, Object> request = new LinkedHashMap<>();    
             request.put("client_id", "VenafiCodeSignClient");
