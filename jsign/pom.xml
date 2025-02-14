@@ -316,9 +316,19 @@
             </goals>
             <configuration>
               <target>
-                <taskdef name="redline" classname="org.freecompany.redline.ant.RedlineTask" classpath="maven.plugin.classpath" />
-                
-                <redline destination="${project.build.directory}" group="Development/Tools" name="${project.artifactId}" version="${project.version}" url="${project.url}">
+                <taskdef name="redline" classname="org.redline_rpm.ant.RedlineTask" classpath="maven.plugin.classpath" />
+
+                <loadresource property="rpm.version">
+                  <propertyresource name="project.version"/>
+                  <filterchain>
+                    <tokenfilter>
+                      <filetokenizer/>
+                      <replacestring from="-SNAPSHOT" to=".SNAPSHOT"/>
+                    </tokenfilter>
+                  </filterchain>
+                </loadresource>
+
+                <redline destination="${project.build.directory}" group="Development/Tools" name="${project.artifactId}" version="${rpm.version}" url="${project.url}">
                   <tarfileset dir="${project.build.directory}/deb/data" excludes="**/*.sh"/>
                   <tarfileset dir="${project.build.directory}/deb/data" includes="**/*.sh" filemode="755"/>
                   <tarfileset dir="${project.build.directory}" prefix="/usr/share/${project.artifactId}">
@@ -335,7 +345,7 @@
           <dependency>
             <groupId>org.redline-rpm</groupId>
             <artifactId>redline</artifactId>
-            <version>1.1.12</version>
+            <version>1.2.10</version>
           </dependency>
         </dependencies>
       </plugin>
