@@ -54,7 +54,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.1 (in development)
+#### Version 7.1 (2025-02-14)
 
 * New signing service: SignPath
 * The "Unsupported file" error when using the Ant task has been fixed
