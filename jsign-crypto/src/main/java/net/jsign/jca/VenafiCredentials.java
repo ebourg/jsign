@@ -31,7 +31,7 @@ import net.jsign.KeyStoreBuilder;
 /**
  * Credentials for the Venafi CodeSign Protect.
  *
- * @since 7.0
+ * @since 7.2
  */
 public class VenafiCredentials {
 

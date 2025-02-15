@@ -44,7 +44,8 @@ import net.jsign.DigestAlgorithm;
 /**
  * Signing service using the Venafi CodeSign Protect REST Service API.
  *
- * @since 7.0
+ * @since 7.2
+ * @see <a href="https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/cco-SDKc-Code-Signing-SDK-reference.php">Venafi CodeSign Protect REST API</a>
  */
 public class VenafiSigningService implements SigningService {
 
