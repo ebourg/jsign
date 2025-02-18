@@ -86,21 +86,10 @@ public class VenafiSigningService implements SigningService {
 
     public static byte[] addASN1Prefix(DigestAlgorithm digestAlgorithm, byte[] hash) throws IOException {
         ASN1EncodableVector v = new ASN1EncodableVector();
-        System.out.println(digestAlgorithm.name());
-        switch(digestAlgorithm.name()) {
-            case "SHA256":
-                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1"));
-            case "SHA384":
-                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2"));
-            case "SHA512":
-                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3"));
-            default:
-                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1"));
-        }
-
+        v.add(digestAlgorithm.oid);
         v.add(org.bouncycastle.asn1.DERNull.INSTANCE);
+        
         DERSequence algorithmIdentifier = new DERSequence(v);
-
         ASN1EncodableVector digestInfoVector = new ASN1EncodableVector();
         digestInfoVector.add(algorithmIdentifier);
         digestInfoVector.add(new DEROctetString(hash));
@@ -189,7 +178,6 @@ public class VenafiSigningService implements SigningService {
         try {
             Certificate[] chain = getCertificateChain(alias);
             String algorithm = chain[0].getPublicKey().getAlgorithm();
-            System.out.println("algorithm: " + algorithm);
             return new SigningServicePrivateKey(alias, algorithm, this);
         } catch (KeyStoreException e) {
             throw (UnrecoverableKeyException) new UnrecoverableKeyException().initCause(e);
@@ -197,7 +185,8 @@ public class VenafiSigningService implements SigningService {
 
     }
 
-    public byte[] encodeASN1(byte[] sigBytes) throws IOException {
+    /* This function encodes the ECDSA signature response from Venafi CodeSign Protect /vedhsm/api/sign REST API */
+    public byte[] encodeASN1Signature(byte[] sigBytes) throws IOException {
 
         // Split the sigbytes into r and s components
         BigInteger r = new BigInteger(1, Arrays.copyOfRange(sigBytes, 0, sigBytes.length / 2));
@@ -220,17 +209,16 @@ public class VenafiSigningService implements SigningService {
 
     @Override
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
-        //System.out.println(algorithm);
         Integer clientMechanism = algorithmMapping.get(algorithm);
         if (clientMechanism == null) {
-            throw new InvalidAlgorithmParameterException("Unsupported signing algorithm: " + clientMechanism);
+            throw new InvalidAlgorithmParameterException("Unsupported signing algorithm: " + algorithm);
         }
 
         try {
             DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
             data = digestAlgorithm.getMessageDigest().digest(data);
             
-            byte[] arr_combined = getASN1Prefix(digestAlgorithm, data);
+            byte[] arr_combined = addASN1Prefix(digestAlgorithm, data);
 
             Map<String, Object> request = new HashMap<>();
 
