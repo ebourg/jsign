@@ -46,6 +46,12 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x509.DigestInfo;
+import org.bouncycastle.asn1.DERNull;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+
+
+
 
 import net.jsign.DigestAlgorithm;
 
@@ -74,9 +80,11 @@ public class VenafiSigningService implements SigningService {
     /** Mapping between Java and Venafi CodeSign Protect signing algorithms */
     private final Map<String, Integer> algorithmMapping = new HashMap<>();
     {
+        algorithmMapping.put("SHA1withRSA", 6);
         algorithmMapping.put("SHA256withRSA", 64);
         algorithmMapping.put("SHA384withRSA", 65);
         algorithmMapping.put("SHA512withRSA", 66);
+        algorithmMapping.put("SHA1withECDSA", 4162);
         algorithmMapping.put("SHA256withECDSA", 4164);
         algorithmMapping.put("SHA384withECDSA", 4165);
         algorithmMapping.put("SHA512withECDSA", 4166);
@@ -85,19 +93,8 @@ public class VenafiSigningService implements SigningService {
     /* Add ASN.1 DER prefix to MessageDigest */
 
     public static byte[] addASN1Prefix(DigestAlgorithm digestAlgorithm, byte[] hash) throws IOException {
-        ASN1EncodableVector v = new ASN1EncodableVector();
-        v.add(digestAlgorithm.oid);
-        v.add(org.bouncycastle.asn1.DERNull.INSTANCE);
-        
-        DERSequence algorithmIdentifier = new DERSequence(v);
-        ASN1EncodableVector digestInfoVector = new ASN1EncodableVector();
-        digestInfoVector.add(algorithmIdentifier);
-        digestInfoVector.add(new DEROctetString(hash));
-        DERSequence digestInfo = new DERSequence(digestInfoVector);
-
-        return digestInfo.getEncoded("DER");
+        return new DigestInfo(new AlgorithmIdentifier(digestAlgorithm.oid, DERNull.INSTANCE), hash).getEncoded("DER");
     }
-
 
     /**
      * Creates a new Venafi CodeSign Protect service.
@@ -209,11 +206,6 @@ public class VenafiSigningService implements SigningService {
 
     @Override
     public byte[] sign(SigningServicePrivateKey privateKey, String algorithm, byte[] data) throws GeneralSecurityException {
-        Integer clientMechanism = algorithmMapping.get(algorithm);
-        if (clientMechanism == null) {
-            throw new InvalidAlgorithmParameterException("Unsupported signing algorithm: " + algorithm);
-        }
-
         try {
             DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
             data = digestAlgorithm.getMessageDigest().digest(data);
@@ -232,12 +224,12 @@ public class VenafiSigningService implements SigningService {
             request.put("ProcessInfo", processInfo); 
             request.put("KeyId", KeyId);
             request.put("Data", Base64.getEncoder().encodeToString(arr_combined));
-            request.put("ClientMechanism", clientMechanism);
-            switch (algorithm) {
-                case "SHA256withRSA": case "SHA384withRSA": case "SHA512withRSA":
+            //switch (algorithm) {
+            switch (algorithm.substring(algorithm.toLowerCase().indexOf("with") + 4)) {
+                case "RSA":
                     request.put("Mechanism", 1); // RSA 
                     break;
-                case "SHA256withECDSA": case "SHA384withECDSA": case "SHA512withECDSA":
+                case "ECDSA":
                     request.put("Mechanism", 4161); // ECDSA
                     break;
                 default:

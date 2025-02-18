@@ -88,7 +88,7 @@ public class VenafiSigningServiceTest {
     }
 
     @Test
-    public void testSign() throws Exception {
+    public void testSignRSA() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/sign")
@@ -98,7 +98,7 @@ public class VenafiSigningServiceTest {
                 .withBody(new FileReader("target/test-classes/services/venafi-sign.json"));
 
         SigningService service = new VenafiSigningService("http://localhost:" + port(), new VenafiCredentials("username", "password", null));
-        SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-cert", null);
+        SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-rsa-cert", null);
 
         byte[] signature = service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
 
@@ -107,19 +107,56 @@ public class VenafiSigningServiceTest {
     }
 
     @Test
-    public void testSignWithFailure() throws Exception {
+    public void testSignECDSA() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/sign")
                 .havingHeaderEqualTo("Authorization", "Bearer da49LbfHokLO+fKwFIneJg==")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileReader("target/test-classes/services/venafi-sign-error.json"));
+                .withBody(new FileReader("target/test-classes/services/venafi-sign.json"));
 
         SigningService service = new VenafiSigningService("http://localhost:" + port(), new VenafiCredentials("username", "password", null));
-        SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-cert", null);
+        SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-ecdsa-cert", null);
+
+        byte[] signature = service.sign(privateKey, "SHA256withECDSA", "Hello".getBytes());
+
+        assertNotNull("null signature", signature);
+        assertEquals("length", 256, signature.length);
+    }
+
+
+    @Test
+    public void testSignRSAWithFailure() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/vedhsm/api/sign")
+                .havingHeaderEqualTo("Authorization", "Bearer da49LbfHokLO+fKwFIneJg==")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-sign-rsa-error.json"));
+
+        SigningService service = new VenafiSigningService("http://localhost:" + port(), new VenafiCredentials("username", "password", null));
+        SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-rsa-cert", null);
 
         Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
-        assertEquals("message", "java.io.IOException: Signing operation failed: Bad Request", e.getMessage());
+        assertEquals("message", "java.io.IOException: Private Key Access: 'sign' operation failed. More info: Error signing data (Failed to sign data using engine: 'Software', error: Call to C_Sign failed [DataInvalid])", e.getMessage());
+    }
+
+    @Test
+    public void testSignECDSAWithFailure() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/vedhsm/api/sign")
+                .havingHeaderEqualTo("Authorization", "Bearer da49LbfHokLO+fKwFIneJg==")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-sign-ecdsa-error.json"));
+
+        SigningService service = new VenafiSigningService("http://localhost:" + port(), new VenafiCredentials("username", "password", null));
+        SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-ecdsa-cert", null);
+
+        Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
+        assertEquals("message", "java.io.IOException: Signing operation failed: Private Key Access: 'sign' operation failed. More info: Error signing data (Failed to sign data using engine: 'Software', error: Mechanism RSA_PKCS not supported by key 'CryptokiECPrivateKey [4294967295])", e.getMessage());
     }
 }
