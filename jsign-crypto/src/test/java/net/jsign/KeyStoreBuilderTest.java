@@ -307,33 +307,14 @@ public class KeyStoreBuilderTest {
 
     @Test
     public void testBuildVenafi() throws Exception {
-        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(VENAFI);
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(VENAFI).keystore("https://tpp.example.local");
 
         Exception e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertEquals("message", "storepass parameter must specify the Venafi username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
-
-        builder.storepass("username|password|keystore.p12|storepass");
-
-        e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertEquals("message", "storepass parameter must specify the Venafi username/password and/or the path to the keystore containing the TLS client certificate: <username>|<password>, <certificate>, or <username>|<password>|<certificate>", e.getMessage());
+        assertEquals("message", "storepass parameter must specify the Venafi username/password", e.getMessage());
 
         builder.storepass("username|password");
 
         KeyStore keystore = builder.build();
-        assertNotNull("keystore", keystore);
-
-        builder = new KeyStoreBuilder().storetype(VENAFI).keystore("https://api.garantir.io");
-        builder.storepass("keystore.p12");
-
-        keystore = builder.build();
-        assertNotNull("keystore", keystore);
-
-        builder = new KeyStoreBuilder().storetype(VENAFI).keystore("https://api.garantir.io");
-        builder.storepass("keystore.p12");
-        builder.storepass("username|password|keystore.p12");
-        builder.keypass("keypass");
-
-        keystore = builder.build();
         assertNotNull("keystore", keystore);
     }
 

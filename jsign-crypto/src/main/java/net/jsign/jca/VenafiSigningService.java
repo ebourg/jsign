@@ -27,6 +27,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
@@ -38,6 +39,13 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1OutputStream;
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DEROctetString;
 
 import net.jsign.DigestAlgorithm;
 
@@ -74,19 +82,31 @@ public class VenafiSigningService implements SigningService {
         algorithmMapping.put("SHA512withECDSA", 4166);
     }
 
-    /* Map ASN.1 DER prefix structures to MessageDigest Algorithm */
+    /* Add ASN.1 DER prefix to MessageDigest */
 
-    private final byte[] getHashPrefix(Integer mechanism) {
-        switch (mechanism) {
-            case 64: case 4164:
-                return new byte[]{0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20}; // SHA256
-            case 65: case 4165:
-                return new byte[]{0x30, 0x41, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x02, 0x05, 0x00, 0x04, 0x30}; // SHA384
-            case 66: case 4166:
-                return new byte[]{0x30, 0x51, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40}; // SHA512
-            default: 
-                return new byte[]{0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, (byte)0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20}; // SHA256
+    public static byte[] addASN1Prefix(DigestAlgorithm digestAlgorithm, byte[] hash) throws IOException {
+        ASN1EncodableVector v = new ASN1EncodableVector();
+        System.out.println(digestAlgorithm.name());
+        switch(digestAlgorithm.name()) {
+            case "SHA256":
+                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1"));
+            case "SHA384":
+                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.2"));
+            case "SHA512":
+                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.3"));
+            default:
+                v.add(new ASN1ObjectIdentifier("2.16.840.1.101.3.4.2.1"));
         }
+
+        v.add(org.bouncycastle.asn1.DERNull.INSTANCE);
+        DERSequence algorithmIdentifier = new DERSequence(v);
+
+        ASN1EncodableVector digestInfoVector = new ASN1EncodableVector();
+        digestInfoVector.add(algorithmIdentifier);
+        digestInfoVector.add(new DEROctetString(hash));
+        DERSequence digestInfo = new DERSequence(digestInfoVector);
+
+        return digestInfo.getEncoded("DER");
     }
 
 
@@ -139,6 +159,7 @@ public class VenafiSigningService implements SigningService {
 
     @Override
     public List<String> aliases() throws KeyStoreException {
+        loadKeyStore("");
         return new ArrayList<>(certificates.keySet());
     }
 
@@ -179,8 +200,8 @@ public class VenafiSigningService implements SigningService {
     public byte[] encodeASN1(byte[] sigBytes) throws IOException {
 
         // Split the sigbytes into r and s components
-        BigInteger r = new BigInteger(1, java.util.Arrays.copyOfRange(sigBytes, 0, sigBytes.length / 2));
-        BigInteger s = new BigInteger(1, java.util.Arrays.copyOfRange(sigBytes, sigBytes.length / 2, sigBytes.length));
+        BigInteger r = new BigInteger(1, Arrays.copyOfRange(sigBytes, 0, sigBytes.length / 2));
+        BigInteger s = new BigInteger(1, Arrays.copyOfRange(sigBytes, sigBytes.length / 2, sigBytes.length));
 
         // Create an ASN1 sequence containing r and s
         DLSequence components = new DLSequence(new ASN1Encodable[] {
@@ -206,21 +227,15 @@ public class VenafiSigningService implements SigningService {
         }
 
         try {
-            DigestAlgorithm digestAlgorithm = DigestAlgorithm.getDefault();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-                byte[] rsaPrefix = getHashPrefix(clientMechanism);
-                out.write(rsaPrefix);
-           
+            DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(algorithm.substring(0, algorithm.toLowerCase().indexOf("with")));
             data = digestAlgorithm.getMessageDigest().digest(data);
-            out.write(data);
-            byte[] arr_combined = out.toByteArray();
+            
+            byte[] arr_combined = getASN1Prefix(digestAlgorithm, data);
 
             Map<String, Object> request = new HashMap<>();
 
             Map<String, String> clientInfo = new HashMap<>();
             clientInfo.put("ClientLibraryName", "jsign");
-            clientInfo.put("ClientLibraryVersion", "7.0.0");
 
             Map<String, String> processInfo = new HashMap<>();
             clientInfo.put("Executable", "jsign");

@@ -24,6 +24,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
