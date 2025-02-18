@@ -1,13 +1,4 @@
 {
-  "ProcessInfo": {
-    "Executable":"My Test"
-},
-  "ClientInfo": {
-      "ClientLibraryName": "MyHSMClienttest"
-  },
-
- "KeyId":"{59744996-dac7-42d7-adea-8de76e34f306}",
- "Mechanism": 1,
- "ClientMechanism": 65,
- "Data":"MDEwDQYJYIZIAWUDBAIBBQAEIEhtAwXZwEFVsL0LriCw7b61jyoy4fPgmEV75vlFw4/o"
+	"Error": "Private Key Access: 'sign' operation failed. More info: Error signing data (Failed to sign data using engine: 'Software', error: Call to C_Sign failed [DataInvalid])",
+	"RequestThumbprint": "C8B78011FF6C2E6C936544B1D0D5455C29890BEE745ADEE5A9E03A6D72E6A1C6"
 }

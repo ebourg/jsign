@@ -252,7 +252,7 @@ public class VenafiSigningService implements SigningService {
             String signature = (String) response.get("ResultData");
 
             if (algorithm.equals("SHA256withECDSA") || algorithm.equals("SHA384withECDSA") || algorithm.equals("SHA512withECDSA")) {
-                return encodeASN1(Base64.getDecoder().decode(signature));
+                return encodeASN1Signature(Base64.getDecoder().decode(signature));
             } else {
                 return Base64.getDecoder().decode(signature);
             }
