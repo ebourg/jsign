@@ -224,12 +224,12 @@ public class VenafiSigningService implements SigningService {
             request.put("ProcessInfo", processInfo); 
             request.put("KeyId", KeyId);
             request.put("Data", Base64.getEncoder().encodeToString(arr_combined));
-            //switch (algorithm) {
-            switch (algorithm.substring(algorithm.toLowerCase().indexOf("with") + 4)) {
+            
+            switch (privateKey.getAlgorithm()) {
                 case "RSA":
                     request.put("Mechanism", 1); // RSA 
                     break;
-                case "ECDSA":
+                case "EC":
                     request.put("Mechanism", 4161); // ECDSA
                     break;
                 default:
@@ -243,7 +243,7 @@ public class VenafiSigningService implements SigningService {
             }    
             String signature = (String) response.get("ResultData");
 
-            if (algorithm.equals("SHA256withECDSA") || algorithm.equals("SHA384withECDSA") || algorithm.equals("SHA512withECDSA")) {
+            if ("EC".equals(privateKey.getAlgorithm())) {
                 return encodeASN1Signature(Base64.getDecoder().decode(signature));
             } else {
                 return Base64.getDecoder().decode(signature);

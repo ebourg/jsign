@@ -56,6 +56,11 @@ public class VenafiSigningServiceTest {
 
     @Test
     public void testGetCertificateChain() throws Exception {
+        onRequest("/vedauth/authorize/oauth")
+                .havingMethodEqualTo("POST")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-authorize.json"));
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/getobjects")
@@ -73,6 +78,11 @@ public class VenafiSigningServiceTest {
 
     @Test
     public void testGetCertificateChainWithInvalidAlias() throws Exception {
+        onRequest("/vedauth/authorize/oauth")
+                .havingMethodEqualTo("POST")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-authorize.json"));
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/getobjects")
@@ -89,6 +99,11 @@ public class VenafiSigningServiceTest {
 
     @Test
     public void testSignRSA() throws Exception {
+        onRequest("/vedauth/authorize/oauth")
+                .havingMethodEqualTo("POST")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-authorize.json"));
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/sign")
@@ -108,6 +123,11 @@ public class VenafiSigningServiceTest {
 
     @Test
     public void testSignECDSA() throws Exception {
+        onRequest("/vedauth/authorize/oauth")
+                .havingMethodEqualTo("POST")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-authorize.json"));
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/sign")
@@ -128,6 +148,11 @@ public class VenafiSigningServiceTest {
 
     @Test
     public void testSignRSAWithFailure() throws Exception {
+        onRequest("/vedauth/authorize/oauth")
+                .havingMethodEqualTo("POST")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-authorize.json"));
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/sign")
@@ -145,6 +170,11 @@ public class VenafiSigningServiceTest {
 
     @Test
     public void testSignECDSAWithFailure() throws Exception {
+        onRequest("/vedauth/authorize/oauth")
+                .havingMethodEqualTo("POST")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/venafi-authorize.json"));
         onRequest()
                 .havingMethodEqualTo("POST")
                 .havingPathEqualTo("/vedhsm/api/sign")
