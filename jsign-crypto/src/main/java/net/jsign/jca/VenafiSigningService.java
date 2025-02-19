@@ -77,19 +77,6 @@ public class VenafiSigningService implements SigningService {
      /** The name of the Venafi CodeSign Protect certificate KeyId */
      private String KeyId;
 
-    /** Mapping between Java and Venafi CodeSign Protect signing algorithms */
-    private final Map<String, Integer> algorithmMapping = new HashMap<>();
-    {
-        algorithmMapping.put("SHA1withRSA", 6);
-        algorithmMapping.put("SHA256withRSA", 64);
-        algorithmMapping.put("SHA384withRSA", 65);
-        algorithmMapping.put("SHA512withRSA", 66);
-        algorithmMapping.put("SHA1withECDSA", 4162);
-        algorithmMapping.put("SHA256withECDSA", 4164);
-        algorithmMapping.put("SHA384withECDSA", 4165);
-        algorithmMapping.put("SHA512withECDSA", 4166);
-    }
-
     /* Add ASN.1 DER prefix to MessageDigest */
 
     public static byte[] addASN1Prefix(DigestAlgorithm digestAlgorithm, byte[] hash) throws IOException {
