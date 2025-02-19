@@ -113,7 +113,7 @@ public class VenafiSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer da49LbfHokLO+fKwFIneJg==")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileReader("target/test-classes/services/venafi-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/venafi-sign-rsa.json"));
 
         SigningService service = new VenafiSigningService("http://localhost:" + port(), new VenafiCredentials("username", "password", null));
         SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-rsa-cert", null);
@@ -138,7 +138,7 @@ public class VenafiSigningServiceTest {
                 .havingHeaderEqualTo("Authorization", "Bearer da49LbfHokLO+fKwFIneJg==")
                 .respond()
                 .withStatus(200)
-                .withBody(new FileReader("target/test-classes/services/venafi-sign.json"));
+                .withBody(new FileReader("target/test-classes/services/venafi-sign-ecdsa.json"));
 
         SigningService service = new VenafiSigningService("http://localhost:" + port(), new VenafiCredentials("username", "password", null));
         SigningServicePrivateKey privateKey = service.getPrivateKey("project-test-ecdsa-cert", null);
