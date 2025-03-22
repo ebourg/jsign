@@ -346,8 +346,9 @@ The keystore parameter references the AWS region.
 
 The AWS access key, secret key, and optionally the session token, are concatenated and used as
 the storepass parameter; if the latter is not provided, Jsign attempts to fetch the credentials
-from the environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN)
-or from the IMDSv2 service when running on an AWS EC2 instance.
+from the environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY and AWS_SESSION_TOKEN),
+from the ECS container credentials endpoint, or from the IMDSv2 service when running on an AWS
+EC2 instance.
 
 In any case, the credentials must allow the following actions: kms:ListKeys, kms:DescribeKey and kms:Sign.
 

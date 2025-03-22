@@ -110,7 +110,7 @@ public class KeyStoreBuilderTest {
 
         e = assertThrows(IllegalArgumentException.class, builder::build);
         assertTrue("message", e.getMessage().matches(
-                "storepass parameter must specify the AWS credentials\\: \\<accessKey\\>\\|\\<secretKey\\>\\[\\|\\<sessionToken\\>\\], when not running from an EC2 instance \\(.*\\)"));
+                "storepass parameter must specify the AWS credentials\\: \\<accessKey\\>\\|\\<secretKey\\>\\[\\|\\<sessionToken\\>\\], when not running from ECS or an EC2 instance"));
 
         builder.storepass("<accessKey>|<secretKey>|<sessionToken>");
 

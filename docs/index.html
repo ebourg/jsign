@@ -710,7 +710,8 @@ endpoint is used.</p>
 
 <p>The AWS access key, secret key, and optionally the session token, are concatenated
 and used as the <code>storepass</code> parameter; if the latter is not provided, Jsign attempts to fetch the credentials
-from the environment variables (<code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code> and <code>AWS_SESSION_TOKEN</code>)
+from the environment variables (<code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code> and <code>AWS_SESSION_TOKEN</code>),
+from the <a href="https://docs.aws.amazon.com/sdkref/latest/guide/feature-container-credentials.html">ECS container credentials endpoint</a>,
 or from the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">IMDSv2</a> service
 when running on an AWS EC2 instance.</p>
 

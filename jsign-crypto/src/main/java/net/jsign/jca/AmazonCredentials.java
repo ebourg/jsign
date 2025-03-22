@@ -70,14 +70,15 @@ public class AmazonCredentials {
      * <ul>
      *   <li>The environment variables <tt>AWS_ACCESS_KEY_ID</tt> (or <tt>AWS_ACCESS_KEY</tt>),
      *       <tt>AWS_SECRET_KEY</tt> (or <tt>AWS_SECRET_ACCESS_KEY</tt>) and <tt>AWS_SESSION_TOKEN</tt></li>
+     *   <li>The ECS container credentials service (ECS, EKS, Greengrass, Fargate)</li>
      *   <li>The EC2 instance metadata service (IMDSv2)</li>
      * </ul>
      */
     public static AmazonCredentials getDefault() throws IOException {
         if (getenv("AWS_ACCESS_KEY_ID") != null || getenv("AWS_ACCESS_KEY") != null) {
-            String accesKey = getenv("AWS_ACCESS_KEY_ID");
-            if (accesKey == null) {
-                accesKey = getenv("AWS_ACCESS_KEY");
+            String accessKey = getenv("AWS_ACCESS_KEY_ID");
+            if (accessKey == null) {
+                accessKey = getenv("AWS_ACCESS_KEY");
             }
             String secretKey = getenv("AWS_SECRET_KEY");
             if (secretKey == null) {
@@ -85,10 +86,18 @@ public class AmazonCredentials {
             }
             String sessionToken = getenv("AWS_SESSION_TOKEN");
 
-            return new AmazonCredentials(accesKey, secretKey, sessionToken);
-
+            return new AmazonCredentials(accessKey, secretKey, sessionToken);
         } else {
-            return new AmazonIMDS2Client().getCredentials();
+            try {
+                return new AmazonECSCredentialsClient().getCredentials();
+            } catch (IOException ecsException) {
+                try {
+                    return new AmazonIMDS2Client().getCredentials();
+                } catch (IOException imds2Exception) {
+                    ecsException.addSuppressed(imds2Exception);
+                    throw ecsException;
+                }
+            }
         }
     }
 

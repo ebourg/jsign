@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
+
 import javax.smartcardio.CardException;
 
 import net.jsign.jca.AmazonCredentials;
@@ -294,7 +295,8 @@ public enum KeyStoreType {
      * <p>The AWS access key, secret key, and optionally the session token, are concatenated and used as
      * the storepass parameter; if the latter is not provided, Jsign attempts to fetch the credentials from
      * the environment variables (<code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code> and
-     * <code>AWS_SESSION_TOKEN</code>) or from the IMDSv2 service when running on an AWS EC2 instance.</p>
+     * <code>AWS_SESSION_TOKEN</code>), from the ECS container credentials endpoint, or from the IMDSv2
+     * service when running on an AWS EC2 instance.</p>
      *
      * <p>In any case, the credentials must allow the following actions: <code>kms:ListKeys</code>,
      * <code>kms:DescribeKey</code> and <code>kms:Sign</code>.</p>
@@ -321,9 +323,9 @@ public enum KeyStoreType {
                 } catch (UnknownServiceException e) {
                     throw new IllegalArgumentException("storepass " + params.parameterName()
                             + " must specify the AWS credentials: <accessKey>|<secretKey>[|<sessionToken>]"
-                            + ", when not running from an EC2 instance (" + e.getMessage() + ")", e);
+                            + ", when not running from ECS or an EC2 instance", e);
                 } catch (IOException e) {
-                    throw new RuntimeException("An error occurred while fetching temporary credentials from IMDSv2 service", e);
+                    throw new RuntimeException("Failed fetching temporary credentials from ECS and IMDSv2 services", e);
                 }
             }
 
