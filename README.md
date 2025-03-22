@@ -54,6 +54,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 7.2 (in development)
+
+* ECS container credentials are now supported when signing with AWS KMS (contributed by Alejandro González)
+
 #### Version 7.1 (2025-02-14)
 
 * New signing service: SignPath
