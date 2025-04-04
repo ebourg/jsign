@@ -60,9 +60,7 @@ public class CatalogFile implements Signable {
             return false;
         }
 
-        try {
-            CatalogFile catFile = new CatalogFile(file);
-            catFile.close();
+        try (CatalogFile catFile = new CatalogFile(file)) {
             return true;
         } catch (IOException e) {
             return false;

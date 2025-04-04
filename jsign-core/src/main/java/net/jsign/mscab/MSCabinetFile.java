@@ -70,9 +70,7 @@ public class MSCabinetFile implements Signable {
             return false;
         }
 
-        try {
-            MSCabinetFile cabFile = new MSCabinetFile(file);
-            cabFile.close();
+        try (MSCabinetFile cabFile = new MSCabinetFile(file)) {
             return true;
         } catch (IOException e) {
             if (e.getMessage().contains("Invalid MSCabinet header signature") || e.getMessage().contains("MSCabinet file too short")) {
