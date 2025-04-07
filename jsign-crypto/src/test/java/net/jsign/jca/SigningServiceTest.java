@@ -230,6 +230,17 @@ public class SigningServiceTest {
     }
 
     @Test
+    public void testVenafiProvider() throws Exception {
+        VenafiCredentials credentials = new VenafiCredentials("demo_user", "password", "target/test-classes/keystores/keystore.p12", "password");
+        Provider provider = new SigningServiceJcaProvider(new VenafiSigningService(null, credentials));
+        KeyStore keystore = KeyStore.getInstance("VENAFI", provider);
+        keystore.load(null, "".toCharArray());
+
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "windows_codesign", ""));
+        assertEquals("message", "Failed to authenticate with Venafi: Error authenticating user", e.getCause().getMessage());
+    }
+
+    @Test
     public void testSignServerProvider() throws Exception {
         SignServerCredentials credentials = new SignServerCredentials("username", "password", "target/test-classes/keystores/keystore.p12", "password");
         Provider provider = new SigningServiceJcaProvider(new SignServerSigningService("https://example.com/signserver", credentials));
