@@ -79,7 +79,9 @@ public class PEFile implements Signable {
             return false;
         }
         
-        try (PEFile peFile = new PEFile(file)) {
+        try {
+            PEFile peFile = new PEFile(file);
+            peFile.close();
             return true;
         } catch (IOException e) {
             if (e.getMessage().contains("DOS header signature not found") || e.getMessage().contains("PE signature not found")) {
