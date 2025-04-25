@@ -57,6 +57,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 7.2 (in development)
 
 * ECS container credentials are now supported when signing with AWS KMS (contributed by Alejandro González)
+* The command line tool on Windows now works even if the installation path contains a space (contributed by Tres Finocchiaro)
 
 #### Version 7.1 (2025-02-14)
 
