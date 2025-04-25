@@ -9,4 +9,4 @@ if exist "C:\Program Files\Yubico\Yubico PIV Tool\bin\" (
 java %JSIGN_OPTS% ^
      -Djava.net.useSystemProxies=true ^
      -Dbasename=jsign ^
-     -jar %~dp0\jsign.jar %*
+     -jar "%~dp0\jsign.jar" %*
