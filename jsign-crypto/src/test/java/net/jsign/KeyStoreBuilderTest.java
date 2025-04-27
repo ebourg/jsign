@@ -306,6 +306,19 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildVenafi() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(VENAFI).keystore("https://tpp.example.local");
+
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the Venafi username/password", e.getMessage());
+
+        builder.storepass("username|password");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildSignPath() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(SIGNPATH);
 
