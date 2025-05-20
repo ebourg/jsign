@@ -53,16 +53,15 @@ class SafeNetEToken {
         if (!library.exists()) {
             throw new ProviderException("SafeNet eToken PKCS11 module is not installed (" + library + " is missing)");
         }
-        String configuration = "--name=\"SafeNet eToken\"\nlibrary = \"" + library.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+
+        long slot;
         try {
-            long slot = getTokenSlot(library);
-            if (slot >= 0) {
-                configuration += "slot=" + slot;
-            }
+            slot = getTokenSlot(library);
         } catch (Exception e) {
             throw new ProviderException(e);
         }
-        return configuration;
+
+        return new PKCS11Configuration().name("SafeNet eToken").library(library).slot(slot).toString();
     }
 
     /**

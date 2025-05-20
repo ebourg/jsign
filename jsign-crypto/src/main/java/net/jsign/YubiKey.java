@@ -59,16 +59,15 @@ class YubiKey {
         if (!libykcs11.exists()) {
             throw new ProviderException("YubiKey PKCS11 module (ykcs11) is not installed (" + libykcs11 + " is missing)");
         }
-        String configuration = "--name=yubikey\nlibrary = \"" + libykcs11.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+
+        long slot;
         try {
-            long slot = getTokenSlot(libykcs11);
-            if (slot >= 0) {
-                configuration += "slot=" + slot;
-            }
+            slot = getTokenSlot(libykcs11);
         } catch (Exception e) {
             throw new ProviderException(e);
         }
-        return configuration;
+
+        return new PKCS11Configuration().name("yubikey").library(libykcs11).slot(slot).toString();
     }
 
     /**

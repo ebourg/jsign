@@ -57,21 +57,19 @@ class OpenSC {
         if (!library.exists()) {
             throw new ProviderException("OpenSC PKCS11 module is not installed (" + library + " is missing)");
         }
-        String configuration = "--name=opensc\nlibrary = \"" + library.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
+
+        long slot;
         try {
-            long slot;
             try {
                 slot = Integer.parseInt(name);
             } catch (Exception e) {
                 slot = getTokenSlot(library, name);
             }
-            if (slot >= 0) {
-                configuration += "slot=" + slot;
-            }
         } catch (Exception e) {
             throw new ProviderException(e);
         }
-        return configuration;
+
+        return new PKCS11Configuration().name("opensc").library(library).slot(slot).toString();
     }
 
     /**
