@@ -37,7 +37,7 @@ public class SafeNetETokenTest {
     public void testGetProvider() {
         assumeSafeNetEToken();
         try {
-            Provider provider = SafeNetEToken.getProvider();
+            Provider provider = SafeNetEToken.getProvider(null);
             assertNotNull("provider", provider);
         } catch (RuntimeException e) {
             assertEquals("message", "No PKCS11 token found", ExceptionUtils.getRootCause(e).getMessage());

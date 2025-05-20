@@ -39,8 +39,8 @@ class SafeNetEToken {
      * @return the SafeNet eTokens security provider
      * @throws ProviderException thrown if the provider can't be initialized
      */
-    static Provider getProvider() {
-        return ProviderUtils.createSunPKCS11Provider(getSunPKCS11Configuration());
+    static Provider getProvider(String name) {
+        return ProviderUtils.createSunPKCS11Provider(getSunPKCS11Configuration(name));
     }
 
     /**
@@ -48,7 +48,7 @@ class SafeNetEToken {
      *
      * @throws ProviderException thrown if the PKCS11 modules cannot be found
      */
-    static String getSunPKCS11Configuration() {
+    static String getSunPKCS11Configuration(String name) {
         File library = getPKCS11Library();
         if (!library.exists()) {
             throw new ProviderException("SafeNet eToken PKCS11 module is not installed (" + library + " is missing)");
@@ -56,7 +56,11 @@ class SafeNetEToken {
 
         long slot;
         try {
-            slot = getTokenSlot(library);
+            try {
+                slot = Integer.parseInt(name);
+            } catch (Exception e) {
+                slot = getTokenSlot(library);
+            }
         } catch (Exception e) {
             throw new ProviderException(e);
         }

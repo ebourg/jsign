@@ -460,7 +460,7 @@ public enum KeyStoreType {
     ETOKEN(false, true) {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            return SafeNetEToken.getProvider();
+            return SafeNetEToken.getProvider(params.keystore());
         }
     },
 
