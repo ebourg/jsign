@@ -1,0 +1,4 @@
+{
+	"Error": "Private Key Access: 'sign' operation failed. More info: Error signing data (Failed to sign data using engine: 'Software', error: Mechanism RSA_PKCS not supported by key 'CryptokiECPrivateKey [4294967295])",
+	"RequestThumbprint": "3F8B611F3B2FD02264368E3E52E1473B7B6EF2EDAADD58A8821476136C3319E7"
+}
