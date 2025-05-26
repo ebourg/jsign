@@ -45,7 +45,7 @@ class PKCS11Configuration {
     }
 
     public String toString() {
-        String configuration = "--name=" + name + "\n";
+        String configuration = "--name=\"" + name + "\"\n";
         configuration += "library = \"" + library.getAbsolutePath().replace("\\", "\\\\") + "\"\n";
         if (slot >= 0) {
             configuration += "slot=" + slot;
