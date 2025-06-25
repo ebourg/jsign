@@ -1,0 +1,10 @@
+{
+	"access_token": "FpBFnGsryqrIiuzewOc3aw==",
+	"refresh_token": "enLssS1xDzxZ\/M0EJMlRIQ==",
+	"expires_in": 7775999,
+	"expires": 1747751472,
+	"token_type": "Bearer",
+	"scope": "codesignclient",
+	"identity": "local:{412fb225-b109-48c9-85d6-3abf45f725dc}",
+	"refresh_until": 1771511472
+}
