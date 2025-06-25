@@ -46,7 +46,7 @@ import net.jsign.KeyStoreBuilder;
  * DigiCert ONE signing service.
  *
  * @since 4.0
- * @see <a href="https://one.digicert.com/signingmanager/swagger-ui/index.html?configUrl=/signingmanager/v3/api-docs/swagger-config">Secure Software Manager REST API</a>
+ * @see <a href="https://one.digicert.com/signingmanager/docs/swagger-ui/index.html">Software Trust Manager REST API</a>
  */
 public class DigiCertOneSigningService implements SigningService {
 
