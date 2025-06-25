@@ -120,7 +120,7 @@ public class DigiCertOneSigningServiceTest {
     }
 
     @Test
-    public void testGetCertificateChainWithError() {
+    public void testGetCertificateChainWithEmptyError() {
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/signingmanager/api/v1/certificates")
@@ -131,6 +131,23 @@ public class DigiCertOneSigningServiceTest {
 
         Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("jsign-1995-cert"));
         assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
+    }
+
+    @Test
+    public void testGetCertificateChainWithStringError() {
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/signingmanager/api/v1/certificates")
+                .respond()
+                .withStatus(510)
+                .withContentType("application/json")
+                .withBody("{\"status\":\"500\",\"error\":\"Internal Server Error\",\"path\":\"/signingmanager/api/v1/certificates\"}");
+
+        SigningService service = getTestService();
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("jsign-1995-cert"));
+        assertEquals("message", "Unable to retrieve DigiCert ONE certificate 'jsign-1995-cert'", e.getMessage());
+        assertEquals("cause", "Internal Server Error", e.getCause().getMessage());
     }
 
     @Test

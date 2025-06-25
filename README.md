@@ -59,6 +59,7 @@ See https://ebourg.github.io/jsign for more information.
 * ECS container credentials are now supported when signing with AWS KMS (contributed by Alejandro González)
 * The `keystore` parameter can now be specified with the `ETOKEN` storetype to distinguish between multiple connected devices
 * The command line tool on Windows now works even if the installation path contains a space (contributed by Tres Finocchiaro)
+* The error handling with DigiCert ONE has been improved (contributed by Alejandro González)
 
 #### Version 7.1 (2025-02-14)
 
