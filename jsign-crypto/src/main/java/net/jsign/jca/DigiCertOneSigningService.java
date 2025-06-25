@@ -109,8 +109,14 @@ public class DigiCertOneSigningService implements SigningService {
                     }
                 })
                 .errorHandler(response -> {
-                    Map error = (Map) response.get("error");
-                    return error != null ? error.get("status") + ": " + error.get("message") : JsonWriter.format(response);
+                    Object error = response.get("error");
+                    if (error instanceof Map) {
+                        return ((Map) error).get("status") + ": " + ((Map) error).get("message");
+                    } else if (error instanceof String) {
+                        return (String) error;
+                    } else {
+                        return JsonWriter.format(response);
+                    }
                 });
     }
 
