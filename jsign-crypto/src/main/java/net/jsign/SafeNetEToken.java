@@ -102,6 +102,13 @@ class SafeNetEToken {
             paths.add("/usr/lib/pkcs11/libeToken.so");
             paths.add("/usr/lib/libeTPkcs11.so");
             paths.add("/usr/lib/libeToken.so");
+            String libraryPath = System.getenv("LD_LIBRARY_PATH");
+            if (libraryPath != null) {
+                for (String s : libraryPath.split(":")) {
+                    paths.add(s + "/libeToken.so");
+                    paths.add(s + "/libeTPkcs11.so");
+                }
+            }
 
             for (String path : paths) {
                 File library = new File(path);

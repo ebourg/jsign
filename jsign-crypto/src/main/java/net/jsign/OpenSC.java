@@ -146,6 +146,12 @@ class OpenSC {
                 paths.add("/usr/lib/mips64el-linux-gnuabi64/opensc-pkcs11.so");
                 paths.add("/usr/lib/riscv64-linux-gnu/opensc-pkcs11.so");
             }
+            String libraryPath = System.getenv("LD_LIBRARY_PATH");
+            if (libraryPath != null) {
+                for (String s : libraryPath.split(":")) {
+                    paths.add(s + "/libykcs11.so");
+                }
+            }
 
             for (String path : paths) {
                 File library = new File(path);
