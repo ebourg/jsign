@@ -131,6 +131,7 @@ the all-in-one jar:</p>
   <li><a href="#timestamp-options">timestamp</a></li>
   <li><a href="#extract-options">extract</a></li>
   <li>remove</li>
+  <li><a href="#show">show</a></li>
   <li><a href="#tag-options">tag</a></li>
 </ul>
 
@@ -365,6 +366,27 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
   <dt>--format</dt>
   <dd>The output format of the signature (DER or PEM)</dd>
 </dl>
+
+<br>
+
+<h4 id="show">Show signature</h4>
+
+<p>To check whether a file has been signed and with which certificate, use the show command to list details about any signature present on the file.</p>
+
+<pre>
+  jsign show foo.exe
+  Signature 0
+  Digest Algorithm:   SHA256
+  Digest Value:       c481bb3892d066ffacba0650adaa4c252580b776b1dd6026cf4a8bea6c813939
+  Is Timestamped?     false
+  Certificate
+    Subject:          CN=net.jsign.signing-cert
+    Issuer:           CN=net.jsign.issuing-cert
+    Not Before:       Fri Dec 03 14:34:46 CST 2021
+    Not After:        Wed May 24 14:34:46 CST 2119
+    Expired:          false
+    Serial:           148957645726085760686199624248870688956
+</pre>
 
 <br>
 
@@ -1039,7 +1061,6 @@ are the same as those described above for the command line tool (the long option
                                   --alias &lt;account&gt;/&lt;profile&gt;
                                   ${{ github.workspace }}/dist/application.exe
 </pre>
-
 
 <h3 id="api">API</h3>
 
