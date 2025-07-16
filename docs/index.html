@@ -527,7 +527,7 @@ are the same as those described above for the Ant task.</p>
   files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics
   365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
   
-  commands: sign (default), timestamp, extract, remove, tag
+  commands: sign (default), timestamp, extract, remove, tag, show
 
   sign:
   -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file,
@@ -1031,6 +1031,25 @@ on the download server without needing Jsign to be installed. For example:</p>
 <p>If the <code>value</code> parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
 <code style="white-space: nowrap">-----BEGIN TAG-----</code> and <code style="white-space: nowrap">-----END TAG-----</code>
 markers.</p>
+
+<h4 id="show">Show signature</h4>
+
+<p>To check whether a file has been signed and with which certificate, use the show command to list details about any signature present on the file.</p>
+
+<pre>
+  jsign show foo.exe
+  Signature 0
+  Digest Algorithm:   SHA256
+  Digest Value:       c481bb3892d066ffacba0650adaa4c252580b776b1dd6026cf4a8bea6c813939
+  Is Timestamped?     false
+  Certificate
+    Subject:          CN=net.jsign.signing-cert
+    Issuer:           CN=net.jsign.issuing-cert
+    Not Before:       Fri Dec 03 14:34:46 CST 2021
+    Not After:        Wed May 24 14:34:46 CST 2119
+    Expired:          false
+    Serial:           148957645726085760686199624248870688956
+</pre>
 
 <h3 id="api">API</h3>
 
