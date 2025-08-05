@@ -27,7 +27,7 @@
   </repositories>
 
   <properties>
-    <gradle.version>3.4</gradle.version>
+    <gradle.version>5.6.4</gradle.version>
   </properties>
 
   <dependencies>
@@ -53,15 +53,31 @@
 
     <dependency>
       <groupId>org.gradle</groupId>
-      <artifactId>gradle-core</artifactId>
+      <artifactId>gradle-base-services</artifactId>
       <version>${gradle.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.gradle</groupId>
-      <artifactId>gradle-native</artifactId>
-      <version>5.6</version>
+      <artifactId>gradle-core-api</artifactId>
+      <version>${gradle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Test dependencies -->
+
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-logging</artifactId>
+      <version>${gradle.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-model-core</artifactId>
+      <version>${gradle.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -69,6 +85,20 @@
       <groupId>org.gradle</groupId>
       <artifactId>gradle-process-services</artifactId>
       <version>${gradle.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>27.1-android</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.36</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

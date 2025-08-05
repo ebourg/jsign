@@ -21,8 +21,8 @@ import java.util.Map;
 
 import groovy.lang.Closure;
 import org.gradle.api.Project;
-import org.gradle.api.internal.plugins.DefaultConvention;
 import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.internal.extensibility.DefaultConvention;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public class JsignGradlePluginTest {
     @Test
     public void testRegisterPlugin() {
         Project project = mock(Project.class);
-        ExtensionContainer container = new DefaultConvention();
+        ExtensionContainer container = new DefaultConvention(null);
         when(project.getExtensions()).thenReturn(container);
 
         new JsignGradlePlugin().apply(project);
@@ -45,7 +45,7 @@ public class JsignGradlePluginTest {
     @Test
     public void testCall() {
         Project project = mock(Project.class);
-        ExtensionContainer container = new DefaultConvention();
+        ExtensionContainer container = new DefaultConvention(null);
         when(project.getExtensions()).thenReturn(container);
 
         new JsignGradlePlugin().apply(project);
@@ -54,7 +54,7 @@ public class JsignGradlePluginTest {
         params.put("file", "wineyes.exe");
         params.put("name", "WinEyes");
 
-        Closure closure = (Closure) container.getByName("jsign");
+        Closure closure = (Closure) project.getExtensions().getByName("jsign");
         assertThrows(SignerException.class, () -> closure.call(params));
     }
 }
