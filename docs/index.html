@@ -482,6 +482,27 @@ are the same as those described above for the Ant task.</p>
     }
 </pre>
 
+<br>
+
+<p>The <code>file</code> parameter can be replaced by a <code>fileset</code> parameter to sign multiple files:</p>
+
+<p>Groovy:</p>
+
+<pre class="prettyprint lang-groovy">
+    jsign(fileset   : fileTree(dir: 'build', include: '**/*.exe'),
+          storetype : 'YUBIKEY',
+          storepass : '123456')
+</pre>
+
+<p>Kotlin:</p>
+
+<pre class="prettyprint lang-kotlin">
+    jsign("fileset"   to fileTree("build") { include ("**/*.exe") },
+          "storetype" to "YUBIKEY",
+          "storepass" to "123456",)
+</pre>
+
+
 <h3 id="github-actions">GitHub Actions</h3>
 
 <p>Jsign can be used in GitHub Actions by inserting the following steps in the workflow:</p>

@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 
 import groovy.lang.Closure;
 import org.gradle.api.Project;
+import org.gradle.api.file.FileCollection;
 
 /**
  * Jsign extension method for Gradle.
@@ -38,24 +40,37 @@ public class JsignExtension extends Closure<Void> {
         this.project = project;
     }
 
-    public void doCall(Map<String, String> params) throws SignerException {
-        String file = params.get("file");
+    public void doCall(Map<String, ?> params) throws SignerException {
+        String file = (String) params.get("file");
         params.remove("file");
+
+        FileCollection fileset = null;
+        if (params.containsKey("fileset")) {
+            fileset = project.files(params.get("fileset"));
+            params.remove("fileset");
+        }
 
         boolean quiet = "true".equals(params.get("quiet"));
         Logger.getLogger("net.jsign").setLevel(quiet ? Level.WARNING : Level.ALL);
 
         SignerHelper helper = new SignerHelper("property");
         helper.setBaseDir(project.getProjectDir());
-        for (Map.Entry<String, String> param : params.entrySet()) {
-            helper.param(param.getKey(), param.getValue());
+        for (Map.Entry<String, ?> param : params.entrySet()) {
+            helper.param(param.getKey(), (String) param.getValue());
         }
-        helper.execute(file);
+
+        if (fileset != null && !fileset.isEmpty()) {
+            for (File f : fileset) {
+                helper.execute(f);
+            }
+        } else {
+            helper.execute(file);
+        }
     }
 
-    public void doCall(kotlin.Pair<String, String>... pairs) throws SignerException {
-        Map<String, String> params = new HashMap<>();
-        for (kotlin.Pair<String, String> pair : pairs) {
+    public void doCall(kotlin.Pair<String, ?>... pairs) throws SignerException {
+        Map<String, Object> params = new HashMap<>();
+        for (kotlin.Pair<String, ?> pair : pairs) {
             params.put(pair.getFirst(), pair.getSecond());
         }
         doCall(params);
