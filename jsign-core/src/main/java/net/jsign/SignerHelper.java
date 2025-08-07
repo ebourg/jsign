@@ -429,7 +429,7 @@ class SignerHelper {
 
     public void sign(File file) throws SignerException {
         if (file == null) {
-            throw new SignerException("file must be set");
+            throw new SignerException("No file specified");
         }
         if (!file.exists()) {
             throw new SignerException("The file " + file + " couldn't be found");
