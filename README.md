@@ -65,6 +65,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.6 (in development)
 
+* The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
 * The Gradle plugin published on the Gradle plugin portal is compiled with Java 8 again
 
 #### Version 7.5 (2026-07-16)
