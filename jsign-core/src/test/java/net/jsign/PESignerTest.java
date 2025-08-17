@@ -627,4 +627,25 @@ public class PESignerTest {
             }
         }
     }
+
+    @Test
+    public void testSignWithSelfSignedCertificate() throws Exception {
+        KeyStore keyStore =  new KeyStoreBuilder().storetype("NONE")
+                .keyfile("target/test-classes/keystores/privatekey.pkcs1.pem")
+                .certfile("target/test-classes/keystores/jsign-self-signed.pem")
+                .build();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-self.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        PESigner signer = new PESigner (keyStore, "jsign", "").withTimestamping(false);
+
+        try (PEFile file = new PEFile(targetFile)) {
+            signer.sign(file);
+
+            SignatureAssert.assertSigned(file, SHA256);
+        }
+    }
 }
