@@ -61,6 +61,7 @@ See https://ebourg.github.io/jsign for more information.
 * The Gradle plugin can now sign multiple files by defining a fileset
 * The command line tool on Windows now works even if the installation path contains a space (contributed by Tres Finocchiaro)
 * The error handling with DigiCert ONE has been improved (contributed by Alejandro González)
+* Upgraded Bouncy Castle LTS to 2.73.8
 
 #### Version 7.1 (2025-02-14)
 
