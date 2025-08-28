@@ -40,8 +40,8 @@ jobs:
       - name: Tests
         run: mvn -B test
 
-      - name: Packaging
-        run: mvn -B package -DskipTests
+      - name: Packaging & integration tests
+        run: mvn -B verify -DskipTests
 
       - name: Archive artifacts
         if: ${{ matrix.java == '8' }}
