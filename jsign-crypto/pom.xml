@@ -14,11 +14,6 @@
   <packaging>jar</packaging>
 
   <dependencies>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-lts8on</artifactId>
-      <version>${bouncycastle.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.bouncycastle</groupId>
