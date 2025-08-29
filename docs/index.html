@@ -234,6 +234,7 @@ invalidating the signature:</p>
           <li><code>SIGNPATH</code>: SignPath</li>
           <li><code>SIGNSERVER</code>: Keyfactor SignServer</li>
           <li><code>TRUSTEDSIGNING</code>: Azure Trusted Signing</li>
+          <li><code>VENAFI</code>: Venafi CodeSign Protect</li>
         </ul>
       </td>
       <td class="required">No, automatically detected for file based keystores.</td>
@@ -579,6 +580,7 @@ are the same as those described above for the Ant task.</p>
                              - SIGNPATH: SignPath
                              - SIGNSERVER: Keyfactor SignServer
                              - TRUSTEDSIGNING: Azure Trusted Signing
+                             - VENAFI: Venafi CodeSign Protect
   -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore
      --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
                              this parameter can be omitted if the keystore shares the
@@ -1019,6 +1021,22 @@ concatenation of the project slug and the signing policy slug, separated by a sl
        --kesytore &lt;organizationId&gt; \
        --storepass &lt;accessToken&gt; \
        --alias &lt;projectSlug&gt;/&lt;signingPolicySlug&gt; \
+       application.exe
+</pre>
+
+<h4 id="example-venafi">Signing with Venafi CodeSign Protect</h4>
+
+<p>Signing with <a href="https://venafi.com/codesign-protect/">Venafi CodeSign Protect</a> requires version 23.1 or later
+and requires a minimum scope of <code>codesignclient</code> as part of the default <code>VenafiCodeSignClient</code> API integration within the Trust Protection Platform.
+The <code>keystore</code> parameter references the URL of the Venafi CodeSign Protect server.  The <code>storepass</code> parameter represents
+the Key User credential assigned to the CodeSign Protect project. The <code>alias</code> parameter is the certificate label which can be obtained from 
+the <code>pkcs11config list</code> command.</p>
+
+<pre>
+ jsign --storetype VENAFI \
+       --keystore https://example.tpp.local \
+       --storepass "&lt;username&gt;|&lt;password&gt;" \
+       --alias my-certificate-label \
        application.exe
 </pre>
 
