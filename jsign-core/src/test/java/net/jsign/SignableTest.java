@@ -16,12 +16,21 @@
 
 package net.jsign;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.appx.APPXFile;
@@ -71,5 +80,53 @@ public class SignableTest {
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
         }
+    }
+
+    @Test
+    public void testFileDescriptorLeak() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").startsWith("Linux"));
+
+        File file = new File("pom.xml");
+        File tmp = new File("target/test-classes/pom-tmp.xml");
+
+        FileUtils.copyFile(file, tmp);
+
+        assertFalse("The file descriptor should be closed before probing the file", isFileOpen(tmp));
+        assertThrows(UnsupportedOperationException.class, () -> Signable.of(tmp));
+        assertFalse("The file descriptor should be closed after probing the file", isFileOpen(tmp));
+    }
+
+    /**
+     * Checks if the current process has an open file descriptor for the specified file (Linux only).
+     */
+    private boolean isFileOpen(File file) throws IOException {
+        Path canonicalPath = file.getCanonicalFile().toPath();
+        //String pid = String.valueOf(ProcessHandle.current().pid()); // Java 9+
+        String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+
+        Process process = null;
+        try {
+            process = new ProcessBuilder("lsfd", "-p", pid, "-Q", "TYPE == \"REG\"", "-o", "NAME", "--noheadings").start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    try {
+                        Path opened = Paths.get(line).toRealPath();
+                        if (Files.isSameFile(opened, canonicalPath)) {
+                            return true;
+                        }
+                    } catch (IOException e) {
+                        // Ignore non-file entries
+                    }
+                }
+            }
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
+        }
+
+        return false;
     }
 }

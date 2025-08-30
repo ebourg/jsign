@@ -93,6 +93,7 @@ public class CatalogFile implements Signable {
         try {
             signedData = new CMSSignedData(Channels.newInputStream(channel));
         } catch (CMSException e) {
+            channel.close();
             throw new IOException("Catalog file format error", e);
         }
     }

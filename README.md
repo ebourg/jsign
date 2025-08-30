@@ -60,6 +60,7 @@ See https://ebourg.github.io/jsign for more information.
 * The `keystore` parameter can now be specified with the `ETOKEN` storetype to distinguish between multiple connected devices
 * The Gradle plugin can now sign multiple files by defining a fileset
 * The command line tool on Windows now works even if the installation path contains a space (contributed by Tres Finocchiaro)
+* The file handle is now properly closed when probing the file format
 * The error handling with DigiCert ONE has been improved (contributed by Alejandro González)
 * Upgraded Bouncy Castle LTS to 2.73.8
 
