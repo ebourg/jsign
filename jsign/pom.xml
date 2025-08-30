@@ -57,6 +57,7 @@
                 <dependencySourceExclude>net.jsign:jsign-ant</dependencySourceExclude>
                 <dependencySourceExclude>org.kohsuke.metainf-services:metainf-services</dependencySourceExclude>
               </dependencySourceExcludes>
+              <detectOfflineLinks>false</detectOfflineLinks>
             </configuration>
           </execution>
         </executions>
