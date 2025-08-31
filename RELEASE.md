@@ -13,7 +13,7 @@ Release process
 
        mvn clean deploy -Prelease
 
-1. Login to https://oss.sonatype.org and release the Nexus staging repository
+1. Login to https://central.sonatype.com/publishing/deployments and publish the staged deployment
 
 1. Review and commit the changes
 
