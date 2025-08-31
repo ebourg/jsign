@@ -54,7 +54,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.2 (in development)
+#### Version 7.2 (2025-08-31)
 
 * ECS container credentials are now supported when signing with AWS KMS (contributed by Alejandro González)
 * The `keystore` parameter can now be specified with the `ETOKEN` storetype to distinguish between multiple connected devices
