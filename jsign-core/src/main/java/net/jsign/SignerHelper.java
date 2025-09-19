@@ -471,10 +471,7 @@ class SignerHelper {
         byte[] signatureBytes = Files.readAllBytes(detachedSignature.toPath());
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
-        List<CMSSignedData> signatures = SignatureUtils.getSignatures(signedData);
-        signatures.set(0, SignatureUtils.removeNestedSignatures(signatures.get(0)));
-
-        signable.setSignatures(signatures);
+        signable.setSignatures(SignatureUtils.getSignatures(signedData));
         signable.save();
         // todo warn if the hashes don't match
     }

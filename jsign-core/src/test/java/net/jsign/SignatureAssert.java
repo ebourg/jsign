@@ -94,6 +94,9 @@ public class SignatureAssert {
             if (isAuthenticode(signature.getSignedContentTypeOID())) {
                 assertNull("signingTime attribute found in signature " + i, signature.getSignerInfos().iterator().next().getSignedAttributes().get(CMSAttributes.signingTime));
             }
+
+            // Check if the nested signatures were removed
+            assertNoUnsignedAttribute("Nested signatures found in the signature", signature, SPC_NESTED_SIGNATURE_OBJID);
         }
     }
 
@@ -120,5 +123,15 @@ public class SignatureAssert {
 
         Attribute attribute = attributes.get(oid);
         assertNotNull(message + " (missing " + oid + " attribute)", attribute);
+    }
+
+    public static void assertNoUnsignedAttribute(String message, CMSSignedData signature, ASN1ObjectIdentifier oid) {
+        SignerInformation signerInformation = signature.getSignerInfos().getSigners().iterator().next();
+
+        AttributeTable attributes = signerInformation.getUnsignedAttributes();
+        if (attributes != null) {
+            Attribute attribute = attributes.get(oid);
+            assertNull(message + " (unsigned attribute " + oid + " found)", attribute);
+        }
     }
 }

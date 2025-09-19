@@ -64,6 +64,7 @@ public class SignatureUtils {
      * Extract the nested Authenticode signatures from the specified signature.
      *
      * @param signature the signature to analyze
+     * @return the list of signatures (the first one is the parent signature without nested signatures)
      */
     public static List<CMSSignedData> getSignatures(CMSSignedData signature) throws IOException {
         List<CMSSignedData> signatures = new ArrayList<>();
@@ -71,6 +72,7 @@ public class SignatureUtils {
         try {
             if (signature != null) {
                 signatures.add(signature);
+                signatures.set(0, SignatureUtils.removeNestedSignatures(signature));
 
                 // look for nested signatures
                 SignerInformation signerInformation = signature.getSignerInfos().iterator().next();

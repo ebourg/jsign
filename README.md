@@ -58,6 +58,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * API changes:
   * New `Signable.setSignatures(List<CMSSignedData>)` method to set multiple signatures (nesting is handled automatically)
+  * `SignatureUtils.getSignatures()` now removes the nested signatures from the first signature in the list
 
 #### Version 7.2 (2025-08-31)
 
