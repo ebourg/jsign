@@ -320,6 +320,35 @@ public class PESignerTest {
     }
 
     @Test
+    public void testSignThreeTimesEFI() throws Exception {
+        File sourceFile = new File("target/test-classes/fbx64.efi");
+        File targetFile = new File("target/test-classes/fbx64-signed-three-times.efi");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+
+            AuthenticodeSigner signer = new AuthenticodeSigner(getKeyStore(), ALIAS, PRIVATE_KEY_PASSWORD);
+            signer.withDigestAlgorithm(SHA256);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256);
+
+            // second signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256, SHA256);
+
+            // third signature
+            signer.withDigestAlgorithm(SHA256);
+            signer.sign(peFile);
+
+            SignatureAssert.assertSigned(peFile, SHA256, SHA256, SHA256);
+        }
+    }
+
+    @Test
     public void testReplaceSignature() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-re-signed.exe");

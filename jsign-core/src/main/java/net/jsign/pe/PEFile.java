@@ -276,10 +276,22 @@ public class PEFile implements Signable {
      * Writes the certificate table. The data is either appended at the end of the file
      * or written over the previous certificate table.
      * 
-     * @param data the content of the certificate table
+     * @param entries the entries of the certificate table
      * @throws IOException if an I/O error occurs
      */
-    synchronized void writeCertificateTable(byte[] data) throws IOException {
+    private synchronized void writeCertificateTable(CertificateTableEntry[] entries) throws IOException {
+        int totalSize = 0;
+        for (CertificateTableEntry entry : entries) {
+            totalSize += entry.getSize();
+        }
+
+        byte[] data = new byte[totalSize];
+        int pos = 0;
+        for (CertificateTableEntry entry : entries) {
+            System.arraycopy(entry.toBytes(), 0, data, pos, entry.getSize());
+            pos += entry.getSize();
+        }
+
         DataDirectory directory = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         if (directory == null) {
             throw new IOException("No space allocated in the data directories index for the certificate table");
@@ -325,8 +337,18 @@ public class PEFile implements Signable {
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
         if (signature != null) {
-            CertificateTableEntry entry = new CertificateTableEntry(signature);
-            writeCertificateTable(entry.toBytes());
+            CertificateTableEntry[] entries;
+            if (isEFI()) {
+                List<CMSSignedData> signatures = SignatureUtils.getSignatures(signature);
+                entries = new CertificateTableEntry[signatures.size()];
+                for (int i = 0; i < signatures.size(); i++) {
+                    entries[i] = new CertificateTableEntry(signatures.get(i));
+                }
+            } else {
+                CertificateTableEntry entry = new CertificateTableEntry(signature);
+                entries = new CertificateTableEntry[] { entry };
+            }
+            writeCertificateTable(entries);
 
         } else if (getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE).exists()) {
             // erase the previous signature

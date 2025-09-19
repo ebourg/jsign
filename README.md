@@ -56,6 +56,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.3 (in development)
 
+* Multiple signatures are now supported for EFI files
 * API changes:
   * New `Signable.setSignatures(List<CMSSignedData>)` method to set multiple signatures (nesting is handled automatically)
   * `SignatureUtils.getSignatures()` now removes the nested signatures from the first signature in the list
