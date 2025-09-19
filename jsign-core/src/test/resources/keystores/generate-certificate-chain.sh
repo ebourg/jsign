@@ -60,6 +60,9 @@ openssl req -new -key privatekey-ed448.pem -subj "/CN=Jsign Code Signing Test Ce
 openssl x509 -req -in jsign-test-certificate-ed448.csr -CA jsign-code-signing-ca.pem -CAkey jsign-code-signing-ca.key -CAcreateserial \
              -out jsign-test-certificate-ed448.pem $CERT_OPTS -extfile extensions.cnf -extensions final
 
+openssl req -new -key privatekey.pkcs1.pem -x509 -subj "/CN=Jsign Self Signed Certificate $YEAR" -out jsign-self-signed-certificate.pem $CERT_OPTS
+openssl x509 -in jsign-self-signed-certificate.pem -out jsign-self-signed-certificate.cer -outform DER
+
 # Generate the certificate chains
 cat jsign-root-ca.pem jsign-code-signing-ca.pem jsign-test-certificate.pem > jsign-test-certificate-full-chain-reversed.pem
 cat jsign-test-certificate.pem jsign-code-signing-ca.pem jsign-root-ca.pem > jsign-test-certificate-full-chain.pem
