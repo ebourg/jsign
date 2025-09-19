@@ -336,19 +336,25 @@ public class PEFile implements Signable {
         }
     }
 
-    private synchronized List<CertificateTableEntry> getCertificateTable() throws IOException {
+    synchronized List<CertificateTableEntry> getCertificateTable() throws IOException {
         List<CertificateTableEntry> entries = new ArrayList<>();
         DataDirectory certificateTable = getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
         
         if (certificateTable != null && certificateTable.exists()) {
             long position = certificateTable.getVirtualAddress();
+            long size = certificateTable.getSize();
             
             try {
-                if (position < channel.size()) {
-                    entries.add(new CertificateTableEntry(this, position));
+                while (position < certificateTable.getVirtualAddress() + size) {
+                    CertificateTableEntry entry = new CertificateTableEntry(this, position);
+                    entries.add(entry);
+                    if (!isEFI()) {
+                        // only one entry for non-EFI files
+                        break;
+                    }
+
+                    position += entry.getSize();
                 }
-                
-                // todo read the remaining entries (but Authenticode use only one, extra signatures are appended as a SPC_NESTED_SIGNATURE unauthenticated attribute)
             } catch (Exception e) {
                 e.printStackTrace();
             }

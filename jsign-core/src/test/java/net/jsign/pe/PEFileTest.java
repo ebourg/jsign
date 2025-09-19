@@ -224,4 +224,12 @@ public class PEFileTest {
             assertNotSigned(file);
         }
     }
+
+    @Test
+    public void testLoadEFISignatures() throws Exception {
+        try (PEFile file = new PEFile(new File("target/test-classes/fbx64-signed-by-sbsign.efi"))) {
+            assertEquals("Number of certificate table entries", 2, file.getCertificateTable().size());
+            assertEquals("Number of signatures", 2, file.getSignatures().size());
+        }
+    }
 }
