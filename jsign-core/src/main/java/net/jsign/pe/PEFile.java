@@ -228,6 +228,23 @@ public class PEFile implements Signable {
     }
 
     /**
+     * The subsystem that is required to run this image.
+     * 
+     * @return the required subsystem
+     */
+    Subsystem getSubsystem() throws IOException {
+        return Subsystem.valueOf(readWord(peHeaderOffset, 92));
+    }
+
+    boolean isEFI() throws IOException {
+        Subsystem subsystem = getSubsystem();
+        return subsystem == Subsystem.EFI_APPLICATION
+                || subsystem == Subsystem.EFI_BOOT_SERVICE_DRIVER
+                || subsystem == Subsystem.EFI_ROM
+                || subsystem == Subsystem.EFI_RUNTIME_DRIVER;
+    }
+
+    /**
      * The number of data-directory entries in the remainder of the optional
      * header. Each describes a location and size.
      * 

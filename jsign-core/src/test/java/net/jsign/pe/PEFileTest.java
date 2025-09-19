@@ -48,6 +48,7 @@ public class PEFileTest {
     public void testLoad() throws Exception {
         try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
             assertEquals(PEFormat.PE32, file.getFormat());
+            assertEquals(Subsystem.WINDOWS_GUI, file.getSubsystem());
             assertEquals(16, file.getNumberOfRvaAndSizes());
         }
     }
@@ -56,6 +57,16 @@ public class PEFileTest {
     public void testLoadNonExecutable() {
         Exception e = assertThrows(IOException.class, () -> new PEFile(new File("pom.xml")));
         assertEquals("message", "DOS header signature not found", e.getMessage());
+    }
+
+    @Test
+    public void testIsEFIFile() throws Exception {
+        try (PEFile file = new PEFile(new File("target/test-classes/wineyes.exe"))) {
+            assertFalse(file.isEFI());
+        }
+        try (PEFile file = new PEFile(new File("target/test-classes/fbx64.efi"))) {
+            assertTrue(file.isEFI());
+        }
     }
 
     /**
