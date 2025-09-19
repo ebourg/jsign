@@ -20,7 +20,19 @@ for various build systems (Maven, Gradle, Ant, GitHub Actions), and as a Java li
 Jsign is free to use and licensed under the [Apache License version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Features
-* Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
+
+* Platform independent command line tool (Linux, macOS and Windows)
+* Build tools integration (Maven, Gradle, Ant, GitHub Actions)
+* File formats supported:
+  * Windows executables (.exe) and libraries (.dll)
+  * Microsoft installers (.msi)
+  * Cabinet files (.cab)
+  * Catalog files (.cat)
+  * Windows packages (.appx, .msix)
+  * Microsoft Dynamics 365 extension packages (.navx)
+  * NuGet packages (.nupkg)
+  * Scripts (PowerShell, VBScript, JScript, WSF)
+  * UEFI executables (.efi)
 * Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)
 * Supports multiple signatures per file, for all file types
 * Extracts and embeds detached signatures to support [reproducible builds](https://reproducible-builds.org/docs/embedded-signatures/)
@@ -44,8 +56,6 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
 * Automatic download of the intermediate certificates
-* Build tools integration (Maven, Gradle, Ant, GitHub Actions)
-* Command line signing tool
 * Authenticode signing API ([Javadoc](https://javadoc.io/doc/net.jsign/jsign-core))
 * JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner or apksigner
 

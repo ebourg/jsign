@@ -13,7 +13,7 @@
     <packageSourceUrl>https://github.com/ebourg/jsign/tree/master/jsign/src/choco</packageSourceUrl>
     <docsUrl>https://ebourg.github.io/jsign/</docsUrl>
     <bugTrackerUrl>https://github.com/ebourg/jsign/issues</bugTrackerUrl>
-    <tags>signing code-signing authenticode signtool PE EXE SYS DLL CAB MSI VBS WSF APPX MSIX NAVX NUGET</tags>
+    <tags>signing code-signing authenticode signtool PE EXE SYS DLL EFI CAB MSI VBS WSF APPX MSIX NAVX NUGET</tags>
     <summary>Command line tool for signing Windows executable files, installers and scripts</summary>
     <description>
       Jsign is a versatile code signing tool that allows you to sign and timestamp Windows executable files, installer

@@ -4,7 +4,7 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Jsign : Authenticode signing tool in Java for signing Windows executable files, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)" />
+    <meta name="description" content="Platform independent code signing tool for signing Windows executable files, installer packages and scripts, with an emphasis on seamless integration with cloud key management systems and hardware tokens." />
     <meta name="google-site-verification" content="p912kgAnTBOzVbswrU43k3FXUbPnxLHdeW6xsVcq1uU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -51,7 +51,21 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
 <h3 id="features">Features</h3>
 
 <ul>
-  <li>Platform independent signing of Windows executables, DLLs, Microsoft Installers (MSI), Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)</li>
+  <li>Platform independent command line tool (Linux, macOS and Windows)</li>
+  <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>, <a href="#github-actions">GitHub Actions</a>)</li>
+  <li>File formats supported:
+    <ul>
+      <li>Windows executables (.exe) and libraries (.dll)</li>
+      <li>Microsoft installers (.msi)</li>
+      <li>Cabinet files (.cab)</li>
+      <li>Catalog files (.cat)</li>
+      <li>Windows packages (.appx, .msix)</li>
+      <li>Microsoft Dynamics 365 extension packages (.navx)</li>
+      <li>NuGet packages (.nupkg)</li>
+      <li>Scripts (PowerShell, VBScript, JScript, WSF)</li>
+      <li>UEFI executables (.efi)</li>
+    </ul>
+  </li>
   <li>Timestamping with retries and fallback on alternative servers (RFC 3161 and Authenticode protocols supported)</li>
   <li>Supports multiple signatures per file, for all file types</li>
   <li>Extracts and embeds detached signatures to support <a href="https://reproducible-builds.org/docs/embedded-signatures/">reproducible builds</a></li>
@@ -80,8 +94,6 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
   <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
   <li>Automatic download of the intermediate certificates</li>
-  <li>Build tools integration (<a href="#maven">Maven</a>, <a href="#gradle">Gradle</a>, <a href="#ant">Ant</a>, <a href="#github-actions">GitHub Actions</a>)</li>
-  <li>Command line signing tool</li>
   <li>Authenticode signing API (<a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a>)</li>
   <li>JCA security provider to use the keystores supported by Jsign with other tools such as jarsigner or apksigner</li>
 </ul>
@@ -165,9 +177,19 @@ invalidating the signature:</p>
     <tr>
       <td class="attribute">file</td>
       <td class="description">
-          The file to be signed. The supported files are Windows executables (EXE), DLLs, Microsoft Installers (MSI),
-          Cabinet files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics 365 extension
-          packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)</td>
+          The file to be signed. The supported file formats are:
+          <ul>
+            <li>Windows executables (.exe) and libraries (.dll)</li>
+            <li>Microsoft installers (.msi)</li>
+            <li>Cabinet files (.cab)</li>
+            <li>Catalog files (.cat)</li>
+            <li>Windows packages (.appx, .msix)</li>
+            <li>Microsoft Dynamics 365 extension packages (.navx)</li>
+            <li>NuGet packages (.nupkg)</li>
+            <li>Scripts (PowerShell, VBScript, JScript, WSF)</li>
+            <li>UEFI executables (.efi)</li>
+          </ul>
+      </td>
       <td class="required">Yes, unless a fileset is specified.</td>
     </tr>
     <tr>
