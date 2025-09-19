@@ -34,7 +34,13 @@ enum CertificateType {
     RESERVED_1(0x0003),
 
     /** Terminal Server Protocol Stack Certificate (not supported) */
-    TS_STACK_SIGNED(0x0004);
+    TS_STACK_SIGNED(0x0004),
+
+    /** UEFI RSASSA_PKCS1-v1_5 digital signature (not supported) */
+    EFI_PKCS115(0x0EF0),
+
+    /** UEFI GUID-specific digital signature (not supported) */
+    EFI_GUID(0x0EF1);
 
     private final short value;
 
