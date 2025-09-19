@@ -22,8 +22,10 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.KeyStore;
+import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
@@ -217,10 +219,10 @@ public class PEFileTest {
         AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
 
         try (PEFile file = new PEFile(targetFile)) {
-            file.setSignature(null);
+            file.setSignatures(new ArrayList<>());
             signer.sign(file);
             assertSigned(file, SHA256);
-            file.setSignature(null);
+            file.setSignatures(null);
             assertNotSigned(file);
         }
     }

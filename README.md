@@ -54,6 +54,11 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 7.3 (in development)
+
+* API changes:
+  * New `Signable.setSignatures(List<CMSSignedData>)` method to set multiple signatures (nesting is handled automatically)
+
 #### Version 7.2 (2025-08-31)
 
 * ECS container credentials are now supported when signing with AWS KMS (contributed by Alejandro González)

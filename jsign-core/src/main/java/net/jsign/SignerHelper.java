@@ -471,13 +471,24 @@ class SignerHelper {
         byte[] signatureBytes = Files.readAllBytes(detachedSignature.toPath());
         CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
 
-        signable.setSignature(signedData);
+        List<CMSSignedData> signatures = SignatureUtils.getSignatures(signedData);
+        signatures.set(0, SignatureUtils.removeNestedSignatures(signatures.get(0)));
+
+        signable.setSignatures(signatures);
         signable.save();
         // todo warn if the hashes don't match
     }
 
     private void detach(Signable signable, File detachedSignature) throws IOException {
-        CMSSignedData signedData = signable.getSignatures().get(0);
+        List<CMSSignedData> signatures = signable.getSignatures();
+
+        // ensure the secondary signatures are nested in the first one (for EFI files)
+        CMSSignedData signedData = signatures.get(0);
+        if (signatures.size() > 1) {
+            List<CMSSignedData> nestedSignatures = signatures.subList(1, signatures.size());
+            signedData = SignatureUtils.addNestedSignature(signedData, true, nestedSignatures.toArray(new CMSSignedData[0]));
+        }
+
         byte[] content = signedData.toASN1Structure().getEncoded("DER");
         if (format == null || "DER".equalsIgnoreCase(format)) {
             Files.write(detachedSignature.toPath(), content);
@@ -538,8 +549,8 @@ class SignerHelper {
                 return;
             }
 
-            log.info("Removing signature from " + file);
-            signable.setSignature(null);
+            log.info("Removing " + signatures.size() + " signature" + (signatures.size() > 1 ? "s" : "") + " from " + file);
+            signable.setSignatures(null);
             signable.save();
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
             throw new SignerException(e.getMessage(), e);
@@ -560,9 +571,8 @@ class SignerHelper {
             }
 
             log.info("Adding tag to " + file);
-            CMSSignedData signature = signatures.get(0);
-            signature = addUnsignedAttribute(signature, AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue());
-            signable.setSignature(signature);
+            signatures.set(0, addUnsignedAttribute(signatures.get(0), AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue()));
+            signable.setSignatures(signatures);
             signable.save();
         } catch (SignerException e) {
             throw e;
@@ -663,12 +673,7 @@ class SignerHelper {
                 signatures.add(signature);
             }
 
-            CMSSignedData signature = signatures.get(0);
-            if (signatures.size() > 1) {
-                Collection<CMSSignedData> nestedSignatures = signatures.subList(1, signatures.size());
-                signature = SignatureUtils.addNestedSignature(signature, true, nestedSignatures.toArray(new CMSSignedData[0]));
-            }
-            signable.setSignature(signature);
+            signable.setSignatures(signatures);
             signable.save();
         } catch (IOException | CMSException e) {
             throw new SignerException("Couldn't timestamp " + file, e);

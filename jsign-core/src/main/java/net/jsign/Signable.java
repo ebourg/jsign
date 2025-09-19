@@ -128,9 +128,9 @@ public interface Signable extends Closeable {
     }
 
     /**
-     * Returns the Authenticode signatures on the file.
+     * Returns the Authenticode signatures on the file. To modify the signatures, use {@link #setSignatures(List)}.
      * 
-     * @return the signatures
+     * @return the signatures (empty if the file is not signed)
      * @throws IOException if an I/O error occurs
      */
     List<CMSSignedData> getSignatures() throws IOException;
@@ -142,6 +142,28 @@ public interface Signable extends Closeable {
      * @throws IOException if an I/O error occurs
      */
     void setSignature(CMSSignedData signature) throws IOException;
+
+    /**
+     * Sets the signatures of the file, overwriting the previous ones.
+     * The default implementation folds all the signatures into the first one (using a SPC_NESTED_SIGNATURE_OBJID
+     * unauthenticated attribute) and then calls {@link #setSignature(CMSSignedData)}.
+     *
+     * @param signatures the signatures to put, empty or null to remove the signatures
+     * @throws IOException if an I/O error occurs
+     * @since 7.3
+     */
+    default void setSignatures(List<CMSSignedData> signatures) throws IOException {
+        if (signatures == null || signatures.isEmpty()) {
+            setSignature(null);
+        } else {
+            CMSSignedData signature = signatures.get(0);
+            if (signatures.size() > 1) {
+                List<CMSSignedData> nestedSignatures = signatures.subList(1, signatures.size());
+                signature = SignatureUtils.addNestedSignature(signature, true, nestedSignatures.toArray(new CMSSignedData[0]));
+            }
+            setSignature(signature);
+        }
+    }
 
     /**
      * Saves the file.

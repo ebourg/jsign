@@ -368,16 +368,14 @@ public class AuthenticodeSigner {
         }
 
         CMSSignedData sigData = createSignedData(file);
-        
+
+        List<CMSSignedData> signatures = new ArrayList<>();
         if (!replace) {
-            List<CMSSignedData> signatures = file.getSignatures();
-            if (!signatures.isEmpty()) {
-                // append the nested signature
-                sigData = SignatureUtils.addNestedSignature(signatures.get(0), false, sigData);
-            }
+            signatures.addAll(file.getSignatures());
         }
-        
-        file.setSignature(sigData);
+        signatures.add(sigData);
+
+        file.setSignatures(signatures);
         file.save();
     }
 

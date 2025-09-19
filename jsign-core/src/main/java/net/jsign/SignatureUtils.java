@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -130,6 +131,16 @@ public class SignatureUtils {
     }
 
     /**
+     * Remove the nested signatures from the specified signature.
+     *
+     * @param signature the signature to modify
+     * @return the signature without nested signatures
+     */
+    static CMSSignedData removeNestedSignatures(CMSSignedData signature) {
+        return removeUnsignedAttributes(signature, SPC_NESTED_SIGNATURE_OBJID);
+    }
+
+    /**
      * Tells if the specified signature is timestamped.
      *
      * @param signature the signature to check
@@ -154,6 +165,22 @@ public class SignatureUtils {
      * @param signature the signature to modify
      */
     static CMSSignedData removeTimestamp(CMSSignedData signature) {
+        // todo remove the TSA certificates from the certificate store
+
+        return removeUnsignedAttributes(signature,
+                CMSAttributes.counterSignature,
+                PKCSObjectIdentifiers.id_aa_signatureTimeStampToken,
+                SPC_RFC3161_OBJID);
+    }
+
+    /**
+     * Remove the specified unsigned attributes from the signature.
+     *
+     * @param signature the signature to modify
+     * @param oids the OIDs of the attributes to remove
+     * @return the modified signature
+     */
+    static CMSSignedData removeUnsignedAttributes(CMSSignedData signature, ASN1ObjectIdentifier... oids) {
         SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
 
         AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
@@ -161,11 +188,9 @@ public class SignatureUtils {
             return signature;
         }
 
-        unsignedAttributes = unsignedAttributes.remove(CMSAttributes.counterSignature);
-        unsignedAttributes = unsignedAttributes.remove(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
-        unsignedAttributes = unsignedAttributes.remove(SPC_RFC3161_OBJID);
-
-        // todo remove the TSA certificates from the certificate store
+        for (ASN1ObjectIdentifier oid : oids) {
+            unsignedAttributes = unsignedAttributes.remove(oid);
+        }
 
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signerInformation));
