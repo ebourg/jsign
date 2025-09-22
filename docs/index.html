@@ -113,544 +113,278 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
 <p>Need a not yet released fix of feature? Pick the latest <a href="https://nightly.link/ebourg/jsign/workflows/build/master/jsign-artifacts.zip">snapshot build</a>
 from the GitHub actions.</p>
 
-<h3 id="ant">Ant Task</h3>
-
-<p>Here is an example showing how the signing works with Ant, using a Java keystore:</p>
-
-<pre class="prettyprint lang-xml">
- &lt;taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-7.2.jar"/>
-
- &lt;jsign file="application.exe"
-        name="My Application"
-        url="http://www.example.com"
-        keystore="keystore.jks"
-        storepass="password"
-        alias="test"
-        tsaurl="http://timestamp.sectigo.com"/>
-</pre>
-
-<br>
-
-<p>Another example with <code>SPC</code> and <code>PVK</code> files commonly used with <code>signcode.exe</code>:</p>
-
-<pre class="prettyprint lang-xml">
- &lt;jsign file="application.exe"
-        certfile="certificate.spc"
-        keyfile="key.pvk"
-        keypass="password"
-        tsaurl="http://timestamp.digicert.com"/>
-</pre>
-
-<br>
-
-<p>The task also accepts a fileset to sign multiple files:</p>
-
-<pre class="prettyprint lang-xml">
- &lt;jsign keystore="keystore.p12"
-        storepass="password"
-        alias="test">
-   &ltfileset dir="build/binaries" includes="*.exe"/>
- &lt;/jsign>
-</pre>
-
-<br>
-
-<p>The <code>sign</code> command is used by default, but other commands can be specified with the <code>command</code>
-attribute. For example for <a href="#tagging">tagging</a> a signed file with user identification data without
-invalidating the signature:</p>
-
-<pre class="prettyprint lang-xml">
- &lt;jsign command="tag" value="userid:1234-ABCD-5678-EFGH" file="application.exe"/>
-</pre>
-
-<br><br>
-
-<h4 id="attributes" class="mobile-only">Attributes</h4>
-
-<table style="border-collapse: collapse; width: 100%">
-  <thead>
-    <tr>
-      <th>Attribute</th>
-      <th>Description</th>
-      <th align="center" width="25%">Required</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="attribute">file</td>
-      <td class="description">
-          The file to be signed. The supported file formats are:
-          <ul>
-            <li>Windows executables (.exe) and libraries (.dll)</li>
-            <li>Microsoft installers (.msi)</li>
-            <li>Cabinet files (.cab)</li>
-            <li>Catalog files (.cat)</li>
-            <li>Windows packages (.appx, .msix)</li>
-            <li>Microsoft Dynamics 365 extension packages (.navx)</li>
-            <li>NuGet packages (.nupkg)</li>
-            <li>Scripts (PowerShell, VBScript, JScript, WSF)</li>
-            <li>UEFI executables (.efi)</li>
-          </ul>
-      </td>
-      <td class="required">Yes, unless a fileset is specified.</td>
-    </tr>
-    <tr>
-      <td class="attribute">name</td>
-      <td class="description">The name of the application</td>
-      <td class="required">No</td>
-    </tr>
-    <tr>
-      <td class="attribute">url</td>
-      <td class="description">The URL of the application</td>
-      <td class="required">No</td>
-    </tr>
-    <tr>
-      <td class="attribute">keystore</td>
-      <td class="description">
-          The keystore file, the <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration file</a>,
-          the cloud keystore name, or the smart card or hardware token name.
-      </td>
-      <td class="required">Yes for file based keystores, PKCS#11 and cloud signing services. Optional for cards/tokens.
-          No when <code>certfile</code> and <code>keyfile</code> are specified.</td>
-    </tr>
-    <tr>
-      <td class="attribute">storepass</td>
-      <td class="description">
-        The password to open the keystore. The password can be loaded from a file by using the <code>file:</code> prefix
-        followed by the path of the file, or from an environment variable by using the <code>env:</code> prefix followed
-        by the name of the variable.
-      </td>
-      <td class="required">No</td>
-    </tr>
-    <tr>
-      <td class="attribute">storetype</td>
-      <td class="description">
-        The type of the keystore.
-
-        <p>File based:</p>
-        <ul>
-          <li><code>JKS</code>: Java keystore (<code>.jks</code> files)</li>
-          <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
-          <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
-        </ul>
-
-        <p>Hardware tokens:</p>
-        <ul>
-          <li><code>PKCS11</code>: PKCS#11 hardware token</li>
-          <li><code>ETOKEN</code>: SafeNet eToken</li>
-          <li><code>NITROKEY</code>: Nitrokey HSM</li>
-          <li><code>OPENPGP</code>: OpenPGP card</li>
-          <li><code>OPENSC</code>: Smart card</li>
-          <li><code>PIV</code>: PIV card</li>
-          <li><code>YUBIKEY</code>: YubiKey security key (requires ykcs11)</li>
-        </ul>
-
-        <p>Cloud key management systems:</p>
-        <ul>
-          <li><code>AWS</code>: AWS Key Management Service</li>
-          <li><code>AZUREKEYVAULT</code>: Azure Key Vault key management system</li>
-          <li><code>DIGICERTONE</code>: DigiCert ONE Secure Software Manager</li>
-          <li><code>ESIGNER</code>: SSL.com eSigner</li>
-          <li><code>GARASIGN</code>: Garantir Remote Signing</li>
-          <li><code>GOOGLECLOUD</code>: Google Cloud KMS</li>
-          <li><code>HASHICORPVAULT</code>: HashiCorp Vault</li>
-          <li><code>ORACLECLOUD</code>: Oracle Cloud Key Management Service</li>
-          <li><code>SIGNPATH</code>: SignPath</li>
-          <li><code>SIGNSERVER</code>: Keyfactor SignServer</li>
-          <li><code>TRUSTEDSIGNING</code>: Azure Trusted Signing</li>
-        </ul>
-      </td>
-      <td class="required">No, automatically detected for file based keystores.</td>
-    </tr>
-    <tr>
-      <td class="attribute">alias</td>
-      <td class="description">The alias of the certificate used for signing in the keystore.</td>
-      <td class="required">Yes, if <code>keystore</code> is specified and more than one alias exist</td>
-    </tr>
-    <tr>
-      <td class="attribute">certfile</td>
-      <td class="description">
-        The file containing the PKCS#7 certificate chain, in PEM or DER format (<code>.p7b</code> or <code>.spc</code>
-        files). This parameter is required if <code>keystore</code> isn't specified, or if the keystore used contains
-        only the key and not the certificate chain. It may be specified if the keystore holds only the signing
-        certificate and not the full certificate chain, otherwise Jsign will attempt to download the missing
-        certificates from the URL specified in the Authority Information Access field of the certificates.
-        This parameter can also be used to replace the certificate chain from the keystore.
-      </td>
-      <td class="required" rowspan="2">No, depends on the keystore used.</td>
-    </tr>
-    <tr>
-      <td class="attribute">keyfile</td>
-      <td class="description">
-        The file containing the private key. <code>PEM</code> and <code>PVK</code> files are supported.
-      </td>
-    </tr>
-    <tr>
-      <td class="attribute">keypass</td>
-      <td class="description">
-        The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares
-        the same password. The password can be loaded from a file by using the <code>file:</code> prefix followed by
-        the path of the file, or from an environment variable by using the <code>env:</code> prefix followed by the
-        name of the variable.
-      </td>
-      <td class="required">No</td>
-    </tr>
-    <tr>
-      <td class="attribute">alg</td>
-      <td class="description">
-        The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512).
-      </td>
-      <td class="required">No; defaults to SHA-256 or a format specific value</td>
-    </tr>
-    <tr>
-      <td class="attribute">tsaurl</td>
-      <td class="description">
-          The URL of the timestamping authority, either RFC 3161 or Authenticode services.
-          You can use for example the Sectigo (http://timestamp.sectigo.com)
-          or the DigiCert (http://timestamp.digicert.com) services.<br>
-          Several URLs separated by a comma can be specified to fallback on alternative servers.
-      </td>
-      <td class="required">No</td>
-    </tr>
-    <tr>
-      <td class="attribute">tsmode</td>
-      <td class="description">The timestamping mode (RFC3161 or Authenticode)</td>
-      <td class="required">No; defaults to Authenticode</td>
-    </tr>
-    <tr>
-      <td class="attribute">tsretries</td>
-      <td class="description">The number of retries for timestamping</td>
-      <td class="required">No; defaults to 3</td>
-    </tr>
-    <tr>
-      <td class="attribute">tsretrywait</td>
-      <td class="description">The number of seconds to wait between timestamping retries</td>
-      <td class="required">No; defaults to 10 seconds</td>
-    </tr>
-    <tr>
-      <td class="attribute">replace</td>
-      <td class="description">Tells if previous signatures should be replaced.</td>
-      <td class="required">No; defaults to "false"</td>
-    </tr>
-    <tr>
-      <td class="attribute">encoding</td>
-      <td class="description">The encoding of the script to be signed (if it doesn't contain a byte order mark).</td>
-      <td class="required">No; defaults to "UTF-8"</td>
-    </tr>
-    <tr>
-      <td class="attribute">detached</td>
-      <td class="description">
-        Tells if a detached signature should be generated or reused. The detached signature
-        is a file in the same directory using the name of the file signed with the <code>.sig</code>
-        suffix added (for example <code>application.exe.sig</code>).
-        <ul>
-          <li>If the signature doesn't exist, the file is signed as usual and the detached signature is generated.</li>
-          <li>If the signature exists it is attached to the file, replacing any existing signature (in this case
-              the private key isn't used for signing and no timestamping is performed).</li>
-        </ul>
-      </td>
-      <td class="required">No; defaults to "false"</td>
-    </tr>
-    <tr>
-      <td class="attribute">value</td>
-      <td class="description">
-          The value of the unsigned attribute when tagging a file. The value is either:
-          <ul>
-            <li>a string (such as a user id, a license key or a JWT token)</li>
-            <li>the name of the file to include, prefixed with <code>file:</code>
-            <li>a binary value in hexadecimal format, prefixed with <code>0x</code>
-          </ul>
-          <p>If no value is specified a default 1KB template is used, filled with zeros and delimited by
-          <code style="white-space: nowrap">-----BEGIN TAG-----</code> and
-          <code style="white-space: nowrap">-----END TAG-----</code> markers.</p>
-      </td>
-      <td class="required">No; defaults to 1KB template</td>
-    </tr>
-  </tbody>
-</table>
-
-
-<h3 id="maven">Maven plugin</h3>
-
-<p>Here is an example showing how the signing works with Maven. The parameters
-are the same as those described above for the Ant task. The execution is bound
-by default to the <code>package</code> phase.</p>
-
-<pre class="prettyprint lang-xml">
-    &lt;build>
-      &lt;plugins>
-        &lt;plugin>
-          &lt;groupId>net.jsign&lt;/groupId>
-          &lt;artifactId>jsign-maven-plugin&lt;/artifactId>
-          &lt;version>7.2&lt;/version>
-          &lt;executions>
-            &lt;execution>
-              &lt;goals>
-                &lt;goal>sign&lt;/goal>
-              &lt;/goals>
-              &lt;configuration>
-                &lt;file>application.exe&lt;/file>
-                &lt;name>My Application&lt;/name>
-                &lt;url>http://www.example.com&lt;/url>
-                &lt;keystore>keystore.jks&lt;/keystore>
-                &lt;alias>test&lt;/alias>
-                &lt;storepass>password&lt;/storepass>
-              &lt;/configuration>
-            &lt;/execution>
-          &lt;/executions>
-        &lt;/plugin>
-      &lt;/plugins>
-    &lt;/build>
-</pre>
-
-<p>It's possible to sign multiple files by using a <code>fileset</code> element instead of <code>file</code>:</p>
-
-<pre class="prettyprint lang-xml">
-              ...
-              &lt;configuration>
-                &lt;fileset>
-                  &lt;directory>target&lt;/directory>
-                  &lt;includes>
-                    &lt;include>*.exe&lt;/include>
-                  &lt;/includes>
-                &lt;/fileset>
-                &lt;keystore>keystore.jks&lt;/keystore>
-                &lt;alias>test&lt;/alias>
-                &lt;storepass>password&lt;/storepass>
-              &lt;/configuration>
-              ...
-</pre>
-
-<p>The value of the <code>storepass</code> and <code>keypass</code> elements can be encrypted using the
-<a href="https://maven.apache.org/guides/mini/guide-encryption.html">Maven master password</a>:</p>
-
-<pre class="prettyprint lang-xml">
-              &lt;configuration>
-                &lt;file>application.exe&lt;/file>
-                &lt;keystore>keystore.jks&lt;/keystore>
-                &lt;storepass>{COQLCE6DU6GtcS5P=}&lt;/storepass>
-              &lt;/configuration>
-</pre>
-
-<p>The <code>storepass</code> and <code>keypass</code> elements may also reference a password defined
-in the <a href="https://maven.apache.org/settings.html">Maven settings file</a>.</p>
-
-<p>In <code> ${user.home}/.m2/settings.xml</code> a server is defined with the password of the keystore:</p>
-
-<pre class="prettyprint lang-xml">
-  &lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
-    ...
-    &lt;servers>
-      &lt;server>
-        &lt;id>keystore&lt;/id>
-        &lt;password>password&lt;/password>
-      &lt;/server>
-    &lt;/servers>
-    ...
-  &lt;/settings>
-</pre>
-
-<p>And in the Maven project file, the password element references the server id prefixed with <code>mvn:</code>:</p>
-
-<pre class="prettyprint lang-xml">
-              &lt;configuration>
-                &lt;file>application.exe&lt;/file>
-                &lt;keystore>keystore.jks&lt;/keystore>
-                &lt;storepass>mvn:keystore&lt;/storepass>
-              &lt;/configuration>
-</pre>
-
-<h3 id="gradle">Gradle plugin</h3>
-
-<p>Here is an example showing how to use Jsign with Gradle. The parameters
-are the same as those described above for the Ant task.</p>
-
-<p>With the Groovy syntax:</p>
-
-<pre class="prettyprint lang-groovy">
-    plugins {
-        id 'net.jsign' version '7.2'
-    }
-    
-    task sign {
-        doLast {
-            jsign(file      : 'application.exe',
-                  name      : 'My Application',
-                  url       : 'http://www.example.com',
-                  keystore  : 'keystore.p12',
-                  alias     : 'test',
-                  storepass : 'secret',
-                  tsaurl    : 'http://timestamp.sectigo.com')
-        }
-    }
-</pre>
-
-<p>With the Kotlin syntax:</p>
-
-<pre class="prettyprint lang-kotlin">
-    plugins {
-        id("net.jsign") version "7.2"
-    }
-    
-    task("sign") {
-        doLast {
-            val jsign = project.extensions.getByName("jsign") as groovy.lang.Closure<*>
-            jsign("file"      to "application.exe",
-                  "name"      to "My Application",
-                  "url"       to "http://www.example.com",
-                  "keystore"  to "keystore.p12",
-                  "alias"     to "test",
-                  "storepass" to "secret",
-                  "tsaurl"    to "http://timestamp.sectigo.com")
-        }
-    }
-</pre>
-
-<br>
-
-<p>The <code>file</code> parameter can be replaced by a <code>fileset</code> parameter to sign multiple files:</p>
-
-<p>Groovy:</p>
-
-<pre class="prettyprint lang-groovy">
-    jsign(fileset   : fileTree(dir: 'build', include: '**/*.exe'),
-          storetype : 'YUBIKEY',
-          storepass : '123456')
-</pre>
-
-<p>Kotlin:</p>
-
-<pre class="prettyprint lang-kotlin">
-    jsign("fileset"   to fileTree("build") { include ("**/*.exe") },
-          "storetype" to "YUBIKEY",
-          "storepass" to "123456",)
-</pre>
-
-
-<h3 id="github-actions">GitHub Actions</h3>
-
-<p>Jsign can be used in GitHub Actions by inserting the following steps in the workflow:</p>
-
-<pre class="prettyprint lang-yaml">
-    steps:
-        [...]
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: 'temurin'
-
-      - name: Download Jsign
-        run: wget https://github.com/ebourg/jsign/releases/download/7.2/jsign-7.2.jar
-
-      - name: Sign
-        run: >
-          java -jar jsign-7.2.jar --storetype TRUSTEDSIGNING
-                                  --keystore weu.codesigning.azure.net
-                                  --storepass ${{ secrets.AZURE_ACCESS_TOKEN }}
-                                  --alias &lt;account&gt;/&lt;profile&gt;
-                                  ${{ github.workspace }}/dist/application.exe
-</pre>
 
 <h3 id="cli">Command Line Tool</h3>
 
-<p>On systems with an <a href="#files">installation package</a> available the command line is invoked with:</p>
+<p>The general syntax is:</p>
 
-<pre> jsign [OPTIONS] [FILE]...</pre>
+<pre> jsign [COMMAND] [OPTIONS] [FILE] [PATTERN] [@FILELIST]...</pre>
 
-<p>On other systems the command line is invoked by running the jar with:</p>
-    
+<p>If no <a href="#files">installation package</a> is available for the system used, Jsign is invoked by running
+the all-in-one jar:</p>
+
 <pre> java -jar jsign-7.2.jar [OPTIONS] [FILE]...</pre>
-    
-<p>The parameters expected are the same as those used by the Ant task:</p>
 
-<pre>
-  usage: jsign [COMMAND] [OPTIONS] [FILE] [PATTERN] [@FILELIST]...
-
-  Sign and timestamp Windows executable files, Microsoft Installers (MSI), Cabinet
-  files (CAB), Catalog files (CAT), Windows packages (APPX/MSIX), Microsoft Dynamics
-  365 extension packages, NuGet packages and scripts (PowerShell, VBScript, JScript, WSF)
-  
-  commands: sign (default), timestamp, extract, remove, tag
-
-  sign:
-  -s,--keystore &lt;FILE>       The keystore file, the SunPKCS11 configuration file,
-                             the cloud keystore name, or the card/token name
-     --storepass &lt;PASSWORD>  The password to open the keystore
-     --storetype &lt;TYPE>      The type of the keystore
-                             File based:
-                             - JKS: Java keystore (.jks files)
-                             - JCEKS: SunJCE keystore (.jceks files)
-                             - PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)
-                             Hardware tokens:
-                             - PKCS11: PKCS#11 hardware token
-                             - ETOKEN: SafeNet eToken
-                             - NITROKEY: Nitrokey HSM
-                             - OPENPGP: OpenPGP card
-                             - OPENSC: Smart card
-                             - PIV: PIV card
-                             - YUBIKEY: YubiKey security key
-                             Cloud key management systems:
-                             - AWS: AWS Key Management Service
-                             - AZUREKEYVAULT: Azure Key Vault key management system
-                             - DIGICERTONE: DigiCert ONE Secure Software Manager
-                             - ESIGNER: SSL.com eSigner
-                             - GARASIGN: Garantir Remote Signing
-                             - GOOGLECLOUD: Google Cloud KMS
-                             - HASHICORPVAULT: HashiCorp Vault
-                             - ORACLECLOUD: Oracle Cloud Key Management Service
-                             - SIGNPATH: SignPath
-                             - SIGNSERVER: Keyfactor SignServer
-                             - TRUSTEDSIGNING: Azure Trusted Signing
-  -a,--alias &lt;NAME>          The alias of the certificate used for signing in the keystore
-     --keypass &lt;PASSWORD>    The password of the private key. When using a keystore,
-                             this parameter can be omitted if the keystore shares the
-                             same password
-     --keyfile &lt;FILE>        The file containing the private key (supports PEM &amp; PVK files)
-  -c,--certfile &lt;FILE>       The file containing the PKCS#7 certificate chain
-                             (.p7b or .spc files).
-  -d,--alg &lt;ALGORITHM>       The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512)
-  -t,--tsaurl &lt;URL>          The URL of the timestamping authority
-  -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
-  -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
-  -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
-  -n,--name &lt;NAME>           The name of the application
-  -u,--url &lt;URL>             The URL of the application
-     --proxyUrl &lt;URL>        The URL of the HTTP proxy
-     --proxyUser &lt;NAME>      The user for the HTTP proxy. If a user is needed
-     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If a user is needed
-     --replace               Tells if the previous signatures should be replaced
-  -e,--encoding &lt;ENCODING>   The encoding of the script to be signed (UTF-8 by default,
-                             or the encoding specified by the byte order mark if there is one)
-     --detached              Tells if a detached signature should be generated or reused
-     --quiet                 Print only error messages
-     --verbose               Print more information
-     --debug                 Print debugging information
-  -h,--help                  Print the help
-
-  timestamp:
-  -t,--tsaurl &lt;URL>          The URL of the timestamping authority
-  -m,--tsmode &lt;MODE>         The timestamping mode (RFC3161 or Authenticode)
-  -r,--tsretries &lt;NUMBER>    The number of retries for timestamping
-  -w,--tsretrywait &lt;SECONDS> The number of seconds to wait between timestamping retries
-     --proxyUrl &lt;URL>        The URL of the HTTP proxy
-     --proxyUser &lt;NAME>      The user for the HTTP proxy. If a user is needed
-     --proxyPass &lt;PASSWORD>  The password for the HTTP proxy user. If a user is needed
-     --replace               Tells if the previous timestamps should be replaced
-
-  extract:
-     --format &lt;FORMAT>       The output format of the signature (DER or PEM)
-
-  tag:
-     --value &lt;VALUE>         The value of the unsigned attribute
-</pre>
+<p>The supported commands are:</p>
+<ul>
+  <li><a href="#sign-options">sign</a> (default, can be omitted)</li>
+  <li><a href="#timestamp-options">timestamp</a></li>
+  <li><a href="#extract-options">extract</a></li>
+  <li>remove</li>
+  <li><a href="#tag-options">tag</a></li>
+</ul>
 
 <p>After the options Jsign accepts one or more files to sign as arguments. The arguments may contain <code>'*'</code>
 or <code>'**'</code> wildcards to match multiple files and scan through directories recursively. For example using
 <code>build/*.exe</code> will sign the executables in the build directory, and <code>installdir/**/*.dll</code> will
-scan the installdir directory recursively and sign all the DLLs found. If an argument starts with @ it is considered
-as a text file containing a list of files to sign, one per line.</p>
+scan the installdir directory recursively and sign all the DLLs found.</p>
+
+<p>If an argument starts with @ it is considered as a text file containing a list of files to sign, one per line.</p>
+
+<p>The supported file formats are:</p>
+
+<ul>
+  <li>Windows executables (.exe) and libraries (.dll)</li>
+  <li>Microsoft installers (.msi)</li>
+  <li>Cabinet files (.cab)</li>
+  <li>Catalog files (.cat)</li>
+  <li>Windows packages (.appx, .msix)</li>
+  <li>Microsoft Dynamics 365 extension packages (.navx)</li>
+  <li>NuGet packages (.nupkg)</li>
+  <li>Scripts (PowerShell, VBScript, JScript, WSF)</li>
+  <li>UEFI executables (.efi)</li>
+</ul>
+
+<p>The options available depend on the command used. Here are the options for each command:</p>
+
+<h4 id="sign-options">sign</h4>
+
+<dl>
+  <dt>-s, --keystore &lt;FILE&gt;</dt>
+  <dd>
+    The keystore file, the <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration file</a>,
+    the cloud keystore name, or the smart card or hardware token name. Required for file based keystores, PKCS#11 and
+    cloud signing services. Optional for cards/tokens. Not required when <code>certfile</code> and <code>keyfile</code>
+    are specified.
+  </dd>
+
+  <dt>--storepass &lt;PASSWORD&gt;</dt>
+  <dd>
+    The password to open the keystore. The password can be loaded from a file by using the <code>file:</code> prefix
+    followed by the path of the file, or from an environment variable by using the <code>env:</code> prefix followed
+    by the name of the variable.
+  </dd>
+
+  <dt>--storetype &lt;TYPE&gt;</dt>
+  <dd>
+    The type of the keystore.
+
+    <p>File based:</p>
+    <ul>
+      <li><code>JKS</code>: Java keystore (<code>.jks</code> files)</li>
+      <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
+      <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
+    </ul>
+      
+    <p>For file based keystores Jsign will detect the type automatically if this parameter is omitted.</p>
+
+    <p>Hardware tokens:</p>
+    <ul>
+      <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+      <li><code>ETOKEN</code>: <a href="#example-etoken">SafeNet eToken</a></li>
+      <li><code>NITROKEY</code>: <a href="#example-nitrokey">Nitrokey HSM</a></li>
+      <li><code>OPENPGP</code>: <a href="#example-openpgp">OpenPGP card</a></li>
+      <li><code>OPENSC</code>: <a href="#example-smart-card">Smart card</a></li>
+      <li><code>PIV</code>: <a href="#example-piv">PIV card</a></li>
+      <li><code>YUBIKEY</code>: <a href="#example-yubikey">YubiKey security key</a></li>
+    </ul>
+
+    <p>Cloud key management systems:</p>
+    <ul>
+      <li><code>AWS</code>: <a href="#example-awskms">AWS Key Management Service</a></li>
+      <li><code>AZUREKEYVAULT</code>: <a href="#example-azurekeyvault">Azure Key Vault key management system</a></li>
+      <li><code>DIGICERTONE</code>: <a href="#example-digicertone">DigiCert ONE Secure Software Manager</a></li>
+      <li><code>ESIGNER</code>: <a href="#example-sslcom-esigner">SSL.com eSigner</a></li>
+      <li><code>GARASIGN</code>: <a href="#example-garasign">Garantir Remote Signing</a></li>
+      <li><code>GOOGLECLOUD</code>: <a href="#example-googlecloud">Google Cloud KMS</a></li>
+      <li><code>HASHICORPVAULT</code>: <a href="#example-hashicorpvault">HashiCorp Vault</a></li>
+      <li><code>ORACLECLOUD</code>: <a href="#example-oraclecloud">Oracle Cloud Key Management Service</a></li>
+      <li><code>SIGNPATH</code>: <a href="#example-signpath">SignPath</a></li>
+      <li><code>SIGNSERVER</code>: <a href="#example-signserver">Keyfactor SignServer</a></li>
+      <li><code>TRUSTEDSIGNING</code>: <a href="#example-trustedsigning">Azure Trusted Signing</a></li>
+    </ul>
+  </dd>
+
+  <dt>-a, --alias &lt;NAME&gt;</dt>
+  <dd>
+    The alias of the certificate used for signing in the keystore. Required if <code>keystore</code> is specified
+    and more than one alias exist. If the alias is not specified, Jsign will display the list of available aliases.
+  </dd>
+
+  <dt>-c, --certfile &lt;FILE&gt;</dt>
+  <dd>
+    The file containing the PKCS#7 certificate chain, in PEM or DER format (<code>.p7b</code> or <code>.spc</code>
+    files). This parameter is required if <code>keystore</code> isn't specified, or if the keystore used contains
+    only the key and not the certificate chain. It may be specified if the keystore holds only the signing
+    certificate and not the full certificate chain, otherwise Jsign will attempt to download the missing
+    certificates from the URL specified in the Authority Information Access field of the certificates.
+    This parameter can also be used to replace the certificate chain from the keystore.
+  </dd>
+
+  <dt>--keyfile &lt;FILE&gt;</dt>
+  <dd>
+    The file containing the private key. <code>PEM</code> and <code>PVK</code> files are supported.
+  </dd>
+
+  <dt>--keypass &lt;PASSWORD&gt;</dt>
+  <dd>
+    The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares
+    the same password. The password can be loaded from a file by using the <code>file:</code> prefix followed by
+    the path of the file, or from an environment variable by using the <code>env:</code> prefix followed by the
+    name of the variable.
+  </dd>
+
+  <dt>-d, --alg &lt;ALGORITHM&gt;</dt>
+  <dd>
+    The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512). Defaults to SHA-256 or a format specific value
+  </dd>
+
+  <dt>-t, --tsaurl &lt;URL&gt;</dt>
+  <dd>
+    The URL of the timestamping authority, either RFC 3161 or Authenticode services.
+    You can use for example the Sectigo (http://timestamp.sectigo.com)
+    or the DigiCert (http://timestamp.digicert.com) services.<br>
+    Several URLs separated by a comma can be specified to fallback on alternative servers.
+  </dd>
+
+  <dt>-m, --tsmode &lt;MODE&gt;</dt>
+  <dd>
+    The timestamping mode (RFC3161 or Authenticode). Defaults to Authenticode
+  </dd>
+
+  <dt>-r, --tsretries &lt;NUMBER&gt;</dt>
+  <dd>
+    The number of retries for timestamping. Defaults to 3.
+  </dd>
+
+  <dt>-w, --tsretrywait &lt;SECONDS&gt;</dt>
+  <dd>
+    The number of seconds to wait between timestamping retries. Defaults to 10 seconds.
+  </dd>
+
+  <dt>--proxyUrl &lt;URL&gt;</dt>
+  <dd>The URL of the HTTP proxy.</dd>
+
+  <dt>--proxyUser &lt;NAME&gt;</dt>
+  <dd>The user for the HTTP proxy. If a user is needed.</dd>
+
+  <dt>--proxyPass &lt;PASSWORD&gt;</dt>
+  <dd>The password for the HTTP proxy user. If a user is needed.</dd>
+
+  <dt>-n, --name &lt;NAME&gt;</dt>
+  <dd>The name of the application</dd>
+
+  <dt>-u, --url &lt;URL&gt;</dt>
+  <dd>The URL of the application</dd>
+
+  <dt>--replace</dt>
+  <dd>
+    Tells if previous signatures should be replaced. Defaults to false.
+  </dd>
+
+  <dt>-e, --encoding &lt;ENCODING&gt;</dt>
+  <dd>
+    The encoding of the script to be signed (if it doesn't contain a byte order mark). Defaults to "UTF-8".
+  </dd>
+
+  <dt>--detached</dt>
+  <dd>
+    Tells if a detached signature should be generated or reused. The detached signature
+    is a file in the same directory using the name of the file signed with the <code>.sig</code>
+    suffix added (for example <code>application.exe.sig</code>).
+    <ul>
+      <li>If the signature doesn't exist, the file is signed as usual and the detached signature is generated.</li>
+      <li>If the signature exists it is attached to the file, replacing any existing signature (in this case
+          the private key isn't used for signing and no timestamping is performed).</li>
+    </ul>
+  </dd>
+
+  <dt>--quiet</dt>
+  <dd>Print only error messages</dd>
+
+  <dt>--debug</dt>
+  <dd>Print more information</dd>
+
+  <dt>--quiet</dt>
+  <dd>Print debugging information</dd>
+</dl>
+
+<br>
+
+<h4 id="timestamp-options">timestamp</h4>
+
+<dl>
+  <dt>-t, --tsaurl &lt;URL&gt;</dt>
+  <dd>
+    The URL of the timestamping authority, either RFC 3161 or Authenticode services.
+    You can use for example the Sectigo (http://timestamp.sectigo.com)
+    or the DigiCert (http://timestamp.digicert.com) services.<br>
+    Several URLs separated by a comma can be specified to fallback on alternative servers.
+  </dd>
+  
+  <dt>-m, --tsmode &lt;MODE&gt;</dt>
+  <dd>
+    The timestamping mode (RFC3161 or Authenticode). Defaults to Authenticode
+  </dd>
+  
+  <dt>-r, --tsretries &lt;NUMBER&gt;</dt>
+  <dd>
+    The number of retries for timestamping. Defaults to 3.
+  </dd>
+  
+  <dt>-w, --tsretrywait &lt;SECONDS&gt;</dt>
+  <dd>
+    The number of seconds to wait between timestamping retries. Defaults to 10 seconds.
+  </dd>
+
+  <dt>--proxyUrl &lt;URL&gt;</dt>
+  <dd>The URL of the HTTP proxy.</dd>
+
+  <dt>--proxyUser &lt;NAME&gt;</dt>
+  <dd>The user for the HTTP proxy. If a user is needed.</dd>
+
+  <dt>--proxyPass &lt;PASSWORD&gt;</dt>
+  <dd>The password for the HTTP proxy user. If a user is needed.</dd>
+</dl>
+
+<br>
+
+<h4 id="extract-options">extract</h4>
+
+<dl>
+  <dt>--format</dt>
+  <dd>The output format of the signature (DER or PEM)</dd>
+</dl>
+
+<br>
+
+<h4 id="tag-options">tag</h4>
+
+<dl>
+  <dt>--value &lt;VALUE&gt;</dt>
+  <dd>
+    The value of the unsigned attribute when tagging a file. The value is either:
+    <ul>
+      <li>a string (such as a user id, a license key or a JWT token)</li>
+      <li>the name of the file to include, prefixed with <code>file:</code>
+      <li>a binary value in hexadecimal format, prefixed with <code>0x</code>
+    </ul>
+
+    <p>If no value is specified a default 1KB template is used, filled with zeros and delimited by
+    <code style="white-space: nowrap">-----BEGIN TAG-----</code> and <code style="white-space: nowrap">-----END TAG-----</code> markers.</p>
+  </dd>
+</dl>
+
 
 <h3 id="examples">Examples</h3>
 
@@ -1076,6 +810,231 @@ on the download server without needing Jsign to be installed. For example:</p>
 <p>If the <code>value</code> parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
 <code style="white-space: nowrap">-----BEGIN TAG-----</code> and <code style="white-space: nowrap">-----END TAG-----</code>
 markers.</p>
+
+
+<h3 id="ant">Ant Task</h3>
+
+<p>Here is an example showing how to use Jsign with <a href="https://ant.apache.org/">Ant</a>. The parameters are the
+same as those described above for the command line tool (the long options only).</p>
+
+<pre class="prettyprint lang-xml">
+ &lt;taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-7.2.jar"/>
+
+ &lt;jsign file="application.exe"
+        name="My Application"
+        url="http://www.example.com"
+        keystore="keystore.jks"
+        storepass="password"
+        alias="test"
+        tsaurl="http://timestamp.sectigo.com"/>
+</pre>
+
+<br>
+
+<p>The task also accepts a fileset to sign multiple files:</p>
+
+<pre class="prettyprint lang-xml">
+ &lt;jsign keystore="keystore.p12"
+        storepass="password"
+        alias="test">
+   &ltfileset dir="build/binaries" includes="*.exe"/>
+ &lt;/jsign>
+</pre>
+
+<br>
+
+<p>The <code>sign</code> command is used by default, but other commands can be specified with the <code>command</code>
+attribute. For example for <a href="#tagging">tagging</a> a signed file with user identification data without
+invalidating the signature:</p>
+
+<pre class="prettyprint lang-xml">
+ &lt;jsign command="tag" value="userid:1234-ABCD-5678-EFGH" file="application.exe"/>
+</pre>
+
+
+<h3 id="maven">Maven plugin</h3>
+
+<p>Here is an example showing how to use Jsign with Maven. The parameters
+are the same as those described above for the command line tool (the long options only).
+The execution is bound by default to the <code>package</code> phase.</p>
+
+<pre class="prettyprint lang-xml">
+    &lt;build>
+      &lt;plugins>
+        &lt;plugin>
+          &lt;groupId>net.jsign&lt;/groupId>
+          &lt;artifactId>jsign-maven-plugin&lt;/artifactId>
+          &lt;version>7.2&lt;/version>
+          &lt;executions>
+            &lt;execution>
+              &lt;goals>
+                &lt;goal>sign&lt;/goal>
+              &lt;/goals>
+              &lt;configuration>
+                &lt;file>application.exe&lt;/file>
+                &lt;name>My Application&lt;/name>
+                &lt;url>http://www.example.com&lt;/url>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;alias>test&lt;/alias>
+                &lt;storepass>password&lt;/storepass>
+              &lt;/configuration>
+            &lt;/execution>
+          &lt;/executions>
+        &lt;/plugin>
+      &lt;/plugins>
+    &lt;/build>
+</pre>
+
+<p>It's possible to sign multiple files by using a <code>fileset</code> element instead of <code>file</code>:</p>
+
+<pre class="prettyprint lang-xml">
+              ...
+              &lt;configuration>
+                &lt;fileset>
+                  &lt;directory>target&lt;/directory>
+                  &lt;includes>
+                    &lt;include>*.exe&lt;/include>
+                  &lt;/includes>
+                &lt;/fileset>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;alias>test&lt;/alias>
+                &lt;storepass>password&lt;/storepass>
+              &lt;/configuration>
+              ...
+</pre>
+
+<p>The value of the <code>storepass</code> and <code>keypass</code> elements can be encrypted using the
+<a href="https://maven.apache.org/guides/mini/guide-encryption.html">Maven master password</a>:</p>
+
+<pre class="prettyprint lang-xml">
+              &lt;configuration>
+                &lt;file>application.exe&lt;/file>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;storepass>{COQLCE6DU6GtcS5P=}&lt;/storepass>
+              &lt;/configuration>
+</pre>
+
+<p>The <code>storepass</code> and <code>keypass</code> elements may also reference a password defined
+in the <a href="https://maven.apache.org/settings.html">Maven settings file</a>.</p>
+
+<p>In <code> ${user.home}/.m2/settings.xml</code> a server is defined with the password of the keystore:</p>
+
+<pre class="prettyprint lang-xml">
+  &lt;settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+    ...
+    &lt;servers>
+      &lt;server>
+        &lt;id>keystore&lt;/id>
+        &lt;password>password&lt;/password>
+      &lt;/server>
+    &lt;/servers>
+    ...
+  &lt;/settings>
+</pre>
+
+<p>And in the Maven project file, the password element references the server id prefixed with <code>mvn:</code>:</p>
+
+<pre class="prettyprint lang-xml">
+              &lt;configuration>
+                &lt;file>application.exe&lt;/file>
+                &lt;keystore>keystore.jks&lt;/keystore>
+                &lt;storepass>mvn:keystore&lt;/storepass>
+              &lt;/configuration>
+</pre>
+
+<h3 id="gradle">Gradle plugin</h3>
+
+<p>Here is an example showing how to use Jsign with Gradle. The parameters
+are the same as those described above for the command line tool (the long options only).</p>
+
+<p>With the Groovy syntax:</p>
+
+<pre class="prettyprint lang-groovy">
+    plugins {
+        id 'net.jsign' version '7.2'
+    }
+
+    task sign {
+        doLast {
+            jsign(file      : 'application.exe',
+                  name      : 'My Application',
+                  url       : 'http://www.example.com',
+                  keystore  : 'keystore.p12',
+                  alias     : 'test',
+                  storepass : 'secret',
+                  tsaurl    : 'http://timestamp.sectigo.com')
+        }
+    }
+</pre>
+
+<p>With the Kotlin syntax:</p>
+
+<pre class="prettyprint lang-kotlin">
+    plugins {
+        id("net.jsign") version "7.2"
+    }
+
+    task("sign") {
+        doLast {
+            val jsign = project.extensions.getByName("jsign") as groovy.lang.Closure<*>
+            jsign("file"      to "application.exe",
+                  "name"      to "My Application",
+                  "url"       to "http://www.example.com",
+                  "keystore"  to "keystore.p12",
+                  "alias"     to "test",
+                  "storepass" to "secret",
+                  "tsaurl"    to "http://timestamp.sectigo.com")
+        }
+    }
+</pre>
+
+<br>
+
+<p>The <code>file</code> parameter can be replaced by a <code>fileset</code> parameter to sign multiple files:</p>
+
+<p>Groovy:</p>
+
+<pre class="prettyprint lang-groovy">
+    jsign(fileset   : fileTree(dir: 'build', include: '**/*.exe'),
+          storetype : 'YUBIKEY',
+          storepass : '123456')
+</pre>
+
+<p>Kotlin:</p>
+
+<pre class="prettyprint lang-kotlin">
+    jsign("fileset"   to fileTree("build") { include ("**/*.exe") },
+          "storetype" to "YUBIKEY",
+          "storepass" to "123456",)
+</pre>
+
+
+<h3 id="github-actions">GitHub Actions</h3>
+
+<p>Jsign can be used in GitHub Actions by inserting the following steps in the workflow:</p>
+
+<pre class="prettyprint lang-yaml">
+    steps:
+        [...]
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+
+      - name: Download Jsign
+        run: wget https://github.com/ebourg/jsign/releases/download/7.2/jsign-7.2.jar
+
+      - name: Sign
+        run: >
+          java -jar jsign-7.2.jar --storetype TRUSTEDSIGNING
+                                  --keystore weu.codesigning.azure.net
+                                  --storepass ${{ secrets.AZURE_ACCESS_TOKEN }}
+                                  --alias &lt;account&gt;/&lt;profile&gt;
+                                  ${{ github.workspace }}/dist/application.exe
+</pre>
+
 
 <h3 id="api">API</h3>
 

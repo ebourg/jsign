@@ -35,11 +35,6 @@ footer, header, hgroup, menu, nav, section {
   display: block;
 }
 
-ol, ul {
-  /*list-style: none;*/
-  padding-left: 20px;
-}
-
 blockquote, q {
 }
 
@@ -195,13 +190,8 @@ dl dt {
 }
 
 dl dd {
-  padding-left: 20px;
-  font-style: italic;
-}
-
-dl p {
-  padding-left: 20px;
-  font-style: italic;
+  padding-left: 2em;
+  margin-bottom: 1em;
 }
 
 hr {
