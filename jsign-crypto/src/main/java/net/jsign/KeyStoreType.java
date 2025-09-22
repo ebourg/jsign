@@ -53,6 +53,8 @@ import net.jsign.jca.SignPathSigningService;
 import net.jsign.jca.SignServerCredentials;
 import net.jsign.jca.SignServerSigningService;
 import net.jsign.jca.SigningServiceJcaProvider;
+import net.jsign.jca.VenafiSigningService;
+import net.jsign.jca.VenafiCredentials;
 
 /**
  * Type of a keystore.
@@ -562,6 +564,36 @@ public enum KeyStoreType {
             return new SigningServiceJcaProvider(new GaraSignSigningService(params.keystore(), credentials));
         }
     },
+
+    
+    VENAFI(false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() == null || params.storepass().split("\\|").length > 2) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Venafi CodeSign Protect username/password: <username>|<password>");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            String[] elements = params.storepass().split("\\|");
+            String username = null;
+            String password = null;
+            if (elements.length == 2) {
+                username = elements[0];
+                password = elements[1];
+            }
+
+            try {
+                VenafiCredentials credentials = new VenafiCredentials(username, password, null, params.keypass());
+                return new SigningServiceJcaProvider(new VenafiSigningService(params.keystore(), credentials));
+            } catch (IOException e) {
+                throw new IllegalStateException("Authentication failed with Venafi", e);
+
+            }
+        }
+    },
+
 
     /**
      * Keyfactor SignServer. This keystore requires a Plain Signer worker, preferably configured to allow client-side
