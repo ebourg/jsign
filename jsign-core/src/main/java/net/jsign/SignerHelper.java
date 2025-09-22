@@ -139,101 +139,121 @@ class SignerHelper {
 
     public SignerHelper keystore(String keystore) {
         ksparams.keystore(keystore);
+        signer = null;
         return this;
     }
 
     public SignerHelper storepass(String storepass) {
         ksparams.storepass(storepass);
+        signer = null;
         return this;
     }
 
     public SignerHelper storetype(String storetype) {
         ksparams.storetype(storetype);
+        signer = null;
         return this;
     }
 
     public SignerHelper alias(String alias) {
         this.alias = alias;
+        signer = null;
         return this;
     }
 
     public SignerHelper keypass(String keypass) {
         ksparams.keypass(keypass);
+        signer = null;
         return this;
     }
 
     public SignerHelper keyfile(String keyfile) {
         ksparams.keyfile(keyfile);
+        signer = null;
         return this;
     }
 
     public SignerHelper keyfile(File keyfile) {
         ksparams.keyfile(keyfile);
+        signer = null;
         return this;
     }
 
     public SignerHelper certfile(String certfile) {
         ksparams.certfile(certfile);
+        signer = null;
         return this;
     }
 
     public SignerHelper certfile(File certfile) {
         ksparams.certfile(certfile);
+        signer = null;
         return this;
     }
 
     public SignerHelper alg(String alg) {
         this.alg = alg;
+        signer = null;
         return this;
     }
 
     public SignerHelper tsaurl(String tsaurl) {
         this.tsaurl = tsaurl;
+        signer = null;
         return this;
     }
 
     public SignerHelper tsmode(String tsmode) {
         this.tsmode = tsmode;
+        signer = null;
         return this;
     }
 
     public SignerHelper tsretries(int tsretries) {
         this.tsretries = tsretries;
+        signer = null;
         return this;
     }
 
     public SignerHelper tsretrywait(int tsretrywait) {
         this.tsretrywait = tsretrywait;
+        signer = null;
         return this;
     }
 
     public SignerHelper name(String name) {
         this.name = name;
+        signer = null;
         return this;
     }
 
     public SignerHelper url(String url) {
         this.url = url;
+        signer = null;
         return this;
     }
 
     public SignerHelper proxyUrl(String proxyUrl) {
         this.proxyUrl = proxyUrl;
+        signer = null;
         return this;
     }
 
     public SignerHelper proxyUser(String proxyUser) {
         this.proxyUser = proxyUser;
+        signer = null;
         return this;
     }
 
     public SignerHelper proxyPass(String proxyPass) {
         this.proxyPass = proxyPass;
+        signer = null;
         return this;
     }
 
     public SignerHelper replace(boolean replace) {
         this.replace = replace;
+        signer = null;
         return this;
     }
 
