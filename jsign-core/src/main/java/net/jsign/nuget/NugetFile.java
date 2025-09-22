@@ -26,7 +26,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.poi.util.IOUtils;
@@ -152,7 +151,7 @@ public class NugetFile extends ZipFile implements Signable {
             InputStream in = getInputStream(SIGNATURE_ENTRY, 1024 * 1024 /* 1MB */);
             return SignatureUtils.getSignatures(IOUtils.toByteArray(in));
         } else {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
     }
 

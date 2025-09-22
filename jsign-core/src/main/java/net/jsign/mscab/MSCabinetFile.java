@@ -23,7 +23,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Object;
@@ -189,7 +189,7 @@ public class MSCabinetFile implements Signable {
             }
         }
 
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     @Override

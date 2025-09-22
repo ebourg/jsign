@@ -25,7 +25,7 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -214,7 +214,7 @@ public class APPXFile extends ZipFile implements Signable {
             return SignatureUtils.getSignatures(IOUtils.toByteArray(in));
         }
 
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     @Override

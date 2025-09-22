@@ -30,7 +30,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.security.MessageDigest;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -245,7 +245,7 @@ public class MSIFile implements Signable {
         } catch (FileNotFoundException e) {
         }
         
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     @Override
