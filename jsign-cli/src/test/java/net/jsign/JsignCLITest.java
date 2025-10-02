@@ -18,6 +18,7 @@ package net.jsign;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.net.ProxySelector;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.netty.handler.codec.http.HttpRequest;
+import net.jadler.Jadler;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
@@ -478,6 +480,52 @@ public class JsignCLITest {
             }
         } finally {
             proxy.stop();
+        }
+    }
+
+    @Test
+    public void testSigningWithProxy() throws Exception {
+        Jadler.initJadler().withDefaultResponseStatus(404);
+        Jadler.onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/certificates/test1")
+                .havingHeaderEqualTo("Via", "1.1 JsignProxy")
+                .respond()
+                .withStatus(200)
+                .withBody(IOUtils.toString(new FileReader("../jsign-crypto/src/test/resources/services/azure-certificate.json")).replaceAll("https://jsigntestkeyvault.vault.azure.net", "http://localhost:" + Jadler.port()));
+
+        Jadler.onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/keys/test1/38ca3e3560b94086ac604c5dd21aa055/sign")
+                .havingHeaderEqualTo("Via", "1.1 JsignProxy")
+                .havingBodyEqualTo("{\"alg\":\"RS256\",\"value\":\"kSBZhCngz7tfmw+l3j1W5vHMMcGYvpijTm++fl8zANY=\"}")
+                .respond()
+                .withStatus(200)
+                .withBody("{\"kid\":\"https://jsigntestkeyvault.vault.azure.net/keys/test1/38ca3e3560b94086ac604c5dd21aa055\",\"value\":\"CzDTijE0vOEDJTzbzhaMuF5mN-yO59DI5DaA35U8Rldj1mwwmHvH2yyLn2UA_dn2U5KjjmI5CXjf_gWa_-WZDmTxr6w-yNRUlJ4TJZBUF7tdi5MI70maZgcY3MGkXzWeAxXiKf57ZLMfJWLNGxXMrMQRJDi6XlDfmwIApxK-0gsUlZhq2GjlBZWGf7IPBr1Mk6ZeOUfPzFTrPXgFs5CBS5FMYGuujePGjVDRY-ODbs2l9JpQW-wv6lRX0bFXgzn4LwVqHOM_P-_kxBLbIV37hfnBnV_uYF3aDEYkE3I-wni8JPRr3hFsqRY5wea_HzzropDD1zQ5TNLJXdbLro0S7A\"}");
+
+        HttpProxyServer proxy = DefaultHttpProxyServer.bootstrap()
+                .withPort(12543)
+                .withProxyAlias("JsignProxy")
+                .start();
+
+        try {
+            File targetFile2 = new File("target/test-classes/wineyes-signed-with-cli-proxy.exe");
+            FileUtils.copyFile(sourceFile, targetFile2);
+            cli.execute("--storetype=AZUREKEYVAULT",
+                    "--keystore=http://localhost:" + Jadler.port(),
+                    "--storepass=token",
+                    "--alias=test1",
+                    "--proxyUrl=localhost:" + proxy.getListenAddress().getPort(),
+                    "" + targetFile2);
+
+            assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+
+            try (PEFile peFile = new PEFile(targetFile2)) {
+                SignatureAssert.assertSigned(peFile, SHA256);
+            }
+        } finally {
+            proxy.stop();
+            Jadler.closeJadler();
         }
     }
 

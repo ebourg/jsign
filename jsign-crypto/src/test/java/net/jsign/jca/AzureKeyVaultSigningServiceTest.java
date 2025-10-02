@@ -118,7 +118,7 @@ public class AzureKeyVaultSigningServiceTest {
         Certificate[] chain = service.getCertificateChain("test1");
         assertNotNull("chain", chain);
         assertEquals("number of certificates", 1, chain.length);
-        assertEquals("subject name", "CN=Jsign Test Certificate", ((X509Certificate) chain[0]).getSubjectDN().getName());
+        assertEquals("subject name", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", ((X509Certificate) chain[0]).getSubjectDN().getName());
 
         // check if the certificate is cached
         Certificate[] chain2 = service.getCertificateChain("test1");

@@ -68,6 +68,7 @@ See https://ebourg.github.io/jsign for more information.
 
 * Multiple signatures are now supported for EFI files
 * Self-signed certificates are no longer removed from the certificate store embedded in the signature (contributed by Christian Renz)
+* The proxy settings are now applied to the connections to the cloud signing services
 * API changes:
   * New `Signable.setSignatures(List<CMSSignedData>)` method to set multiple signatures (nesting is handled automatically)
   * `SignatureUtils.getSignatures()` now removes the nested signatures from the first signature in the list

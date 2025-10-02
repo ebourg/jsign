@@ -342,6 +342,12 @@ class SignerHelper {
     }
 
     private AuthenticodeSigner build() throws SignerException {
+        try {
+            initializeProxy(proxyUrl, proxyUser, proxyPass);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't initialize proxy", e);
+        }
+
         KeyStore ks;
         try {
             ks = ksparams.build();
@@ -414,12 +420,6 @@ class SignerHelper {
 
         if (alg != null && DigestAlgorithm.of(alg) == null) {
             throw new SignerException("The digest algorithm " + alg + " is not supported");
-        }
-
-        try {
-            initializeProxy(proxyUrl, proxyUser, proxyPass);
-        } catch (Exception e) {
-            throw new SignerException("Couldn't initialize proxy", e);
         }
 
         // enable timestamping with Azure Trusted Signing
