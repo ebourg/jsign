@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,7 @@ public class JsignCLI {
         map.put("timestamp", options);
 
         options = new Options();
-        options.addOption(Option.builder().hasArg().longOpt(PARAM_FORMAT).argName("FORMAT").desc("      The output format of the signature (DER or PEM)").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_FORMAT).argName("FORMAT").desc("The output format of the signature (DER or PEM)").build());
 
         map.put("extract", options);
 
@@ -147,7 +148,7 @@ public class JsignCLI {
         map.put("remove", options);
 
         options = new Options();
-        options.addOption(Option.builder().hasArg().longOpt(PARAM_VALUE).argName("VALUE").desc("        The value of the unsigned attribute").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_VALUE).argName("VALUE").desc("The value of the unsigned attribute").build());
 
         map.put("tag", options);
 
@@ -285,7 +286,6 @@ public class JsignCLI {
         HelpFormatter formatter = new HelpFormatter();
         formatter.setOptionComparator(null);
         formatter.setWidth(85);
-        formatter.setDescPadding(1);
 
         PrintWriter out = new PrintWriter(System.out);
         formatter.printUsage(out, formatter.getWidth(), getProgramName() + " [COMMAND] [OPTIONS] [FILE] [PATTERN] [@FILELIST]...");
@@ -295,10 +295,15 @@ public class JsignCLI {
         Map<String, Options> options = getOptions();
         out.println("commands: " + options.keySet().stream().map(s -> "sign".equals(s) ? s + " (default)" : s).collect(Collectors.joining(", ")));
 
+        Map<String, Integer> paddings = new HashMap<>();
+        paddings.put("extract", 6);
+        paddings.put("tag", 8);
+
         for (String command : options.keySet()) {
             if (!options.get(command).getOptions().isEmpty()) {
                 out.println();
                 out.println(command + ":");
+                formatter.setDescPadding(paddings.getOrDefault(command, 1));
                 formatter.printOptions(out, formatter.getWidth(), options.get(command), formatter.getLeftPadding(), formatter.getDescPadding());
             }
         }
