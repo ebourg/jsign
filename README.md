@@ -64,7 +64,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.3 (in development)
+#### Version 7.3 (2025-10-03)
 
 * Multiple signatures are now supported for EFI files
 * The root and intermediate certificates stored in the PIV slots 82 to 95 are now used to build the certificate chain
