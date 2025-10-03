@@ -23,6 +23,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,9 +105,49 @@ public class PIVCardSigningService implements SigningService {
                 String subject = ((X509Certificate) certificate).getSubjectX500Principal().getName();
                 certificates.put(subject, certificate);
             }
+        } else {
+            // add the certificates from the slots 82-95 if related (see https://support.yubico.com/hc/en-us/articles/360016614840)
+            certificates.putAll(getCertificateChain(certificates.values().iterator().next()));
         }
 
         return certificates.values().toArray(new Certificate[0]);
+    }
+
+    /**
+     * Returns the certificate chain stored in the slots 82-95 of the PIV card for the specified certificate.
+     */
+    private Map<String, X509Certificate> getCertificateChain(Certificate certificate) {
+        Map<String, X509Certificate> chain = new LinkedHashMap<>();
+
+        Map<String, X509Certificate> certificates = new HashMap<>();
+
+        PIVCard.Key[] retiredKeys = PIVCard.Key.values();
+        retiredKeys = Arrays.copyOfRange(retiredKeys, 4, retiredKeys.length);
+
+        String issuer = ((X509Certificate) certificate).getIssuerX500Principal().getName();
+        keys: for (PIVCard.Key retiredKey : retiredKeys) {
+            try {
+                X509Certificate extraCertificate = (X509Certificate) card.getCertificate(retiredKey);
+                if (extraCertificate != null) {
+                    certificates.put(extraCertificate.getSubjectX500Principal().getName(), extraCertificate);
+
+                    // build the chain as far as possible from the extra certificates found
+                    X509Certificate issuerCertificate;
+                    while ((issuerCertificate = certificates.remove(issuer)) != null) {
+                        chain.put(issuer, issuerCertificate);
+                        if (issuer.equals(issuerCertificate.getIssuerX500Principal().getName())) {
+                            // root certificate found, stop iterating the keys
+                            break keys;
+                        }
+                        issuer = extraCertificate.getIssuerX500Principal().getName();
+                    }
+                }
+            } catch (CardException e) {
+                // ignore
+            }
+        }
+
+        return chain;
     }
 
     @Override

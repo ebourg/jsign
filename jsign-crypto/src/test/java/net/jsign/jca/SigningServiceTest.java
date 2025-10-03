@@ -37,10 +37,10 @@ import static org.junit.Assume.*;
 
 public class SigningServiceTest {
 
-    public void testCustomProvider(Provider signingProvider, KeyStore keystore, String alias, String keypass) throws Exception {
+    public void testCustomProvider(Provider signingProvider, KeyStore keystore, String alias, String keypass, int chainLength) throws Exception {
         Certificate[] chain = keystore.getCertificateChain(alias);
         assertNotNull("Certificate chain not found", chain);
-        assertNotEquals("Empty certificate chain", 0, chain.length);
+        assertEquals("Chain length", chainLength, chain.length);
 
         Key key = keystore.getKey(alias, keypass.toCharArray());
         assertNotNull("Private key not found", key);
@@ -70,7 +70,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("LOCALKEYSTORE", provider);
         keystore.load(null, "secret".toCharArray());
 
-        testCustomProvider(provider, keystore, "test", "password");
+        testCustomProvider(provider, keystore, "test", "password", 3);
     }
 
     @Test
@@ -91,11 +91,11 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("OPENPGP", provider);
         keystore.load(null, "123456".toCharArray());
 
-        testCustomProvider(provider, keystore, "AUTHENTICATION", "123456");
+        testCustomProvider(provider, keystore, "AUTHENTICATION", "123456", 3);
     }
 
     @Test
-    public void testPIVCardProvider() throws Exception {
+    public void testPIVCardProviderWithSuppliedChain() throws Exception {
         PIVCardTest.assumeCardPresent();
         Provider provider = new SigningServiceJcaProvider(new PIVCardSigningService(null, "123456", alias -> {
             try {
@@ -112,7 +112,18 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("PIV", provider);
         keystore.load(null, "123456".toCharArray());
 
-        testCustomProvider(provider, keystore, "SIGNATURE", "123456");
+        testCustomProvider(provider, keystore, "SIGNATURE", "123456", 3);
+    }
+
+    @Test
+    public void testPIVCardProvider() throws Exception {
+        PIVCardTest.assumeCardPresent();
+        Provider provider = new SigningServiceJcaProvider(new PIVCardSigningService(null, "123456", null));
+
+        KeyStore keystore = KeyStore.getInstance("PIV", provider);
+        keystore.load(null, "123456".toCharArray());
+
+        testCustomProvider(provider, keystore, "SIGNATURE", "123456", 3);
     }
 
     @Test
@@ -132,7 +143,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("AWS", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "test", "");
+        testCustomProvider(provider, keystore, "test", "", 3);
     }
 
     @Test
@@ -141,7 +152,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("AZUREKEYVAULT", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "jsign", "");
+        testCustomProvider(provider, keystore, "jsign", "", 3);
     }
 
     @Test
@@ -160,7 +171,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("GOOGLECLOUD", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "test", "");
+        testCustomProvider(provider, keystore, "test", "", 3);
     }
 
     @Test
@@ -172,7 +183,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("DIGICERTONE", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "353d4f18-5325-4b78-b17c-f92375cf40ec", "");
+        testCustomProvider(provider, keystore, "353d4f18-5325-4b78-b17c-f92375cf40ec", "", 3);
     }
 
     @Test
@@ -183,7 +194,7 @@ public class SigningServiceTest {
         keystore.load(null, "".toCharArray());
         String alias = keystore.aliases().nextElement();
 
-        testCustomProvider(provider, keystore, alias, "RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=");
+        testCustomProvider(provider, keystore, alias, "RDXYgV9qju+6/7GnMf1vCbKexXVJmUVr+86Wq/8aIGg=", 2);
     }
 
     @Test
@@ -205,7 +216,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("ORACLECLOUD", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", "");
+        testCustomProvider(provider, keystore, "ocid1.key.oc1.eu-paris-1.h5tafwboaahxq.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7yo6z7yhl2zyn2yncwzxiza", "", 3);
     }
 
     @Test
@@ -215,7 +226,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("TRUSTEDSIGNING", provider);
         keystore.load(null, "".toCharArray());
 
-        testCustomProvider(provider, keystore, "MyAccount/MyProfile", "");
+        testCustomProvider(provider, keystore, "MyAccount/MyProfile", "", 3);
     }
 
     @Test
@@ -225,7 +236,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("GARASIGN", provider);
         keystore.load(null, "".toCharArray());
 
-        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "windows_codesign", ""));
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "windows_codesign", "", 3));
         assertEquals("message", "Failed to authenticate with GaraSign: Error authenticating user", e.getCause().getMessage());
     }
 
@@ -236,7 +247,7 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("SIGNSERVER", provider);
         keystore.load(null, "".toCharArray());
 
-        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", ""));
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", "", 3));
         assertEquals("message", "Unable to retrieve the certificate chain 'default'", e.getMessage());
     }
 
@@ -251,9 +262,9 @@ public class SigningServiceTest {
         KeyStore keystore = KeyStore.getInstance("SIGNPATH", provider);
         keystore.load(null, "".toCharArray());
 
-        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", ""));
+        Exception e = assertThrows(Exception.class, () -> testCustomProvider(provider, keystore, "default", "", 3));
         assertEquals("message", "Unable to retrieve SignPath signing policy 'default'", e.getMessage());
 
-        testCustomProvider(provider, keystore, "jsign/rsa-2048", "");
+        testCustomProvider(provider, keystore, "jsign/rsa-2048", "", 3);
     }
 }

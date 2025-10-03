@@ -158,7 +158,7 @@ public class PIVCardTest {
         Set<PIVCard.Key> keys = card.getAvailableKeys();
 
         assertNotNull("keys", keys);
-        assertEquals("number of keys", 2, keys.size());
+        assertEquals("number of keys", 5, keys.size());
     }
 
     @Test

@@ -67,6 +67,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 7.3 (in development)
 
 * Multiple signatures are now supported for EFI files
+* The root and intermediate certificates stored in the PIV slots 82 to 95 are now used to build the certificate chain
 * Self-signed certificates are no longer removed from the certificate store embedded in the signature (contributed by Christian Renz)
 * The proxy settings are now applied to the connections to the cloud signing services
 * API changes:

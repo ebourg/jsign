@@ -413,7 +413,8 @@ be installed on the system at the default location.</p>
  jsign --storetype YUBIKEY --storepass 123456 application.exe
 </pre>
 
-<p>Alternatively, the PIV storetype can also be used to sign with a Yubikey and doesn't require the ykcs11 library.</p>
+<p>Alternatively, the <a href="#example-piv">PIV</a> storetype can also be used to sign with a Yubikey and doesn't
+require the ykcs11 library.</p>
 
 <h4 id="example-nitrokey">Signing with a Nitrokey HSM</h4>
 
@@ -481,6 +482,10 @@ Slot numbers are also accepted (for example <code>9c</code> for the digital sign
 
 <p>If multiple devices are connected, the <code>keystore</code> parameter can be used to specify
 the name of the one to use.</p>
+
+<p>If the <code>certfile</code> parameter is not specified Jsign will look for the CA root and intermediate certificates
+stored in the <code>RETIRED&lt;1-20&gt;</code> (82 to 95) slots to build the full certificate chain.</p>
+
 
 <h4 id="example-awskms">Signing with AWS Key Management Service</h4>
 
