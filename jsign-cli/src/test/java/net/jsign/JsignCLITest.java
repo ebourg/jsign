@@ -90,6 +90,11 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testPrintVersion() {
+        JsignCLI.main("--version");
+    }
+
+    @Test
     public void testMissingKeyStore() {
         assertThrows(SignerException.class, () -> cli.execute("sign", "" + targetFile));
     }

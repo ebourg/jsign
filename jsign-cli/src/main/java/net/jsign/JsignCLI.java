@@ -123,6 +123,7 @@ public class JsignCLI {
         options.addOption(Option.builder().longOpt("verbose").desc("Print more information").build());
         options.addOption(Option.builder().longOpt("debug").desc("Print debugging information").build());
         options.addOption(Option.builder("h").longOpt("help").desc("Print the help").build());
+        options.addOption(Option.builder().longOpt("version").desc("Display version information").build());
 
         map.put("sign", options);
 
@@ -176,6 +177,11 @@ public class JsignCLI {
 
         if (cmd.hasOption("help") || args.length == 0) {
             printHelp();
+            return;
+        }
+
+        if (cmd.hasOption("version")) {
+            printVersion();
             return;
         }
 
@@ -309,6 +315,10 @@ public class JsignCLI {
         }
         formatter.printWrapped(out, formatter.getWidth(), footer);
         out.flush();
+    }
+
+    private void printVersion() {
+        System.out.println("Jsign " + getClass().getPackage().getImplementationVersion());
     }
 
     private static String getProgramName() {

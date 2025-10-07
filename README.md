@@ -64,6 +64,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 7.4 (in development)
+
+* The new command line option `--version` displays the version of Jsign
+
 #### Version 7.3 (2025-10-03)
 
 * Multiple signatures are now supported for EFI files
