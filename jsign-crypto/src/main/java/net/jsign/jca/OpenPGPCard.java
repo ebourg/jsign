@@ -71,13 +71,7 @@ class OpenPGPCard extends SmartCard {
      * Select the OpenPGP application on the card.
      */
     private void select() throws CardException {
-        ResponseAPDU response = transmit(new CommandAPDU(0x00, 0xA4, 0x04, 0x00, new byte[] { (byte) 0xD2, 0x76, 0x00, 0x01, 0x24, 0x01 })); // SELECT
-        switch (response.getSW()) {
-            case 0x6A82:
-            case 0x6A86:
-                throw new CardException("OpenPGP application not found on the card/token");
-        }
-        handleError(response);
+        select("OpenPGP", new byte[] { (byte) 0xD2, 0x76, 0x00, 0x01, 0x24, 0x01 });
     }
 
     /**

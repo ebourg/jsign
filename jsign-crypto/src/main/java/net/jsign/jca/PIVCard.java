@@ -142,13 +142,7 @@ class PIVCard extends SmartCard {
      * Select the PIV application on the card.
      */
     private void select() throws CardException {
-        ResponseAPDU response = transmit(new CommandAPDU(0x00, 0xA4, 0x04, 0x00, new byte[] { (byte) 0xA0, 0x00, 0x00, 0x03, 0x08, 0x00, 0x00, 0x10, 0x00 })); // SELECT
-        switch (response.getSW()) {
-            case 0x6A82:
-            case 0x6A86:
-                throw new CardException("PIV application not found on the card/token");
-        }
-        handleError(response);
+        select("PIV", new byte[] { (byte) 0xA0, 0x00, 0x00, 0x03, 0x08, 0x00, 0x00, 0x10, 0x00 });
     }
 
     /**

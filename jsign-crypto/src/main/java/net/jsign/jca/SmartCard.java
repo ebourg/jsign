@@ -54,6 +54,22 @@ abstract class SmartCard {
     }
 
     /**
+     * Select an application on the card.
+     *
+     * @param name the name of the application (for logging purposes)
+     * @param aid  the AID of the application
+     */
+    void select(String name, byte[] aid) throws CardException {
+        ResponseAPDU response = transmit(new CommandAPDU(0x00, 0xA4, 0x04, 0x00, aid)); // SELECT
+        switch (response.getSW()) {
+            case 0x6A82:
+            case 0x6A86:
+                throw new CardException(name + " application not found on the card/token");
+        }
+        handleError(response);
+    }
+
+    /**
      * Set the PIN for the verify operation.
      */
     public void verify(String pin) {
