@@ -376,35 +376,36 @@ class SignerHelper {
         }
 
         Certificate[] chain;
-        try {
-            chain = ks.getCertificateChain(alias);
-        } catch (KeyStoreException e) {
-            throw new SignerException(e.getMessage(), e);
-        }
-        if (chain == null) {
-            String message = "No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
-            if (aliases == null) {
-                try {
-                    aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
-                    if (aliases.isEmpty()) {
-                        message = "No certificate found in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
-                    } else if (aliases.contains(alias)) {
-                        message = "The keystore password must be specified";
-                    } else {
-                        message += " (available aliases: " + String.join(", ", aliases) + ")";
-                    }
-                } catch (KeyStoreException e) {
-                    message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
-                }
-            }
-            throw new SignerException(message);
-        }
         if (ksparams.certfile() != null) {
             // replace the certificate chain from the keystore with the complete chain from file
             try {
                 chain = CertificateUtils.loadCertificateChain(ksparams.certfile());
             } catch (Exception e) {
                 throw new SignerException("Failed to load the certificate from " + ksparams.certfile(), e);
+            }
+        } else {
+            try {
+                chain = ks.getCertificateChain(alias);
+            } catch (KeyStoreException e) {
+                throw new SignerException(e.getMessage(), e);
+            }
+            if (chain == null) {
+                String message = "No certificate found under the alias '" + alias + "' in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
+                if (aliases == null) {
+                    try {
+                        aliases = new LinkedHashSet<>(Collections.list(ks.aliases()));
+                        if (aliases.isEmpty()) {
+                            message = "No certificate found in the keystore " + (provider != null ? provider.getName() : ksparams.keystore());
+                        } else if (aliases.contains(alias)) {
+                            message = "The keystore password must be specified";
+                        } else {
+                            message += " (available aliases: " + String.join(", ", aliases) + ")";
+                        }
+                    } catch (KeyStoreException e) {
+                        message += " (couldn't load the list of available aliases: " + e.getMessage() + ")";
+                    }
+                }
+                throw new SignerException(message);
             }
         }
 

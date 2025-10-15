@@ -67,6 +67,7 @@ See https://ebourg.github.io/jsign for more information.
 #### Version 7.4 (in development)
 
 * The new command line option `--version` displays the version of Jsign
+* The certificate chain is no longer fetched from the keystore when the `certfile` parameter is specified
 
 #### Version 7.3 (2025-10-03)
 
