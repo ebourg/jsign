@@ -73,8 +73,8 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
   <li>Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512</li>
   <li>Keystores supported:
     <ul>
-      <li>PKCS#12, JKS and JCEKS files</li>
-      <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, <a href="https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication">SafeNet eToken</a>, <a href="https://shop.certum.eu/karta-kryptograficzna-cryptocertum-3-6.html">CryptoCertum</a>, etc)</li>
+      <li>Keystore files (PKCS#12, JKS, JCEKS, PVK/PKCS#1/PKCS#8 keys and PKCS#7 certificates)</li>
+      <li>Hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication">SafeNet eToken</a>, <a href="https://shop.certum.eu/karta-kryptograficzna-cryptocertum-3-6.html">CryptoCertum</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, PKCS#11 devices)</li>
       <li>Cloud key management systems:
         <ul>
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
@@ -91,7 +91,6 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
         </ul>
       </li>
     </ul>
-  <li>Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not</li>
   <li>Certificates: PKCS#7 in PEM and DER format</li>
   <li>Automatic download of the intermediate certificates</li>
   <li>Authenticode signing API (<a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a>)</li>
@@ -181,16 +180,16 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
 
     <p>File based:</p>
     <ul>
+      <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
       <li><code>JKS</code>: Java keystore (<code>.jks</code> files)</li>
       <li><code>JCEKS</code>: SunJCE keystore (<code>.jceks</code> files)</li>
-      <li><code>PKCS12</code>: Standard PKCS#12 keystore (<code>.p12</code> or <code>.pfx</code> files)</li>
     </ul>
       
     <p>For file based keystores Jsign will detect the type automatically if this parameter is omitted.</p>
 
     <p>Hardware tokens:</p>
     <ul>
-      <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+      <li><code>PKCS11</code>: PKCS#11 devices</li>
       <li><code>CRYPTOCERTUM</code>: <a href="#example-cryptocertum">CryptoCertum card</a></li>
       <li><code>ETOKEN</code>: <a href="#example-etoken">SafeNet eToken</a></li>
       <li><code>NITROKEY</code>: <a href="#example-nitrokey">Nitrokey HSM</a></li>

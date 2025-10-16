@@ -39,8 +39,8 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Tags signed files with unsigned data (for user identification)
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported:
-  * PKCS#12, JKS and JCEKS files
-  * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), [SafeNet eToken](https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication), [CryptoCertum](https://shop.certum.eu/karta-kryptograficzna-cryptocertum-3-6.html), etc)
+  * Keystore files (PKCS#12, JKS, JCEKS, PVK/PKCS#1/PKCS#8 keys and PKCS#7 certificates)
+  * Hardware tokens ([YubiKey](https://www.yubico.com), [SafeNet eToken](https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication), [CryptoCertum](https://shop.certum.eu/karta-kryptograficzna-cryptocertum-3-6.html), [Nitrokey](https://www.nitrokey.com), PKCS#11 devices)
   * Cloud key management systems:
     * [AWS KMS](https://aws.amazon.com/kms/)
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
@@ -53,7 +53,6 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [Oracle Cloud KMS](https://www.oracle.com/security/cloud-security/key-management/)
     * [SignPath](https://signpath.io)
     * [SSL.com eSigner](https://www.ssl.com/esigner/)
-* Private key formats: PVK and PEM (PKCS#1 and PKCS#8), encrypted or not
 * Certificates: PKCS#7 in PEM and DER format
 * Automatic download of the intermediate certificates
 * Authenticode signing API ([Javadoc](https://javadoc.io/doc/net.jsign/jsign-core))

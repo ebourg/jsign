@@ -78,9 +78,9 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_STORETYPE).argName("TYPE")
                 .desc("The type of the keystore\n"
                         + "File based:\n"
+                        + "- PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)\n"
                         + "- JKS: Java keystore (.jks files)\n"
                         + "- JCEKS: SunJCE keystore (.jceks files)\n"
-                        + "- PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)\n"
                         + "Hardware tokens\n"
                         + "- PKCS11: PKCS#11 hardware token\n"
                         + "- CRYPTOCERTUM: CryptoCertum card\n"
