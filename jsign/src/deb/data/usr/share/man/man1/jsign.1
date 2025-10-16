@@ -71,6 +71,8 @@ Hardware tokens;
 .br
 - PKCS11        : PKCS#11 hardware token
 .br
+- CRYPTOCERTUM  : CryptoCertum card
+.br
 - ETOKEN        : SafeNet eToken
 .br
 - NITROKEY      : Nitrokey HSM
@@ -341,6 +343,19 @@ X.509 certificates stored on the card are automatically used, and the certfile p
 if the certificate chain contains an intermediate certificate.
 
 If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
+
+
+.TP
+
+Signing with a CryptoCertum card
+
+The CryptoCertum cryptographic card from Certum is supported using the CRYPTOCERTUM storetype. No PKCS#11 module
+is required, Jsign communicates directly with the card and uses the keys and certificates stored in the common file
+(the secure profile containing eIDAS certificates is not supported).
+
+jsign --storetype CRYPTOCERTUM --storepass 123456 --alias test application.exe
+
+The alias parameter specifies the common name of the certificate.
 
 
 .TP

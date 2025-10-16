@@ -74,7 +74,7 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
   <li>Keystores supported:
     <ul>
       <li>PKCS#12, JKS and JCEKS files</li>
-      <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, <a href="https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication">SafeNet eToken</a>, etc)</li>
+      <li>PKCS#11 hardware tokens (<a href="https://www.yubico.com">YubiKey</a>, <a href="https://www.nitrokey.com">Nitrokey</a>, <a href="https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication">SafeNet eToken</a>, <a href="https://shop.certum.eu/karta-kryptograficzna-cryptocertum-3-6.html">CryptoCertum</a>, etc)</li>
       <li>Cloud key management systems:
         <ul>
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
@@ -191,6 +191,7 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
     <p>Hardware tokens:</p>
     <ul>
       <li><code>PKCS11</code>: PKCS#11 hardware token</li>
+      <li><code>CRYPTOCERTUM</code>: <a href="#example-cryptocertum">CryptoCertum card</a></li>
       <li><code>ETOKEN</code>: <a href="#example-etoken">SafeNet eToken</a></li>
       <li><code>NITROKEY</code>: <a href="#example-nitrokey">Nitrokey HSM</a></li>
       <li><code>OPENPGP</code>: <a href="#example-openpgp">OpenPGP card</a></li>
@@ -485,6 +486,19 @@ the name of the one to use.</p>
 
 <p>If the <code>certfile</code> parameter is not specified Jsign will look for the CA root and intermediate certificates
 stored in the <code>RETIRED&lt;1-20&gt;</code> (82 to 95) slots to build the full certificate chain.</p>
+
+
+<h4 id="example-cryptocertum">Signing with a CryptoCertum card</h4>
+
+<p>The CryptoCertum cryptographic card from <a href="https://www.certum.eu">Certum</a> is supported using
+the <code>CRYPTOCERTUM</code> storetype. No PKCS#11 module is required, Jsign communicates directly with the card and uses
+the keys and certificates stored in the common file (the secure profile containing eIDAS certificates is not supported).</p>
+
+<pre>
+    jsign --storetype CRYPTOCERTUM --storepass 123456 --alias test application.exe
+</pre>
+
+<p>The <code>alias</code> parameter specifies the common name of the certificate.</p>
 
 
 <h4 id="example-awskms">Signing with AWS Key Management Service</h4>

@@ -39,6 +39,7 @@ import net.jsign.jca.AmazonCredentials;
 import net.jsign.jca.AmazonSigningService;
 import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.AzureTrustedSigningService;
+import net.jsign.jca.CryptoCertumCardSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GaraSignCredentials;
@@ -626,6 +627,28 @@ public enum KeyStoreType {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return new SigningServiceJcaProvider(new SignPathSigningService(params.keystore(), params.storepass()));
+        }
+    },
+
+    /**
+     * CryptoCertum card. No PKCS#11 module is required, Jsign communicates directly with the card and uses the keys
+     * and certificates stored in the common file (the secure profile containing eIDAS certificates is not supported).
+     */
+    CRYPTOCERTUM(false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() == null) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the PIN");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            try {
+                return new SigningServiceJcaProvider(new CryptoCertumCardSigningService(params.storepass()));
+            } catch (CardException e) {
+                throw new IllegalStateException("Failed to initialize the CryptoCertum card", e);
+            }
         }
     };
 

@@ -127,6 +127,17 @@ public class SigningServiceTest {
     }
 
     @Test
+    public void testCryptoCertumCardProvider() throws Exception {
+        CryptoCertumCardTest.assumeCardPresent();
+        Provider provider = new SigningServiceJcaProvider(new CryptoCertumCardSigningService("123456"));
+
+        KeyStore keystore = KeyStore.getInstance("CRYPTOCERTUM", provider);
+        keystore.load(null, "123456".toCharArray());
+
+        testCustomProvider(provider, keystore, "Jsign Code Signing Test Certificate 2024 (RSA)", "123456", 1);
+    }
+
+    @Test
     public void testAmazonProvider() throws Exception {
         AmazonCredentials credentials = new AmazonCredentials(AWS.getAccessKey(), AWS.getSecretKey(), null);
         Provider provider = new SigningServiceJcaProvider(new AmazonSigningService("eu-west-3", credentials, alias -> {

@@ -40,7 +40,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
 * Hashing algorithms: MD5, SHA-1, SHA-256, SHA-384 and SHA-512
 * Keystores supported:
   * PKCS#12, JKS and JCEKS files
-  * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), [SafeNet eToken](https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication), etc)
+  * PKCS#11 hardware tokens ([YubiKey](https://www.yubico.com), [Nitrokey](https://www.nitrokey.com), [SafeNet eToken](https://cpl.thalesgroup.com/access-management/authenticators/pki-usb-authentication), [CryptoCertum](https://shop.certum.eu/karta-kryptograficzna-cryptocertum-3-6.html), etc)
   * Cloud key management systems:
     * [AWS KMS](https://aws.amazon.com/kms/)
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
@@ -66,6 +66,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.4 (in development)
 
+* The CryptoCertum cryptographic card is now supported with the new `CRYPTOCERTUM` storetype (no PKCS#11 module required)
 * The new command line option `--version` displays the version of Jsign
 * The certificate chain is no longer fetched from the keystore when the `certfile` parameter is specified
 

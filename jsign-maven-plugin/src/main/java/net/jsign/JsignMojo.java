@@ -89,9 +89,9 @@ public class JsignMojo extends AbstractMojo {
     private String storepass;
 
     /**
-     * The type of the keystore (JKS, JCEKS, PKCS12, PKCS11, ETOKEN, NITROKEY, OPENPGP, OPENSC, PIV, YUBIKEY, AWS,
-     * AZUREKEYVAULT, DIGICERTONE, ESIGNER, GARASIGN, GOOGLECLOUD, HASHICORPVAULT, ORACLECLOUD, SIGNPATH, SIGNSERVER
-     * or TRUSTEDSIGNING).
+     * The type of the keystore (JKS, JCEKS, PKCS12, PKCS11, CRYPTOCERTUM, ETOKEN, NITROKEY, OPENPGP, OPENSC, PIV,
+     * YUBIKEY, AWS, AZUREKEYVAULT, DIGICERTONE, ESIGNER, GARASIGN, GOOGLECLOUD, HASHICORPVAULT, ORACLECLOUD, SIGNPATH,
+     * SIGNSERVER or TRUSTEDSIGNING).
      */
     @Parameter( property = "jsign.storetype" )
     private String storetype;

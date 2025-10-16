@@ -17,7 +17,9 @@
 package net.jsign.jca;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -148,11 +150,39 @@ abstract class SmartCard {
                 throw new CardException("The parameters in the data field are incorrect");
             case 0x6A82:
                 throw new CardException("Incorrect P1 or P2 parameter");
+            case 0x6A88:
+                throw new CardException("Referenced data not found");
+            case 0x6B00:
+                throw new CardException("Wrong parameter(s) P1-P2");
             case 0x6D00:
                 throw new CardException("Instruction code not supported or invalid");
             default:
                 throw new CardException("Error " + Integer.toHexString(response.getSW()));
         }
+    }
+
+    /**
+     * Opens a channel to the first available smart card hosting the specified application.
+     *
+     * @param aid the AID of the application
+     */
+    static CardChannel openChannel(byte[] aid) throws CardException {
+        for (CardTerminal terminal : getTerminals(null)) {
+            try {
+                Card card = terminal.connect("*");
+                CardChannel channel = card.getBasicChannel();
+                ResponseAPDU response = channel.transmit(new CommandAPDU(0x00, 0xA4, 0x04, 0x00, aid)); // SELECT
+                if (response.getSW() == 0x9000) {
+                    return channel;
+                } else {
+                    card.disconnect(false);
+                }
+            } catch (CardException e) {
+                // ignore and try the next terminal
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -164,7 +194,7 @@ abstract class SmartCard {
         CardTerminal terminal = getTerminal(name);
         if (terminal != null) {
             try {
-                Card card = terminal.connect("T=1");
+                Card card = terminal.connect("*");
                 return card.getBasicChannel();
             } catch (CardException e) {
                 e.printStackTrace();
@@ -180,13 +210,21 @@ abstract class SmartCard {
      * @param name the partial name of the terminal
      */
     static CardTerminal getTerminal(String name) throws CardException {
-        CardTerminals terminals = TerminalFactory.getDefault().terminals();
-        for (CardTerminal terminal : terminals.list(CardTerminals.State.CARD_PRESENT)) {
-            if (name == null || terminal.getName().toLowerCase().contains(name.toLowerCase())) {
-                return terminal;
-            }
-        }
+        List<CardTerminal> terminals = getTerminals(name);
+        return terminals.isEmpty() ? null : terminals.get(0);
+    }
 
-        return null;
+    /**
+     * Returns the available smart card terminals matching the specified name.
+     *
+     * @param name the partial name of the terminal
+     */
+    static List<CardTerminal> getTerminals(String name) throws CardException {
+        List<CardTerminal> activeTerminals = TerminalFactory.getDefault().terminals().list(CardTerminals.State.CARD_PRESENT);
+        if (name != null) {
+            activeTerminals = new ArrayList<>(activeTerminals);
+            activeTerminals.removeIf(terminal -> !terminal.getName().toLowerCase().contains(name.toLowerCase()));
+        }
+        return activeTerminals;
     }
 }

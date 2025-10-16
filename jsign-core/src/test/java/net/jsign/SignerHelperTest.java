@@ -35,6 +35,7 @@ import org.junit.Test;
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
 import net.jsign.jca.AWS;
 import net.jsign.jca.Azure;
+import net.jsign.jca.CryptoCertumCardTest;
 import net.jsign.jca.DigiCertONE;
 import net.jsign.jca.GoogleCloud;
 import net.jsign.jca.OracleCloudCredentials;
@@ -380,6 +381,26 @@ public class SignerHelperTest {
                 .storepass("123456")
                 .alias("SIGNATURE")
                 .certfile("src/test/resources/keystores/jsign-test-certificate-full-chain.pem")
+                .alg("SHA-256");
+
+        helper.execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testCryptoCertum() throws Exception {
+        CryptoCertumCardTest.assumeCardPresent();
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-cryptocertum.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper("option")
+                .storetype("CRYPTOCERTUM")
+                .storepass("123456")
+                .alias("Jsign Code Signing Test Certificate 2024 (RSA)")
                 .alg("SHA-256");
 
         helper.execute(targetFile);

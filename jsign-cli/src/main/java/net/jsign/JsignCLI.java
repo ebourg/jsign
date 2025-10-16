@@ -83,6 +83,7 @@ public class JsignCLI {
                         + "- PKCS12: Standard PKCS#12 keystore (.p12 or .pfx files)\n"
                         + "Hardware tokens\n"
                         + "- PKCS11: PKCS#11 hardware token\n"
+                        + "- CRYPTOCERTUM: CryptoCertum card\n"
                         + "- ETOKEN: SafeNet eToken\n"
                         + "- NITROKEY: Nitrokey HSM\n"
                         + "- OPENPGP: OpenPGP card\n"
