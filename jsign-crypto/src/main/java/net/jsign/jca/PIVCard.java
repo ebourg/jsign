@@ -271,37 +271,39 @@ class PIVCard extends SmartCard {
         info.algorithm = publicKey.getAlgorithm();
         if ("RSA".equals(info.algorithm)) {
             info.size = ((RSAKey) publicKey).getModulus().bitLength();
-            switch (info.size) {
-                case 1024:
-                    info.algorithmId = 0x06;
-                    break;
-                case 2048:
-                    info.algorithmId = 0x07;
-                    break;
-                case 3072:
-                    info.algorithmId = 0x05;
-                    break;
-                case 4096:
-                    info.algorithmId = 0x16;
-                    break;
-            }
         } else if ("EC".equals(info.algorithm)) {
             ECParameterSpec spec = ((ECKey) publicKey).getParams();
             if (spec != null) {
                 info.size = spec.getOrder().bitLength();
             }
+        }
+        info.algorithmId = getAlgorithmId(info.algorithm, info.size);
 
-            switch (info.size) {
+        return info;
+    }
+
+    private int getAlgorithmId(String algorithm, int size) {
+        if ("RSA".equals(algorithm)) {
+            switch (size) {
+                case 1024:
+                    return 0x06;
+                case 2048:
+                    return 0x07;
+                case 3072:
+                    return 0x05;
+                case 4096:
+                    return 0x16;
+            }
+        } else if ("EC".equals(algorithm)) {
+            switch (size) {
                 case 256:
-                    info.algorithmId = 0x11;
-                    break;
+                    return 0x11;
                 case 384:
-                    info.algorithmId = 0x14;
-                    break;
+                    return 0x14;
             }
         }
 
-        return info;
+        throw new IllegalArgumentException("Unsupported algorithm " + algorithm + " with key size " + size);
     }
 
     /**
