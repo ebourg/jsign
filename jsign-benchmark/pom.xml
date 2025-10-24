@@ -32,7 +32,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.14.1</version>
         <configuration>
           <annotationProcessorPaths>
             <path>
@@ -46,7 +46,7 @@
       <plugin>
         <groupId>org.apache.maven.surefire</groupId>
         <artifactId>surefire</artifactId>
-        <version>3.5.3</version>
+        <version>3.5.4</version>
         <configuration>
           <skip>true</skip>
         </configuration>

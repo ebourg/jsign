@@ -43,7 +43,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.3</version>
+        <version>3.12.0</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
@@ -65,7 +65,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.13</version>
+        <version>0.8.14</version>
         <executions>
           <execution>
             <id>jacoco-report</id>
@@ -79,7 +79,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -208,12 +208,12 @@
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-base</artifactId>
-            <version>7.7.0</version>
+            <version>7.8.0</version>
           </dependency>
           <dependency>
             <groupId>com.guardsquare</groupId>
             <artifactId>proguard-core</artifactId>
-            <version>9.1.10</version>
+            <version>9.2.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -238,7 +238,7 @@
       <plugin>
         <groupId>com.github.siom79.japicmp</groupId>
         <artifactId>japicmp-maven-plugin</artifactId>
-        <version>0.23.1</version>
+        <version>0.24.2</version>
         <executions>
           <execution>
             <phase>verify</phase>
@@ -291,7 +291,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <id>replace-version</id>
@@ -464,7 +464,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
             <executions>
               <execution>
                 <id>update-release-version</id>

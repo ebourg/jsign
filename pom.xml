@@ -114,7 +114,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.13</version>
+          <version>0.8.14</version>
           <executions>
             <execution>
               <id>prepare-jacoco-agent</id>
@@ -140,7 +140,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.14.0</version>
+        <version>3.14.1</version>
         <configuration>
           <source>8</source>
           <target>8</target>
@@ -148,7 +148,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.3</version>
+        <version>3.5.4</version>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
           <environmentVariables>
@@ -175,7 +175,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.13</version>
+        <version>0.8.14</version>
       </plugin>
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
@@ -195,7 +195,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.3</version>
+        <version>3.12.0</version>
         <configuration>
           <linksource>true</linksource>
           <links>
@@ -230,7 +230,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.1</version>
+        <version>3.6.2</version>
         <executions>
           <execution>
             <id>enforce-maven</id>
@@ -323,7 +323,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.11.3</version>
+            <version>3.12.0</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -368,7 +368,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.11.3</version>
+        <version>3.12.0</version>
         <configuration>
           <doclint>none</doclint>
         </configuration>
@@ -383,7 +383,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.9.4.0</version>
+        <version>4.9.8.1</version>
       </plugin>
     </plugins>
   </reporting>
