@@ -73,4 +73,19 @@ public class CentralDirectoryFileHeaderTest {
             assertEquals("message", "Invalid Central Directory File Header signature 0x4034b50", e.getMessage());
         }
     }
+
+    @Test
+    public void testLocalHeaderOffsetUpdate() throws Exception {
+        File file = new File("target/test-classes/minimal.zip");
+
+        try (SeekableByteChannel channel = Files.newByteChannel(file.toPath(), StandardOpenOption.READ)) {
+            channel.position(0x247B);
+
+            CentralDirectoryFileHeader centralDirectoryFileHeader = new CentralDirectoryFileHeader();
+            centralDirectoryFileHeader.read(channel);
+
+            centralDirectoryFileHeader.setLocalHeaderOffset(centralDirectoryFileHeader.getLocalHeaderOffset());
+            assertEquals("local header offset", 0xFFFFFFFFL, centralDirectoryFileHeader.localHeaderOffset);
+        }
+    }
 }
