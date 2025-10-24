@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>jsign</id>
-    <version>7.3</version>
+    <version>7.4</version>
     <owners>ebourg</owners>
     <title>Jsign</title>
     <authors>Emmanuel Bourg</authors>
@@ -28,7 +28,7 @@
   </metadata>
   <files>
     <file src="tools\**" target="tools" />
-    <file src="..\..\target\jsign-7.3.jar" target="tools\jsign.jar" />
+    <file src="..\..\target\jsign-7.4.jar" target="tools\jsign.jar" />
     <file src="..\..\..\LICENSE.txt" target="tools\" />
   </files>
 </package>

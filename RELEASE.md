@@ -11,7 +11,7 @@ Release process
 
 1. Upload the Maven artifacts to Nexus:
 
-       mvn clean deploy -Prelease
+       mvn clean deploy -Prelease --projects !jsign-benchmark
 
 1. Login to https://central.sonatype.com/publishing/deployments and publish the staged deployment
 

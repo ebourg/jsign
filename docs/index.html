@@ -101,12 +101,12 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
 <h3 id="files">Downloads</h3>
 
 <ul>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/7.3/jsign_7.3_all.deb">DEB package</a> (Debian/Ubuntu)</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/7.3/jsign-7.3-1.noarch.rpm">RPM package</a> (RedHat/Fedora)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/7.4/jsign_7.4_all.deb">DEB package</a> (Debian/Ubuntu)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/7.4/jsign-7.4-1.noarch.rpm">RPM package</a> (RedHat/Fedora)</li>
   <li><a href="https://community.chocolatey.org/packages/jsign/">Chocolatey package</a> (Windows)</li>
   <li><a href="https://scoop.sh/#/apps?q=jsign&id=48a014807579e3b45a673676f26a17fff1f8e961">Scoop package</a> (Windows)</li>
   <li><a href="https://formulae.brew.sh/formula/jsign">Homebrew package</a> (macOS/Linux)</li>
-  <li><a href="https://github.com/ebourg/jsign/releases/download/7.3/jsign-7.3.jar">All-in-one JAR</a> (Other systems, Ant task, JCA provider)</li>
+  <li><a href="https://github.com/ebourg/jsign/releases/download/7.4/jsign-7.4.jar">All-in-one JAR</a> (Other systems, Ant task, JCA provider)</li>
 </ul>
 
 <p>Need a not yet released fix of feature? Pick the latest <a href="https://nightly.link/ebourg/jsign/workflows/build/master/jsign-artifacts.zip">snapshot build</a>
@@ -122,7 +122,7 @@ from the GitHub actions.</p>
 <p>If no <a href="#files">installation package</a> is available for the system used, Jsign is invoked by running
 the all-in-one jar:</p>
 
-<pre> java -jar jsign-7.3.jar [OPTIONS] [FILE]...</pre>
+<pre> java -jar jsign-7.4.jar [OPTIONS] [FILE]...</pre>
 
 <p>The supported commands are:</p>
 <ul>
@@ -836,7 +836,7 @@ markers.</p>
 same as those described above for the command line tool (the long options only).</p>
 
 <pre class="prettyprint lang-xml">
- &lt;taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-7.3.jar"/>
+ &lt;taskdef name="jsign" classname="net.jsign.JsignTask" classpath="jsign-7.4.jar"/>
 
  &lt;jsign file="application.exe"
         name="My Application"
@@ -882,7 +882,7 @@ The execution is bound by default to the <code>package</code> phase.</p>
         &lt;plugin>
           &lt;groupId>net.jsign&lt;/groupId>
           &lt;artifactId>jsign-maven-plugin&lt;/artifactId>
-          &lt;version>7.3&lt;/version>
+          &lt;version>7.4&lt;/version>
           &lt;executions>
             &lt;execution>
               &lt;goals>
@@ -969,7 +969,7 @@ are the same as those described above for the command line tool (the long option
 
 <pre class="prettyprint lang-groovy">
     plugins {
-        id 'net.jsign' version '7.3'
+        id 'net.jsign' version '7.4'
     }
 
     task sign {
@@ -989,7 +989,7 @@ are the same as those described above for the command line tool (the long option
 
 <pre class="prettyprint lang-kotlin">
     plugins {
-        id("net.jsign") version "7.3"
+        id("net.jsign") version "7.4"
     }
 
     task("sign") {
@@ -1042,11 +1042,11 @@ are the same as those described above for the command line tool (the long option
           distribution: 'temurin'
 
       - name: Download Jsign
-        run: wget https://github.com/ebourg/jsign/releases/download/7.3/jsign-7.3.jar
+        run: wget https://github.com/ebourg/jsign/releases/download/7.4/jsign-7.4.jar
 
       - name: Sign
         run: >
-          java -jar jsign-7.3.jar --storetype TRUSTEDSIGNING
+          java -jar jsign-7.4.jar --storetype TRUSTEDSIGNING
                                   --keystore weu.codesigning.azure.net
                                   --storepass ${{ secrets.AZURE_ACCESS_TOKEN }}
                                   --alias &lt;account&gt;/&lt;profile&gt;
@@ -1064,7 +1064,7 @@ are the same as those described above for the command line tool (the long option
     &lt;dependency>
       &lt;groupId>net.jsign&lt;/groupId>
       &lt;artifactId>jsign-core&lt;/artifactId>
-      &lt;version>7.3&lt;/version>
+      &lt;version>7.4&lt;/version>
     &lt;/dependency>
 </pre>
 
@@ -1099,7 +1099,7 @@ their range of supported keystores.</p>
 <p>With Java 11 or later the syntax looks like this:</p>
 
 <pre>
- jarsigner -J-cp -Jjsign-7.3.jar -J--add-modules -Jjava.sql \
+ jarsigner -J-cp -Jjsign-7.4.jar -J--add-modules -Jjava.sql \
            -providerClass net.jsign.jca.JsignJcaProvider \
            -providerArg &lt;keystore&gt; \
            -keystore NONE \
@@ -1114,7 +1114,7 @@ their range of supported keystores.</p>
 parameter is removed:</p>
 
 <pre>
- jarsigner -J-cp -Jjsign-7.3.jar:$JAVA_HOME/lib/tools.jar \
+ jarsigner -J-cp -Jjsign-7.4.jar:$JAVA_HOME/lib/tools.jar \
            ...
 </pre>
 

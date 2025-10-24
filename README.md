@@ -63,7 +63,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.4 (in development)
+#### Version 7.4 (2025-10-25)
 
 * The CryptoCertum cryptographic card is now supported with the new `CRYPTOCERTUM` storetype (no PKCS#11 module required)
 * The new command line option `--version` displays the version of Jsign

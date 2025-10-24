@@ -4,7 +4,7 @@
   <groupId>net.jsign</groupId>
   <artifactId>jsign-parent</artifactId>
   <name>Jsign - Authenticode signing in Java (Parent)</name>
-  <version>7.4-SNAPSHOT</version>
+  <version>7.4</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2012</inceptionYear>
@@ -436,7 +436,7 @@
     <bouncycastle.version>2.73.9</bouncycastle.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.build.outputTimestamp>2025-10-03T14:09:40Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-10-24T15:50:28Z</project.build.outputTimestamp>
   </properties>
   
 </project>
