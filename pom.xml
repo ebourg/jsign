@@ -91,14 +91,14 @@
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy-agent</artifactId>
-      <version>1.17.7</version>
+      <version>1.17.8</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
-      <version>1.17.7</version>
+      <version>1.17.8</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -389,7 +389,7 @@
   </reporting>
 
   <properties>
-    <bouncycastle.version>2.73.8</bouncycastle.version>
+    <bouncycastle.version>2.73.9</bouncycastle.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>2025-10-03T14:09:40Z</project.build.outputTimestamp>

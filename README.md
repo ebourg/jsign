@@ -68,6 +68,7 @@ See https://ebourg.github.io/jsign for more information.
 * The CryptoCertum cryptographic card is now supported with the new `CRYPTOCERTUM` storetype (no PKCS#11 module required)
 * The new command line option `--version` displays the version of Jsign
 * The certificate chain is no longer fetched from the keystore when the `certfile` parameter is specified
+* Upgraded Bouncy Castle LTS to 2.73.9
 
 #### Version 7.3 (2025-10-03)
 
