@@ -283,6 +283,16 @@
               </compilerArgs>
             </configuration>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java17-to-23</id>
+      <activation>
+        <jdk>[17,23]</jdk>
+      </activation>
+      <build>
+        <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
@@ -296,6 +306,40 @@
                 --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED
                 --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
                 -Djava.security.manager=allow
+                ${argLine}
+              </argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java24+</id>
+      <activation>
+        <jdk>[24,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <compilerArgs>
+                <arg>-proc:full</arg>
+              </compilerArgs>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>
+                --add-exports java.base/sun.net.www=ALL-UNNAMED
+                --add-exports java.base/sun.net.www.protocol.http=ALL-UNNAMED
+                --add-exports java.base/sun.net.www.protocol.https=ALL-UNNAMED
+                --add-exports jdk.crypto.cryptoki/sun.security.pkcs11.wrapper=ALL-UNNAMED
+                --add-opens java.base/javax.crypto=ALL-UNNAMED
+                --add-opens java.base/sun.net.www.protocol.http=ALL-UNNAMED
+                --add-opens java.base/sun.net.www.protocol.https=ALL-UNNAMED
                 ${argLine}
               </argLine>
             </configuration>

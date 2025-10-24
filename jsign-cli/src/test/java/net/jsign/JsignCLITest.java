@@ -34,6 +34,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.JavaVersion;
+import org.apache.commons.lang3.SystemUtils;
 import org.bouncycastle.cms.CMSSignedData;
 import org.junit.After;
 import org.junit.Assume;
@@ -560,6 +562,8 @@ public class JsignCLITest {
 
     @Test
     public void testExitOnError() {
+        Assume.assumeTrue("Security Manager removed in Java 24+", SystemUtils.isJavaVersionAtMost(JavaVersion.JAVA_23));
+
         NoExitSecurityManager manager = new NoExitSecurityManager();
         System.setSecurityManager(manager);
 
