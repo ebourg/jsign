@@ -199,7 +199,7 @@
         <configuration>
           <linksource>true</linksource>
           <links>
-            <link>https://docs.oracle.com/javase/6/docs/api</link>
+            <link>https://docs.oracle.com/javase/8/docs/api</link>
             <link>https://javadoc.io/doc/org.bouncycastle/bcprov-lts8on/latest</link>
             <link>https://javadoc.io/doc/org.bouncycastle/bcpkix-lts8on/latest</link>
           </links>
