@@ -4,7 +4,7 @@
   <groupId>net.jsign</groupId>
   <artifactId>jsign-parent</artifactId>
   <name>Jsign - Authenticode signing in Java (Parent)</name>
-  <version>7.4</version>
+  <version>7.5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <inceptionYear>2012</inceptionYear>
