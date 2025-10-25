@@ -83,3 +83,20 @@ To run only one benchmark, use the following command:
     OpenPGPCardBenchmark.authenticate (EC P256)   avgt   50   433,962 ± 3,455  ms/op
     OpenPGPCardBenchmark.encrypt      (EC P256)   avgt   50   476,991 ± 5,480  ms/op
     OpenPGPCardBenchmark.sign         (EC P256)   avgt   50   816,355 ±12,088  ms/op
+
+
+### Comparison
+
+This table summarizes the total time taken in milliseconds for selecting the applet, verifying the PIN and performing
+the signing operation.
+
+| Device              | Version |  Application   | RSA 1024 | RSA 2048 | RSA 3072 | RSA 4096 | EC P256 | EC P384 | EC P521 |
+|---------------------|:-------:|:--------------:|:--------:|:--------:|:--------:|:--------:|:-------:|:-------:|:-------:|
+| **CryptoCertum**    |  3.6.1  | Common Profile |   162    |   312    |   1141   |   1554   |   200   |   273   |   358   |
+| **Yubikey 5 NFC**   |  5.1.2  |      PIV       |    67    |   149    |    -     |    -     |   82    |   129   |    -    |
+| **Yubikey 5 NFC**   |  5.1.2  |    OpenPGP     |    -     |   144    |   517    |   864    |    -    |    -    |    -    |
+| **Nitrokey 3A NFC** |  1.8.2  |      PIV       |    -     |   1169   |   1269   |    -     |  1262   |    -    |    -    |
+| **Nitrokey 3A NFC** |  1.8.2  |    OpenPGP     |    -     |   911    |   1016   |   1183   |  1038   |    -    |    -    |
+
+
+![Cryptographic tokens performance](https://quickchart.io/chart?w=800&h=800&format=svg&bkg=%23ffffff&c=%7Btype%3A%27horizontalBar%27%2Cdata%3A%7Blabels%3A%5B%27CryptoCertum%27%2C%27Yubikey%2BPIV%27%2C%27Yubikey%2BOpenPGP%27%2C%27Nitrokey%2BPIV%27%2C%27Nitrokey%2BOpenPGP%27%5D%2Cdatasets%3A%5B%7Blabel%3A%27RSA%201024%27%2Cdata%3A%5B162%2C67%2C%5D%2CbackgroundColor%3A%27%23FFDDDD%27%7D%2C%7Blabel%3A%27RSA%202048%27%2Cdata%3A%5B312%2C149%2C144%2C1169%2C911%5D%2CbackgroundColor%3A%27%23FFAAAA%27%7D%2C%7Blabel%3A%27RSA%203072%27%2Cdata%3A%5B1141%2C%2C517%2C1269%2C1016%5D%2CbackgroundColor%3A%27%23FF7777%27%7D%2C%7Blabel%3A%27RSA%204096%27%2Cdata%3A%5B1554%2C%2C864%2C%2C1183%5D%2CbackgroundColor%3A%27%23FF0000%27%7D%2C%7Blabel%3A%27EC%20P256%27%2Cdata%3A%5B200%2C82%2C%2C1262%2C1038%5D%2CbackgroundColor%3A%27%23AAAAFF%27%7D%2C%7Blabel%3A%27EC%20P384%27%2Cdata%3A%5B273%2C129%2C%2C%2C%5D%2CbackgroundColor%3A%27%236666FF%27%7D%2C%7Blabel%3A%27EC%20P521%27%2Cdata%3A%5B358%2C%5D%2CbackgroundColor%3A%27%230000FF%27%7D%5D%7D%2Coptions%3A%7Btitle%3A%7Bdisplay%3Atrue%2Ctext%3A%27Cryptographic%20tokens%20performance%27%2CfontSize%3A16%2Ccolor%3A%27black%27%7D%2Cscales%3A%7ByAxes%3A%5B%7Bdisplay%3Atrue%2CgridLines%3A%7Bdisplay%3Afalse%7D%2Cticks%3A%7BfontColor%3A%27black%27%7D%2C%7D%2C%5D%2C%7D%2Clegend%3A%7Bdisplay%3Atrue%2Cposition%3A%27bottom%27%2Calign%3A%27end%27%7D%2Cplugins%3A%7Bdatalabels%3A%7Banchor%3A%27end%27%2Calign%3A%27end%27%2Ccolor%3A%27black%27%2Cfont%3A%7Bsize%3A12%7D%7D%7D%7D%7D)
