@@ -35,7 +35,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * with the PIN set to "123456", 2 RSA keys (1024, 2048) in the slots 9A and 9C,
  * and 2 EC keys (P256, P384) in the slots 9D and 9E.</p>
  *
- * Typical results (Yubikey 5.1.2):
+ * Results with Yubikey 5.1.2:
  * <pre>
  * Benchmark                             Mode  Cnt     Score   Error  Units
  * PIVBenchmark.selectApplet             avgt   10     1,257 ± 0,212  ms/op
@@ -45,6 +45,17 @@ import org.openjdk.jmh.infra.Blackhole;
  * PIVBenchmark.signRSA2048              avgt   10   138,491 ± 2,433  ms/op
  * PIVBenchmark.signP256                 avgt   10    71,572 ± 0,246  ms/op
  * PIVBenchmark.signP384                 avgt   10   118,563 ± 0,228  ms/op
+ * </pre>
+ *
+ * Results with Nitrokey 3A NFC, firmware 1.8.2:
+ * <pre>
+ * Benchmark                             Mode  Cnt     Score   Error  Units
+ * PIVBenchmark.selectApplet             avgt   20     7,193 ± 0,073  ms/op
+ * PIVBenchmark.getCertificate           avgt   20   132,630 ± 0,785  ms/op
+ * PIVBenchmark.verifyPin                avgt   20   230,584 ± 2,911  ms/op
+ * PIVBenchmark.signRSA2048              avgt   20   931,171 ± 0,519  ms/op
+ * PIVBenchmark.signRSA3072              avgt   20  1030,787 ± 0,665  ms/op
+ * PIVBenchmark.signP256                 avgt   20  1023,819 ± 0,238  ms/op
  * </pre>
  */
 public class PIVBenchmark extends CardBenchmark {

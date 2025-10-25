@@ -56,6 +56,16 @@ To run only one benchmark, use the following command:
     OpenPGPCardBenchmark.authenticate (RSA 4096)  avgt   10   854,132 ± 2,455  ms/op
     OpenPGPCardBenchmark.sign         (RSA 4096)  avgt   10   855,868 ± 5,322  ms/op
 
+#### Nitrokey 3A NFC - PIV (firmware 1.8.2)
+
+    Benchmark                                     Mode  Cnt     Score   Error  Units
+    PIVBenchmark.selectApplet                     avgt   20     7,193 ± 0,073  ms/op
+    PIVBenchmark.getCertificate                   avgt   20   132,630 ± 0,785  ms/op
+    PIVBenchmark.verifyPin                        avgt   20   230,584 ± 2,911  ms/op
+    PIVBenchmark.signRSA2048                      avgt   20   931,171 ± 0,519  ms/op
+    PIVBenchmark.signRSA3072                      avgt   20  1030,787 ± 0,665  ms/op
+    PIVBenchmark.signP256                         avgt   20  1023,819 ± 0,238  ms/op
+
 #### Nitrokey 3A NFC - OpenPGP 3.4 (firmware 1.8.2)
 
     Benchmark                                     Mode  Cnt     Score   Error  Units
