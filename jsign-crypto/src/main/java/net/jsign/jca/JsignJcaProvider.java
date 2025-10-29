@@ -201,7 +201,12 @@ public class JsignJcaProvider extends Provider {
             JsignJcaPrivateKey key = (JsignJcaPrivateKey) privateKey;
 
             try {
-                signature = Signature.getInstance(signingAlgorithm, key.getProvider());
+                Provider provider = key.getProvider();
+                if (provider == null) {
+                    signature = Signature.getInstance(signingAlgorithm);
+                } else {
+                    signature = Signature.getInstance(signingAlgorithm, provider);
+                }
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
             }
