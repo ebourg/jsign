@@ -268,7 +268,7 @@ public class PEFile implements Signable {
         if (type.ordinal() >= getNumberOfRvaAndSizes()) {
             return null;
         } else {
-            return new DataDirectory(this, type.ordinal());
+            return new DataDirectory(this, type);
         }
     }
 

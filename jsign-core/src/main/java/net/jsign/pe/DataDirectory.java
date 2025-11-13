@@ -29,19 +29,19 @@ import java.nio.ByteOrder;
 class DataDirectory {
 
     private final PEFile peFile;
-    private final int index;
+    private final DataDirectoryType type;
 
-    DataDirectory(PEFile peFile, int index) {
+    DataDirectory(PEFile peFile, DataDirectoryType type) {
         this.peFile = peFile;
-        this.index = index;
+        this.type = type;
     }
 
     public long getVirtualAddress() throws IOException {
-        return peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8);
+        return peFile.readDWord(peFile.getDataDirectoryOffset(), type.ordinal() * 8);
     }
     
     public long getSize() throws IOException {
-        return peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8 + 4);
+        return peFile.readDWord(peFile.getDataDirectoryOffset(), type.ordinal() * 8 + 4);
     }
 
     public boolean exists() throws IOException {
@@ -59,7 +59,7 @@ class DataDirectory {
         long size = getSize();
 
         if (address + size > peFile.channel.size()) {
-            throw new IOException("Invalid data directory (index=" + index + ", address=" + address + ", size=" + size + ")");
+            throw new IOException(type.name().replace('_', ' ') + " data directory is invalid (address=" + address + ", size=" + size + ")");
         }
     }
 
@@ -80,6 +80,6 @@ class DataDirectory {
         buffer.putInt((int) virtualAddress);
         buffer.putInt(size);
         buffer.flip();
-        peFile.write(peFile.getDataDirectoryOffset() + index * 8, buffer);
+        peFile.write(peFile.getDataDirectoryOffset() + type.ordinal() * 8, buffer);
     }
 }
