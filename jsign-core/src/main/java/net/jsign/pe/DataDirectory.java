@@ -58,7 +58,7 @@ class DataDirectory {
         long address = getVirtualAddress();
         long size = getSize();
 
-        if (address < 0 || address + size > peFile.channel.size()) {
+        if (address + size > peFile.channel.size()) {
             throw new IOException("Invalid data directory (index=" + index + ", address=" + address + ", size=" + size + ")");
         }
     }
