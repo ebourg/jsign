@@ -26,6 +26,7 @@ import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -59,6 +60,9 @@ public class PrivateKeyUtilsTest {
     @Test
     public void testLoadPKCS1PEMNonPEMExtension() throws Exception {
         File targetFile = new File("target/test-classes/keystores/privatekey.pkcs1.pem.key");
+        if (targetFile.exists()) {
+            Assert.assertTrue("Failed to remove " + targetFile, targetFile.delete());
+        }
         Files.copy(new File("target/test-classes/keystores/privatekey.pkcs1.pem").toPath(), targetFile.toPath());
 
         testLoadPEM(targetFile, null);
