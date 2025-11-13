@@ -40,8 +40,8 @@ class DataDirectory {
         return peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8);
     }
     
-    public int getSize() throws IOException {
-        return (int) peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8 + 4);
+    public long getSize() throws IOException {
+        return peFile.readDWord(peFile.getDataDirectoryOffset(), index * 8 + 4);
     }
 
     public boolean exists() throws IOException {
@@ -56,9 +56,9 @@ class DataDirectory {
      */
     void check() throws IOException {
         long address = getVirtualAddress();
-        int size = getSize();
+        long size = getSize();
 
-        if (address < 0 || size < 0 || address + size > peFile.channel.size()) {
+        if (address < 0 || address + size > peFile.channel.size()) {
             throw new IOException("Invalid data directory (index=" + index + ", address=" + address + ", size=" + size + ")");
         }
     }
