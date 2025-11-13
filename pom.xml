@@ -151,6 +151,7 @@
         <version>3.5.4</version>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
+          <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
           <environmentVariables>
             <STOREPASS>password</STOREPASS>
           </environmentVariables>
