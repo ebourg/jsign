@@ -63,7 +63,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.4 (2025-10-25)
+#### Version 7.5 (in development)
+* The error message displayed when the PE certificate table is corrupted has been improved
+
+#### Version 7.4 (2025-10-24)
 
 * The CryptoCertum cryptographic card is now supported with the new `CRYPTOCERTUM` storetype (no PKCS#11 module required)
 * The new command line option `--version` displays the version of Jsign

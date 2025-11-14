@@ -57,9 +57,14 @@ class DataDirectory {
     void check() throws IOException {
         long address = getVirtualAddress();
         long size = getSize();
+        long fileSize = peFile.channel.size();
 
-        if (address + size > peFile.channel.size()) {
-            throw new IOException(type.name().replace('_', ' ') + " data directory is invalid (address=" + address + ", size=" + size + ")");
+        if (address >= fileSize) {
+            throw new IOException(type.name().replace('_', ' ') + " data directory starts after the end of the file - address=" + address + " (" + String.format("0x%08X", address) + "), size=" + size + ", file size=" + fileSize + " (" + String.format("0x%08X", fileSize) + ")");
+        }
+
+        if (address + size > fileSize) {
+            throw new IOException(type.name().replace('_', ' ') + " data directory extends beyond the end of the file - address=" + address + " (" + String.format("0x%08X", address) + "), size=" + size + ", file size=" + fileSize + " (" + String.format("0x%08X", fileSize) + ")");
         }
     }
 
