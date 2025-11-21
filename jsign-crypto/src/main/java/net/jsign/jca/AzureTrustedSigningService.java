@@ -144,7 +144,7 @@ public class AzureTrustedSigningService implements SigningService {
         request.put("signatureAlgorithm", algorithm);
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
-        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2022-06-15-preview", JsonWriter.format(request));
+        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2024-09-30-preview", JsonWriter.format(request));
 
         String operationId = (String) response.get("operationId");
 
@@ -157,7 +157,7 @@ public class AzureTrustedSigningService implements SigningService {
             } catch (InterruptedException e) {
                 break;
             }
-            response = client.get("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=2022-06-15-preview");
+            response = client.get("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=2024-09-30-preview");
             String status = (String) response.get("status");
             if ("InProgress".equals(status)) {
                 continue;
