@@ -42,6 +42,8 @@ import net.jsign.DigestAlgorithm;
  */
 public class AzureTrustedSigningService implements SigningService {
 
+    // Dataplane documentation for 2023-06-15-preview:
+    // https://github.com/Azure/azure-rest-api-specs/blob/main/specification/trustedsigning/data-plane/TrustedSigning/preview/2023-06-15-preview/azure.developer.trustedsigning.json
     private static final String API_VERSION = "2023-06-15-preview";
 
     /** Cache of certificate chains indexed by alias */
