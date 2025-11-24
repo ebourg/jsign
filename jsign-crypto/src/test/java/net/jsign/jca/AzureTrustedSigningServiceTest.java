@@ -16,14 +16,19 @@
 
 package net.jsign.jca;
 
-import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.cedarsoftware.util.io.JsonReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,15 +60,16 @@ public class AzureTrustedSigningServiceTest {
     public void testGetCertificateChain() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
-                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+        .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+        .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(202)
-                .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
+        .withHeader("operation-location", "http://localhost:" + port() + "/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb?api-version=2023-06-15-preview")
+        .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+        .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(200)
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}")
@@ -72,7 +78,7 @@ public class AzureTrustedSigningServiceTest {
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}")
                 .thenRespond()
                 .withStatus(200)
-                .withBody(new FileReader("target/test-classes/services/trustedsigning-sign.json"));
+                .withBody(loadSignSuccessResponse());
 
         SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         Certificate[] chain = service.getCertificateChain("MyAccount/MyProfile");
@@ -88,8 +94,8 @@ public class AzureTrustedSigningServiceTest {
     public void testGetCertificateChainWithError() {
         onRequest()
                 .havingMethodEqualTo("POST")
-                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+        .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+        .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(403);
 
@@ -112,15 +118,16 @@ public class AzureTrustedSigningServiceTest {
     public void testSign() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
-                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(202)
+                .withHeader("operation-location", "http://localhost:" + port() + "/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb?api-version=2023-06-15-preview")
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(200)
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}")
@@ -129,7 +136,7 @@ public class AzureTrustedSigningServiceTest {
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}")
                 .thenRespond()
                 .withStatus(200)
-                .withBody(new FileReader("target/test-classes/services/trustedsigning-sign.json"));
+                .withBody(loadSignSuccessResponse());
 
         AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token");
         SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
@@ -144,15 +151,16 @@ public class AzureTrustedSigningServiceTest {
     public void testSignWithTimeout() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
-                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(202)
+                .withHeader("operation-location", "http://localhost:" + port() + "/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb?api-version=2023-06-15-preview")
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(200)
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
@@ -169,15 +177,16 @@ public class AzureTrustedSigningServiceTest {
     public void testSignWithFailure() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
-                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(202)
+                .withHeader("operation-location", "http://localhost:" + port() + "/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb?api-version=2023-06-15-preview")
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
         onRequest()
                 .havingMethodEqualTo("GET")
                 .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(200)
                 .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"Failed\",\"signature\":null,\"signingCertificate\":null}");
@@ -202,8 +211,8 @@ public class AzureTrustedSigningServiceTest {
     public void testSignWithAuthorizationError() throws Exception {
         onRequest()
                 .havingMethodEqualTo("POST")
-                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
-                .havingQueryStringEqualTo("api-version=2024-02-05-preview")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+                .havingQueryStringEqualTo("api-version=2023-06-15-preview")
                 .respond()
                 .withStatus(404)
                 .withContentType("application/json")
@@ -215,4 +224,17 @@ public class AzureTrustedSigningServiceTest {
         Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
         assertEquals("message", "InternalError - Response status code does not indicate success: 403 (Forbidden).", e.getCause().getMessage());
     }
+
+        private String loadSignSuccessResponse() throws Exception {
+                String json = new String(Files.readAllBytes(Paths.get("target/test-classes/services/trustedsigning-sign.json")), StandardCharsets.UTF_8);
+                Map<String, Object> response = (Map<String, Object>) JsonReader.jsonToJava(json);
+                Map<String, Object> payload = new LinkedHashMap<>();
+                payload.put("operationId", response.get("operationId"));
+                payload.put("status", response.get("status"));
+                Map<String, Object> result = new LinkedHashMap<>();
+                result.put("signature", response.get("signature"));
+                result.put("signingCertificate", response.get("signingCertificate"));
+                payload.put("result", result);
+                return JsonWriter.format(payload);
+        }
 }
