@@ -49,6 +49,9 @@ public class AzureTrustedSigningService implements SigningService {
     /** Timeout in seconds for the signing operation */
     private long timeout = 60;
 
+    /** API version to use for Azure Trusted Signing */
+    private String apiVersion = "2023-06-15-preview";
+
     /**
      * Mapping between Java and Azure signing algorithms.
      * @see <a href="https://docs.microsoft.com/en-us/rest/api/keyvault/sign/sign#jsonwebkeysignaturealgorithm">Key Vault API - JonWebKeySignatureAlgorithm</a>
@@ -144,9 +147,9 @@ public class AzureTrustedSigningService implements SigningService {
         request.put("signatureAlgorithm", algorithm);
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
-        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2024-02-05-preview", JsonWriter.format(request));
+        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + ":sign?api-version=" + apiVersion, JsonWriter.format(request));
 
-        String operationId = (String) response.get("operationId");
+        String operationId = (String) response.get("id");
 
         // poll until the operation is completed
         long startTime = System.currentTimeMillis();
@@ -157,9 +160,9 @@ public class AzureTrustedSigningService implements SigningService {
             } catch (InterruptedException e) {
                 break;
             }
-            response = client.get("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=2024-02-05-preview");
+            response = client.get("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + ":sign/" + operationId + "?api-version=" + apiVersion);
             String status = (String) response.get("status");
-            if ("InProgress".equals(status)) {
+            if ("NotStarted".equals(status) || "Running".equals(status)) {
                 continue;
             }
             if ("Succeeded".equals(status)) {
@@ -174,8 +177,15 @@ public class AzureTrustedSigningService implements SigningService {
         }
 
         SignStatus status = new SignStatus();
-        status.signature = Base64.getDecoder().decode((String) response.get("signature"));
-        status.signingCertificate = new String(Base64.getDecoder().decode((String) response.get("signingCertificate")));
+        Map<String, ?> result = (Map<String, ?>) response.get("result");
+        if (result != null) {
+            status.signature = Base64.getDecoder().decode((String) result.get("signature"));
+            status.signingCertificate = new String(Base64.getDecoder().decode((String) result.get("signingCertificate")));
+        } else {
+            // Fallback for older API versions
+            status.signature = Base64.getDecoder().decode((String) response.get("signature"));
+            status.signingCertificate = new String(Base64.getDecoder().decode((String) response.get("signingCertificate")));
+        }
 
         return status;
     }
