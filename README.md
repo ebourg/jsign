@@ -69,6 +69,8 @@ See https://ebourg.github.io/jsign for more information.
 * LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The new `--lazy` signing option skips files that are already signed
+* The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
+  use on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
 * Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.4 (2025-10-24)
