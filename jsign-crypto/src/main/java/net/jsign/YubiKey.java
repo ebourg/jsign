@@ -118,6 +118,17 @@ class YubiKey {
             return libykcs11;
 
         } else if (osname.contains("Mac")) {
+            List<String> paths = new ArrayList<>();
+            paths.add("/opt/homebrew/lib/libykcs11.dylib");
+            paths.add("/usr/local/lib/libykcs11.dylib");
+            
+            for (String path : paths) {
+                File libykcs11 = new File(path);
+                if (libykcs11.exists()) {
+                    return libykcs11;
+                }
+            }
+            
             return new File("/usr/local/lib/libykcs11.dylib");
 
         } else {
