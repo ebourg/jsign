@@ -121,14 +121,21 @@ class YubiKey {
             List<String> paths = new ArrayList<>();
             paths.add("/opt/homebrew/lib/libykcs11.dylib");
             paths.add("/usr/local/lib/libykcs11.dylib");
-            
+
+            String dyldLibraryPath = System.getenv("DYLD_LIBRARY_PATH");
+            if (dyldLibraryPath != null) {
+                for (String s : dyldLibraryPath.split(":")) {
+                    paths.add(s + "/libykcs11.dylib");
+                }
+            }
+
             for (String path : paths) {
                 File libykcs11 = new File(path);
                 if (libykcs11.exists()) {
                     return libykcs11;
                 }
             }
-            
+
             return new File("/usr/local/lib/libykcs11.dylib");
 
         } else {
