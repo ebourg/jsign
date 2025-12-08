@@ -101,14 +101,6 @@ class YubiKey {
         String osname = System.getProperty("os.name");
         String arch = System.getProperty("sun.arch.data.model");
 
-        String pkcs11Module = System.getenv("PKCS11_MODULE");
-        if (pkcs11Module != null && !pkcs11Module.isEmpty()) {
-            File lib = new File(pkcs11Module);
-            if (lib.exists()) {
-                return lib;
-            }
-        }
-
         if (osname.contains("Windows")) {
             String programfiles;
             if ("32".equals(arch) && System.getenv("ProgramFiles(x86)") != null) {
