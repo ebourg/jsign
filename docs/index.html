@@ -1139,6 +1139,15 @@ The syntax looks like this:</p>
       --in application.apk
 </pre>
 
+<h3 id="development">Development</h3>
+
+If you'd like to build and run jsign from source, please follow the below instructions:
+
+<pre>
+  mvn clean package -DskipTests
+  java -jar jsign/target/jsign-7.3-SNAPSHOT.jar --help
+</pre>
+
 <h3 id="credits">Credits</h3>
 
 <p>Jsign leverages the cryptography API developed by the <a href="http://www.bouncycastle.org">Bouncy Castle</a> project.<br>
