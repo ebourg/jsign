@@ -52,6 +52,16 @@ public class CertificateUtilsTest {
     }
 
     @Test
+    public void testGetIssuerCertificateURLSkipsLDAP() throws Exception {
+        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain-2026.pem"));
+
+        String url = CertificateUtils.getIssuerCertificateURL((X509Certificate) chain[0]);
+        assertNotNull("certificate 1 issuer URL should not be null", url);
+        assertTrue("certificate 1 issuer URL should be HTTP, not LDAP", url.startsWith("http"));
+        assertEquals("certificate 1 issuer", "http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-code-signing-ca.cer", url);
+    }
+
+    @Test
     public void testGetFullCertificateChain() throws Exception {
         System.setProperty("jsign.cachedir", "target/test-classes/cache/");
 
