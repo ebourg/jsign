@@ -333,6 +333,9 @@ class SignerHelper {
             case "remove":
                 remove(file);
                 break;
+            case "show":
+                show(file);
+                break;
             case "tag":
                 tag(file);
                 break;
@@ -497,6 +500,32 @@ class SignerHelper {
         // todo warn if the hashes don't match
     }
 
+    private void printSignatures(Signable signable) throws IOException {
+        List<CMSSignedData> signatures = signable.getSignatures();
+        for (int i = 0; i < signatures.size(); i++) {
+            CMSSignedData signature = signatures.get(i);
+            SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
+
+            String digestAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(signerInformation.getDigestAlgorithmID());
+            SignerId signerId = signerInformation.getSID();
+            X509CertificateHolder cert = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
+
+            byte[] digest = signable.computeDigest(DigestAlgorithm.of(signerInformation.getDigestAlgorithmID().getAlgorithm()));
+
+            System.out.println("Signature " + i);
+            System.out.println("  Digest Algorithm:   " + digestAlgorithmName);
+            System.out.println("  Digest Value:       " + Hex.toHexString(digest));
+            System.out.println("  Is Timestamped?     " + SignatureUtils.isTimestamped(signature));
+            System.out.println("  Certificate");
+            System.out.println("    Subject:          " + cert.getSubject());
+            System.out.println("    Issuer:           " + cert.getIssuer());
+            System.out.println("    Not Before:       " + cert.getNotBefore());
+            System.out.println("    Not After:        " + cert.getNotAfter());
+            System.out.println("    Expired:          " + cert.getNotAfter().before(new Date()));
+            System.out.println("    Serial:           " + cert.getSerialNumber());
+        }
+    }
+
     private void detach(Signable signable, File detachedSignature) throws IOException {
         List<CMSSignedData> signatures = signable.getSignatures();
 
@@ -574,6 +603,20 @@ class SignerHelper {
             throw new SignerException(e.getMessage(), e);
         } catch (Exception e) {
             throw new SignerException("Couldn't remove the signature from " + file, e);
+        }
+    }
+
+    private void show(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        try (Signable signable = Signable.of(file)) {
+            printSignatures(signable);
+        } catch (UnsupportedOperationException | IllegalArgumentException e) {
+            throw new SignerException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new SignerException("Couldn't show the signatures of" + file, e);
         }
     }
 
