@@ -17,10 +17,12 @@
 package net.jsign.jca;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,12 +72,24 @@ class RESTClient {
         return query("GET", resource, null, null);
     }
 
+    public RESTResponse getResponse(String resource) throws IOException {
+        return request("GET", resource, null, null);
+    }
+
     public Map<String, ?> post(String resource, String body) throws IOException {
         return query("POST", resource, body, null);
     }
 
     public Map<String, ?> post(String resource, String body, Map<String, String> headers) throws IOException {
         return query("POST", resource, body, headers);
+    }
+
+    public RESTResponse postResponse(String resource, String body) throws IOException {
+        return request("POST", resource, body, null);
+    }
+
+    public RESTResponse postResponse(String resource, String body, Map<String, String> headers) throws IOException {
+        return request("POST", resource, body, headers);
     }
 
     public Map<String, ?> post(String resource, Map<String, String> params) throws IOException {
@@ -124,6 +138,10 @@ class RESTClient {
     }
 
     private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {
+        return request(method, resource, body, headers).getBody();
+    }
+
+    private RESTResponse request(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         log.finest(method + " " + url);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -167,20 +185,26 @@ class RESTClient {
         log.finest("Content-Type: " + contentType);
 
         if (responseCode < 400) {
-            byte[] binaryResponse = IOUtils.toByteArray(conn.getInputStream());
+            InputStream input = conn.getInputStream();
+            byte[] binaryResponse = input != null ? IOUtils.toByteArray(input) : new byte[0];
             String response = new String(binaryResponse, StandardCharsets.UTF_8);
             log.finest("Content-Length: " + binaryResponse.length);
             log.finest("Content:\n" + response);
             log.finest("");
 
-            Object value = JsonReader.jsonToJava(response);
-            if (value instanceof Map) {
-                return (Map) value;
-            } else {
-                Map<String, Object> map = new HashMap<>();
-                map.put("result", value);
-                return map;
+            Map<String, ?> responseBody = Collections.emptyMap();
+            if (!response.trim().isEmpty()) {
+                Object value = JsonReader.jsonToJava(response);
+                if (value instanceof Map) {
+                    responseBody = (Map) value;
+                } else {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("result", value);
+                    responseBody = map;
+                }
             }
+
+            return new RESTResponse(responseCode, conn.getHeaderFields(), responseBody, binaryResponse);
         } else {
             String error = conn.getErrorStream() != null ? IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8) : "";
             if (conn.getErrorStream() != null) {
@@ -191,6 +215,49 @@ class RESTClient {
             } else {
                 throw new IOException("HTTP Error " + responseCode + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : "") + " (" + url + ")");
             }
+        }
+    }
+
+    static class RESTResponse {
+        private final int statusCode;
+        private final Map<String, List<String>> headers;
+        private final Map<String, ?> body;
+        private final byte[] rawBody;
+
+        RESTResponse(int statusCode, Map<String, List<String>> headers, Map<String, ?> body, byte[] rawBody) {
+            this.statusCode = statusCode;
+            this.headers = headers != null ? headers : Collections.emptyMap();
+            this.body = body != null ? body : Collections.emptyMap();
+            this.rawBody = rawBody != null ? rawBody : new byte[0];
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public Map<String, List<String>> getHeaders() {
+            return headers;
+        }
+
+        public Map<String, ?> getBody() {
+            return body;
+        }
+
+        public byte[] getRawBody() {
+            return rawBody;
+        }
+
+        public String getHeader(String name) {
+            if (name == null) {
+                return null;
+            }
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                if (entry.getKey() != null && entry.getKey().equalsIgnoreCase(name)) {
+                    List<String> values = entry.getValue();
+                    return values != null && !values.isEmpty() ? values.get(0) : null;
+                }
+            }
+            return null;
         }
     }
 }

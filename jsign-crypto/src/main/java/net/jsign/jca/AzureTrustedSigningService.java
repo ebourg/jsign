@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.jsign.DigestAlgorithm;
@@ -40,6 +41,10 @@ import net.jsign.DigestAlgorithm;
  * @since 7.0
  */
 public class AzureTrustedSigningService implements SigningService {
+
+    // Dataplane documentation for 2023-06-15-preview:
+    // https://github.com/Azure/azure-rest-api-specs/blob/main/specification/trustedsigning/data-plane/TrustedSigning/preview/2023-06-15-preview/azure.developer.trustedsigning.json
+    private static final String API_VERSION = "2023-06-15-preview";
 
     /** Cache of certificate chains indexed by alias */
     private final Map<String, Certificate[]> certificates = new HashMap<>();
@@ -144,40 +149,138 @@ public class AzureTrustedSigningService implements SigningService {
         request.put("signatureAlgorithm", algorithm);
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
-        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2022-06-15-preview", JsonWriter.format(request));
+        RESTClient.RESTResponse initialResponse = client.postResponse("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + ":sign?api-version=" + API_VERSION, JsonWriter.format(request));
 
-        String operationId = (String) response.get("operationId");
-
-        // poll until the operation is completed
-        long startTime = System.currentTimeMillis();
-        int i = 0;
-        while (System.currentTimeMillis() - startTime < timeout * 1000) {
-            try {
-                Thread.sleep(Math.min(1000, 50 + 10 * i++));
-            } catch (InterruptedException e) {
-                break;
-            }
-            response = client.get("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=2022-06-15-preview");
-            String status = (String) response.get("status");
-            if ("InProgress".equals(status)) {
-                continue;
-            }
-            if ("Succeeded".equals(status)) {
-                break;
-            }
-
-            throw new IOException("Signing operation " + operationId + " failed: " + status);
+        Map<String, ?> statusResponse = initialResponse.getBody();
+        String operationLocation = initialResponse.getHeader("operation-location");
+        String operationId = readOperationId(statusResponse);
+        if (operationId == null) {
+            operationId = extractOperationId(operationLocation);
         }
 
-        if (!"Succeeded".equals(response.get("status"))) {
-            throw new IOException("Signing operation " + operationId + " timed out");
+        String status = statusResponse != null ? (String) statusResponse.get("status") : null;
+
+        if (!isSucceeded(status)) {
+            String statusResource = resolveStatusResource(account, profile, operationId, operationLocation);
+
+            long startTime = System.currentTimeMillis();
+            int i = 0;
+            while (System.currentTimeMillis() - startTime < timeout * 1000) {
+                try {
+                    Thread.sleep(Math.min(1000, 50 + 10 * i++));
+                } catch (InterruptedException e) {
+                    break;
+                }
+                statusResponse = client.get(statusResource);
+                status = statusResponse != null ? (String) statusResponse.get("status") : null;
+                if (operationId == null) {
+                    operationId = readOperationId(statusResponse);
+                }
+                if (isPending(status)) {
+                    continue;
+                }
+                if (isSucceeded(status)) {
+                    break;
+                }
+
+                throw new IOException("Signing operation " + describeOperation(operationId) + " failed: " + status);
+            }
+
+            if (!isSucceeded(status)) {
+                throw new IOException("Signing operation " + describeOperation(operationId) + " timed out");
+            }
+        }
+
+        SignStatus signStatus = buildSignStatus(statusResponse);
+        if (signStatus == null) {
+            throw new IOException("Signing operation " + describeOperation(operationId) + " returned no result");
+        }
+
+        return signStatus;
+    }
+
+    private SignStatus buildSignStatus(Map<String, ?> response) {
+        if (response == null) {
+            return null;
+        }
+
+        Map<String, ?> result = response;
+        Object resultNode = response.get("result");
+        if (resultNode instanceof Map) {
+            result = (Map<String, ?>) resultNode;
+        }
+
+        Object signatureValue = result.get("signature");
+        Object certificateValue = result.get("signingCertificate");
+        if (!(signatureValue instanceof String) || !(certificateValue instanceof String)) {
+            return null;
         }
 
         SignStatus status = new SignStatus();
-        status.signature = Base64.getDecoder().decode((String) response.get("signature"));
-        status.signingCertificate = new String(Base64.getDecoder().decode((String) response.get("signingCertificate")));
-
+        status.signature = Base64.getDecoder().decode((String) signatureValue);
+        status.signingCertificate = new String(Base64.getDecoder().decode((String) certificateValue));
         return status;
+    }
+
+    private String resolveStatusResource(String account, String profile, String operationId, String operationLocation) throws IOException {
+        if (operationLocation != null && !operationLocation.isEmpty()) {
+            return ensureApiVersion(operationLocation.trim());
+        }
+        if (operationId != null && !operationId.isEmpty()) {
+            return "/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=" + API_VERSION;
+        }
+        throw new IOException("Signing operation identifier not returned by Azure Trusted Signing");
+    }
+
+    private String ensureApiVersion(String resource) {
+        if (resource == null || resource.isEmpty() || resource.contains("api-version=")) {
+            return resource;
+        }
+        return resource + (resource.contains("?") ? "&" : "?") + "api-version=" + API_VERSION;
+    }
+
+    private String extractOperationId(String operationLocation) {
+        if (operationLocation == null || operationLocation.isEmpty()) {
+            return null;
+        }
+        String value = operationLocation;
+        int queryIndex = value.indexOf('?');
+        if (queryIndex >= 0) {
+            value = value.substring(0, queryIndex);
+        }
+        int slashIndex = value.lastIndexOf('/');
+        if (slashIndex >= 0 && slashIndex < value.length() - 1) {
+            return value.substring(slashIndex + 1);
+        }
+        return null;
+    }
+
+    private String readOperationId(Map<String, ?> response) {
+        if (response == null) {
+            return null;
+        }
+        Object value = response.get("operationId");
+        if (value == null) {
+            value = response.get("id");
+        }
+        return value instanceof String ? (String) value : null;
+    }
+
+    private boolean isPending(String status) {
+        String normalized = normalizeStatus(status);
+        return normalized == null || "INPROGRESS".equals(normalized) || "RUNNING".equals(normalized) || "NOTSTARTED".equals(normalized);
+    }
+
+    private boolean isSucceeded(String status) {
+        return "SUCCEEDED".equals(normalizeStatus(status));
+    }
+
+    private String normalizeStatus(String status) {
+        return status == null ? null : status.replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
+    }
+
+    private String describeOperation(String operationId) {
+        return operationId != null ? operationId : "unknown";
     }
 
     private static class SignStatus {
