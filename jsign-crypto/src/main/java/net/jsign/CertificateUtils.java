@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -84,7 +85,7 @@ class CertificateUtils {
     }
 
     /**
-     * Returns the issuer certificate URL of the specified certificate.
+     * Returns the issuer certificate URL of the specified certificate (HTTP only).
      *
      * @since 7.0
      */
@@ -93,7 +94,10 @@ class CertificateUtils {
         if (aia != null) {
             for (AccessDescription access : aia.getAccessDescriptions()) {
                 if (X509ObjectIdentifiers.id_ad_caIssuers.equals(access.getAccessMethod())) {
-                    return access.getAccessLocation().getName().toString();
+                    String url = access.getAccessLocation().getName().toString();
+                    if (url.startsWith("http")) {
+                        return access.getAccessLocation().getName().toString();
+                    }
                 }
             }
         }

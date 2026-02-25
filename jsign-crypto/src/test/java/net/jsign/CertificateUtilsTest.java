@@ -55,12 +55,12 @@ public class CertificateUtilsTest {
     public void testGetFullCertificateChain() throws Exception {
         System.setProperty("jsign.cachedir", "target/test-classes/cache/");
 
-        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain.pem"));
+        Certificate[] chain = CertificateUtils.loadCertificateChain(new File("target/test-classes/keystores/jsign-test-certificate-full-chain-2026.pem"));
 
         List<X509Certificate> fullChain = CertificateUtils.getFullCertificateChain(Collections.singletonList((X509Certificate) chain[0]));
         assertEquals("chain size", chain.length, fullChain.size());
 
-        assertEquals("certificate 1", "CN=Jsign Code Signing Test Certificate 2024 (RSA)", fullChain.get(0).getSubjectDN().getName());
+        assertEquals("certificate 1", "CN=Jsign Code Signing Test Certificate 2026 (RSA)", fullChain.get(0).getSubjectDN().getName());
         assertEquals("certificate 2", "CN=Jsign Code Signing CA 2024", fullChain.get(1).getSubjectDN().getName());
         assertEquals("certificate 3", "CN=Jsign Root Certificate Authority 2024", fullChain.get(2).getSubjectDN().getName());
     }

@@ -64,6 +64,7 @@ See https://ebourg.github.io/jsign for more information.
 ## Changes
 
 #### Version 7.5 (in development)
+* LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
 
 #### Version 7.4 (2025-10-24)
