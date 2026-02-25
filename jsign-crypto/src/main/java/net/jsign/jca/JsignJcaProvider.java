@@ -63,13 +63,14 @@ import net.jsign.KeyStoreType;
 public class JsignJcaProvider extends Provider {
 
     private String keystore;
+    private String certfile;
 
     public JsignJcaProvider() {
         super("Jsign", 1.0, "Jsign security provider");
 
         AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
             for (KeyStoreType type : KeyStoreType.values()) {
-                putService(new ProviderService(this, "KeyStore", type.name(), JsignJcaKeyStore.class.getName(), () -> new JsignJcaKeyStore(type, keystore)));
+                putService(new ProviderService(this, "KeyStore", type.name(), JsignJcaKeyStore.class.getName(), () -> new JsignJcaKeyStore(type, keystore, certfile)));
             }
             for (String alg : new String[]{"RSA", "ECDSA"}) {
                 for (DigestAlgorithm digest : DigestAlgorithm.values()) {
@@ -83,15 +84,43 @@ public class JsignJcaProvider extends Provider {
         });
     }
 
+    /**
+     * Creates a new JsignJcaProvider with the specified configuration.
+     *
+     * @param configArg the configuration argument.
+     * This should be the keystore and optionally the certificate file.
+     * The format is "keystore[,certfile]".
+     */
     public JsignJcaProvider(String configArg) {
         this();
         configure(configArg);
     }
 
-    public Provider configure(String configArg) throws InvalidParameterException {
-        this.keystore = configArg;
+    /**
+     * Configures the provider with the specified keystore.
+     *
+     * @param configArg the keystore and optionally, the certificate file.
+     * The format is "keystore[,certfile]".
+     */
+    public Provider configure(final String configArg) throws InvalidParameterException {
+        if (configArg != null) {
+            final String[] config = configArg.split(",");
+            this.keystore = config[0].trim();
+
+            if (config.length == 2) {
+                this.certfile = config[1].trim();
+            }
+        }
 
         return this;
+    }
+
+    public String getKeystore() {
+        return keystore;
+    }
+
+    public String getCertFile() {
+        return certfile;
     }
 
     static class JsignJcaKeyStore extends AbstractKeyStoreSpi {
@@ -99,10 +128,10 @@ public class JsignJcaProvider extends Provider {
         private KeyStoreBuilder builder = new KeyStoreBuilder();
         private KeyStore keystore;
 
-        public JsignJcaKeyStore(KeyStoreType type, String keystore) {
+        public JsignJcaKeyStore(final KeyStoreType type, final String keystore, final String certfile) {
             builder.storetype(type);
             builder.keystore(keystore);
-            builder.certfile("");
+            builder.certfile(certfile);
         }
 
         private KeyStore getKeyStore() throws KeyStoreException {

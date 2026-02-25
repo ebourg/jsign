@@ -18,6 +18,7 @@ package net.jsign;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.UnknownServiceException;
 import java.nio.ByteBuffer;
@@ -747,16 +748,21 @@ public enum KeyStoreType {
         }
     }
 
-    private static Function<String, Certificate[]> getCertificateStore(KeyStoreBuilder params) {
+    private static Function<String, Certificate[]> getCertificateStore(KeyStoreBuilder params) throws RuntimeException {
         return alias -> {
             if (alias == null || alias.isEmpty()) {
                 return null;
             }
+            File certificateFile = params.certfile();
 
             try {
-                return CertificateUtils.loadCertificateChain(params.certfile());
-            } catch (IOException | CertificateException e) {
-                throw new RuntimeException("Failed to load the certificate from " + params.certfile(), e);
+                if (!certificateFile.exists()) {
+                    throw new FileNotFoundException("The certfile '" + certificateFile + "' could not be found");
+                }
+                return CertificateUtils.loadCertificateChain(certificateFile);
+            }
+            catch (IOException | CertificateException e) {
+                throw new RuntimeException("Failed to load the certificate from '" + certificateFile + "'", e);
             }
         };
     }
