@@ -27,7 +27,10 @@ keyUsage = digitalSignature
 extendedKeyUsage = codeSigning
 subjectKeyIdentifier=hash
 authorityKeyIdentifier=keyid,issuer
-authorityInfoAccess = caIssuers;URI:http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-code-signing-ca.cer
+authorityInfoAccess = @aia
+[ aia ]
+caIssuers;URI.1 = ldap://ldap.example.com/CN=Jsign%20Code%20Signing%20CA,CN=AIA,CN=Public%20Key%20Services,CN=Services,CN=Configuration,DC=jsign,DC=net?cACertificate?base?objectClass=certificationAuthority
+caIssuers;URI.2 = http://raw.githubusercontent.com/ebourg/jsign/master/jsign-core/src/test/resources/keystores/jsign-code-signing-ca.cer
 EOF
 
 CERT_OPTS="-days 7305 -text -sha256"
