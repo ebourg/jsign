@@ -20,14 +20,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.Proxy;
 import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.KeyStore;
@@ -705,30 +699,10 @@ class SignerHelper {
      * @param proxyUser      the username for the proxy authentication
      * @param proxyPassword  the password for the proxy authentication
      */
-    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
+    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) {
         // Do nothing if there is no proxy url.
         if (proxyUrl != null && !proxyUrl.trim().isEmpty()) {
-            if (!proxyUrl.trim().startsWith("http")) {
-                proxyUrl = "http://" + proxyUrl.trim();
-            }
-            final URL url = new URL(proxyUrl);
-            final int port = url.getPort() < 0 ? 80 : url.getPort();
-
-            ProxySelector.setDefault(new ProxySelector() {
-                public List<Proxy> select(URI uri) {
-                    Proxy proxy;
-                    if (uri.getScheme().equals("socket")) {
-                        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(url.getHost(), port));
-                    } else {
-                        proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port));
-                    }
-                    log.fine("Proxy selected for " + uri + " : " + proxy);
-                    return Collections.singletonList(proxy);
-                }
-
-                public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-                }
-            });
+            ProxySelector.setDefault(new JsignProxySelector(proxyUrl));
 
             if (proxyUser != null && !proxyUser.isEmpty() && proxyPassword != null) {
                 Authenticator.setDefault(new Authenticator() {
