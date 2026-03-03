@@ -32,6 +32,7 @@ import static java.net.Proxy.Type.*;
  * Proxy selector for Jsign.
  *
  * @author Emmanuel Bourg
+ * @since 7.5
  */
 class JsignProxySelector extends ProxySelector {
 
@@ -41,15 +42,15 @@ class JsignProxySelector extends ProxySelector {
     private final InetSocketAddress address;
 
     /**
-     * Creates a new proxy selector for the specified proxy URL.
+     * Creates a new proxy selector for the specified proxy settings.
      *
-     * @param proxyUrl the url of the proxy (either as hostname:port or http[s]://hostname:port)
+     * @param settings the proxy settings
      */
-    public JsignProxySelector(String proxyUrl) {
-        if (!proxyUrl.trim().startsWith("http")) {
-            proxyUrl = "http://" + proxyUrl.trim();
+    public JsignProxySelector(ProxySettings settings) {
+        if (!settings.url.trim().startsWith("http")) {
+            settings.url = "http://" + settings.url.trim();
         }
-        URI uri = URI.create(proxyUrl);
+        URI uri = URI.create(settings.url);
         int port = uri.getPort() < 0 ? 80 : uri.getPort();
 
         address = new InetSocketAddress(uri.getHost(), port);

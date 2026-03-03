@@ -29,7 +29,9 @@ public class JsignProxySelectorTest {
 
     @Test
     public void testHttpProxy() throws Exception {
-        JsignProxySelector selector = new JsignProxySelector("http://example.com:1080");
+        ProxySettings proxySettings = new ProxySettings();
+        proxySettings.url = "http://example.com:1080";
+        JsignProxySelector selector = new JsignProxySelector(proxySettings);
 
         List<Proxy> proxies = selector.select(new URI("http://example.com/resource"));
         assertNotNull("null proxies", proxies);
@@ -41,7 +43,9 @@ public class JsignProxySelectorTest {
 
     @Test
     public void testSocksProxy() throws Exception {
-        JsignProxySelector selector = new JsignProxySelector("example.com");
+        ProxySettings proxySettings = new ProxySettings();
+        proxySettings.url = "example.com:80";
+        JsignProxySelector selector = new JsignProxySelector(proxySettings);
 
         List<Proxy> proxies = selector.select(new URI("socket://example.com/resource"));
         assertNotNull("null proxies", proxies);
