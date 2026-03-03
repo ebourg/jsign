@@ -19,9 +19,6 @@ package net.jsign;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.net.ProxySelector;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.KeyStore;
@@ -110,9 +107,7 @@ class SignerHelper {
     private String alg;
     private String name;
     private String url;
-    private String proxyUrl;
-    private String proxyUser;
-    private String proxyPass;
+    private final ProxySettings proxySettings = new ProxySettings();
     private boolean replace;
     private Charset encoding;
     private boolean detached;
@@ -228,19 +223,19 @@ class SignerHelper {
     }
 
     public SignerHelper proxyUrl(String proxyUrl) {
-        this.proxyUrl = proxyUrl;
+        this.proxySettings.url = proxyUrl;
         signer = null;
         return this;
     }
 
     public SignerHelper proxyUser(String proxyUser) {
-        this.proxyUser = proxyUser;
+        this.proxySettings.username = proxyUser;
         signer = null;
         return this;
     }
 
     public SignerHelper proxyPass(String proxyPass) {
-        this.proxyPass = proxyPass;
+        this.proxySettings.password = proxyPass;
         signer = null;
         return this;
     }
@@ -337,7 +332,7 @@ class SignerHelper {
 
     private AuthenticodeSigner build() throws SignerException {
         try {
-            initializeProxy(proxyUrl, proxyUser, proxyPass);
+            proxySettings.initializeProxy();
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
@@ -637,7 +632,7 @@ class SignerHelper {
         }
 
         try {
-            initializeProxy(proxyUrl, proxyUser, proxyPass);
+            proxySettings.initializeProxy();
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
@@ -689,28 +684,6 @@ class SignerHelper {
             signable.save();
         } catch (IOException | CMSException e) {
             throw new SignerException("Couldn't timestamp " + file, e);
-        }
-    }
-
-    /**
-     * Initializes the proxy.
-     *
-     * @param proxyUrl       the url of the proxy (either as hostname:port or http[s]://hostname:port)
-     * @param proxyUser      the username for the proxy authentication
-     * @param proxyPassword  the password for the proxy authentication
-     */
-    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) {
-        // Do nothing if there is no proxy url.
-        if (proxyUrl != null && !proxyUrl.trim().isEmpty()) {
-            ProxySelector.setDefault(new JsignProxySelector(proxyUrl));
-
-            if (proxyUser != null && !proxyUser.isEmpty() && proxyPassword != null) {
-                Authenticator.setDefault(new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-                    }
-                });
-            }
         }
     }
 }
