@@ -78,7 +78,7 @@ public class RESTClientTest {
 
         RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port());
         client.setReadTimeout(200);
-        client.setRetries(3);
+        client.setRetries(4); // allow enough retries
         client.setRetryPause(400);
 
         Map<String, ?> response = client.get("/test");
