@@ -18,6 +18,7 @@ package net.jsign.jca;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -124,9 +125,38 @@ class RESTClient {
     }
 
     private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {
+        int attempts = 0;
+        while (true) {
+            try {
+                return queryOnce(method, resource, body, headers);
+            } catch (SocketTimeoutException e) {
+                attempts++;
+                if (attempts >= 3) {
+                    throw e;
+                }
+                log.warning("Connection timeout, retrying in 5 seconds (attempt " + attempts + "/3)");
+                sleep(5000);
+            }
+        }
+    }
+
+    void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    protected HttpURLConnection openConnection(URL url) throws IOException {
+        return (HttpURLConnection) url.openConnection();
+    }
+
+    private Map<String, ?> queryOnce(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         log.finest(method + " " + url);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        HttpURLConnection conn = openConnection(url);
+        conn.setConnectTimeout(30000);
         conn.setRequestMethod(method);
         String userAgent = System.getProperty("http.agent");
         conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
