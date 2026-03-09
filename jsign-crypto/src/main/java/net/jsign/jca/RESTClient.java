@@ -84,9 +84,8 @@ class RESTClient {
      *
      * @param connectTimeout the timeout in milliseconds
      */
-    public RESTClient connectTimeout(int connectTimeout) {
+    public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
-        return this;
     }
 
     /**
@@ -94,9 +93,8 @@ class RESTClient {
      *
      * @param readTimeout the timeout in milliseconds
      */
-    public RESTClient readTimeout(int readTimeout) {
+    public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
-        return this;
     }
 
     /**
@@ -104,9 +102,8 @@ class RESTClient {
      *
      * @param retries the number of retries
      */
-    public RESTClient retries(int retries) {
+    public void setRetries(int retries) {
         this.retries = retries;
-        return this;
     }
 
     /**
@@ -114,9 +111,8 @@ class RESTClient {
      *
      * @param retryPause the pause in milliseconds
      */
-    public RESTClient retryPause(int retryPause) {
+    public void setRetryPause(int retryPause) {
         this.retryPause = retryPause;
-        return this;
     }
 
     public Map<String, ?> get(String resource) throws IOException {
@@ -196,7 +192,7 @@ class RESTClient {
         }
     }
 
-    protected Map<String, ?> queryOnce(String method, String resource, String body, Map<String, String> headers) throws IOException {
+    private Map<String, ?> queryOnce(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         log.finest(method + " " + url);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();

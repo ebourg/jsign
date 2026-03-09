@@ -51,10 +51,10 @@ public class RESTClientTest {
                         .withStatus(200)
                         .withFixedDelay(1000)));
 
-        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port())
-                .readTimeout(100)
-                .retries(3)
-                .retryPause(10);
+        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port());
+        client.setReadTimeout(100);
+        client.setRetries(3);
+        client.setRetryPause(10);
 
         assertThrows(SocketTimeoutException.class, () -> client.get("/test"));
         wireMockServer.verify(3, getRequestedFor(urlEqualTo("/test")));
@@ -76,10 +76,10 @@ public class RESTClientTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody("{\"status\":\"ok\"}")));
 
-        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port())
-                .readTimeout(200)
-                .retries(3)
-                .retryPause(400);
+        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port());
+        client.setReadTimeout(200);
+        client.setRetries(3);
+        client.setRetryPause(400);
 
         Map<String, ?> response = client.get("/test");
         assertEquals("ok", response.get("status"));
@@ -92,9 +92,9 @@ public class RESTClientTest {
                 .willReturn(aResponse()
                         .withStatus(404)));
 
-        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port())
-                .retries(3)
-                .retryPause(10);
+        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port());
+        client.setRetries(3);
+        client.setRetryPause(10);
 
         assertThrows(IOException.class, () -> client.get("/test"));
         wireMockServer.verify(1, getRequestedFor(urlEqualTo("/test")));
