@@ -17,99 +17,86 @@
 package net.jsign.jca;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static net.jadler.Jadler.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.*;
 
 public class RESTClientTest {
 
+    private WireMockServer wireMockServer;
+
     @Before
     public void setUp() {
-        initJadler().withDefaultResponseStatus(404);
+        wireMockServer = new WireMockServer(wireMockConfig().dynamicPort());
+        wireMockServer.start();
     }
 
     @After
     public void tearDown() {
-        closeJadler();
+        wireMockServer.stop();
     }
 
     @Test
-    public void testRetryOnTimeout() throws Exception {
-        AtomicInteger attempts = new AtomicInteger(0);
-        RESTClient client = new RESTClient("http://localhost:" + port()) {
-            @Override
-            protected HttpURLConnection openConnection(URL url) throws IOException {
-                attempts.incrementAndGet();
-                throw new SocketTimeoutException("timeout");
-            }
+    public void testRetryOnTimeout() {
+        wireMockServer.stubFor(get(urlEqualTo("/test"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withFixedDelay(1000)));
 
-            @Override
-            void sleep(long millis) {
-                // don't sleep in tests
-            }
-        };
+        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port())
+                .readTimeout(100)
+                .retries(3)
+                .retryPause(10);
 
         assertThrows(SocketTimeoutException.class, () -> client.get("/test"));
-        assertEquals("attempts", 3, attempts.get());
+        wireMockServer.verify(3, getRequestedFor(urlEqualTo("/test")));
     }
 
     @Test
     public void testRetryEventuallySucceeds() throws Exception {
-        AtomicInteger attempts = new AtomicInteger(0);
+        wireMockServer.stubFor(get(urlEqualTo("/test")).inScenario("Retry Scenario")
+                .whenScenarioStateIs("Started")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withFixedDelay(500))
+                .willSetStateTo("Succeeded"));
 
-        onRequest()
-                .havingMethodEqualTo("GET")
-                .havingPathEqualTo("/test")
-                .respond()
-                .withStatus(200)
-                .withBody("{\"status\":\"ok\"}");
+        wireMockServer.stubFor(get(urlEqualTo("/test")).inScenario("Retry Scenario")
+                .whenScenarioStateIs("Succeeded")
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"status\":\"ok\"}")));
 
-        RESTClient client = new RESTClient("http://localhost:" + port()) {
-            @Override
-            protected HttpURLConnection openConnection(URL url) throws IOException {
-                if (attempts.incrementAndGet() < 3) {
-                    throw new SocketTimeoutException("timeout");
-                }
-                return super.openConnection(url);
-            }
-
-            @Override
-            void sleep(long millis) {
-                // don't sleep in tests
-            }
-        };
+        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port())
+                .readTimeout(200)
+                .retries(3)
+                .retryPause(400);
 
         Map<String, ?> response = client.get("/test");
-        assertEquals("attempts", 3, attempts.get());
         assertEquals("ok", response.get("status"));
+        wireMockServer.verify(2, getRequestedFor(urlEqualTo("/test")));
     }
 
     @Test
-    public void testNoRetryOnOtherException() throws Exception {
-        AtomicInteger attempts = new AtomicInteger(0);
-        RESTClient client = new RESTClient("http://localhost:" + port()) {
-            @Override
-            protected HttpURLConnection openConnection(URL url) throws IOException {
-                attempts.incrementAndGet();
-                throw new IOException("error");
-            }
+    public void testNoRetryOnOtherException() {
+        wireMockServer.stubFor(get(urlEqualTo("/test"))
+                .willReturn(aResponse()
+                        .withStatus(404)));
 
-            @Override
-            void sleep(long millis) {
-                // don't sleep in tests
-            }
-        };
+        RESTClient client = new RESTClient("http://localhost:" + wireMockServer.port())
+                .retries(3)
+                .retryPause(10);
 
         assertThrows(IOException.class, () -> client.get("/test"));
-        assertEquals("attempts", 1, attempts.get());
+        wireMockServer.verify(1, getRequestedFor(urlEqualTo("/test")));
     }
 }

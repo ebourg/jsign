@@ -48,6 +48,18 @@ class RESTClient {
     /** Callback building an error message from the JSON formatted error response */
     private Function<Map<String, ?>, String> errorHandler;
 
+    /** Connect timeout (in milliseconds) */
+    private int connectTimeout = 30000;
+
+    /** Read timeout (in milliseconds) */
+    private int readTimeout = 30000;
+
+    /** Number of retries */
+    private int retries = 3;
+
+    /** Pause between retries (in milliseconds) */
+    private int retryPause = 5000;
+
     public RESTClient(String endpoint) {
         this.endpoint = endpoint;
     }
@@ -64,6 +76,46 @@ class RESTClient {
 
     public RESTClient errorHandler(Function<Map<String, ?>, String> errorHandler) {
         this.errorHandler = errorHandler;
+        return this;
+    }
+
+    /**
+     * Sets the connect timeout.
+     *
+     * @param connectTimeout the timeout in milliseconds
+     */
+    public RESTClient connectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+        return this;
+    }
+
+    /**
+     * Sets the read timeout.
+     *
+     * @param readTimeout the timeout in milliseconds
+     */
+    public RESTClient readTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+        return this;
+    }
+
+    /**
+     * Sets the number of retries.
+     *
+     * @param retries the number of retries
+     */
+    public RESTClient retries(int retries) {
+        this.retries = retries;
+        return this;
+    }
+
+    /**
+     * Sets the pause between retries.
+     *
+     * @param retryPause the pause in milliseconds
+     */
+    public RESTClient retryPause(int retryPause) {
+        this.retryPause = retryPause;
         return this;
     }
 
@@ -131,32 +183,25 @@ class RESTClient {
                 return queryOnce(method, resource, body, headers);
             } catch (SocketTimeoutException e) {
                 attempts++;
-                if (attempts >= 3) {
+                if (attempts >= retries) {
                     throw e;
                 }
-                log.warning("Connection timeout, retrying in 5 seconds (attempt " + attempts + "/3)");
-                sleep(5000);
+                log.warning("Connection timeout, retrying in " + (retryPause / 1000) + " seconds (attempt " + attempts + "/" + retries + ")");
+                try {
+                    Thread.sleep(retryPause);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
     }
 
-    void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    protected HttpURLConnection openConnection(URL url) throws IOException {
-        return (HttpURLConnection) url.openConnection();
-    }
-
-    private Map<String, ?> queryOnce(String method, String resource, String body, Map<String, String> headers) throws IOException {
+    protected Map<String, ?> queryOnce(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         log.finest(method + " " + url);
-        HttpURLConnection conn = openConnection(url);
-        conn.setConnectTimeout(30000);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setConnectTimeout(connectTimeout);
+        conn.setReadTimeout(readTimeout);
         conn.setRequestMethod(method);
         String userAgent = System.getProperty("http.agent");
         conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
