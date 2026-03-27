@@ -150,6 +150,10 @@ public class JsignCLI {
         map.put("remove", options);
 
         options = new Options();
+
+        map.put("show", options);
+
+        options = new Options();
         options.addOption(Option.builder().hasArg().longOpt(PARAM_VALUE).argName("VALUE").desc("The value of the unsigned attribute").build());
 
         map.put("tag", options);
