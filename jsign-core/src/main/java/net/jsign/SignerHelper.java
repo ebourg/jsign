@@ -412,7 +412,7 @@ class SignerHelper {
             throw new SignerException("The digest algorithm " + alg + " is not supported");
         }
 
-        // enable timestamping with Azure Trusted Signing
+        // enable timestamping with Azure Artifact Signing
         if (tsaurl == null && storetype == KeyStoreType.TRUSTEDSIGNING) {
             tsaurl = "http://timestamp.acs.microsoft.com/";
             tsmode = TimestampingMode.RFC3161.name();

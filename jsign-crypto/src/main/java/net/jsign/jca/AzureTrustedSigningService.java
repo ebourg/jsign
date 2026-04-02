@@ -35,7 +35,7 @@ import java.util.Map;
 import net.jsign.DigestAlgorithm;
 
 /**
- * Signing service using the Azure Trusted Signing API.
+ * Signing service using the Azure Artifact Signing API.
  *
  * @since 7.0
  */

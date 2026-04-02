@@ -323,7 +323,7 @@ public class SignerHelperTest {
     @Test
     public void testTrustedSigning() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-signed-with-azure-trusted-signing.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-azure-artifact-signing.exe");
 
         FileUtils.copyFile(sourceFile, targetFile);
 

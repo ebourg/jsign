@@ -107,7 +107,7 @@ Cloud key management systems:
 .br
 - SIGNSERVER    : Keyfactor SignServer
 .br
-- TRUSTEDSIGNING: Azure Trusted Signing
+- TRUSTEDSIGNING: Azure Artifact Signing
 
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
@@ -402,10 +402,11 @@ The Azure account used must have the "Key Vault Crypto User" and "Key Vault Cert
 
 .TP
 
-Signing with Azure Trusted Signing
+Signing with Azure Artifact Signing
 
-With the Azure Trusted Signing service the keystore parameter specifies the endpoint URI, and the alias combines
-the account name and the certificate profile. The Azure API access token is used as the keystore password.
+With Azure Artifact Signing (formerly Azure Trusted Signing) the keystore parameter specifies the endpoint URI,
+and the alias combines the account name and the certificate profile. The Azure API access token is used as the
+keystore password.
 
 jsign --storetype TRUSTEDSIGNING \
       --keystore weu.codesigning.azure.net \
@@ -418,7 +419,7 @@ az account get-access-token --resource https://codesigning.azure.net
 
 The Azure account used must have the "Code Signing Certificate Profile Signer" role.
 
-The certificates issued by Azure Trusted Signing have a lifetime of 3 days only, and timestamping is necessary to
+The certificates issued by Azure Artifact Signing have a lifetime of 3 days only, and timestamping is necessary to
 ensure the long term validity of the signature. For this reason timestamping is automatically enabled when signing
 with this service.
 

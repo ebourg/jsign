@@ -511,7 +511,7 @@ public enum KeyStoreType {
     },
 
     /**
-     * Azure Trusted Signing Service. The keystore parameter specifies the API endpoint (for example
+     * Azure Artifact Signing Service. The keystore parameter specifies the API endpoint (for example
      * <code>weu.codesigning.azure.net</code>). The Azure API access token is used as the keystore password,
      * it can be obtained using the Azure CLI with:
      *
