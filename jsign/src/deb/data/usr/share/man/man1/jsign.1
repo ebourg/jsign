@@ -91,6 +91,8 @@ Cloud key management systems:
 .br
 - AZUREKEYVAULT : Azure Key Vault key management system
 .br
+- CODESIGNSECURE: Encryption Consulting CodeSign Secure
+.br
 - DIGICERTONE   : DigiCert ONE Secure Software Manager
 .br
 - ESIGNER       : SSL.com eSigner
@@ -439,6 +441,23 @@ host can be specified with the --keystore parameter.
 jsign --storetype DIGICERTONE \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
       --alias test application.exe
+
+
+.TP
+
+Signing with Encryption Consulting CodeSign Secure
+
+When signing with Encryption Consulting CodeSign Secure, the keystore parameter specifies the API endpoint
+(it defaults to https://codesignsecure.encryptionconsulting.com). The storepass parameter is the concatenation of the
+CodeSign Secure username, password and the path to the PKCS#12 keystore containing the TLS client certificate, separated
+by a pipe character. If the TLS client certificate is stored in a password protected keystore, the password is specified
+in the keypass parameter.
+
+jsign --storetype CODESIGNSECURE \\
+      --storepass "<username>|<password>|/path/to/client-certificate.p12" \\
+      --keypass <client-certificate-password> \\
+      --alias <keyname> \\
+      application.exe
 
 
 .TP

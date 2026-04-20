@@ -145,6 +145,7 @@ class RESTClient {
                 conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             }
             conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+            conn.setRequestProperty("Accept", "*/*");
         }
 
         if (log.isLoggable(Level.FINEST)) {
@@ -176,10 +177,14 @@ class RESTClient {
             Object value = JsonReader.jsonToJava(response);
             if (value instanceof Map) {
                 return (Map) value;
-            } else {
+            } else if (value instanceof Object[]) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("result", value);
                 return map;
+            } else {
+                Map<String, Object> map = new HashMap<>();
+                map.put("result", response);
+                return map;  
             }
         } else {
             String error = conn.getErrorStream() != null ? IOUtils.toString(conn.getErrorStream(), StandardCharsets.UTF_8) : "";
