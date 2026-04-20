@@ -41,6 +41,8 @@ import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.AzureTrustedSigningService;
 import net.jsign.jca.CryptoCertumCardSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
+import net.jsign.jca.CodeSignSecureCredentials;
+import net.jsign.jca.CodeSignSecureSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GaraSignCredentials;
 import net.jsign.jca.GaraSignSigningService;
@@ -649,6 +651,32 @@ public enum KeyStoreType {
             } catch (CardException e) {
                 throw new IllegalStateException("Failed to initialize the CryptoCertum card", e);
             }
+        }
+    },
+
+    /**
+     * Encryption Consulting CodeSign Secure. The keystore parameter specifies the API endpoint. The storepass parameter
+     * is the concatenation of the CodeSign Secure username, password and the path to the PKCS#12 keystore containing
+     * the TLS client certificate, separated by a pipe character. If the TLS client certificate is stored in a password
+     * protected keystore, the password is specified in the keypass parameter.
+     */
+    CODESIGNSECURE(false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() == null || params.storepass().split("\\|").length != 3) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the CodeSign Secure username, password and the path to the keystore containing the TLS client certificate: <username>|<password>|<certificate>");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            String[] elements = params.storepass().split("\\|");
+            String username = elements[0];
+            String password = elements[1];
+            String certificate = elements[2];
+
+            CodeSignSecureCredentials credentials = new CodeSignSecureCredentials(username, password, certificate, params.keypass());
+            return new SigningServiceJcaProvider(new CodeSignSecureSigningService(params.keystore(), credentials));
         }
     };
 

@@ -46,6 +46,7 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
     * [Azure Artifact Signing](https://learn.microsoft.com/en-us/azure/artifact-signing/)
     * [DigiCert ONE](https://www.digicert.com/digicert-one) / [DigiCert KeyLocker](https://docs.digicert.com/en/digicert-keylocker.html)
+    * [Encryption Consulting CodeSign Secure](https://www.encryptionconsulting.com/code-signing-solution/)
     * [GaraSign](https://garantir.io/garasign/)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)
@@ -64,6 +65,7 @@ See https://ebourg.github.io/jsign for more information.
 ## Changes
 
 #### Version 7.5 (in development)
+* New signing service: Encryption Consulting CodeSign Secure
 * LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
 * Upgraded Bouncy Castle LTS to 2.73.10

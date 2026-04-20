@@ -81,6 +81,7 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
           <li><a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a></li>
           <li><a href="https://learn.microsoft.com/en-us/azure/artifact-signing/">Azure Artifact Signing</a></li>
           <li><a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> / <a href="https://docs.digicert.com/en/digicert-keylocker.html">DigiCert KeyLocker</a></li>
+          <li><a href="https://www.encryptionconsulting.com/code-signing-solution/">Encryption Consulting CodeSign Secure</a></li>
           <li><a href="https://garantir.io/garasign/">GaraSign</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
@@ -203,6 +204,7 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
     <ul>
       <li><code>AWS</code>: <a href="#example-awskms">AWS Key Management Service</a></li>
       <li><code>AZUREKEYVAULT</code>: <a href="#example-azurekeyvault">Azure Key Vault key management system</a></li>
+      <li><code>CODESIGNSECURE</code>: <a href="#example-codesignsecure">Encryption Consulting CodeSign Secure</a></li>
       <li><code>DIGICERTONE</code>: <a href="#example-digicertone">DigiCert ONE Secure Software Manager</a></li>
       <li><code>ESIGNER</code>: <a href="#example-sslcom-esigner">SSL.com eSigner</a></li>
       <li><code>GARASIGN</code>: <a href="#example-garasign">Garantir Remote Signing</a></li>
@@ -587,6 +589,22 @@ holding a client certificate for the authentication. The US DigiCert ONE host is
  jsign --storetype DIGICERTONE \
        --storepass "&lt;api-key&gt;|/path/to/Certificate_pkcs12.p12|&lt;password&gt;" \
        --alias test application.exe
+</pre>
+
+<h4 id="example-codesignsecure">Signing with Encryption Consulting CodeSign Secure</h4>
+
+<p>When signing with <a href="https://www.encryptionconsulting.com/code-signing-solution/">Encryption Consulting CodeSign Secure</a>,
+the <code>keystore</code> parameter specifies the API endpoint (it defaults to https://codesignsecure.encryptionconsulting.com).
+The <code>storepass</code> parameter is the concatenation of the CodeSign Secure username, password and the path to the
+PKCS#12 keystore containing the TLS client certificate, separated by a pipe character. If the TLS client certificate
+is stored in a password protected keystore, the password is specified in the <code>keypass</code> parameter.
+
+<pre>
+ jsign --storetype CODESIGNSECURE \
+       --storepass "&lt;username&gt;|&lt;password&gt;|/path/to/client-certificate.p12" \
+       --keypass &lt;client-certificate-password&gt; \
+       --alias &lt;keyname&gt; \
+       application.exe
 </pre>
 
 <h4 id="example-sslcom-esigner">Signing with SSL.com eSigner</h4>

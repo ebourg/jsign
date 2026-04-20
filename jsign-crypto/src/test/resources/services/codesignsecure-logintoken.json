@@ -1,0 +1,22 @@
+{
+  "Id": 73,
+  "Role": [
+    {
+      "Id": 3,
+      "RoleName": "ProjectManager"
+    },
+    {
+      "Id": 4,
+      "RoleName": "SecurityOfficer"
+    },
+    {
+      "Id": 5,
+      "RoleName": "Auditor"
+    },
+    {
+      "Id": 6,
+      "RoleName": "Developer"
+    }
+  ],
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI3MyIsInVzZXJuYW1lIjoiR3Vlc3QtRW1tYW51ZWxAZW5jcnlwdGlvbmNvbnN1bHRpbmcuY29tIiwiZXhwIjoxNzc3NjI2NjQxfQ.C-6KLQCHCqvlEowI6SZOp6Jpk6vdQFHayMBFitdNvY0"
+}

@@ -93,6 +93,7 @@ public class JsignCLI {
                         + "Cloud key management systems:\n"
                         + "- AWS: AWS Key Management Service\n"
                         + "- AZUREKEYVAULT: Azure Key Vault key management system\n"
+                        + "- CODESIGNSECURE: Encryption Consulting CodeSign Secure\n"
                         + "- DIGICERTONE: DigiCert ONE Secure Software Manager\n"
                         + "- ESIGNER: SSL.com eSigner\n"
                         + "- GARASIGN: Garantir Remote Signing\n"
