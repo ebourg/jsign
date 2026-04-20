@@ -578,10 +578,10 @@ the quota usage.</p>
 
 <h4 id="example-digicertone">Signing with DigiCert ONE / DigiCert KeyLocker</h4>
 
-<p>Certificates and keys stored in the <a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> Secure Software Manager
-can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
-a client certificate for the authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com)
-but a different host can be specified with the <code>--keystore</code> parameter.</p>
+<p>Certificates and keys stored in the <a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> Secure Software
+Manager can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore
+holding a client certificate for the authentication. The US DigiCert ONE host is used by default
+(https://clientauth.one.digicert.com) but a different host can be specified with the <code>--keystore</code> parameter.</p>
 
 <pre>
  jsign --storetype DIGICERTONE \
@@ -746,10 +746,11 @@ SignServer REST API. The <code>alias</code> parameter specifies the id or the na
 used by the OCI CLI. The OCI CLI isn't required for signing, but it may be used to initialize the configuration file
 with <code>oci setup bootstrap</code>.</p>
 
-<p>The storepass parameter specifies the path to the configuration file (<code>~/.oci/config</code> by default). If the
-configuration file contains multiple profiles, the name of the non-default profile to use is appended to the storepass
-(for example <code>~/.oci/config|PROFILE</code>). The <code>keypass</code> parameter may be used to specify the
-passphrase of the key file used for signing the requests to the OCI API if it isn't set in the configuration file.</p>
+<p>The <code>storepass</code> parameter specifies the path to the configuration file (<code>~/.oci/config</code> by
+default). If the configuration file contains multiple profiles, the name of the non-default profile to use is appended
+to the storepass (for example <code>~/.oci/config|PROFILE</code>). The <code>keypass</code> parameter may be used to
+specify the passphrase of the key file used for signing the requests to the OCI API if it isn't set in the configuration
+file.</p>
 
 <p>The certificate must be provided separately using the <code>certfile</code> parameter. The alias specifies the OCID
 of the key.</p>
@@ -804,11 +805,11 @@ concatenation of the project slug and the signing policy slug, separated by a sl
 <h4 id="tagging">Tagging</h4>
 
 <p>A signed file can be modified to include additional data without invalidating the signature. This feature is useful
-for embedding user identification data, such as a licence key or a session token, within a signed installer when the
+for embedding user identification data, such as a license key or a session token, within a signed installer when the
 file is downloaded. Upon installation, the installer extracts this data, enabling the application to automatically
 authenticate the user without requiring credentials.</p>
 
-<p>For example, to tag a signed installer with a licence key:</p>
+<p>For example, to tag a signed installer with a license key:</p>
 
 <pre>
   jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
@@ -1094,7 +1095,7 @@ their range of supported keystores.</p>
 
 <h4 id="jar-signing">JAR signing</h4>
 
-<p>The JCA provider can be used to sign JAR files with with the <code>jarsigner</code> tool.</p>
+<p>The JCA provider can be used to sign JAR files with the <code>jarsigner</code> tool.</p>
 
 <p>With Java 11 or later the syntax looks like this:</p>
 
@@ -1143,7 +1144,8 @@ The syntax looks like this:</p>
 
 <p>Jsign leverages the cryptography API developed by the <a href="http://www.bouncycastle.org">Bouncy Castle</a> project.<br>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
-MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
+MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a>
+and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
 <p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås,
 Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy, Sebastian Müller, Sebastian Stamm,
