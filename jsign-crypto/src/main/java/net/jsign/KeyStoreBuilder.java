@@ -286,7 +286,7 @@ public class KeyStoreBuilder {
         int maxAttempts = storetype().getAliasReloadMaxAttempts();
         while (!keystore.aliases().hasMoreElements() && maxAttempts-- > 0) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new KeyStoreException(e);
