@@ -282,7 +282,18 @@ public class KeyStoreBuilder {
      */
     public KeyStore build() throws KeyStoreException {
         validate();
-        return storetype().getKeystore(this, provider());
+        KeyStore keystore = storetype().getKeystore(this, provider());
+        int maxAttempts = storetype().getAliasReloadMaxAttempts();
+        while (!keystore.aliases().hasMoreElements() && maxAttempts-- > 0) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new KeyStoreException(e);
+            }
+            keystore = storetype().getKeystore(this, provider());
+        }
+        return keystore;
     }
 
     /**

@@ -170,7 +170,7 @@ public enum KeyStoreType {
      * in <code>jre/lib/security/java.security</code> or the path to the
      * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration file</a>.
      */
-    PKCS11(false, true) {
+    PKCS11(false, true, 3) {
         @Override
         void validate(KeyStoreBuilder params) {
             if (params.keystore() == null) {
@@ -460,7 +460,7 @@ public enum KeyStoreType {
      * SafeNet eToken
      * This keystore requires the installation of the SafeNet Authentication Client.
      */
-    ETOKEN(false, true) {
+    ETOKEN(false, true, 3) {
         @Override
         Provider getProvider(KeyStoreBuilder params) {
             return SafeNetEToken.getProvider(params.keystore());
@@ -686,9 +686,17 @@ public enum KeyStoreType {
     /** Tells if the keystore is actually a PKCS#11 keystore */
     private final boolean pkcs11;
 
+    /** Returns the max number of attempts to reload the keystore if no alias has been read after {@link #getKeystore(KeyStoreBuilder, Provider)} */
+    private final int aliasReloadMaxAttempts;
+
     KeyStoreType(boolean fileBased, boolean pkcs11) {
+        this(fileBased, pkcs11, 0);
+    }
+
+    KeyStoreType(boolean fileBased, boolean pkcs11, int aliasReloadMaxAttempts) {
         this.fileBased = fileBased;
         this.pkcs11 = pkcs11;
+        this.aliasReloadMaxAttempts = aliasReloadMaxAttempts;
     }
 
     /**
@@ -702,6 +710,13 @@ public enum KeyStoreType {
      */
     Provider getProvider(KeyStoreBuilder params) {
         return null;
+    }
+
+    /**
+     * Returns the {@link #aliasReloadMaxAttempts}
+     */
+    int getAliasReloadMaxAttempts() {
+        return aliasReloadMaxAttempts;
     }
 
     /**
