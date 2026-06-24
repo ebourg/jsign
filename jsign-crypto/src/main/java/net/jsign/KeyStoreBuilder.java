@@ -282,7 +282,22 @@ public class KeyStoreBuilder {
      */
     public KeyStore build() throws KeyStoreException {
         validate();
-        return storetype().getKeystore(this, provider());
+        KeyStore keystore = storetype().getKeystore(this, provider());
+
+        // On some PKCS#11/eToken configurations, KeyStore.load() may intermittently return a keystore
+        // with an empty alias list on the first attempt, likely due to a timing/race issue in the native token middleware.
+        // Retry to mitigate this (see issue #345).
+        int maxAttempts = 3;
+        while (!keystore.aliases().hasMoreElements() && maxAttempts-- > 0) {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new KeyStoreException(e);
+            }
+            keystore = storetype().getKeystore(this, provider());
+        }
+        return keystore;
     }
 
     /**
