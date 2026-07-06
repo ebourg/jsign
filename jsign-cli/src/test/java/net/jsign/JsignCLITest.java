@@ -225,6 +225,18 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testLazySigning() throws Exception {
+        cli.execute("--name=WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "--lazy", "" + targetFile);
+        cli.execute("--name=WinEyes", "--alg=SHA-384", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "--lazy", "" + targetFile);
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
     public void testSigningMultipleFilesWithListFile() throws Exception {
         File listFile = new File("target/test-classes/files.txt");
         Files.write(listFile.toPath(), Arrays.asList("# first file", '"' + targetFile.getPath() + '"', " ", "# second file", targetFile.getAbsolutePath()));

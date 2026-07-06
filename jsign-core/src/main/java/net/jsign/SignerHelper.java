@@ -85,6 +85,7 @@ class SignerHelper {
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
     public static final String PARAM_REPLACE = "replace";
+    public static final String PARAM_LAZY = "lazy";
     public static final String PARAM_ENCODING = "encoding";
     public static final String PARAM_DETACHED = "detached";
     public static final String PARAM_FORMAT = "format";
@@ -109,6 +110,7 @@ class SignerHelper {
     private String url;
     private final ProxySettings proxySettings = new ProxySettings();
     private boolean replace;
+    private boolean lazy;
     private Charset encoding;
     private boolean detached;
     private String format;
@@ -246,6 +248,11 @@ class SignerHelper {
         return this;
     }
 
+    public SignerHelper lazy(boolean lazy) {
+        this.lazy = lazy;
+        return this;
+    }
+
     public SignerHelper encoding(String encoding) {
         this.encoding = Charset.forName(encoding);
         return this;
@@ -291,6 +298,7 @@ class SignerHelper {
             case PARAM_PROXY_USER: return proxyUser(value);
             case PARAM_PROXY_PASS: return proxyPass(value);
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
+            case PARAM_LAZY:       return lazy("true".equalsIgnoreCase(value));
             case PARAM_ENCODING:   return encoding(value);
             case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
             case PARAM_FORMAT:     return format(value);
@@ -456,6 +464,11 @@ class SignerHelper {
                 }
 
             } else {
+                if (lazy && !signable.getSignatures().isEmpty()) {
+                    log.info("Skipping already signed file " + file);
+                    return;
+                }
+
                 if (signer == null) {
                     signer = build();
                 }

@@ -9,7 +9,7 @@ _jsign()
     local commands="sign timestamp extract remove tag"
 
     declare -A opts
-    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --replace -e --encoding --detached --quiet --verbose --debug -h --help"
+    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --replace --lazy -e --encoding --detached --quiet --verbose --debug -h --help"
     opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass"
     opts["extract"]="--format"
     opts["remove"]=""
