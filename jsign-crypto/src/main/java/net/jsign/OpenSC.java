@@ -55,7 +55,7 @@ class OpenSC {
     static String getSunPKCS11Configuration(String name) {
         File library = getOpenSCLibrary();
         if (!library.exists()) {
-            throw new ProviderException("OpenSC PKCS11 module is not installed (" + library + " is missing)");
+            throw new ProviderException("OpenSC PKCS#11 module is not installed (" + library + " is missing)");
         }
 
         long slot;
@@ -106,9 +106,9 @@ class OpenSC {
         }
 
         if (matches.isEmpty()) {
-            throw new RuntimeException(descriptions.isEmpty() ? "No PKCS11 token found" : "No PKCS11 token found matching '" + name + "' (available tokens: " + String.join(", ", descriptions) + ")");
+            throw new RuntimeException(descriptions.isEmpty() ? "No PKCS#11 token found" : "No PKCS#11 token found matching '" + name + "' (available tokens: " + String.join(", ", descriptions) + ")");
         } else {
-            throw new RuntimeException("Multiple PKCS11 tokens found" + (name != null ? " matching '" + name + "'" : "") + ", please specify the name of the token to use (available tokens: " + String.join(", ", descriptions) + ")");
+            throw new RuntimeException("Multiple PKCS#11 tokens found" + (name != null ? " matching '" + name + "'" : "") + ", please specify the name of the token to use (available tokens: " + String.join(", ", descriptions) + ")");
         }
     }
 

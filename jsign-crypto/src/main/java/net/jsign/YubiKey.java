@@ -57,7 +57,7 @@ class YubiKey {
     static String getSunPKCS11Configuration() {
         File libykcs11 = getYkcs11Library();
         if (!libykcs11.exists()) {
-            throw new ProviderException("YubiKey PKCS11 module (ykcs11) is not installed (" + libykcs11 + " is missing)");
+            throw new ProviderException("YubiKey PKCS#11 module (ykcs11) is not installed (" + libykcs11 + " is missing)");
         }
 
         long slot;
