@@ -68,7 +68,7 @@ See https://ebourg.github.io/jsign for more information.
 * New signing service: Encryption Consulting CodeSign Secure
 * LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
-* Upgraded Bouncy Castle LTS to 2.73.11
+* Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.4 (2025-10-24)
 
