@@ -149,7 +149,7 @@ class OpenSC {
             String libraryPath = System.getenv("LD_LIBRARY_PATH");
             if (libraryPath != null) {
                 for (String s : libraryPath.split(":")) {
-                    paths.add(s + "/libykcs11.so");
+                    paths.add(s + "/opensc-pkcs11.so");
                 }
             }
 
