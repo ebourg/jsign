@@ -705,7 +705,7 @@ public enum KeyStoreType {
     }
 
     /**
-     * Build the keystore.
+     * Builds the keystore and ensure it's loaded.
      */
     KeyStore getKeystore(KeyStoreBuilder params, Provider provider) throws KeyStoreException {
         KeyStore ks;
@@ -722,7 +722,17 @@ public enum KeyStoreType {
 
         try {
             try (FileInputStream in = fileBased ? new FileInputStream(params.createFile(params.keystore())) : null) {
-                ks.load(in, params.storepass() != null ? params.storepass().toCharArray() : null);
+                char[] password = params.storepass() != null ? params.storepass().toCharArray() : null;
+
+                // multiple attempts to load the keystore for PKCS#11, as some tokens may not be ready immediately
+                // after being initialized (see #345)
+                int attempts = pkcs11 ? 20 : 1;
+                while (attempts-- > 0) {
+                    ks.load(in, password);
+                    if (pkcs11 && ks.size() == 0 && attempts > 0) {
+                        Thread.sleep(50);
+                    }
+                }
             }
         } catch (Exception e) {
             throw new KeyStoreException("Unable to load the " + name() + " keystore" + (params.keystore() != null ? " " + params.keystore() : ""), e);
