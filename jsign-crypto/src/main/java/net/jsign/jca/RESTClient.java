@@ -18,6 +18,7 @@ package net.jsign.jca;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -47,6 +48,18 @@ class RESTClient {
     /** Callback building an error message from the JSON formatted error response */
     private Function<Map<String, ?>, String> errorHandler;
 
+    /** Number of attempts for a request */
+    private int retries = 5;
+
+    /** Pause between retries in milliseconds */
+    private int retryWait = 1000;
+
+    /** Connect timeout in milliseconds */
+    private int connectTimeout = 30000;
+
+    /** Read timeout in milliseconds */
+    private int readTimeout = 30000;
+
     public RESTClient(String endpoint) {
         this.endpoint = endpoint;
     }
@@ -63,6 +76,26 @@ class RESTClient {
 
     public RESTClient errorHandler(Function<Map<String, ?>, String> errorHandler) {
         this.errorHandler = errorHandler;
+        return this;
+    }
+
+    public RESTClient retries(int retries) {
+        this.retries = retries;
+        return this;
+    }
+
+    public RESTClient retryWait(int retryWait) {
+        this.retryWait = retryWait;
+        return this;
+    }
+
+    public RESTClient connectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+        return this;
+    }
+
+    public RESTClient readTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
         return this;
     }
 
@@ -126,42 +159,46 @@ class RESTClient {
     private Map<String, ?> query(String method, String resource, String body, Map<String, String> headers) throws IOException {
         URL url = new URL(resource.startsWith("http") ? resource : endpoint + resource);
         log.finest(method + " " + url);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod(method);
-        String userAgent = System.getProperty("http.agent");
-        conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
-        if (headers != null) {
-            for (Map.Entry<String, String> header : headers.entrySet()) {
-                conn.setRequestProperty(header.getKey(), header.getValue());
+        HttpURLConnection c = open(url, conn -> {
+            conn.setConnectTimeout(connectTimeout);
+            conn.setReadTimeout(readTimeout);
+            conn.setRequestMethod(method);
+            String userAgent = System.getProperty("http.agent");
+            conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
+            if (headers != null) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    conn.setRequestProperty(header.getKey(), header.getValue());
+                }
             }
-        }
 
-        byte[] data = body != null ? body.getBytes(StandardCharsets.UTF_8) : null;
-        if (authenticationHandler != null) {
-            authenticationHandler.accept(conn, data);
-        }
-        if (body != null) {
-            if (!conn.getRequestProperties().containsKey("Content-Type")) {
-                conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            byte[] data = body != null ? body.getBytes(StandardCharsets.UTF_8) : null;
+            if (authenticationHandler != null) {
+                authenticationHandler.accept(conn, data);
             }
-            conn.setRequestProperty("Content-Length", String.valueOf(data.length));
-            conn.setRequestProperty("Accept", "*/*");
-        }
-
-        if (log.isLoggable(Level.FINEST)) {
-            for (String requestHeader : conn.getRequestProperties().keySet()) {
-                List<String> values = conn.getRequestProperties().get(requestHeader);
-                log.finest(requestHeader + ": " + (values.size() == 1 ? values.get(0) : values));
+            if (body != null) {
+                if (!conn.getRequestProperties().containsKey("Content-Type")) {
+                    conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                }
+                conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+                conn.setRequestProperty("Accept", "*/*");
             }
-        }
 
-        if (body != null) {
-            log.finest("Content:\n" + body);
-            conn.setDoOutput(true);
-            conn.getOutputStream().write(data);
-        }
-        log.finest("");
+            if (log.isLoggable(Level.FINEST)) {
+                for (String requestHeader : conn.getRequestProperties().keySet()) {
+                    List<String> values = conn.getRequestProperties().get(requestHeader);
+                    log.finest(requestHeader + ": " + (values.size() == 1 ? values.get(0) : values));
+                }
+            }
 
+            if (body != null) {
+                log.finest("Content:\n" + body);
+                conn.setDoOutput(true);
+                conn.getOutputStream().write(data);
+            }
+            log.finest("");
+        });
+
+        HttpURLConnection conn = c;
         int responseCode = conn.getResponseCode();
         String contentType = conn.getHeaderField("Content-Type");
         log.finest("Response Code: " + responseCode);
@@ -197,5 +234,43 @@ class RESTClient {
                 throw new IOException("HTTP Error " + responseCode + (conn.getResponseMessage() != null ? " - " + conn.getResponseMessage() : "") + " (" + url + ")");
             }
         }
+    }
+
+    /**
+     * Opens a connection to the specified URL and makes several attempts if a timeout occurs.
+     * The provided configurator is used to set up the connection before making the request.
+     */
+    private HttpURLConnection open(URL url, HttpURLConnectionHandler configurator) throws IOException {
+        boolean retry = true;
+        int attempt = 1;
+
+        HttpURLConnection conn = null;
+
+        while (retry) {
+            try {
+                conn = (HttpURLConnection) url.openConnection();
+                configurator.handle(conn);
+
+                conn.getResponseCode();
+                retry = false;
+            } catch (SocketTimeoutException e) {
+                if (attempt++ < retries) {
+                    try {
+                        Thread.sleep(retryWait);
+                        log.fine("Connection to " + url + " timed out, attempt " + attempt + " of " + retries);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
+                } else {
+                    throw (IOException) new SocketTimeoutException("Unable to connect to " + url + " after " + retries + " attempts").initCause(e);
+                }
+            }
+        }
+
+        return conn;
+    }
+
+    private interface HttpURLConnectionHandler {
+        void handle(HttpURLConnection conn) throws IOException;
     }
 }
