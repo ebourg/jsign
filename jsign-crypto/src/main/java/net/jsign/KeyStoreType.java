@@ -726,16 +726,12 @@ public enum KeyStoreType {
 
                 // multiple attempts to load the keystore for PKCS#11, as some tokens may not be ready immediately
                 // after being initialized (see #345)
-                int attempts = pkcs11 ? 20 : 1;
+                int attempts = pkcs11 ? 4 : 1;
                 while (attempts-- > 0) {
                     ks.load(in, password);
 
-                    if (pkcs11) {
-                        if (ks.size() == 0 && attempts > 0) {
-                            Thread.sleep(50);
-                        } else {
-                            break;
-                        }
+                    if (attempts > 0 && ks.size() == 0) {
+                        Thread.sleep(300);
                     }
                 }
             }
