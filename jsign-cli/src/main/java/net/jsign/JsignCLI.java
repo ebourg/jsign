@@ -118,6 +118,7 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_URL).argName("URL").desc("The URL of the HTTP proxy").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If a user is needed").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If a user is needed").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_NON_PROXY_HOSTS).argName("HOSTS").desc("The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous signatures should be replaced").build());
         options.addOption(Option.builder().longOpt(PARAM_LAZY).desc("Skip files that are already signed").build());
         options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one)").build());
@@ -138,6 +139,7 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_URL).argName("URL").desc("The URL of the HTTP proxy").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If a user is needed").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If a user is needed").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_NON_PROXY_HOSTS).argName("HOSTS").desc("The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous timestamps should be replaced").build());
 
         map.put("timestamp", options);
@@ -215,6 +217,7 @@ public class JsignCLI {
         setOption(PARAM_PROXY_URL, helper, cmd);
         setOption(PARAM_PROXY_USER, helper, cmd);
         setOption(PARAM_PROXY_PASS, helper, cmd);
+        setOption(PARAM_NON_PROXY_HOSTS, helper, cmd);
         helper.replace(cmd.hasOption(PARAM_REPLACE));
         helper.lazy(cmd.hasOption(PARAM_LAZY));
         setOption(PARAM_ENCODING, helper, cmd);

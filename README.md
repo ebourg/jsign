@@ -68,6 +68,7 @@ See https://ebourg.github.io/jsign for more information.
 * New signing service: Encryption Consulting CodeSign Secure
 * LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
+* The new `--nonProxyHosts` option allows to specify hosts that should bypass the HTTP proxy
 * The new `--lazy` signing option skips files that are already signed
 * Timed-out connections to the cloud signing services are now retried
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)

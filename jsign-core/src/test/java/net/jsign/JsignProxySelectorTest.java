@@ -54,4 +54,27 @@ public class JsignProxySelectorTest {
         assertEquals("proxy host", "example.com", ((InetSocketAddress) proxies.get(0).address()).getHostName());
         assertEquals("proxy port", 80, ((InetSocketAddress) proxies.get(0).address()).getPort());
     }
+
+    @Test
+    public void testNonProxyHosts() throws Exception {
+        ProxySettings proxySettings = new ProxySettings();
+        proxySettings.url = "http://example.com:1080";
+        proxySettings.nonProxyHosts = "localhost|*.internal.example.com";
+        JsignProxySelector selector = new JsignProxySelector(proxySettings);
+
+        List<Proxy> proxies = selector.select(new URI("http://localhost/resource"));
+        assertNotNull("null proxies", proxies);
+        assertEquals("number of proxies", 1, proxies.size());
+        assertSame("proxy", Proxy.NO_PROXY, proxies.get(0));
+
+        proxies = selector.select(new URI("http://service.internal.example.com/resource"));
+        assertNotNull("null proxies", proxies);
+        assertEquals("number of proxies", 1, proxies.size());
+        assertSame("proxy", Proxy.NO_PROXY, proxies.get(0));
+
+        proxies = selector.select(new URI("http://example.com/resource"));
+        assertNotNull("null proxies", proxies);
+        assertEquals("number of proxies", 1, proxies.size());
+        assertEquals("proxy type", Proxy.Type.HTTP, proxies.get(0).type());
+    }
 }

@@ -29,10 +29,12 @@ import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.model.fileset.FileSet;
+import org.mockito.MockedConstruction;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class JsignMojoTest extends AbstractMojoTestCase {
 
@@ -151,6 +153,34 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         Exception e = assertThrows(MojoFailureException.class, mojo::execute);
         assertEquals("Couldn't initialize proxy", e.getMessage());
+    }
+
+    public void testNonProxyHosts() throws Exception {
+        JsignMojo mojo = getMojo();
+
+        Proxy proxy = new Proxy();
+        proxy.setActive(true);
+        proxy.setProtocol("http");
+        proxy.setHost("example.com");
+        proxy.setPort(1080);
+        proxy.setUsername("johndoe");
+        proxy.setPassword("secret");
+        proxy.setNonProxyHosts("localhost|*.internal.example.com");
+
+        Settings settings = new Settings();
+        settings.setProxies(Collections.singletonList(proxy));
+
+        setVariableValueToObject(mojo, "settings", settings);
+
+        setVariableValueToObject(mojo, "file", new File("target/test-classes/wineyes.exe"));
+        setVariableValueToObject(mojo, "keystore", "keystores/keystore.jks");
+        setVariableValueToObject(mojo, "alias", "test");
+        setVariableValueToObject(mojo, "keypass", "password");
+
+        try (MockedConstruction<SignerHelper> mocked = mockConstruction(SignerHelper.class)) {
+            mojo.execute();
+            verify(mocked.constructed().get(0)).nonProxyHosts("localhost|*.internal.example.com");
+        }
     }
 
     public void testActiveProxy() throws Exception {

@@ -22,9 +22,11 @@ import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.SocketAddress;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static java.net.Proxy.Type.*;
 
@@ -41,6 +43,9 @@ class JsignProxySelector extends ProxySelector {
     /** The address of the proxy server */
     private final InetSocketAddress address;
 
+    /** The patterns for the non-proxy hosts */
+    private final List<Pattern> nonProxyHostsPatterns = new ArrayList<>();
+
     /**
      * Creates a new proxy selector for the specified proxy settings.
      *
@@ -54,11 +59,22 @@ class JsignProxySelector extends ProxySelector {
         int port = uri.getPort() < 0 ? 80 : uri.getPort();
 
         address = new InetSocketAddress(uri.getHost(), port);
+
+        if (settings.nonProxyHosts != null) {
+            for (String pattern : settings.nonProxyHosts.split("\\|")) {
+                nonProxyHostsPatterns.add(Pattern.compile(pattern.replace(".", "\\.").replace("*", ".*"), Pattern.CASE_INSENSITIVE));
+            }
+        }
     }
 
     @Override
     public List<Proxy> select(URI uri) {
-        Proxy proxy = new Proxy(uri.getScheme().equals("socket") ? SOCKS : HTTP, address);
+        Proxy proxy;
+        if (isNonProxyHost(uri.getHost())) {
+            proxy = Proxy.NO_PROXY;
+        } else {
+            proxy = new Proxy(uri.getScheme().equals("socket") ? SOCKS : HTTP, address);
+        }
 
         log.fine("Proxy selected for " + uri + " : " + proxy);
         return Collections.singletonList(proxy);
@@ -66,5 +82,14 @@ class JsignProxySelector extends ProxySelector {
 
     @Override
     public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+    }
+
+    public boolean isNonProxyHost(String host) {
+        for (Pattern pattern : nonProxyHostsPatterns) {
+            if (pattern.matcher(host).matches()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

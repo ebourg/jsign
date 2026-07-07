@@ -31,6 +31,9 @@ class ProxySettings {
     /** The url of the proxy (either as hostname:port or http[s]://hostname:port) */
     String url;
 
+    /** The list of non-proxy hosts patterns (separated by |) */
+    String nonProxyHosts;
+
     /** The username for the proxy authentication */
     String username;
 
