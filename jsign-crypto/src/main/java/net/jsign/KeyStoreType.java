@@ -729,8 +729,13 @@ public enum KeyStoreType {
                 int attempts = pkcs11 ? 20 : 1;
                 while (attempts-- > 0) {
                     ks.load(in, password);
-                    if (pkcs11 && ks.size() == 0 && attempts > 0) {
-                        Thread.sleep(50);
+
+                    if (pkcs11) {
+                        if (ks.size() == 0 && attempts > 0) {
+                            Thread.sleep(50);
+                        } else {
+                            break;
+                        }
                     }
                 }
             }
