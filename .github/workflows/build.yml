@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'temurin'
+          distribution: 'zulu'
           cache: 'maven'
 
       - name: Set up dependencies
