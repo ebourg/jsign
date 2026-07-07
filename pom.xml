@@ -10,8 +10,8 @@
   <inceptionYear>2012</inceptionYear>
 
   <description>
-    Java implementation of Microsoft Authenticode for signing Windows executable files, installer packages and scripts,
-    with an emphasis on seamless integration with cloud key management systems and hardware tokens.
+    Java implementation of Microsoft Authenticode for signing Windows executable files, installation packages
+    and scripts, with an emphasis on seamless integration with cloud key management systems and hardware tokens.
   </description>
   <url>https://ebourg.github.io/jsign</url>
 

@@ -6,7 +6,7 @@ Jsign - Authenticode signing tool in Java
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
 
-Jsign is a versatile code signing tool that allows you to sign and timestamp Windows
+Jsign is a code signing tool that allows you to sign and timestamp Windows
 executable files, installer packages and scripts. Jsign is platform independent
 and provides an alternative to native tools like signtool on Windows or the Mono
 development tools on Unix systems. It's particularly well-suited for signing
