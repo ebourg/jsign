@@ -189,4 +189,14 @@
     <jsign command="tag" file="wineyes.exe"/>
   </target>
 
+  <target name="extract-signature">
+    <copy file="wineyes.exe" tofile="wineyes-signed.exe" overwrite="true"/>
+    <jsign file="wineyes-signed.exe"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"/>
+    <jsign command="extract" file="wineyes-signed.exe" format="PEM"/>
+    <jsign command="extract" file="wineyes-signed.exe" format="DER"/>
+  </target>
+
 </project>
