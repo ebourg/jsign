@@ -47,17 +47,27 @@ import static net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers.*;
 public class SignatureUtils {
 
     /**
+     * Parse the specified signature.
+     *
+     * @param signature the signature to analyze
+     * @since 7.5
+     */
+    public static CMSSignedData getSignature(byte[] signature) throws IOException {
+        try (ASN1InputStream in = new ASN1InputStream(signature)) {
+            return new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(in.readObject()));
+        } catch (CMSException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException | StackOverflowError e) {
+            // Bouncy Castle can throw a wide range of exceptions when parsing a signature, so we wrap them all in an IOException
+            throw new IOException("Malformed signature", e);
+        }
+    }
+
+    /**
      * Parse the specified signature and return the nested Authenticode signatures.
      *
      * @param signature the signature to analyze
      */
     public static List<CMSSignedData> getSignatures(byte[] signature) throws IOException {
-        try (ASN1InputStream in = new ASN1InputStream(signature)) {
-            CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(in.readObject()));
-            return getSignatures(signedData);
-        } catch (CMSException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException | StackOverflowError e) {
-            throw new IOException(e);
-        }
+        return getSignatures(getSignature(signature));
     }
 
     /**

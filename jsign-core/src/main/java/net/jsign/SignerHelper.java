@@ -37,16 +37,13 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
@@ -498,11 +495,9 @@ class SignerHelper {
         }
     }
 
-    private void attach(Signable signable, File detachedSignature) throws IOException, CMSException {
+    private void attach(Signable signable, File detachedSignature) throws IOException {
         byte[] signatureBytes = Files.readAllBytes(detachedSignature.toPath());
-        CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
-
-        signable.setSignatures(SignatureUtils.getSignatures(signedData));
+        signable.setSignatures(SignatureUtils.getSignatures(signatureBytes));
         signable.save();
         // todo warn if the hashes don't match
     }
