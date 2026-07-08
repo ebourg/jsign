@@ -88,7 +88,7 @@ public class SignatureAssert {
 
             // Check the signature algorithm
             SignerInformation si = signature.getSignerInfos().getSigners().iterator().next();
-            assertEquals("Digest algorithm of signature " + i, algorithms[i].oid, si.getDigestAlgorithmID().getAlgorithm());
+            assertEqualsAlgorithm("Digest algorithm of signature " + i, algorithms[i].oid, si.getDigestAlgorithmID().getAlgorithm());
 
             // Check if the signingTime attribute is present
             if (isAuthenticode(signature.getSignedContentTypeOID())) {
@@ -98,6 +98,12 @@ public class SignatureAssert {
             // Check if the nested signatures were removed
             assertNoUnsignedAttribute("Nested signatures found in the signature", signature, SPC_NESTED_SIGNATURE_OBJID);
         }
+    }
+
+    private static void assertEqualsAlgorithm(String message, ASN1ObjectIdentifier expectedAlgorithm, ASN1ObjectIdentifier actualAlgorithm) {
+        String expected = expectedAlgorithm.getId() + " (" + DigestAlgorithm.of(expectedAlgorithm) + ")";
+        String actual = actualAlgorithm.getId() + " (" + (DigestAlgorithm.of(actualAlgorithm) != null ? DigestAlgorithm.of(actualAlgorithm) : "unknown") + ")";
+        assertEquals(message, expected, actual);
     }
 
     public static void assertNotSigned(Signable signable) throws IOException {
