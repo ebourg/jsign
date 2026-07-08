@@ -102,6 +102,9 @@ public class JsignTask extends Task {
     /** Tells if a detached signature should be generated or reused. */
     private boolean detached;
 
+    /** The output format of the signature (DER or PEM). */
+    private String format;
+
     /** The value of the unsigned attribute */
     private String value;
 
@@ -189,6 +192,10 @@ public class JsignTask extends Task {
         this.detached = detached;
     }
 
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
     public void setValue(String value) {
         this.value = value;
     }
@@ -225,6 +232,7 @@ public class JsignTask extends Task {
             helper.lazy(lazy);
             helper.encoding(encoding);
             helper.detached(detached);
+            helper.format(format);
             helper.value(value);
 
             if (fileset != null) {

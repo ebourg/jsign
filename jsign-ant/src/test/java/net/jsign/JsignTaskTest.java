@@ -311,4 +311,12 @@ public class JsignTaskTest {
         BuildException e = assertThrows( BuildException.class, () -> project.executeTarget( "tag-unsigned-file" ) );
         assertTrue("message", e.getMessage().startsWith("No signature found in"));
     }
+
+    @Test
+    public void testExtractSignature() {
+        project.executeTarget("extract-signature");
+
+        assertTrue("Signature not extracted (PEM)", new File("target/test-classes/wineyes-signed.exe.sig.pem").exists());
+        assertTrue("Signature not extracted (DER)", new File("target/test-classes/wineyes-signed.exe.sig").exists());
+    }
 }
