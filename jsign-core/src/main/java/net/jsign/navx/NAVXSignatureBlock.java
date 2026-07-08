@@ -20,11 +20,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.cms.ContentInfo;
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
+
+import net.jsign.SignatureUtils;
 
 import static java.nio.ByteOrder.*;
 
@@ -65,11 +63,7 @@ class NAVXSignatureBlock {
         byte[] signatureBytes = new byte[size - 8];
         buffer.position(4);
         buffer.get(signatureBytes);
-        try (ASN1InputStream in = new ASN1InputStream(signatureBytes)) {
-            signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(in.readObject()));
-        } catch (CMSException | StackOverflowError e) {
-            throw new IOException("Invalid CMS signature", e);
-        }
+        signedData = SignatureUtils.getSignature(signatureBytes);
     }
 
     public void write(SeekableByteChannel channel) throws IOException {
