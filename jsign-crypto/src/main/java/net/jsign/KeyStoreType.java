@@ -723,15 +723,14 @@ public enum KeyStoreType {
         try {
             try (FileInputStream in = fileBased ? new FileInputStream(params.createFile(params.keystore())) : null) {
                 char[] password = params.storepass() != null ? params.storepass().toCharArray() : null;
+                ks.load(in, password);
 
-                // multiple attempts to load the keystore for PKCS#11, as some tokens may not be ready immediately
-                // after being initialized (see #345)
-                int attempts = pkcs11 ? 4 : 1;
-                while (attempts-- > 0) {
-                    ks.load(in, password);
-
-                    if (attempts > 0 && ks.size() == 0) {
+                if (pkcs11 && ks.size() == 0) {
+                    // retry loading the PKCS#11 keystore, since the token may not be ready immediately after initialization (see #345)
+                    int attempts = 3;
+                    while (attempts-- >= 1 && ks.size() == 0) {
                         Thread.sleep(300);
+                        ks.load(in, password);
                     }
                 }
             }
