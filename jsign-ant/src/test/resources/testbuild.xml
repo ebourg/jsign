@@ -191,7 +191,7 @@
   </target>
 
   <target name="tag-unsigned-file">
-    <jsign command="tag" file="wineyes.exe"/>
+    <jsign command="tag" file="wineyes.exe" value="userid:1234-ABCD-5678-EFGH"/>
   </target>
 
   <target name="extract-signature">
