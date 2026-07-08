@@ -93,6 +93,9 @@ public class JsignTask extends Task {
     /** Tells if previous signatures should be replaced */
     private boolean replace;
 
+    /** Skip files that are already signed. */
+    private boolean lazy;
+
     /** The encoding of the script to be signed (UTF-8 by default). */
     private String encoding = "UTF-8";
 
@@ -174,6 +177,10 @@ public class JsignTask extends Task {
         this.replace = replace;
     }
 
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
+    }
+
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
@@ -215,6 +222,7 @@ public class JsignTask extends Task {
             helper.tsretries(tsretries);
             helper.tsretrywait(tsretrywait);
             helper.replace(replace);
+            helper.lazy(lazy);
             helper.encoding(encoding);
             helper.detached(detached);
             helper.value(value);

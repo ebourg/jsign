@@ -149,6 +149,10 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.replace", defaultValue = "false")
     private boolean replace;
 
+    /** Skip files that are already signed. */
+    @Parameter( property = "jsign.lazy", defaultValue = "false")
+    private boolean lazy;
+
     /** The encoding of the script to be signed (UTF-8 by default). */
     @Parameter( property = "jsign.encoding", defaultValue = "UTF-8")
     private String encoding = "UTF-8";
@@ -227,6 +231,7 @@ public class JsignMojo extends AbstractMojo {
         helper.tsretries(tsretries);
         helper.tsretrywait(tsretrywait);
         helper.replace(replace);
+        helper.lazy(lazy);
         helper.encoding(encoding);
         helper.detached(detached);
         helper.value(value);

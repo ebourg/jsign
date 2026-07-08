@@ -200,6 +200,17 @@ public class JsignTaskTest {
     }
 
     @Test
+    public void testLazySigning() throws Exception {
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        project.executeTarget("lazy-signing");
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
     public void testSigningPowerShell() throws Exception {
         File sourceFile = new File("target/test-classes/hello-world.ps1");
         File targetFile = new File("target/test-classes/hello-world-signed-with-ant.ps1");
