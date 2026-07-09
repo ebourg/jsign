@@ -215,4 +215,26 @@ public class AzureTrustedSigningServiceTest {
         Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
         assertEquals("message", "InternalError - Response status code does not indicate success: 403 (Forbidden).", e.getCause().getMessage());
     }
+
+    @Test
+    public void testEndpointWithTrailingSlash() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
+                .respond()
+                .withStatus(202)
+                .withBody("{\"operationId\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"InProgress\",\"signature\":null,\"signingCertificate\":null}");
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/trustedsigning-sign.json"));
+
+        SigningService service = new AzureTrustedSigningService("http://localhost:" + port() + "/", "token");
+        Certificate[] chain = service.getCertificateChain("MyAccount/MyProfile");
+
+        assertNotNull("null chain", chain);
+        assertEquals("length", 4, chain.length);
+    }
 }

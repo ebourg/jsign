@@ -70,6 +70,7 @@ public class AzureTrustedSigningService implements SigningService {
         if (!endpoint.startsWith("http")) {
             endpoint = "https://" + endpoint;
         }
+        endpoint = endpoint.replaceFirst("/+$", "");
         client = new RESTClient(endpoint)
                 .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token))
                 .errorHandler(response -> {
