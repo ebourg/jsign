@@ -23,16 +23,13 @@ import java.util.NoSuchElementException;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
-import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
@@ -53,8 +50,8 @@ public class SignatureUtils {
      * @since 7.5
      */
     public static CMSSignedData getSignature(byte[] signature) throws IOException {
-        try (ASN1InputStream in = new ASN1InputStream(signature)) {
-            return new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(in.readObject()));
+        try {
+            return new CMSSignedData(signature);
         } catch (CMSException | IllegalArgumentException | IllegalStateException | NoSuchElementException | ClassCastException | StackOverflowError e) {
             // Bouncy Castle can throw a wide range of exceptions when parsing a signature, so we wrap them all in an IOException
             throw new IOException("Malformed signature", e);
@@ -91,7 +88,7 @@ public class SignatureUtils {
                     Attribute nestedSignatures = unsignedAttributes.get(SPC_NESTED_SIGNATURE_OBJID);
                     if (nestedSignatures != null) {
                         for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(nestedSignature)));
+                            signatures.add(new CMSSignedData(nestedSignature.toASN1Primitive().getEncoded()));
                         }
                     }
                 }
