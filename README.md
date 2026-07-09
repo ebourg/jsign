@@ -75,6 +75,7 @@ See https://ebourg.github.io/jsign for more information.
 * The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
   use on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
 * The terminally deprecated method warning displayed when signing MSI files has been fixed (from the command line only)
+* An Azure Trusted Signing endpoint with a trailing slash no longer causes a 404 error
 * Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.4 (2025-10-24)
