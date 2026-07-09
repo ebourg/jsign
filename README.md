@@ -65,6 +65,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.5 (in development)
 
+* The terminally deprecated method warning displayed when signing MSI files has been fixed (from the command line only)
 * LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
   use on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
