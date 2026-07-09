@@ -74,6 +74,7 @@ See https://ebourg.github.io/jsign for more information.
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
 * The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
   use on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
+* The terminally deprecated method warning displayed when signing MSI files has been fixed (from the command line only)
 * Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.4 (2025-10-24)
