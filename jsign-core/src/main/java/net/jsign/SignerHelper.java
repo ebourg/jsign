@@ -609,6 +609,12 @@ class SignerHelper {
             throw new SignerException("Couldn't find " + file);
         }
 
+        AnsiFormatter ansiFormatter = new AnsiFormatter();
+        log.setFilter(record -> {
+            record.setMessage(ansiFormatter.format(record.getMessage()));
+            return true;
+        });
+
         try (Signable signable = Signable.of(file)) {
             boolean verbose = log.isLoggable(Level.FINE);
 
@@ -640,29 +646,29 @@ class SignerHelper {
                     DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(signer.getDigestAlgorithmID().getAlgorithm());
                     byte[] computedDigest = signable.computeDigest(digestAlgorithm);
                     boolean matches = Arrays.equals(computedDigest, digestInfo.getDigest());
-                    log.info("  Digest:          (" + digestAlgorithm.id + ") " + Hex.toHexString(digestInfo.getDigest()) + (matches ? " (matches)" : " (mismatches)"));
+                    log.info("  <b>Digest:</b>          (" + digestAlgorithm.id + ") " + Hex.toHexString(digestInfo.getDigest()) + (matches ? " (<green>matches</green>)" : " (<red>mismatches</red>)"));
                     if (!matches) {
-                        log.info("  Expected Digest: (" + digestAlgorithm.id + ") " + Hex.toHexString(computedDigest));
+                        log.info("  <b>Expected Digest:</b> (" + digestAlgorithm.id + ") " + Hex.toHexString(computedDigest));
                     }
                 }
 
                 Date timestamp = SignatureUtils.getTimestampDate(signature);
                 if (timestamp != null) {
                     X509CertificateHolder timestampCertificate = SignatureUtils.getTimestampCertificate(signature);
-                    log.info("  Timestamp:       " + datetimeFormat.format(timestamp) + " (" + formatName(timestampCertificate.getSubject(), verbose) + ")");
+                    log.info("  <b>Timestamp:</b>       " + datetimeFormat.format(timestamp) + " (" + formatName(timestampCertificate.getSubject(), verbose) + ")");
                 }
 
                 String tag = formatTag(SignatureUtils.getTag(signature));
                 if (tag != null) {
-                    log.info("  Tag:             " + tag.trim());
+                    log.info("  <b>Tag:</b>             " + tag.trim());
                 }
 
-                log.info("  Certificate");
-                log.info("    Subject:       " + formatName(cert.getSubject(), verbose));
-                log.info("    Issuer:        " + formatName(cert.getIssuer(), verbose));
-                log.info("    Key:           " + getKeyAlgorithm(cert));
-                log.info("    Validity:      " + dateFormat.format(cert.getNotBefore()) + " - " + dateFormat.format(cert.getNotAfter()) + " (" + (expired ? "expired" : daysLeft + " days left") + ")");
-                log.info("    Serial:        " + String.format("%032x", cert.getSerialNumber()));
+                log.info("  <b>Certificate</b>");
+                log.info("    <b>Subject:</b>       " + formatName(cert.getSubject(), verbose));
+                log.info("    <b>Issuer:</b>        " + formatName(cert.getIssuer(), verbose));
+                log.info("    <b>Key:</b>           " + getKeyAlgorithm(cert));
+                log.info("    <b>Validity:</b>      " + dateFormat.format(cert.getNotBefore()) + " - " + dateFormat.format(cert.getNotAfter()) + " (" + (expired ? "expired" : daysLeft + " days left") + ")");
+                log.info("    <b>Serial:</b>        " + String.format("%032x", cert.getSerialNumber()));
                 log.info("");
             }
         } catch (Exception e) {
