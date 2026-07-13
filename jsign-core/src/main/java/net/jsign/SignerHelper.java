@@ -40,7 +40,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -53,9 +52,7 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1UTF8String;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTF8String;
-import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -66,7 +63,6 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -749,7 +745,7 @@ class SignerHelper {
             }
 
             log.info("Adding tag to " + file);
-            signatures.set(0, addUnsignedAttribute(signatures.get(0), AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue()));
+            signatures.set(0, SignatureUtils.addUnsignedAttribute(signatures.get(0), AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue()));
             signable.setSignatures(signatures);
             signable.save();
         } catch (SignerException e) {
@@ -757,22 +753,6 @@ class SignerHelper {
         } catch (Exception e) {
             throw new SignerException("Couldn't modify the signature of " + file, e);
         }
-    }
-
-    private CMSSignedData addUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid, ASN1Encodable value) {
-        SignerInformationStore store = signature.getSignerInfos();
-        Collection<SignerInformation> signers = store.getSigners();
-        SignerInformation signer = signers.iterator().next();
-
-        AttributeTable attributes = signer.getUnsignedAttributes();
-        if (attributes == null) {
-            attributes = new AttributeTable(new DERSet());
-        }
-        attributes = attributes.add(oid, value);
-
-        signers.remove(signer);
-        signers.add(SignerInformation.replaceUnsignedAttributes(signer, attributes));
-        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signers));
     }
 
     private ASN1Encodable getTagValue() throws IOException {

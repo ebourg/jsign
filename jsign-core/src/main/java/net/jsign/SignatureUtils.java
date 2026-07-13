@@ -330,4 +330,28 @@ public class SignatureUtils {
 
         return unsignedAttributes.get(oid);
     }
+
+    /**
+     * Adds an unsigned attribute to the signature/
+     *
+     * @param signature the signature
+     * @param oid       the object identifier of the attribute
+     * @param value     the value of the attribute
+     * @since 7.5
+     */
+    static CMSSignedData addUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid, ASN1Encodable value) {
+        SignerInformationStore store = signature.getSignerInfos();
+        Collection<SignerInformation> signers = store.getSigners();
+        SignerInformation signer = signers.iterator().next();
+
+        AttributeTable attributes = signer.getUnsignedAttributes();
+        if (attributes == null) {
+            attributes = new AttributeTable(new DERSet());
+        }
+        attributes = attributes.add(oid, value);
+
+        signers.remove(signer);
+        signers.add(SignerInformation.replaceUnsignedAttributes(signer, attributes));
+        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signers));
+    }
 }
