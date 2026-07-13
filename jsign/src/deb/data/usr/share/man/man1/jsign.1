@@ -371,6 +371,46 @@ The alias parameter specifies the common name of the certificate.
 
 .TP
 
+Signing with a PKCS#11 token:
+
+Jsign tries to support the most common PKCS#11 tokens and smart cards used for signing with a dedicated storetype,
+but if your device isn't supported you can use the generic PKCS11 storetype. In this case the keystore parameter
+specifies the SunPKCS11 configuration, either as a configuration file, an inline configuration, or a reference to
+a SunPKCS11 provider name defined in java.security.
+
+With a file, create a SunPKCS11 configuration file such as pkcs11.cfg:
+
+name = MyToken
+library = /path/to/pkcs11/library
+slot = 0
+
+Then, pass the filename to the keystore parameter:
+
+jsign --storetype PKCS11 \
+      --keystore pkcs11.cfg \
+      --storepass 123456 \
+      --alias test \
+      application.exe
+
+For an inline configuration, prefix the keystore parameter value with -- and separate the lines with \n:
+
+jsign --storetype PKCS11 \
+      --keystore="--name=MyToken\nlibrary=/path/to/pkcs11/library\nslot=0" \
+      --storepass 123456 \
+      --alias test \
+      application.exe
+
+The keystore parameter can also refer to a provider named SunPKCS11-<name> defined in the java.security file:
+
+jsign --storetype PKCS11 \
+      --keystore SunPKCS11-MyToken \
+      --storepass 123456 \
+      --alias test \
+      application.exe
+
+
+.TP
+
 Signing with AWS Key Management Service:
 
 AWS Key Management Service stores only the private key, the certificate must be provided separately.

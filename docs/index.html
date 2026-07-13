@@ -536,6 +536,53 @@ the keys and certificates stored in the common file (the secure profile containi
 
 <p>The <code>alias</code> parameter specifies the common name of the certificate.</p>
 
+<h4 id="example-pkcs11">Signing with a PKCS#11 token</h4>
+
+<p>Jsign tries to support the most common PKCS#11 tokens and smart cards used for signing with a dedicated storetype,
+but if your device isn't supported you can use the generic <code>PKCS11</code> storetype. In this case the
+<code>keystore</code> parameter specifies the <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration</a>,
+either as a configuration file, an inline configuration, or a reference to a SunPKCS11 provider name defined in
+<code>java.security</code>.</p>
+
+<p>With a file, create a SunPKCS11 configuration file such as <code>pkcs11.cfg</code>:</p>
+
+<pre>
+ name = MyToken
+ library = /path/to/pkcs11/library
+ slot = 0
+</pre>
+
+<p>Then, pass the filename to the <code>keystore</code> parameter:</p>
+
+<pre>
+ jsign --storetype PKCS11 \
+       --keystore pkcs11.cfg \
+       --storepass 123456 \
+       --alias test \
+       application.exe
+</pre>
+
+<p>For an inline configuration, prefix the <code>keystore</code> parameter value with <code>--</code> and separate
+the lines with <code>\n</code>:</p>
+
+<pre>
+ jsign --storetype PKCS11 \
+       --keystore="--name=MyToken\nlibrary=/path/to/pkcs11/library\nslot=0" \
+       --storepass 123456 \
+       --alias test \
+       application.exe
+</pre>
+
+<p>The <code>keystore</code> parameter can also refer to a provider named <code>SunPKCS11-&lt;name&gt;</code> defined in
+the <code>java.security</code> file:</p>
+
+<pre>
+ jsign --storetype PKCS11 \
+       --keystore SunPKCS11-MyToken \
+       --storepass 123456 \
+       --alias test \
+       application.exe
+</pre>
 
 <h4 id="example-awskms">Signing with AWS Key Management Service</h4>
 
