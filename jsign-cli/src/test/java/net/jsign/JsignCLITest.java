@@ -700,4 +700,12 @@ public class JsignCLITest {
         Exception e = assertThrows(SignerException.class, () -> cli.execute("timestamp", "--quiet", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
     }
+
+    @Test
+    public void testShow() throws Exception {
+        testSigning();
+        cli.execute("tag", "--value", "userid:1234-ABCD-5678-EFGH", "" + targetFile);
+        cli.execute("show", "" + targetFile);
+        cli.execute("show", "--verbose", "" + targetFile);
+    }
 }

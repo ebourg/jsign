@@ -16,6 +16,7 @@
 
 package net.jsign;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,8 +26,19 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,14 +46,21 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1UTF8String;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTF8String;
 import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
@@ -505,32 +524,6 @@ class SignerHelper {
         // todo warn if the hashes don't match
     }
 
-    private void printSignatures(Signable signable) throws IOException {
-        List<CMSSignedData> signatures = signable.getSignatures();
-        for (int i = 0; i < signatures.size(); i++) {
-            CMSSignedData signature = signatures.get(i);
-            SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
-
-            String digestAlgorithmName = new DefaultAlgorithmNameFinder().getAlgorithmName(signerInformation.getDigestAlgorithmID());
-            SignerId signerId = signerInformation.getSID();
-            X509CertificateHolder cert = (X509CertificateHolder) signature.getCertificates().getMatches(signerId).iterator().next();
-
-            byte[] digest = signable.computeDigest(DigestAlgorithm.of(signerInformation.getDigestAlgorithmID().getAlgorithm()));
-
-            System.out.println("Signature " + i);
-            System.out.println("  Digest Algorithm:   " + digestAlgorithmName);
-            System.out.println("  Digest Value:       " + Hex.toHexString(digest));
-            System.out.println("  Is Timestamped?     " + SignatureUtils.isTimestamped(signature));
-            System.out.println("  Certificate");
-            System.out.println("    Subject:          " + cert.getSubject());
-            System.out.println("    Issuer:           " + cert.getIssuer());
-            System.out.println("    Not Before:       " + cert.getNotBefore());
-            System.out.println("    Not After:        " + cert.getNotAfter());
-            System.out.println("    Expired:          " + cert.getNotAfter().before(new Date()));
-            System.out.println("    Serial:           " + cert.getSerialNumber());
-        }
-    }
-
     private void detach(Signable signable, File detachedSignature) throws IOException {
         List<CMSSignedData> signatures = signable.getSignatures();
 
@@ -617,12 +610,125 @@ class SignerHelper {
         }
 
         try (Signable signable = Signable.of(file)) {
-            printSignatures(signable);
-        } catch (UnsupportedOperationException | IllegalArgumentException e) {
-            throw new SignerException(e.getMessage(), e);
+            boolean verbose = log.isLoggable(Level.FINE);
+
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                log.info("No signature found in " + (verbose ? file.getAbsolutePath() : file.getName()));
+                return;
+            }
+
+            log.info("Signature" + (signatures.size() > 1 ? "s" : "") + " of " + (verbose ? file.getAbsolutePath() : file.getName()) + ":");
+            log.info("");
+
+            DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+            DateFormat dateFormat = verbose ? datetimeFormat : new SimpleDateFormat("yyyy-MM-dd");
+
+            for (int i = 0; i < signatures.size(); i++) {
+                CMSSignedData signature = signatures.get(i);
+                SignerInformation signer = signature.getSignerInfos().iterator().next();
+                DigestInfo digestInfo = SignatureUtils.getDigestInfo(signature);
+                X509CertificateHolder cert = (X509CertificateHolder) signature.getCertificates().getMatches(signer.getSID()).iterator().next();
+
+                boolean expired = cert.getNotAfter().before(new Date());
+                long daysLeft = Duration.between(Instant.now(), cert.getNotAfter().toInstant()).toDays();
+
+                if (signatures.size() > 1) {
+                    log.info("Signature #" + (i + 1));
+                }
+                if (digestInfo != null) {
+                    DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(signer.getDigestAlgorithmID().getAlgorithm());
+                    byte[] computedDigest = signable.computeDigest(digestAlgorithm);
+                    boolean matches = Arrays.equals(computedDigest, digestInfo.getDigest());
+                    log.info("  Digest:          (" + digestAlgorithm.id + ") " + Hex.toHexString(digestInfo.getDigest()) + (matches ? " (matches)" : " (mismatches)"));
+                    if (!matches) {
+                        log.info("  Expected Digest: (" + digestAlgorithm.id + ") " + Hex.toHexString(computedDigest));
+                    }
+                }
+
+                Date timestamp = SignatureUtils.getTimestampDate(signature);
+                if (timestamp != null) {
+                    X509CertificateHolder timestampCertificate = SignatureUtils.getTimestampCertificate(signature);
+                    log.info("  Timestamp:       " + datetimeFormat.format(timestamp) + " (" + formatName(timestampCertificate.getSubject(), verbose) + ")");
+                }
+
+                String tag = formatTag(SignatureUtils.getTag(signature));
+                if (tag != null) {
+                    log.info("  Tag:             " + tag.trim());
+                }
+
+                log.info("  Certificate");
+                log.info("    Subject:       " + formatName(cert.getSubject(), verbose));
+                log.info("    Issuer:        " + formatName(cert.getIssuer(), verbose));
+                log.info("    Key:           " + getKeyAlgorithm(cert));
+                log.info("    Validity:      " + dateFormat.format(cert.getNotBefore()) + " - " + dateFormat.format(cert.getNotAfter()) + " (" + (expired ? "expired" : daysLeft + " days left") + ")");
+                log.info("    Serial:        " + String.format("%032x", cert.getSerialNumber()));
+                log.info("");
+            }
         } catch (Exception e) {
             throw new SignerException("Couldn't show the signatures of" + file, e);
         }
+    }
+
+    /**
+     * Formats the X500 name:
+     * <ul>
+     *   <li>in normal mode, returns only the common name (CN)</li>
+     *   <li>in verbose mode, returns the full name in LDAP order (starting with the common name)</li>
+     * </ul>
+     */
+    private String formatName(X500Name name, boolean verbose) {
+        if (verbose) {
+            return new X500Name(new BCStyle() {
+                public String toString(X500Name name) {
+                    StringBuilder buf = new StringBuilder();
+                    RDN[] rdns = name.getRDNs();
+                    for (int i = rdns.length - 1; i >= 0; i--) {
+                        if (i != rdns.length - 1) {
+                            buf.append(", ");
+                        }
+                        IETFUtils.appendRDN(buf, rdns[i], defaultSymbols);
+                    }
+                    return buf.toString();
+                }
+            }, name.getRDNs()).toString().replaceAll("\\\\,", ",");
+        } else {
+            return name.getRDNs(BCStyle.CN)[0].getFirst().getValue().toString();
+        }
+    }
+
+    /**
+     * Returns the algorithm of the public key of the certificate (for example "RSA 2048" or "EC 384").
+     */
+    private String getKeyAlgorithm(X509CertificateHolder certificate) throws IOException, CertificateException {
+        X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(certificate.getEncoded()));
+        PublicKey publicKey = cert.getPublicKey();
+
+        if (publicKey instanceof RSAPublicKey) {
+            return "RSA " + ((RSAPublicKey) publicKey).getModulus().bitLength();
+        } else if (publicKey instanceof ECPublicKey) {
+            return "EC " + (((ECPublicKey) publicKey).getParams()).getCurve().getField().getFieldSize();
+        } else {
+            return publicKey.getAlgorithm();
+        }
+    }
+
+    /**
+     * Formats the value of the unsigned tag.
+     */
+    static String formatTag(ASN1Encodable value) {
+        if (value != null) {
+            if (value instanceof ASN1UTF8String) {
+                return ((ASN1UTF8String) value).getString();
+            }
+
+            if (value instanceof DEROctetString) {
+                int limit = 100;
+                byte[] bytes = ((DEROctetString) value).getOctets();
+                return "(" + bytes.length + " bytes) " + new String(bytes).substring(0, limit) + (bytes.length > limit ? " ... (truncated)" : "");
+            }
+        }
+        return null;
     }
 
     private void tag(File file) throws SignerException {

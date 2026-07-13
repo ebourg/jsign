@@ -382,23 +382,25 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
 
 <br>
 
-<h4 id="show">Show signature</h4>
+<h4 id="show">show</h4>
 
-<p>To check whether a file has been signed and with which certificate, use the show command to list details about any signature present on the file.</p>
+<p>Displays information about the signatures of a file (certificate, timestamp, digest, tag). The <code>--verbose</code>
+option can be used to display more details.</p>
 
 <pre>
-  jsign show foo.exe
-  Signature 0
-  Digest Algorithm:   SHA256
-  Digest Value:       c481bb3892d066ffacba0650adaa4c252580b776b1dd6026cf4a8bea6c813939
-  Is Timestamped?     false
-  Certificate
-    Subject:          CN=net.jsign.signing-cert
-    Issuer:           CN=net.jsign.issuing-cert
-    Not Before:       Fri Dec 03 14:34:46 CST 2021
-    Not After:        Wed May 24 14:34:46 CST 2119
-    Expired:          false
-    Serial:           148957645726085760686199624248870688956
+  $ jsign show application.exe
+
+  Signature of application.exe:
+
+    Digest:        (SHA-1) d27ec498912807ddfc4bec2be4f62c42814836f3 (matches)
+    Timestamp:     2026-04-15 19:56:53 CEST (DigiCert SHA256 RSA4096 Timestamp Responder 2025)
+    Tag:           userid:1234-ABCD-5678-EFGH
+    Certificate
+      Subject:     Jsign Code Signing Test Certificate 2024 (RSA)
+      Issuer:      Jsign Code Signing CA 2024
+      Key:         RSA 2048
+      Validity:    2024-05-10 - 2044-05-10 (6511 days left)
+      Serial:      232ae74743b0ae4da74beae15387644af6ca7a03
 </pre>
 
 <br>
