@@ -843,7 +843,7 @@ public class SignerHelperTest {
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password")
                 .tsaurl("http://timestamp.sectigo.com")
-                .tsmode(TimestampingMode.AUTHENTICODE.name());
+                .tsmode(TimestampingMode.RFC3161.name());
 
         signer.execute(targetFile);
         try (Signable signable = Signable.of(targetFile)) {
