@@ -82,14 +82,10 @@ public class SignatureUtils {
                 signatures.set(0, SignatureUtils.removeNestedSignatures(signature));
 
                 // look for nested signatures
-                SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
-                AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-                if (unsignedAttributes != null) {
-                    Attribute nestedSignatures = unsignedAttributes.get(SPC_NESTED_SIGNATURE_OBJID);
-                    if (nestedSignatures != null) {
-                        for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
-                            signatures.add(new CMSSignedData(nestedSignature.toASN1Primitive().getEncoded()));
-                        }
+                Attribute nestedSignatures = getUnsignedAttribute(signature, SPC_NESTED_SIGNATURE_OBJID);
+                if (nestedSignatures != null) {
+                    for (ASN1Encodable nestedSignature : nestedSignatures.getAttrValues()) {
+                        signatures.add(new CMSSignedData(nestedSignature.toASN1Primitive().getEncoded()));
                     }
                 }
             }
@@ -155,16 +151,9 @@ public class SignatureUtils {
      * @param signature the signature to check
      */
     static boolean isTimestamped(CMSSignedData signature) {
-        SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
-
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        if (unsignedAttributes == null) {
-            return false;
-        }
-
         boolean authenticode = isAuthenticode(signature.getSignedContentTypeOID());
-        Attribute authenticodeTimestampAttribute = unsignedAttributes.get(CMSAttributes.counterSignature);
-        Attribute rfc3161TimestampAttribute = unsignedAttributes.get(authenticode ? SPC_RFC3161_OBJID : PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+        Attribute authenticodeTimestampAttribute = getUnsignedAttribute(signature, CMSAttributes.counterSignature);
+        Attribute rfc3161TimestampAttribute = getUnsignedAttribute(signature, authenticode ? SPC_RFC3161_OBJID : PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
         return authenticodeTimestampAttribute != null || rfc3161TimestampAttribute != null;
     }
 
@@ -203,5 +192,24 @@ public class SignatureUtils {
 
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
         return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signerInformation));
+    }
+
+    /**
+     * Returns the specified unsigned attribute from the signature.
+     *
+     * @param signature the signature
+     * @param oid       the object identifier of the attribute
+     * @return the unsigned attribute, or null if not found
+     * @since 7.5
+     */
+    static Attribute getUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid) {
+        SignerInformation signer = signature.getSignerInfos().iterator().next();
+
+        AttributeTable unsignedAttributes = signer.getUnsignedAttributes();
+        if (unsignedAttributes == null) {
+            return null;
+        }
+
+        return unsignedAttributes.get(oid);
     }
 }
