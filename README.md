@@ -66,6 +66,7 @@ See https://ebourg.github.io/jsign for more information.
 
 #### Version 7.5 (in development)
 * New signing service: Encryption Consulting CodeSign Secure
+* New `show` command to display the signatures of a file (contributed by Daniel Schaefer)
 * LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The new `--nonProxyHosts` option allows to specify hosts that should bypass the HTTP proxy

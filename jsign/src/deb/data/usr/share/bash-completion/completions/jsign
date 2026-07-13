@@ -6,13 +6,14 @@ _jsign()
     local cur prev
     _get_comp_words_by_ref cur prev
 
-    local commands="sign timestamp extract remove tag"
+    local commands="sign timestamp extract remove show tag"
 
     declare -A opts
     opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --replace --lazy -e --encoding --detached --quiet --verbose --debug -h --help"
     opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass"
     opts["extract"]="--format"
     opts["remove"]=""
+    opts["show"]="--verbose"
     opts["tag"]="--value"
 
     # completion of the first token (either a command or a sign option)
