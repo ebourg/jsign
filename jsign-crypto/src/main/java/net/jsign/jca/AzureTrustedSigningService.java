@@ -30,7 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import net.jsign.DigestAlgorithm;
 
@@ -41,10 +44,18 @@ import net.jsign.DigestAlgorithm;
  */
 public class AzureTrustedSigningService implements SigningService {
 
+    private static final Logger logger = Logger.getLogger(AzureTrustedSigningService.class.getName());
+
+    /** Default API version for Azure Trusted Signing Service */
+    private static final String DEFAULT_API_VERSION = "2023-06-15-preview";
+
     /** Cache of certificate chains indexed by alias */
     private final Map<String, Certificate[]> certificates = new HashMap<>();
 
     private final RESTClient client;
+
+    /** API version for Azure Trusted Signing Service */
+    private final String apiVersion;
 
     /** Timeout in seconds for the signing operation */
     private long timeout = 60;
@@ -67,10 +78,32 @@ public class AzureTrustedSigningService implements SigningService {
     }
 
     public AzureTrustedSigningService(String endpoint, String token) {
+        this(endpoint, token, null);
+    }
+
+    /**
+     * Create an Azure Trusted Signing Service with optional API version.
+     *
+     * @param endpoint the Azure Trusted Signing Service endpoint
+     * @param token the authentication token
+     * @param apiVersion the API version to use (null to use default or environment variable)
+     */
+    public AzureTrustedSigningService(String endpoint, String token, String apiVersion) {
         if (!endpoint.startsWith("http")) {
             endpoint = "https://" + endpoint;
         }
         endpoint = endpoint.replaceFirst("/+$", "");
+        
+        // Determine API version: parameter > environment variable > default
+        if (apiVersion != null) {
+            this.apiVersion = apiVersion;
+        } else {
+            String envApiVersion = System.getenv("JSIGN_AZURE_API_VERSION");
+            this.apiVersion = envApiVersion != null ? envApiVersion : DEFAULT_API_VERSION;
+        }
+        
+        logger.log(Level.INFO, "Initializing AzureTrustedSigningService with endpoint: " + endpoint + ", API version: " + this.apiVersion);
+        
         client = new RESTClient(endpoint)
                 .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token))
                 .errorHandler(response -> {
@@ -145,9 +178,13 @@ public class AzureTrustedSigningService implements SigningService {
         request.put("signatureAlgorithm", algorithm);
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
-        Map<String, ?> response = client.post("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=2022-06-15-preview", JsonWriter.format(request));
+        String signEndpoint = "/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign?api-version=" + apiVersion;
+        logger.log(Level.FINE, "Sending signing request to: " + signEndpoint + ", algorithm: " + algorithm);
+        
+        Map<String, ?> response = client.post(signEndpoint, JsonWriter.format(request));
 
         String operationId = (String) response.get("operationId");
+        logger.log(Level.INFO, "Signing operation started with operationId: " + operationId);
 
         // poll until the operation is completed
         long startTime = System.currentTimeMillis();
@@ -158,19 +195,27 @@ public class AzureTrustedSigningService implements SigningService {
             } catch (InterruptedException e) {
                 break;
             }
-            response = client.get("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=2022-06-15-preview");
+            
+            String statusEndpoint = "/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=" + apiVersion;
+            response = client.get(statusEndpoint);
             String status = (String) response.get("status");
+            
+            logger.log(Level.FINE, "Signing operation " + operationId + " status: " + status);
+            
             if ("InProgress".equals(status)) {
                 continue;
             }
             if ("Succeeded".equals(status)) {
+                logger.log(Level.INFO, "Signing operation " + operationId + " succeeded");
                 break;
             }
 
+            logger.log(Level.SEVERE, "Signing operation " + operationId + " failed with status: " + status);
             throw new IOException("Signing operation " + operationId + " failed: " + status);
         }
 
         if (!"Succeeded".equals(response.get("status"))) {
+            logger.log(Level.SEVERE, "Signing operation " + operationId + " timed out after " + timeout + " seconds");
             throw new IOException("Signing operation " + operationId + " timed out");
         }
 
