@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.jsign.DigestAlgorithm;
 
@@ -42,14 +43,37 @@ import net.jsign.DigestAlgorithm;
  */
 public class AzureTrustedSigningService implements SigningService {
 
-    // Dataplane documentation for 2023-06-15-preview:
-    // https://github.com/Azure/azure-rest-api-specs/blob/main/specification/trustedsigning/data-plane/TrustedSigning/preview/2023-06-15-preview/azure.developer.trustedsigning.json
-    private static final String API_VERSION = "2023-06-15-preview";
+    private static final Logger log = Logger.getLogger(AzureTrustedSigningService.class.getName());
+
+    /**
+     * Default API version. It matches the version currently used in production and uses the legacy
+     * REST layout (POST <code>.../sign</code> with a flat response body).
+     */
+    private static final String DEFAULT_API_VERSION = "2022-06-15-preview";
+
+    /** Environment variable used to override the Azure Trusted Signing API version. */
+    private static final String API_VERSION_ENV = "JSIGN_AZURE_API_VERSION";
+
+    /**
+     * First API version using the RPC-style layout (POST <code>.../certificateprofiles/{profile}:sign</code>,
+     * operation tracked with the <code>operation-location</code> header, signature returned under
+     * <code>result</code>). Any version greater than or equal to this value uses that layout.
+     *
+     * @see <a href="https://github.com/Azure/azure-rest-api-specs/blob/main/specification/trustedsigning/data-plane/TrustedSigning/preview/2023-06-15-preview/azure.developer.trustedsigning.json">2023-06-15-preview</a>
+     * @see <a href="https://github.com/Azure/azure-rest-api-specs/blob/main/specification/artifactsigning/data-plane/ArtifactSigning/stable/2024-06-15/azure.developer.artifactsigning.json">2024-06-15 (stable)</a>
+     */
+    private static final String RPC_STYLE_MIN_VERSION = "2023-06-15";
 
     /** Cache of certificate chains indexed by alias */
     private final Map<String, Certificate[]> certificates = new HashMap<>();
 
     private final RESTClient client;
+
+    /** API version used for the Azure Trusted Signing REST calls */
+    private final String apiVersion;
+
+    /** Whether the configured API version uses the RPC-style layout */
+    private final boolean rpcStyle;
 
     /** Timeout in seconds for the signing operation */
     private long timeout = 60;
@@ -72,9 +96,27 @@ public class AzureTrustedSigningService implements SigningService {
     }
 
     public AzureTrustedSigningService(String endpoint, String token) {
+        this(endpoint, token, null);
+    }
+
+    /**
+     * Creates an Azure Trusted Signing service using a specific API version.
+     *
+     * @param endpoint   the Azure Trusted Signing endpoint (for example <code>weu.codesigning.azure.net</code>)
+     * @param token      the Azure API access token
+     * @param apiVersion the API version to use. When <code>null</code> or blank the value of the
+     *                   <code>JSIGN_AZURE_API_VERSION</code> environment variable is used if set,
+     *                   otherwise the default version (<code>2022-06-15-preview</code>) is used.
+     */
+    public AzureTrustedSigningService(String endpoint, String token, String apiVersion) {
         if (!endpoint.startsWith("http")) {
             endpoint = "https://" + endpoint;
         }
+
+        this.apiVersion = resolveApiVersion(apiVersion);
+        this.rpcStyle = isRpcStyle(this.apiVersion);
+        log.fine("Azure Trusted Signing API version " + this.apiVersion + " (rpc-style=" + this.rpcStyle + ")");
+
         client = new RESTClient(endpoint)
                 .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token))
                 .errorHandler(response -> {
@@ -86,6 +128,22 @@ public class AzureTrustedSigningService implements SigningService {
                         return response.get("status") + " - " + response.get("title") + ": " + errors;
                     }
                 });
+    }
+
+    private static String resolveApiVersion(String apiVersion) {
+        if (apiVersion != null && !apiVersion.trim().isEmpty()) {
+            return apiVersion.trim();
+        }
+        String env = System.getenv(API_VERSION_ENV);
+        if (env != null && !env.trim().isEmpty()) {
+            return env.trim();
+        }
+        return DEFAULT_API_VERSION;
+    }
+
+    private static boolean isRpcStyle(String apiVersion) {
+        // Versions 2023-06-15-preview and later use the RPC-style ":sign" layout.
+        return apiVersion != null && apiVersion.compareTo(RPC_STYLE_MIN_VERSION) >= 0;
     }
 
     void setTimeout(int timeout) {
@@ -149,13 +207,18 @@ public class AzureTrustedSigningService implements SigningService {
         request.put("signatureAlgorithm", algorithm);
         request.put("digest", Base64.getEncoder().encodeToString(data));
 
-        RESTClient.RESTResponse initialResponse = client.postResponse("/codesigningaccounts/" + account + "/certificateprofiles/" + profile + ":sign?api-version=" + API_VERSION, JsonWriter.format(request));
+        String signVerb = rpcStyle ? ":sign" : "/sign";
+        String signResource = "/codesigningaccounts/" + account + "/certificateprofiles/" + profile + signVerb + "?api-version=" + apiVersion;
+        RESTClient.RESTResponse initialResponse = client.postResponse(signResource, JsonWriter.format(request));
 
         Map<String, ?> statusResponse = initialResponse.getBody();
         String operationLocation = initialResponse.getHeader("operation-location");
         String operationId = readOperationId(statusResponse);
         if (operationId == null) {
             operationId = extractOperationId(operationLocation);
+        }
+        if (operationId != null) {
+            log.fine("Azure Trusted Signing operation started: " + operationId);
         }
 
         String status = statusResponse != null ? (String) statusResponse.get("status") : null;
@@ -227,7 +290,7 @@ public class AzureTrustedSigningService implements SigningService {
             return ensureApiVersion(operationLocation.trim());
         }
         if (operationId != null && !operationId.isEmpty()) {
-            return "/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=" + API_VERSION;
+            return "/codesigningaccounts/" + account + "/certificateprofiles/" + profile + "/sign/" + operationId + "?api-version=" + apiVersion;
         }
         throw new IOException("Signing operation identifier not returned by Azure Trusted Signing");
     }
@@ -236,7 +299,7 @@ public class AzureTrustedSigningService implements SigningService {
         if (resource == null || resource.isEmpty() || resource.contains("api-version=")) {
             return resource;
         }
-        return resource + (resource.contains("?") ? "&" : "?") + "api-version=" + API_VERSION;
+        return resource + (resource.contains("?") ? "&" : "?") + "api-version=" + apiVersion;
     }
 
     private String extractOperationId(String operationLocation) {
