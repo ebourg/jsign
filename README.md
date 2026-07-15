@@ -6,7 +6,7 @@ Jsign - Authenticode signing tool in Java
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/net.jsign/jsign.svg)](https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22net.jsign%22)
 
-Jsign is a versatile code signing tool that allows you to sign and timestamp Windows
+Jsign is a code signing tool that allows you to sign and timestamp Windows
 executable files, installer packages and scripts. Jsign is platform independent
 and provides an alternative to native tools like signtool on Windows or the Mono
 development tools on Unix systems. It's particularly well-suited for signing
@@ -44,8 +44,9 @@ Jsign is free to use and licensed under the [Apache License version 2.0](https:/
   * Cloud key management systems:
     * [AWS KMS](https://aws.amazon.com/kms/)
     * [Azure Key Vault](https://azure.microsoft.com/services/key-vault/)
-    * [Azure Trusted Signing](https://learn.microsoft.com/en-us/azure/trusted-signing/)
+    * [Azure Artifact Signing](https://learn.microsoft.com/en-us/azure/artifact-signing/)
     * [DigiCert ONE](https://www.digicert.com/digicert-one) / [DigiCert KeyLocker](https://docs.digicert.com/en/digicert-keylocker.html)
+    * [Encryption Consulting CodeSign Secure](https://www.encryptionconsulting.com/code-signing-solution/)
     * [GaraSign](https://garantir.io/garasign/)
     * [Google Cloud KMS](https://cloud.google.com/security-key-management)
     * [HashiCorp Vault](https://www.vaultproject.io/)
@@ -64,7 +65,19 @@ See https://ebourg.github.io/jsign for more information.
 ## Changes
 
 #### Version 7.5 (in development)
+* New signing service: Encryption Consulting CodeSign Secure
+* New `show` command to display the signatures of a file (contributed by Daniel Schaefer)
+* LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
 * The error message displayed when the PE certificate table is corrupted has been improved
+* The new `--nonProxyHosts` option allows to specify hosts that should bypass the HTTP proxy
+* The new `--lazy` signing option skips files that are already signed
+* Timed-out connections to the cloud signing services are now retried
+* Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
+* The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
+  use on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
+* The terminally deprecated method warning displayed when signing MSI files has been fixed (from the command line only)
+* An Azure Trusted Signing endpoint with a trailing slash no longer causes a 404 error
+* Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.4 (2025-10-24)
 

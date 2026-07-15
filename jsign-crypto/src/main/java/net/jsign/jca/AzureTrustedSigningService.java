@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 import net.jsign.DigestAlgorithm;
 
 /**
- * Signing service using the Azure Trusted Signing API.
+ * Signing service using the Azure Artifact Signing API.
  *
  * @since 7.0
  */
@@ -112,6 +112,7 @@ public class AzureTrustedSigningService implements SigningService {
         if (!endpoint.startsWith("http")) {
             endpoint = "https://" + endpoint;
         }
+        endpoint = endpoint.replaceFirst("/+$", "");
 
         this.apiVersion = resolveApiVersion(apiVersion);
         this.rpcStyle = isRpcStyle(this.apiVersion);

@@ -137,6 +137,19 @@ public class KeyStoreBuilderTest {
     }
 
     @Test
+    public void testBuildCodeSignSecure() throws Exception {
+        KeyStoreBuilder builder = new KeyStoreBuilder().storetype(CODESIGNSECURE);
+
+        Exception e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the CodeSign Secure username, password and the path to the keystore containing the TLS client certificate: <username>|<password>|<certificate>", e.getMessage());
+
+        builder.storepass("username|password|keystore.p12");
+
+        KeyStore keystore = builder.build();
+        assertNotNull("keystore", keystore);
+    }
+
+    @Test
     public void testBuildDigiCertONE() throws Exception {
         KeyStoreBuilder builder = new KeyStoreBuilder().storetype(DIGICERTONE);
 

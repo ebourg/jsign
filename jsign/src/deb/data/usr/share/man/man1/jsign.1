@@ -9,7 +9,7 @@ jsign \- code signing tool for Windows executable files, installer packages and 
 [OPTIONS] [FILE] [PATTERN] [@FILELIST]...
 
 .SH DESCRIPTION
-Jsign is a versatile code signing tool that allows you to sign and timestamp
+Jsign is a code signing tool that allows you to sign and timestamp
 Windows executable files, installer packages and scripts. Jsign is platform
 independent and provides an alternative to native tools like signtool on Windows
 or the Mono development tools on Unix systems.
@@ -91,6 +91,8 @@ Cloud key management systems:
 .br
 - AZUREKEYVAULT : Azure Key Vault key management system
 .br
+- CODESIGNSECURE: Encryption Consulting CodeSign Secure
+.br
 - DIGICERTONE   : DigiCert ONE Secure Software Manager
 .br
 - ESIGNER       : SSL.com eSigner
@@ -107,7 +109,7 @@ Cloud key management systems:
 .br
 - SIGNSERVER    : Keyfactor SignServer
 .br
-- TRUSTEDSIGNING: Azure Trusted Signing
+- TRUSTEDSIGNING: Azure Artifact Signing
 
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
@@ -187,8 +189,16 @@ The user for the HTTP proxy. If a user is needed.
 The password for the HTTP proxy user. If a user is needed.
 
 .TP
+.B --nonProxyHosts <HOSTS>
+The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns.
+
+.TP
 .B --replace
 Tells if previous signatures should be replaced. By default the new signature is appended to the existing ones.
+
+.TP
+.B --lazy
+Skip files that are already signed instead of appending a new signature.
 
 .TP
 .B -e, --encoding <ENCODING>
@@ -361,6 +371,46 @@ The alias parameter specifies the common name of the certificate.
 
 .TP
 
+Signing with a PKCS#11 token:
+
+Jsign tries to support the most common PKCS#11 tokens and smart cards used for signing with a dedicated storetype,
+but if your device isn't supported you can use the generic PKCS11 storetype. In this case the keystore parameter
+specifies the SunPKCS11 configuration, either as a configuration file, an inline configuration, or a reference to
+a SunPKCS11 provider name defined in java.security.
+
+With a file, create a SunPKCS11 configuration file such as pkcs11.cfg:
+
+name = MyToken
+library = /path/to/pkcs11/library
+slot = 0
+
+Then, pass the filename to the keystore parameter:
+
+jsign --storetype PKCS11 \
+      --keystore pkcs11.cfg \
+      --storepass 123456 \
+      --alias test \
+      application.exe
+
+For an inline configuration, prefix the keystore parameter value with -- and separate the lines with \n:
+
+jsign --storetype PKCS11 \
+      --keystore="--name=MyToken\nlibrary=/path/to/pkcs11/library\nslot=0" \
+      --storepass 123456 \
+      --alias test \
+      application.exe
+
+The keystore parameter can also refer to a provider named SunPKCS11-<name> defined in the java.security file:
+
+jsign --storetype PKCS11 \
+      --keystore SunPKCS11-MyToken \
+      --storepass 123456 \
+      --alias test \
+      application.exe
+
+
+.TP
+
 Signing with AWS Key Management Service:
 
 AWS Key Management Service stores only the private key, the certificate must be provided separately.
@@ -402,10 +452,11 @@ The Azure account used must have the "Key Vault Crypto User" and "Key Vault Cert
 
 .TP
 
-Signing with Azure Trusted Signing
+Signing with Azure Artifact Signing
 
-With the Azure Trusted Signing service the keystore parameter specifies the endpoint URI, and the alias combines
-the account name and the certificate profile. The Azure API access token is used as the keystore password.
+With Azure Artifact Signing (formerly Azure Trusted Signing) the keystore parameter specifies the endpoint URI,
+and the alias combines the account name and the certificate profile. The Azure API access token is used as the
+keystore password.
 
 jsign --storetype TRUSTEDSIGNING \
       --keystore weu.codesigning.azure.net \
@@ -418,7 +469,7 @@ az account get-access-token --resource https://codesigning.azure.net
 
 The Azure account used must have the "Code Signing Certificate Profile Signer" role.
 
-The certificates issued by Azure Trusted Signing have a lifetime of 3 days only, and timestamping is necessary to
+The certificates issued by Azure Artifact Signing have a lifetime of 3 days only, and timestamping is necessary to
 ensure the long term validity of the signature. For this reason timestamping is automatically enabled when signing
 with this service.
 
@@ -438,6 +489,23 @@ host can be specified with the --keystore parameter.
 jsign --storetype DIGICERTONE \\
       --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
       --alias test application.exe
+
+
+.TP
+
+Signing with Encryption Consulting CodeSign Secure
+
+When signing with Encryption Consulting CodeSign Secure, the keystore parameter specifies the API endpoint
+(it defaults to https://codesignsecure.encryptionconsulting.com). The storepass parameter is the concatenation of the
+CodeSign Secure username, password and the path to the PKCS#12 keystore containing the TLS client certificate, separated
+by a pipe character. If the TLS client certificate is stored in a password protected keystore, the password is specified
+in the keypass parameter.
+
+jsign --storetype CODESIGNSECURE \\
+      --storepass "<username>|<password>|/path/to/client-certificate.p12" \\
+      --keypass <client-certificate-password> \\
+      --alias <keyname> \\
+      application.exe
 
 
 .TP
@@ -635,6 +703,27 @@ jsign --storetype SIGNPATH \\
       --alias <projectSlug>/<signingPolicySlug> \\
        application.exe
 
+
+.TP
+
+Displaying the signatures
+
+The show command displays information about the signatures of a file (certificate, timestamp, digest, tag).
+The --verbose option can be used to display more details.
+
+$ jsign show application.exe
+
+Signature of application.exe:
+
+Digest:        (SHA-1) d27ec498912807ddfc4bec2be4f62c42814836f3 (matches)
+Timestamp:     2026-04-15 19:56:53 CEST (DigiCert SHA256 RSA4096 Timestamp Responder 2025)
+Tag:           userid:1234-ABCD-5678-EFGH
+Certificate
+  Subject:     Jsign Code Signing Test Certificate 2024 (RSA)
+  Issuer:      Jsign Code Signing CA 2024
+  Key:         RSA 2048
+  Validity:    2024-05-10 - 2044-05-10 (6511 days left)
+  Serial:      232ae74743b0ae4da74beae15387644af6ca7a03
 
 .TP
 

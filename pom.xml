@@ -10,8 +10,8 @@
   <inceptionYear>2012</inceptionYear>
 
   <description>
-    Java implementation of Microsoft Authenticode for signing Windows executable files, installer packages and scripts,
-    with an emphasis on seamless integration with cloud key management systems and hardware tokens.
+    Java implementation of Microsoft Authenticode for signing Windows executable files, installation packages
+    and scripts, with an emphasis on seamless integration with cloud key management systems and hardware tokens.
   </description>
   <url>https://ebourg.github.io/jsign</url>
 
@@ -91,14 +91,14 @@
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy-agent</artifactId>
-      <version>1.17.8</version>
+      <version>1.18.10</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
-      <version>1.17.8</version>
+      <version>1.18.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -200,7 +200,7 @@
         <configuration>
           <linksource>true</linksource>
           <links>
-            <link>https://docs.oracle.com/javase/8/docs/api</link>
+            <link>${javadoc.link.jdk}</link>
             <link>https://javadoc.io/doc/org.bouncycastle/bcprov-lts8on/latest</link>
             <link>https://javadoc.io/doc/org.bouncycastle/bcpkix-lts8on/latest</link>
           </links>
@@ -347,6 +347,9 @@
           </plugin>
         </plugins>
       </build>
+      <properties>
+        <javadoc.link.jdk>https://docs.oracle.com/en/java/javase/25/docs/api</javadoc.link.jdk>
+      </properties>
     </profile>
     <profile>
       <id>release</id>
@@ -434,7 +437,8 @@
   </reporting>
 
   <properties>
-    <bouncycastle.version>2.73.9</bouncycastle.version>
+    <javadoc.link.jdk>https://docs.oracle.com/javase/8/docs/api</javadoc.link.jdk>
+    <bouncycastle.version>2.73.10</bouncycastle.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>2025-10-24T15:50:28Z</project.build.outputTimestamp>

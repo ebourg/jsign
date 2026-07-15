@@ -8,8 +8,8 @@ Suggests: ykcs11, opensc-pkcs11
 Recommends: bash-completion
 Maintainer: Emmanuel Bourg <ebourg@apache.org>
 Homepage: https://ebourg.github.com/jsign
-Description: Code signing for Windows executables, Microsoft Installers and scripts
- Jsign is a versatile code signing tool that allows you to sign and timestamp
+Description: Code signing tool for Windows executables, installers and scripts
+ Jsign is a code signing tool that allows you to sign and timestamp
  Windows executable files, installer packages and scripts. Jsign is platform
  independent and provides an alternative to native tools like signtool on
  Windows or the Mono development tools on Unix systems. It's particularly

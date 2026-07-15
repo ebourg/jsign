@@ -90,8 +90,8 @@ public class JsignMojo extends AbstractMojo {
 
     /**
      * The type of the keystore (JKS, JCEKS, PKCS12, PKCS11, CRYPTOCERTUM, ETOKEN, NITROKEY, OPENPGP, OPENSC, PIV,
-     * YUBIKEY, AWS, AZUREKEYVAULT, DIGICERTONE, ESIGNER, GARASIGN, GOOGLECLOUD, HASHICORPVAULT, ORACLECLOUD, SIGNPATH,
-     * SIGNSERVER or TRUSTEDSIGNING).
+     * YUBIKEY, AWS, AZUREKEYVAULT, CODESIGNSECURE, DIGICERTONE, ESIGNER, GARASIGN, GOOGLECLOUD, HASHICORPVAULT,
+     * ORACLECLOUD, SIGNPATH, SIGNSERVER or TRUSTEDSIGNING).
      */
     @Parameter( property = "jsign.storetype" )
     private String storetype;
@@ -148,6 +148,10 @@ public class JsignMojo extends AbstractMojo {
     /** Tells if previous signatures should be replaced */
     @Parameter( property = "jsign.replace", defaultValue = "false")
     private boolean replace;
+
+    /** Skip files that are already signed. */
+    @Parameter( property = "jsign.lazy", defaultValue = "false")
+    private boolean lazy;
 
     /** The encoding of the script to be signed (UTF-8 by default). */
     @Parameter( property = "jsign.encoding", defaultValue = "UTF-8")
@@ -227,6 +231,7 @@ public class JsignMojo extends AbstractMojo {
         helper.tsretries(tsretries);
         helper.tsretrywait(tsretrywait);
         helper.replace(replace);
+        helper.lazy(lazy);
         helper.encoding(encoding);
         helper.detached(detached);
         helper.value(value);
@@ -234,6 +239,7 @@ public class JsignMojo extends AbstractMojo {
         Proxy proxy = getProxyFromSettings();
         if (proxy != null) {
             helper.proxyUrl(proxy.getProtocol() + "://" + proxy.getHost() + ":" + proxy.getPort());
+            helper.nonProxyHosts(proxy.getNonProxyHosts());
             helper.proxyUser(proxy.getUsername());
             helper.proxyPass(proxy.getPassword());
         }

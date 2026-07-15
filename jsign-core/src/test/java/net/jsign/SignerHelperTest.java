@@ -323,7 +323,7 @@ public class SignerHelperTest {
     @Test
     public void testTrustedSigning() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-signed-with-azure-trusted-signing.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-azure-artifact-signing.exe");
 
         FileUtils.copyFile(sourceFile, targetFile);
 
@@ -406,6 +406,36 @@ public class SignerHelperTest {
         helper.execute(targetFile);
 
         SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
+    public void testCodeSignSecure() throws Exception {
+        String username = System.getenv("CODESIGNSECURE_USERNAME");
+        String password = System.getenv("CODESIGNSECURE_PASSWORD");
+        String keystore = System.getenv("CODESIGNSECURE_AUTH_CERT");
+        String certpass = System.getenv("CODESIGNSECURE_AUTH_CERT_PASSWORD");
+        assumeNotNull("CODESIGNSECURE_USERNAME environment variable not defined", username);
+        assumeNotNull("CODESIGNSECURE_PASSWORD environment variable not defined", password);
+        assumeNotNull("CODESIGNSECURE_AUTH_CERT environment variable not defined", keystore);
+        assumeNotNull("CODESIGNSECURE_AUTH_CERT_PASSWORD environment variable not defined", certpass);
+
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-with-eccodesign.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper helper = new SignerHelper("option")
+                .storetype("CODESIGNSECURE")
+                .keystore("https://test2codesignsecure.encryptionconsulting.com")
+                .storepass(username + "|" + password + "|" + keystore)
+                .keypass(certpass)
+                .alias("JSign-Test-2026")
+                .alg("SHA-256");
+
+        helper.sign(targetFile);
+
+        Signable signable = Signable.of(targetFile);
+        SignatureAssert.assertSigned(signable, SHA256);
     }
 
     @Test
@@ -813,7 +843,7 @@ public class SignerHelperTest {
                 .keystore("target/test-classes/keystores/keystore.jks")
                 .keypass("password")
                 .tsaurl("http://timestamp.sectigo.com")
-                .tsmode(TimestampingMode.AUTHENTICODE.name());
+                .tsmode(TimestampingMode.RFC3161.name());
 
         signer.execute(targetFile);
         try (Signable signable = Signable.of(targetFile)) {

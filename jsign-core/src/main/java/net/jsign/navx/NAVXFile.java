@@ -68,7 +68,7 @@ public class NAVXFile implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public static boolean isNAVXFile(File file) throws IOException {
-        if (file.length() < NAVXHeader.SIZE) {
+        if (!file.exists() || !file.isFile() || file.length() < NAVXHeader.SIZE) {
             return false;
         }
 

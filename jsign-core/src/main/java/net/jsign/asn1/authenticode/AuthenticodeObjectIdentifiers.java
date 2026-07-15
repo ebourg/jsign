@@ -40,7 +40,6 @@ public interface AuthenticodeObjectIdentifiers {
     ASN1ObjectIdentifier SPC_INDIVIDUAL_SP_KEY_PURPOSE_OBJID = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.21");
     ASN1ObjectIdentifier SPC_COMMERCIAL_SP_KEY_PURPOSE_OBJID = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.22");
     ASN1ObjectIdentifier SPC_CAB_DATA_OBJID                  = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.25");
-    ASN1ObjectIdentifier SPC_GLUE_RDN_OBJID                  = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.25");
     ASN1ObjectIdentifier SPC_MINIMAL_CRITERIA_OBJID          = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.26");
     ASN1ObjectIdentifier SPC_FINANCIAL_CRITERIA_OBJID        = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.27");
     ASN1ObjectIdentifier SPC_LINK_OBJID                      = new ASN1ObjectIdentifier("1.3.6.1.4.1.311.2.1.28");

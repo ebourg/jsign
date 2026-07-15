@@ -1,0 +1,6 @@
+{
+  "message": "Error occurred in Token Generation",
+  "errors": [
+    "USERNAME NOT FOUND"
+  ]
+}

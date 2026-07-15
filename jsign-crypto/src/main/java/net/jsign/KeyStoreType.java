@@ -41,6 +41,8 @@ import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.AzureTrustedSigningService;
 import net.jsign.jca.CryptoCertumCardSigningService;
 import net.jsign.jca.DigiCertOneSigningService;
+import net.jsign.jca.CodeSignSecureCredentials;
+import net.jsign.jca.CodeSignSecureSigningService;
 import net.jsign.jca.ESignerSigningService;
 import net.jsign.jca.GaraSignCredentials;
 import net.jsign.jca.GaraSignSigningService;
@@ -511,7 +513,7 @@ public enum KeyStoreType {
     },
 
     /**
-     * Azure Trusted Signing Service. The keystore parameter specifies the API endpoint (for example
+     * Azure Artifact Signing Service. The keystore parameter specifies the API endpoint (for example
      * <code>weu.codesigning.azure.net</code>). The Azure API access token is used as the keystore password,
      * it can be obtained using the Azure CLI with:
      *
@@ -650,6 +652,32 @@ public enum KeyStoreType {
                 throw new IllegalStateException("Failed to initialize the CryptoCertum card", e);
             }
         }
+    },
+
+    /**
+     * Encryption Consulting CodeSign Secure. The keystore parameter specifies the API endpoint. The storepass parameter
+     * is the concatenation of the CodeSign Secure username, password and the path to the PKCS#12 keystore containing
+     * the TLS client certificate, separated by a pipe character. If the TLS client certificate is stored in a password
+     * protected keystore, the password is specified in the keypass parameter.
+     */
+    CODESIGNSECURE(false, false) {
+        @Override
+        void validate(KeyStoreBuilder params) {
+            if (params.storepass() == null || params.storepass().split("\\|").length != 3) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the CodeSign Secure username, password and the path to the keystore containing the TLS client certificate: <username>|<password>|<certificate>");
+            }
+        }
+
+        @Override
+        Provider getProvider(KeyStoreBuilder params) {
+            String[] elements = params.storepass().split("\\|");
+            String username = elements[0];
+            String password = elements[1];
+            String certificate = elements[2];
+
+            CodeSignSecureCredentials credentials = new CodeSignSecureCredentials(username, password, certificate, params.keypass());
+            return new SigningServiceJcaProvider(new CodeSignSecureSigningService(params.keystore(), credentials));
+        }
     };
 
     /** Tells if the keystore is contained in a local file */
@@ -677,7 +705,7 @@ public enum KeyStoreType {
     }
 
     /**
-     * Build the keystore.
+     * Builds the keystore and ensure it's loaded.
      */
     KeyStore getKeystore(KeyStoreBuilder params, Provider provider) throws KeyStoreException {
         KeyStore ks;
@@ -694,7 +722,17 @@ public enum KeyStoreType {
 
         try {
             try (FileInputStream in = fileBased ? new FileInputStream(params.createFile(params.keystore())) : null) {
-                ks.load(in, params.storepass() != null ? params.storepass().toCharArray() : null);
+                char[] password = params.storepass() != null ? params.storepass().toCharArray() : null;
+                ks.load(in, password);
+
+                if (pkcs11 && ks.size() == 0) {
+                    // retry loading the PKCS#11 keystore, since the token may not be ready immediately after initialization (see #345)
+                    int attempts = 3;
+                    while (attempts-- >= 1 && ks.size() == 0) {
+                        Thread.sleep(300);
+                        ks.load(in, password);
+                    }
+                }
             }
         } catch (Exception e) {
             throw new KeyStoreException("Unable to load the " + name() + " keystore" + (params.keystore() != null ? " " + params.keystore() : ""), e);

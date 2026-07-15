@@ -4,14 +4,14 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Platform independent code signing tool for signing Windows executable files, installer packages and scripts, with an emphasis on seamless integration with cloud key management systems and hardware tokens." />
+    <meta name="description" content="Platform independent code signing tool for signing Windows executable files, installation packages and scripts, with an emphasis on seamless integration with cloud key management systems and hardware tokens." />
     <meta name="google-site-verification" content="p912kgAnTBOzVbswrU43k3FXUbPnxLHdeW6xsVcq1uU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <script src="scripts/prettify/run_prettify.js"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Jsign - Versatile code signing tool for Windows executable files, installers and scripts</title>
+    <title>Jsign - Code signing tool for Windows executables, installers and scripts</title>
   </head>
 
   <body>
@@ -22,7 +22,7 @@
           <a id="forkme_banner" href="https://github.com/ebourg/jsign">View on GitHub</a>
 
           <h1 id="project_title">Jsign</h1>
-          <h2 id="project_tagline">Versatile code signing tool for Windows executable files, installers and scripts</h2>
+          <h2 id="project_tagline">Code signing tool for Windows executables, installers and scripts</h2>
         </header>
     </div>
 
@@ -30,7 +30,7 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
 
-<p>Jsign is a versatile code signing tool that allows you to sign and timestamp
+<p>Jsign is a code signing tool that allows you to sign and timestamp
 Windows executable files, installer packages and scripts. Jsign is platform
 independent and provides an alternative to native tools like signtool on Windows
 or the Mono development tools on Unix systems. It's particularly well-suited for
@@ -79,8 +79,9 @@ for various build systems (<a href="#maven">Maven</a>, <a href="#gradle">Gradle<
         <ul>
           <li><a href="https://aws.amazon.com/kms/">AWS KMS</a></li>
           <li><a href="https://azure.microsoft.com/services/key-vault/">Azure Key Vault</a></li>
-          <li><a href="https://learn.microsoft.com/en-us/azure/trusted-signing/">Azure Trusted Signing</a></li>
+          <li><a href="https://learn.microsoft.com/en-us/azure/artifact-signing/">Azure Artifact Signing</a></li>
           <li><a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> / <a href="https://docs.digicert.com/en/digicert-keylocker.html">DigiCert KeyLocker</a></li>
+          <li><a href="https://www.encryptionconsulting.com/code-signing-solution/">Encryption Consulting CodeSign Secure</a></li>
           <li><a href="https://garantir.io/garasign/">GaraSign</a></li>
           <li><a href="https://cloud.google.com/security-key-management">Google Cloud KMS</a></li>
           <li><a href="https://www.vaultproject.io">HashiCorp Vault</a></li>
@@ -130,6 +131,7 @@ the all-in-one jar:</p>
   <li><a href="#timestamp-options">timestamp</a></li>
   <li><a href="#extract-options">extract</a></li>
   <li>remove</li>
+  <li><a href="#show">show</a></li>
   <li><a href="#tag-options">tag</a></li>
 </ul>
 
@@ -203,6 +205,7 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
     <ul>
       <li><code>AWS</code>: <a href="#example-awskms">AWS Key Management Service</a></li>
       <li><code>AZUREKEYVAULT</code>: <a href="#example-azurekeyvault">Azure Key Vault key management system</a></li>
+      <li><code>CODESIGNSECURE</code>: <a href="#example-codesignsecure">Encryption Consulting CodeSign Secure</a></li>
       <li><code>DIGICERTONE</code>: <a href="#example-digicertone">DigiCert ONE Secure Software Manager</a></li>
       <li><code>ESIGNER</code>: <a href="#example-sslcom-esigner">SSL.com eSigner</a></li>
       <li><code>GARASIGN</code>: <a href="#example-garasign">Garantir Remote Signing</a></li>
@@ -211,7 +214,7 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
       <li><code>ORACLECLOUD</code>: <a href="#example-oraclecloud">Oracle Cloud Key Management Service</a></li>
       <li><code>SIGNPATH</code>: <a href="#example-signpath">SignPath</a></li>
       <li><code>SIGNSERVER</code>: <a href="#example-signserver">Keyfactor SignServer</a></li>
-      <li><code>TRUSTEDSIGNING</code>: <a href="#example-trustedsigning">Azure Trusted Signing</a></li>
+      <li><code>TRUSTEDSIGNING</code>: <a href="#example-trustedsigning">Azure Artifact Signing</a></li>
     </ul>
   </dd>
 
@@ -281,6 +284,9 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
   <dt>--proxyPass &lt;PASSWORD&gt;</dt>
   <dd>The password for the HTTP proxy user. If a user is needed.</dd>
 
+  <dt>--nonProxyHosts &lt;HOSTS&gt;</dt>
+  <dd>The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns.</dd>
+
   <dt>-n, --name &lt;NAME&gt;</dt>
   <dd>The name of the application</dd>
 
@@ -290,6 +296,11 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
   <dt>--replace</dt>
   <dd>
     Tells if previous signatures should be replaced. Defaults to false.
+  </dd>
+
+  <dt>--lazy</dt>
+  <dd>
+    Skip files that are already signed instead of adding a new signature.
   </dd>
 
   <dt>-e, --encoding &lt;ENCODING&gt;</dt>
@@ -312,10 +323,10 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
   <dt>--quiet</dt>
   <dd>Print only error messages</dd>
 
-  <dt>--debug</dt>
+  <dt>--verbose</dt>
   <dd>Print more information</dd>
 
-  <dt>--quiet</dt>
+  <dt>--debug</dt>
   <dd>Print debugging information</dd>
 </dl>
 
@@ -355,6 +366,9 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
 
   <dt>--proxyPass &lt;PASSWORD&gt;</dt>
   <dd>The password for the HTTP proxy user. If a user is needed.</dd>
+
+  <dt>--nonProxyHosts &lt;HOSTS&gt;</dt>
+  <dd>The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns.</dd>
 </dl>
 
 <br>
@@ -365,6 +379,29 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
   <dt>--format</dt>
   <dd>The output format of the signature (DER or PEM)</dd>
 </dl>
+
+<br>
+
+<h4 id="show">show</h4>
+
+<p>Displays information about the signatures of a file (certificate, timestamp, digest, tag). The <code>--verbose</code>
+option can be used to display more details.</p>
+
+<pre>
+  $ jsign show application.exe
+
+  Signature of application.exe:
+
+    <strong>Digest:</strong>        (SHA-1) d27ec498912807ddfc4bec2be4f62c42814836f3 (<span style="color: green">matches</span>)
+    <strong>Timestamp:</strong>     2026-04-15 19:56:53 CEST (DigiCert SHA256 RSA4096 Timestamp Responder 2025)
+    <strong>Tag:</strong>           userid:1234-ABCD-5678-EFGH
+    <strong>Certificate</strong>
+      <strong>Subject:</strong>     Jsign Code Signing Test Certificate 2024 (RSA)
+      <strong>Issuer:</strong>      Jsign Code Signing CA 2024
+      <strong>Key:</strong>         RSA 2048
+      <strong>Validity:</strong>    2024-05-10 - 2044-05-10 (6511 days left)
+      <strong>Serial:</strong>      232ae74743b0ae4da74beae15387644af6ca7a03
+</pre>
 
 <br>
 
@@ -499,6 +536,53 @@ the keys and certificates stored in the common file (the secure profile containi
 
 <p>The <code>alias</code> parameter specifies the common name of the certificate.</p>
 
+<h4 id="example-pkcs11">Signing with a PKCS#11 token</h4>
+
+<p>Jsign tries to support the most common PKCS#11 tokens and smart cards used for signing with a dedicated storetype,
+but if your device isn't supported you can use the generic <code>PKCS11</code> storetype. In this case the
+<code>keystore</code> parameter specifies the <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/security/p11guide.html#Config">SunPKCS11 configuration</a>,
+either as a configuration file, an inline configuration, or a reference to a SunPKCS11 provider name defined in
+<code>java.security</code>.</p>
+
+<p>With a file, create a SunPKCS11 configuration file such as <code>pkcs11.cfg</code>:</p>
+
+<pre>
+ name = MyToken
+ library = /path/to/pkcs11/library
+ slot = 0
+</pre>
+
+<p>Then, pass the filename to the <code>keystore</code> parameter:</p>
+
+<pre>
+ jsign --storetype PKCS11 \
+       --keystore pkcs11.cfg \
+       --storepass 123456 \
+       --alias test \
+       application.exe
+</pre>
+
+<p>For an inline configuration, prefix the <code>keystore</code> parameter value with <code>--</code> and separate
+the lines with <code>\n</code>:</p>
+
+<pre>
+ jsign --storetype PKCS11 \
+       --keystore="--name=MyToken\nlibrary=/path/to/pkcs11/library\nslot=0" \
+       --storepass 123456 \
+       --alias test \
+       application.exe
+</pre>
+
+<p>The <code>keystore</code> parameter can also refer to a provider named <code>SunPKCS11-&lt;name&gt;</code> defined in
+the <code>java.security</code> file:</p>
+
+<pre>
+ jsign --storetype PKCS11 \
+       --keystore SunPKCS11-MyToken \
+       --storepass 123456 \
+       --alias test \
+       application.exe
+</pre>
 
 <h4 id="example-awskms">Signing with AWS Key Management Service</h4>
 
@@ -547,11 +631,11 @@ key management system can be used with:</p>
 
 <p>The Azure account used must have the <em>"Key Vault Crypto User"</em> and <em>"Key Vault Certificate User"</em> roles.</p>
 
-<h4 id="example-trustedsigning">Signing with Azure Trusted Signing</h4>
+<h4 id="example-trustedsigning">Signing with Azure Artifact Signing</h4>
 
-<p>With the Azure <a href="https://learn.microsoft.com/en-us/azure/trusted-signing/overview">Trusted Signing</a> service
-the <code>keystore</code> parameter specifies the endpoint URI, and the <code>alias</code> combines the account name and
-the certificate profile. The Azure API access token is used as the keystore password.</p>
+<p>With Azure <a href="https://learn.microsoft.com/en-us/azure/artifact-signing/overview">Artifact Signing</a> (formerly
+Azure Trusted Signing) the <code>keystore</code> parameter specifies the endpoint URI, and the <code>alias</code>
+combines the account name and the certificate profile. The Azure API access token is used as the keystore password.</p>
 
 <pre>
  jsign --storetype TRUSTEDSIGNING \
@@ -568,7 +652,7 @@ the certificate profile. The Azure API access token is used as the keystore pass
 
 <p>The Azure account used must have the <em>"Code Signing Certificate Profile Signer"</em> role.</p>
 
-<p>The certificates issued by Azure Trusted Signing have a lifetime of 3 days only, and timestamping is necessary to
+<p>The certificates issued by Azure Artifact Signing have a lifetime of 3 days only, and timestamping is necessary to
 ensure the long term validity of the signature. For this reason timestamping is automatically enabled when signing
 with this service.</p>
 
@@ -578,15 +662,31 @@ the quota usage.</p>
 
 <h4 id="example-digicertone">Signing with DigiCert ONE / DigiCert KeyLocker</h4>
 
-<p>Certificates and keys stored in the <a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> Secure Software Manager
-can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
-a client certificate for the authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com)
-but a different host can be specified with the <code>--keystore</code> parameter.</p>
+<p>Certificates and keys stored in the <a href="https://www.digicert.com/digicert-one">DigiCert ONE</a> Secure Software
+Manager can be used directly without installing the DigiCert client tools. It requires an API key and a PKCS#12 keystore
+holding a client certificate for the authentication. The US DigiCert ONE host is used by default
+(https://clientauth.one.digicert.com) but a different host can be specified with the <code>--keystore</code> parameter.</p>
 
 <pre>
  jsign --storetype DIGICERTONE \
        --storepass "&lt;api-key&gt;|/path/to/Certificate_pkcs12.p12|&lt;password&gt;" \
        --alias test application.exe
+</pre>
+
+<h4 id="example-codesignsecure">Signing with Encryption Consulting CodeSign Secure</h4>
+
+<p>When signing with <a href="https://www.encryptionconsulting.com/code-signing-solution/">Encryption Consulting CodeSign Secure</a>,
+the <code>keystore</code> parameter specifies the API endpoint (it defaults to https://codesignsecure.encryptionconsulting.com).
+The <code>storepass</code> parameter is the concatenation of the CodeSign Secure username, password and the path to the
+PKCS#12 keystore containing the TLS client certificate, separated by a pipe character. If the TLS client certificate
+is stored in a password protected keystore, the password is specified in the <code>keypass</code> parameter.
+
+<pre>
+ jsign --storetype CODESIGNSECURE \
+       --storepass "&lt;username&gt;|&lt;password&gt;|/path/to/client-certificate.p12" \
+       --keypass &lt;client-certificate-password&gt; \
+       --alias &lt;keyname&gt; \
+       application.exe
 </pre>
 
 <h4 id="example-sslcom-esigner">Signing with SSL.com eSigner</h4>
@@ -746,10 +846,11 @@ SignServer REST API. The <code>alias</code> parameter specifies the id or the na
 used by the OCI CLI. The OCI CLI isn't required for signing, but it may be used to initialize the configuration file
 with <code>oci setup bootstrap</code>.</p>
 
-<p>The storepass parameter specifies the path to the configuration file (<code>~/.oci/config</code> by default). If the
-configuration file contains multiple profiles, the name of the non-default profile to use is appended to the storepass
-(for example <code>~/.oci/config|PROFILE</code>). The <code>keypass</code> parameter may be used to specify the
-passphrase of the key file used for signing the requests to the OCI API if it isn't set in the configuration file.</p>
+<p>The <code>storepass</code> parameter specifies the path to the configuration file (<code>~/.oci/config</code> by
+default). If the configuration file contains multiple profiles, the name of the non-default profile to use is appended
+to the storepass (for example <code>~/.oci/config|PROFILE</code>). The <code>keypass</code> parameter may be used to
+specify the passphrase of the key file used for signing the requests to the OCI API if it isn't set in the configuration
+file.</p>
 
 <p>The certificate must be provided separately using the <code>certfile</code> parameter. The alias specifies the OCID
 of the key.</p>
@@ -804,11 +905,11 @@ concatenation of the project slug and the signing policy slug, separated by a sl
 <h4 id="tagging">Tagging</h4>
 
 <p>A signed file can be modified to include additional data without invalidating the signature. This feature is useful
-for embedding user identification data, such as a licence key or a session token, within a signed installer when the
+for embedding user identification data, such as a license key or a session token, within a signed installer when the
 file is downloaded. Upon installation, the installer extracts this data, enabling the application to automatically
 authenticate the user without requiring credentials.</p>
 
-<p>For example, to tag a signed installer with a licence key:</p>
+<p>For example, to tag a signed installer with a license key:</p>
 
 <pre>
   jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
@@ -1053,7 +1154,6 @@ are the same as those described above for the command line tool (the long option
                                   ${{ github.workspace }}/dist/application.exe
 </pre>
 
-
 <h3 id="api">API</h3>
 
 <p>Jsign also provides a simple API for signing files and can be embedded in another application.</p>
@@ -1094,7 +1194,7 @@ their range of supported keystores.</p>
 
 <h4 id="jar-signing">JAR signing</h4>
 
-<p>The JCA provider can be used to sign JAR files with with the <code>jarsigner</code> tool.</p>
+<p>The JCA provider can be used to sign JAR files with the <code>jarsigner</code> tool.</p>
 
 <p>With Java 11 or later the syntax looks like this:</p>
 
@@ -1143,7 +1243,8 @@ The syntax looks like this:</p>
 
 <p>Jsign leverages the cryptography API developed by the <a href="http://www.bouncycastle.org">Bouncy Castle</a> project.<br>
 PVK parsing is based on the <a href="https://web.archive.org/web/20170810033553/http://www.drh-consultancy.demon.co.uk/pvk.html">pvktool</a> by Stephen N Henson.<br>
-MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a> and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
+MSI signing was possible thanks to the work done by the <a href="https://github.com/mtrojnar/osslsigncode">osslsigncode</a>
+and <a href="https://poi.apache.org/">Apache POI</a> projects.</p>
 
 <p>Jsign includes contributions from Emmanuel Bourg, Florent Daigniere, Michael Szediwy, Michael Peterson, Markus Kilås,
 Erwin Tratar, Björn Kautler, Joseph Lee, Maria Merkel, Vincent Malmedy, Sebastian Müller, Sebastian Stamm,

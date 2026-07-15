@@ -225,6 +225,18 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testLazySigning() throws Exception {
+        cli.execute("--name=WinEyes", "--alg=SHA-256", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "--lazy", "" + targetFile);
+        cli.execute("--name=WinEyes", "--alg=SHA-384", "--keystore=target/test-classes/keystores/" + keystore, "--keypass=" + keypass, "--lazy", "" + targetFile);
+
+        assertTrue("The file " + targetFile + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile));
+
+        try (PEFile peFile = new PEFile(targetFile)) {
+            SignatureAssert.assertSigned(peFile, SHA256);
+        }
+    }
+
+    @Test
     public void testSigningMultipleFilesWithListFile() throws Exception {
         File listFile = new File("target/test-classes/files.txt");
         Files.write(listFile.toPath(), Arrays.asList("# first file", '"' + targetFile.getPath() + '"', " ", "# second file", targetFile.getAbsolutePath()));
@@ -491,6 +503,39 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testTimestampingWithProxyAndNonProxyHosts() throws Exception {
+        final AtomicBoolean proxyUsed = new AtomicBoolean(false);
+        HttpProxyServer proxy = DefaultHttpProxyServer.bootstrap().withPort(12545)
+                .withFiltersSource(new HttpFiltersSourceAdapter() {
+                    @Override
+                    public HttpFilters filterRequest(HttpRequest originalRequest) {
+                        proxyUsed.set(true);
+                        return super.filterRequest(originalRequest);
+                    }
+                })
+                .start();
+
+        try {
+            File targetFile2 = new File("target/test-classes/wineyes-timestamped-with-cli-rfc3161-nonproxyhosts.exe");
+            FileUtils.copyFile(sourceFile, targetFile2);
+            cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--alias=" + alias, "--keypass=" + keypass,
+                        "--tsaurl=http://timestamp.sectigo.com", "--tsmode=rfc3161", "--tsretries=1", "--tsretrywait=1",
+                        "--proxyUrl=localhost:" + proxy.getListenAddress().getPort(),
+                        "--nonProxyHosts=*.sectigo.com",
+                        "" + targetFile2);
+
+            assertTrue("The file " + targetFile2 + " wasn't changed", SOURCE_FILE_CRC32 != FileUtils.checksumCRC32(targetFile2));
+            assertFalse("The proxy should not have been used for a non-proxy host", proxyUsed.get());
+
+            try (PEFile peFile = new PEFile(targetFile2)) {
+                SignatureAssert.assertSigned(peFile, SHA256);
+            }
+        } finally {
+            proxy.stop();
+        }
+    }
+
+    @Test
     public void testSigningWithProxy() throws Exception {
         Jadler.initJadler().withDefaultResponseStatus(404);
         Jadler.onRequest()
@@ -654,5 +699,13 @@ public class JsignCLITest {
     public void testTimestamp() {
         Exception e = assertThrows(SignerException.class, () -> cli.execute("timestamp", "--quiet", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
+    }
+
+    @Test
+    public void testShow() throws Exception {
+        testSigning();
+        cli.execute("tag", "--value", "userid:1234-ABCD-5678-EFGH", "" + targetFile);
+        cli.execute("show", "" + targetFile);
+        cli.execute("show", "--verbose", "" + targetFile);
     }
 }

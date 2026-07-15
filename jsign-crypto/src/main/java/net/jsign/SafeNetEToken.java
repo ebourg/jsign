@@ -51,7 +51,7 @@ class SafeNetEToken {
     static String getSunPKCS11Configuration(String name) {
         File library = getPKCS11Library();
         if (!library.exists()) {
-            throw new ProviderException("SafeNet eToken PKCS11 module is not installed (" + library + " is missing)");
+            throw new ProviderException("SafeNet eToken PKCS#11 module is not installed (" + library + " is missing)");
         }
 
         long slot;

@@ -104,6 +104,11 @@
     </jsign>
   </target>
 
+  <target name="lazy-signing">
+    <jsign file="wineyes-signed-with-ant.exe" keystore="${keystore}" alias="${alias}" keypass="${keypass}" lazy="true"/>
+    <jsign file="wineyes-signed-with-ant.exe" keystore="${keystore}" alias="${alias}" keypass="${keypass}" lazy="true"/>
+  </target>
+
   <target name="signing-powershell">
     <jsign file="hello-world-signed-with-ant.ps1"
            alg="SHA-1"
@@ -186,7 +191,17 @@
   </target>
 
   <target name="tag-unsigned-file">
-    <jsign command="tag" file="wineyes.exe"/>
+    <jsign command="tag" file="wineyes.exe" value="userid:1234-ABCD-5678-EFGH"/>
+  </target>
+
+  <target name="extract-signature">
+    <copy file="wineyes.exe" tofile="wineyes-signed.exe" overwrite="true"/>
+    <jsign file="wineyes-signed.exe"
+           keystore="${keystore}"
+           alias="${alias}"
+           keypass="${keypass}"/>
+    <jsign command="extract" file="wineyes-signed.exe" format="PEM"/>
+    <jsign command="extract" file="wineyes-signed.exe" format="DER"/>
   </target>
 
 </project>

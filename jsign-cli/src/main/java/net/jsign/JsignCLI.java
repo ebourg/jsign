@@ -93,6 +93,7 @@ public class JsignCLI {
                         + "Cloud key management systems:\n"
                         + "- AWS: AWS Key Management Service\n"
                         + "- AZUREKEYVAULT: Azure Key Vault key management system\n"
+                        + "- CODESIGNSECURE: Encryption Consulting CodeSign Secure\n"
                         + "- DIGICERTONE: DigiCert ONE Secure Software Manager\n"
                         + "- ESIGNER: SSL.com eSigner\n"
                         + "- GARASIGN: Garantir Remote Signing\n"
@@ -101,7 +102,7 @@ public class JsignCLI {
                         + "- ORACLECLOUD: Oracle Cloud Key Management Service\n"
                         + "- SIGNPATH: SignPath\n"
                         + "- SIGNSERVER: Keyfactor SignServer\n"
-                        + "- TRUSTEDSIGNING: Azure Trusted Signing\n").build());
+                        + "- TRUSTEDSIGNING: Azure Artifact Signing\n").build());
         options.addOption(Option.builder("a").hasArg().longOpt(PARAM_ALIAS).argName("NAME").desc("The alias of the certificate used for signing in the keystore").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYPASS).argName("PASSWORD").desc("The password of the private key. When using a keystore, this parameter can be omitted if the keystore shares the same password").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_KEYFILE).argName("FILE").desc("The file containing the private key. PEM and PVK files are supported").type(File.class).build());
@@ -117,7 +118,9 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_URL).argName("URL").desc("The URL of the HTTP proxy").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If a user is needed").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If a user is needed").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_NON_PROXY_HOSTS).argName("HOSTS").desc("The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous signatures should be replaced").build());
+        options.addOption(Option.builder().longOpt(PARAM_LAZY).desc("Skip files that are already signed").build());
         options.addOption(Option.builder("e").hasArg().longOpt(PARAM_ENCODING).argName("ENCODING").desc("The encoding of the script to be signed (UTF-8 by default, or the encoding specified by the byte order mark if there is one)").build());
         options.addOption(Option.builder().longOpt(PARAM_DETACHED).desc("Tells if a detached signature should be generated or reused").build());
         options.addOption(Option.builder().longOpt("quiet").desc("Print only error messages").build());
@@ -136,6 +139,7 @@ public class JsignCLI {
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_URL).argName("URL").desc("The URL of the HTTP proxy").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_USER).argName("NAME").desc("The user for the HTTP proxy. If a user is needed").build());
         options.addOption(Option.builder().hasArg().longOpt(PARAM_PROXY_PASS).argName("PASSWORD").desc("The password for the HTTP proxy user. If a user is needed").build());
+        options.addOption(Option.builder().hasArg().longOpt(PARAM_NON_PROXY_HOSTS).argName("HOSTS").desc("The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns").build());
         options.addOption(Option.builder().longOpt(PARAM_REPLACE).desc("Tells if the previous timestamps should be replaced").build());
 
         map.put("timestamp", options);
@@ -148,6 +152,10 @@ public class JsignCLI {
         options = new Options();
 
         map.put("remove", options);
+
+        options = new Options();
+
+        map.put("show", options);
 
         options = new Options();
         options.addOption(Option.builder().hasArg().longOpt(PARAM_VALUE).argName("VALUE").desc("The value of the unsigned attribute").build());
@@ -213,7 +221,9 @@ public class JsignCLI {
         setOption(PARAM_PROXY_URL, helper, cmd);
         setOption(PARAM_PROXY_USER, helper, cmd);
         setOption(PARAM_PROXY_PASS, helper, cmd);
+        setOption(PARAM_NON_PROXY_HOSTS, helper, cmd);
         helper.replace(cmd.hasOption(PARAM_REPLACE));
+        helper.lazy(cmd.hasOption(PARAM_LAZY));
         setOption(PARAM_ENCODING, helper, cmd);
         helper.detached(cmd.hasOption(PARAM_DETACHED));
         setOption(PARAM_FORMAT, helper, cmd);

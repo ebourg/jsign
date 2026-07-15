@@ -16,50 +16,53 @@
 
 package net.jsign;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bouncycastle.asn1.ASN1Encodable;
-import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1UTF8String;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.DERUTF8String;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -93,7 +96,9 @@ class SignerHelper {
     public static final String PARAM_PROXY_URL = "proxyUrl";
     public static final String PARAM_PROXY_USER = "proxyUser";
     public static final String PARAM_PROXY_PASS = "proxyPass";
+    public static final String PARAM_NON_PROXY_HOSTS = "nonProxyHosts";
     public static final String PARAM_REPLACE = "replace";
+    public static final String PARAM_LAZY = "lazy";
     public static final String PARAM_ENCODING = "encoding";
     public static final String PARAM_DETACHED = "detached";
     public static final String PARAM_FORMAT = "format";
@@ -116,10 +121,9 @@ class SignerHelper {
     private String alg;
     private String name;
     private String url;
-    private String proxyUrl;
-    private String proxyUser;
-    private String proxyPass;
+    private final ProxySettings proxySettings = new ProxySettings();
     private boolean replace;
+    private boolean lazy;
     private Charset encoding;
     private boolean detached;
     private String format;
@@ -234,19 +238,25 @@ class SignerHelper {
     }
 
     public SignerHelper proxyUrl(String proxyUrl) {
-        this.proxyUrl = proxyUrl;
+        this.proxySettings.url = proxyUrl;
         signer = null;
         return this;
     }
 
     public SignerHelper proxyUser(String proxyUser) {
-        this.proxyUser = proxyUser;
+        this.proxySettings.username = proxyUser;
         signer = null;
         return this;
     }
 
     public SignerHelper proxyPass(String proxyPass) {
-        this.proxyPass = proxyPass;
+        this.proxySettings.password = proxyPass;
+        signer = null;
+        return this;
+    }
+
+    public SignerHelper nonProxyHosts(String nonProxyHosts) {
+        this.proxySettings.nonProxyHosts = nonProxyHosts;
         signer = null;
         return this;
     }
@@ -254,6 +264,11 @@ class SignerHelper {
     public SignerHelper replace(boolean replace) {
         this.replace = replace;
         signer = null;
+        return this;
+    }
+
+    public SignerHelper lazy(boolean lazy) {
+        this.lazy = lazy;
         return this;
     }
 
@@ -301,7 +316,9 @@ class SignerHelper {
             case PARAM_PROXY_URL:  return proxyUrl(value);
             case PARAM_PROXY_USER: return proxyUser(value);
             case PARAM_PROXY_PASS: return proxyPass(value);
+            case PARAM_NON_PROXY_HOSTS: return nonProxyHosts(value);
             case PARAM_REPLACE:    return replace("true".equalsIgnoreCase(value));
+            case PARAM_LAZY:       return lazy("true".equalsIgnoreCase(value));
             case PARAM_ENCODING:   return encoding(value);
             case PARAM_DETACHED:   return detached("true".equalsIgnoreCase(value));
             case PARAM_FORMAT:     return format(value);
@@ -333,6 +350,9 @@ class SignerHelper {
             case "remove":
                 remove(file);
                 break;
+            case "show":
+                show(file);
+                break;
             case "tag":
                 tag(file);
                 break;
@@ -343,7 +363,7 @@ class SignerHelper {
 
     private AuthenticodeSigner build() throws SignerException {
         try {
-            initializeProxy(proxyUrl, proxyUser, proxyPass);
+            proxySettings.initializeProxy();
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
@@ -423,7 +443,7 @@ class SignerHelper {
             throw new SignerException("The digest algorithm " + alg + " is not supported");
         }
 
-        // enable timestamping with Azure Trusted Signing
+        // enable timestamping with Azure Artifact Signing
         if (tsaurl == null && storetype == KeyStoreType.TRUSTEDSIGNING) {
             tsaurl = "http://timestamp.acs.microsoft.com/";
             tsmode = TimestampingMode.RFC3161.name();
@@ -467,6 +487,11 @@ class SignerHelper {
                 }
 
             } else {
+                if (lazy && !signable.getSignatures().isEmpty()) {
+                    log.info("Skipping already signed file " + file);
+                    return;
+                }
+
                 if (signer == null) {
                     signer = build();
                 }
@@ -488,11 +513,9 @@ class SignerHelper {
         }
     }
 
-    private void attach(Signable signable, File detachedSignature) throws IOException, CMSException {
+    private void attach(Signable signable, File detachedSignature) throws IOException {
         byte[] signatureBytes = Files.readAllBytes(detachedSignature.toPath());
-        CMSSignedData signedData = new CMSSignedData((CMSProcessable) null, ContentInfo.getInstance(new ASN1InputStream(signatureBytes).readObject()));
-
-        signable.setSignatures(SignatureUtils.getSignatures(signedData));
+        signable.setSignatures(SignatureUtils.getSignatures(signatureBytes));
         signable.save();
         // todo warn if the hashes don't match
     }
@@ -577,6 +600,139 @@ class SignerHelper {
         }
     }
 
+    private void show(File file) throws SignerException {
+        if (!file.exists()) {
+            throw new SignerException("Couldn't find " + file);
+        }
+
+        AnsiFormatter ansiFormatter = new AnsiFormatter();
+        log.setFilter(record -> {
+            record.setMessage(ansiFormatter.format(record.getMessage()));
+            return true;
+        });
+
+        try (Signable signable = Signable.of(file)) {
+            boolean verbose = log.isLoggable(Level.FINE);
+
+            List<CMSSignedData> signatures = signable.getSignatures();
+            if (signatures.isEmpty()) {
+                log.info("No signature found in " + (verbose ? file.getAbsolutePath() : file.getName()));
+                return;
+            }
+
+            log.info("Signature" + (signatures.size() > 1 ? "s" : "") + " of " + (verbose ? file.getAbsolutePath() : file.getName()) + ":");
+            log.info("");
+
+            DateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+            DateFormat dateFormat = verbose ? datetimeFormat : new SimpleDateFormat("yyyy-MM-dd");
+
+            for (int i = 0; i < signatures.size(); i++) {
+                CMSSignedData signature = signatures.get(i);
+                SignerInformation signer = signature.getSignerInfos().iterator().next();
+                DigestInfo digestInfo = SignatureUtils.getDigestInfo(signature);
+                X509CertificateHolder cert = (X509CertificateHolder) signature.getCertificates().getMatches(signer.getSID()).iterator().next();
+
+                boolean expired = cert.getNotAfter().before(new Date());
+                long daysLeft = Duration.between(Instant.now(), cert.getNotAfter().toInstant()).toDays();
+
+                if (signatures.size() > 1) {
+                    log.info("Signature #" + (i + 1));
+                }
+                if (digestInfo != null) {
+                    DigestAlgorithm digestAlgorithm = DigestAlgorithm.of(signer.getDigestAlgorithmID().getAlgorithm());
+                    byte[] computedDigest = signable.computeDigest(digestAlgorithm);
+                    boolean matches = Arrays.equals(computedDigest, digestInfo.getDigest());
+                    log.info("  <b>Digest:</b>          (" + digestAlgorithm.id + ") " + Hex.toHexString(digestInfo.getDigest()) + (matches ? " (<green>matches</green>)" : " (<red>mismatches</red>)"));
+                    if (!matches) {
+                        log.info("  <b>Expected Digest:</b> (" + digestAlgorithm.id + ") " + Hex.toHexString(computedDigest));
+                    }
+                }
+
+                Date timestamp = SignatureUtils.getTimestampDate(signature);
+                if (timestamp != null) {
+                    X509CertificateHolder timestampCertificate = SignatureUtils.getTimestampCertificate(signature);
+                    log.info("  <b>Timestamp:</b>       " + datetimeFormat.format(timestamp) + " (" + formatName(timestampCertificate.getSubject(), verbose) + ")");
+                }
+
+                String tag = formatTag(SignatureUtils.getTag(signature));
+                if (tag != null) {
+                    log.info("  <b>Tag:</b>             " + tag.trim());
+                }
+
+                log.info("  <b>Certificate</b>");
+                log.info("    <b>Subject:</b>       " + formatName(cert.getSubject(), verbose));
+                log.info("    <b>Issuer:</b>        " + formatName(cert.getIssuer(), verbose));
+                log.info("    <b>Key:</b>           " + getKeyAlgorithm(cert));
+                log.info("    <b>Validity:</b>      " + dateFormat.format(cert.getNotBefore()) + " - " + dateFormat.format(cert.getNotAfter()) + " (" + (expired ? "expired" : daysLeft + " days left") + ")");
+                log.info("    <b>Serial:</b>        " + String.format("%032x", cert.getSerialNumber()));
+                log.info("");
+            }
+        } catch (Exception e) {
+            throw new SignerException("Couldn't show the signatures of" + file, e);
+        }
+    }
+
+    /**
+     * Formats the X500 name:
+     * <ul>
+     *   <li>in normal mode, returns only the common name (CN)</li>
+     *   <li>in verbose mode, returns the full name in LDAP order (starting with the common name)</li>
+     * </ul>
+     */
+    private String formatName(X500Name name, boolean verbose) {
+        if (verbose) {
+            return new X500Name(new BCStyle() {
+                public String toString(X500Name name) {
+                    StringBuilder buf = new StringBuilder();
+                    RDN[] rdns = name.getRDNs();
+                    for (int i = rdns.length - 1; i >= 0; i--) {
+                        if (i != rdns.length - 1) {
+                            buf.append(", ");
+                        }
+                        IETFUtils.appendRDN(buf, rdns[i], defaultSymbols);
+                    }
+                    return buf.toString();
+                }
+            }, name.getRDNs()).toString().replaceAll("\\\\,", ",");
+        } else {
+            return name.getRDNs(BCStyle.CN)[0].getFirst().getValue().toString();
+        }
+    }
+
+    /**
+     * Returns the algorithm of the public key of the certificate (for example "RSA 2048" or "EC 384").
+     */
+    private String getKeyAlgorithm(X509CertificateHolder certificate) throws IOException, CertificateException {
+        X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(certificate.getEncoded()));
+        PublicKey publicKey = cert.getPublicKey();
+
+        if (publicKey instanceof RSAPublicKey) {
+            return "RSA " + ((RSAPublicKey) publicKey).getModulus().bitLength();
+        } else if (publicKey instanceof ECPublicKey) {
+            return "EC " + (((ECPublicKey) publicKey).getParams()).getCurve().getField().getFieldSize();
+        } else {
+            return publicKey.getAlgorithm();
+        }
+    }
+
+    /**
+     * Formats the value of the unsigned tag.
+     */
+    static String formatTag(ASN1Encodable value) {
+        if (value != null) {
+            if (value instanceof ASN1UTF8String) {
+                return ((ASN1UTF8String) value).getString();
+            }
+
+            if (value instanceof DEROctetString) {
+                int limit = 100;
+                byte[] bytes = ((DEROctetString) value).getOctets();
+                return "(" + bytes.length + " bytes) " + new String(bytes).substring(0, limit) + (bytes.length > limit ? " ... (truncated)" : "");
+            }
+        }
+        return null;
+    }
+
     private void tag(File file) throws SignerException {
         if (!file.exists()) {
             throw new SignerException("Couldn't find " + file);
@@ -589,7 +745,7 @@ class SignerHelper {
             }
 
             log.info("Adding tag to " + file);
-            signatures.set(0, addUnsignedAttribute(signatures.get(0), AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue()));
+            signatures.set(0, SignatureUtils.addUnsignedAttribute(signatures.get(0), AuthenticodeObjectIdentifiers.JSIGN_UNSIGNED_DATA_OBJID, getTagValue()));
             signable.setSignatures(signatures);
             signable.save();
         } catch (SignerException e) {
@@ -597,22 +753,6 @@ class SignerHelper {
         } catch (Exception e) {
             throw new SignerException("Couldn't modify the signature of " + file, e);
         }
-    }
-
-    private CMSSignedData addUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid, ASN1Encodable value) {
-        SignerInformationStore store = signature.getSignerInfos();
-        Collection<SignerInformation> signers = store.getSigners();
-        SignerInformation signer = signers.iterator().next();
-
-        AttributeTable attributes = signer.getUnsignedAttributes();
-        if (attributes == null) {
-            attributes = new AttributeTable(new DERSet());
-        }
-        attributes = attributes.add(oid, value);
-
-        signers.remove(signer);
-        signers.add(SignerInformation.replaceUnsignedAttributes(signer, attributes));
-        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signers));
     }
 
     private ASN1Encodable getTagValue() throws IOException {
@@ -643,7 +783,7 @@ class SignerHelper {
         }
 
         try {
-            initializeProxy(proxyUrl, proxyUser, proxyPass);
+            proxySettings.initializeProxy();
         } catch (Exception e) {
             throw new SignerException("Couldn't initialize proxy", e);
         }
@@ -695,48 +835,6 @@ class SignerHelper {
             signable.save();
         } catch (IOException | CMSException e) {
             throw new SignerException("Couldn't timestamp " + file, e);
-        }
-    }
-
-    /**
-     * Initializes the proxy.
-     *
-     * @param proxyUrl       the url of the proxy (either as hostname:port or http[s]://hostname:port)
-     * @param proxyUser      the username for the proxy authentication
-     * @param proxyPassword  the password for the proxy authentication
-     */
-    private void initializeProxy(String proxyUrl, final String proxyUser, final String proxyPassword) throws MalformedURLException {
-        // Do nothing if there is no proxy url.
-        if (proxyUrl != null && !proxyUrl.trim().isEmpty()) {
-            if (!proxyUrl.trim().startsWith("http")) {
-                proxyUrl = "http://" + proxyUrl.trim();
-            }
-            final URL url = new URL(proxyUrl);
-            final int port = url.getPort() < 0 ? 80 : url.getPort();
-
-            ProxySelector.setDefault(new ProxySelector() {
-                public List<Proxy> select(URI uri) {
-                    Proxy proxy;
-                    if (uri.getScheme().equals("socket")) {
-                        proxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress(url.getHost(), port));
-                    } else {
-                        proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), port));
-                    }
-                    log.fine("Proxy selected for " + uri + " : " + proxy);
-                    return Collections.singletonList(proxy);
-                }
-
-                public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-                }
-            });
-
-            if (proxyUser != null && !proxyUser.isEmpty() && proxyPassword != null) {
-                Authenticator.setDefault(new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(proxyUser, proxyPassword.toCharArray());
-                    }
-                });
-            }
         }
     }
 }

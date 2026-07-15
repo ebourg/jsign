@@ -93,11 +93,17 @@ public class JsignTask extends Task {
     /** Tells if previous signatures should be replaced */
     private boolean replace;
 
+    /** Skip files that are already signed. */
+    private boolean lazy;
+
     /** The encoding of the script to be signed (UTF-8 by default). */
     private String encoding = "UTF-8";
 
     /** Tells if a detached signature should be generated or reused. */
     private boolean detached;
+
+    /** The output format of the signature (DER or PEM). */
+    private String format;
 
     /** The value of the unsigned attribute */
     private String value;
@@ -174,12 +180,20 @@ public class JsignTask extends Task {
         this.replace = replace;
     }
 
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
+    }
+
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
     public void setDetached(boolean detached) {
         this.detached = detached;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 
     public void setValue(String value) {
@@ -215,8 +229,10 @@ public class JsignTask extends Task {
             helper.tsretries(tsretries);
             helper.tsretrywait(tsretrywait);
             helper.replace(replace);
+            helper.lazy(lazy);
             helper.encoding(encoding);
             helper.detached(detached);
+            helper.format(format);
             helper.value(value);
 
             if (fileset != null) {
