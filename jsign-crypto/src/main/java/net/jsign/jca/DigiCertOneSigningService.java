@@ -50,7 +50,7 @@ import net.jsign.KeyStoreBuilder;
  */
 public class DigiCertOneSigningService implements SigningService {
 
-    /** Cache of certificates indexed by id and alias */ 
+    /** Cache of certificates indexed by id and alias */
     private final Map<String, Map<String, ?>> certificates = new HashMap<>();
 
     private final RESTClient client;
@@ -201,7 +201,7 @@ public class DigiCertOneSigningService implements SigningService {
             Map<String, Object> keypair = (Map<String, Object>) certificate.get("keypair");
             String keyId = (String) keypair.get("id");
 
-            Map<String, ?> response = client.get("/keypairs/" + keyId);
+            Map<String, ?> response = client.get("keypairs/" + keyId);
             String algorithm = (String) response.get("key_alg");
 
             SigningServicePrivateKey key = new SigningServicePrivateKey(keyId, algorithm, this);

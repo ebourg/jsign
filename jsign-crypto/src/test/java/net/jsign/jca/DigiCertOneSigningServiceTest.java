@@ -177,7 +177,7 @@ public class DigiCertOneSigningServiceTest {
                 .withBody(new FileReader("target/test-classes/services/digicertone-certificates.json"));
         onRequest()
                 .havingMethodEqualTo("GET")
-                .havingPathEqualTo("/signingmanager/api/v1//keypairs/ea936a8f-446d-8bab-b782-c01e8612bf1e")
+                .havingPathEqualTo("/signingmanager/api/v1/keypairs/ea936a8f-446d-8bab-b782-c01e8612bf1e")
                 .respond()
                 .withStatus(200)
                 .withContentType("application/json")
@@ -203,7 +203,7 @@ public class DigiCertOneSigningServiceTest {
                 .withBody(new FileReader("target/test-classes/services/digicertone-certificates.json"));
         onRequest()
                 .havingMethodEqualTo("GET")
-                .havingPathEqualTo("/signingmanager/api/v1//keypairs/ea936a8f-446d-8bab-b782-c01e8612bf1e")
+                .havingPathEqualTo("/signingmanager/api/v1/keypairs/ea936a8f-446d-8bab-b782-c01e8612bf1e")
                 .respond()
                 .withStatus(404)
                 .withContentType("application/json")
