@@ -24,7 +24,7 @@ import java.net.ProxySelector;
  * Proxy settings.
  *
  * @author Emmanuel Bourg
- * @since 7.5
+ * @since 8.0
  */
 class ProxySettings {
 

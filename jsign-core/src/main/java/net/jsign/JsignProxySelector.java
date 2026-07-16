@@ -34,7 +34,7 @@ import static java.net.Proxy.Type.*;
  * Proxy selector for Jsign.
  *
  * @author Emmanuel Bourg
- * @since 7.5
+ * @since 8.0
  */
 class JsignProxySelector extends ProxySelector {
 

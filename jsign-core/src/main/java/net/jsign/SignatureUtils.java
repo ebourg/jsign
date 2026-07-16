@@ -58,7 +58,7 @@ public class SignatureUtils {
      * Parse the specified signature.
      *
      * @param signature the signature to analyze
-     * @since 7.5
+     * @since 8.0
      */
     public static CMSSignedData getSignature(byte[] signature) throws IOException {
         try {
@@ -208,7 +208,7 @@ public class SignatureUtils {
     /**
      * Returns the digest info of the signature.
      *
-     * @since 7.5
+     * @since 8.0
      */
     static DigestInfo getDigestInfo(CMSSignedData signature) {
         if (SPC_INDIRECT_DATA_OBJID.equals(signature.getSignedContent().getContentType())) {
@@ -229,7 +229,7 @@ public class SignatureUtils {
     /**
      * Returns the timestamp signer information.
      *
-     * @since 7.5
+     * @since 8.0
      */
     static SignerInformation getCounterSigner(CMSSignedData signature) throws CMSException {
         SignerInformation signer = signature.getSignerInfos().iterator().next();
@@ -256,7 +256,7 @@ public class SignatureUtils {
     /**
      * Returns the signing time of the timestamp.
      *
-     * @since 7.5
+     * @since 8.0
      */
     static Date getTimestampDate(CMSSignedData signature) throws CMSException {
         SignerInformation counterSigner = getCounterSigner(signature);
@@ -273,7 +273,7 @@ public class SignatureUtils {
     /**
      * Returns the certificate of the timestamp.
      *
-     * @since 7.5
+     * @since 8.0
      */
     static X509CertificateHolder getTimestampCertificate(CMSSignedData signature) throws CMSException {
         SignerInformation counterSigner = getCounterSigner(signature);
@@ -301,7 +301,7 @@ public class SignatureUtils {
      *
      * @param signature the CMS signed data
      * @return the value of the unsigned tag (ASN1UTF8String or ASN1OctetString), or null if not found
-     * @since 7.5
+     * @since 8.0
      */
     static ASN1Encodable getTag(CMSSignedData signature) throws IOException {
         Attribute attribute = getUnsignedAttribute(signature, JSIGN_UNSIGNED_DATA_OBJID);
@@ -318,7 +318,7 @@ public class SignatureUtils {
      * @param signature the signature
      * @param oid       the object identifier of the attribute
      * @return the unsigned attribute, or null if not found
-     * @since 7.5
+     * @since 8.0
      */
     static Attribute getUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid) {
         SignerInformation signer = signature.getSignerInfos().iterator().next();
@@ -337,7 +337,7 @@ public class SignatureUtils {
      * @param signature the signature
      * @param oid       the object identifier of the attribute
      * @param value     the value of the attribute
-     * @since 7.5
+     * @since 8.0
      */
     static CMSSignedData addUnsignedAttribute(CMSSignedData signature, ASN1ObjectIdentifier oid, ASN1Encodable value) {
         SignerInformationStore store = signature.getSignerInfos();

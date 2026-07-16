@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
  * <p>Tags are either translated into standard ANSI escape sequences for compatible terminals, or stripped
  * out entirely (useful for raw text logs or unsupported terminals). Unknown tags are left unchanged.</p>
  *
- * @since 7.5
+ * @since 8.0
  */
 class AnsiFormatter {
 

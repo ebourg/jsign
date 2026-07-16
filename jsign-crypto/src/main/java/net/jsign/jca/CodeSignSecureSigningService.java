@@ -38,7 +38,7 @@ import net.jsign.DigestAlgorithm;
 /**
  * Signing service using Encryption Consulting CodeSign Secure REST API.
  *
- * @since 7.5
+ * @since 8.0
  */
 public class CodeSignSecureSigningService implements SigningService {
 

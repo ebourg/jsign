@@ -30,7 +30,7 @@ import net.jsign.KeyStoreBuilder;
 /**
  * Credentials for Encryption Consulting CodeSign Secure.
  *
- * @since 7.5
+ * @since 8.0
  */
 public class CodeSignSecureCredentials {
 
