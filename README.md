@@ -64,20 +64,25 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.5 (in development)
+#### Version 8.0 (in development)
+
 * New signing service: Encryption Consulting CodeSign Secure
 * New `show` command to display the signatures of a file (contributed by Daniel Schaefer)
-* LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
-* The error message displayed when the PE certificate table is corrupted has been improved
-* The new `--nonProxyHosts` option allows to specify hosts that should bypass the HTTP proxy
-* The new `--lazy` signing option skips files that are already signed
+* The new `--nonProxyHosts` parameter allows to specify hosts that should bypass the HTTP proxy
+* The new `--lazy` signing parameter skips files that are already signed
 * Timed-out connections to the cloud signing services are now retried
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
-* The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
-  use on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
-* The terminally deprecated method warning displayed when signing MSI files has been fixed (from the command line only)
-* An Azure Trusted Signing endpoint with a trailing slash no longer causes a 404 error
+* The error message displayed when the PE certificate table is corrupted has been improved
 * Upgraded Bouncy Castle LTS to 2.73.10
+
+#### Version 7.5 (2026-07-16)
+
+* The "_Unknown JSON value type_" error with DigiCert ONE has been fixed (contributed by Rhys Hansen)
+* An Azure Trusted Signing endpoint with a trailing slash no longer causes a 404 error
+* The terminally deprecated method warning displayed when signing MSI files has been fixed (from the command line only)
+* LDAP URLs in the Authority Information Access attribute are now ignored and no longer cause an error
+* The Yubikey PKCS#11 library is now also searched in the Homebrew installation directory (`/opt/homebrew/lib/`)
+  used on Apple Silicon and on DYLD_LIBRARY_PATH (contributed by ye4241)
 
 #### Version 7.4 (2025-10-24)
 
