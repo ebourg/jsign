@@ -73,6 +73,7 @@ See https://ebourg.github.io/jsign for more information.
 * Timed-out connections to the cloud signing services are now retried
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
 * The error message displayed when the PE certificate table is corrupted has been improved
+* The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
 * Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.5 (2026-07-16)

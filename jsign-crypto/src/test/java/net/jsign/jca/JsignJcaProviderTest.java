@@ -85,4 +85,22 @@ public class JsignJcaProviderTest {
 
         assertNotNull("Signature", signature.sign());
     }
+
+    @Test
+    public void testKeyStorePKCS12() throws Exception {
+        JsignJcaProvider provider = new JsignJcaProvider("../jsign-core/src/test/resources/keystores/keystore.p12");
+
+        KeyStore keystore = KeyStore.getInstance("PKCS12", provider);
+        keystore.load(null, "password".toCharArray());
+        String alias = keystore.aliases().nextElement();
+
+        PrivateKey key = (PrivateKey) keystore.getKey(alias, "password".toCharArray());
+        assertNotNull("key not found", key);
+
+        Signature signature = Signature.getInstance("SHA256withRSA", provider);
+        signature.initSign(key);
+        signature.update("Lorem ipsum dolor sit amet".getBytes());
+
+        assertNotNull("Signature", signature.sign());
+    }
 }
