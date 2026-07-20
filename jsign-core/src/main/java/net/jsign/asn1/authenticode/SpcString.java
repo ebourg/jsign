@@ -20,7 +20,6 @@ import org.bouncycastle.asn1.ASN1Choice;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERBMPString;
-import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERTaggedObject;
 
 /**
@@ -36,19 +35,14 @@ import org.bouncycastle.asn1.DERTaggedObject;
  */
 public class SpcString extends ASN1Object implements ASN1Choice {
 
-    private DERBMPString unicode;
-    private DERIA5String ascii;
+    private final String string;
 
     public SpcString(String string) {
-        unicode = new DERBMPString(string);
+        this.string = string;
     }
 
     @Override
     public ASN1Primitive toASN1Primitive() {
-        if (unicode != null) {
-            return new DERTaggedObject(false, 0, unicode);
-        } else {
-            return new DERTaggedObject(false, 1, ascii);
-        }
+        return new DERTaggedObject(false, 0, new DERBMPString(string));
     }
 }
