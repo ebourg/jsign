@@ -43,16 +43,10 @@ import org.bouncycastle.asn1.BERSequence;
 public class SpcSipInfo extends ASN1Object {
 
     /** A value specific to the type of object signed (1 for MSI, VBScript and JScript, 65536 for PowerShell) */
-    private int version;
+    private final int version;
 
     /** The GUID of the object signed */
-    private SpcUuid uuid;
-
-    private int reserved1;
-    private int reserved2;
-    private int reserved3;
-    private int reserved4;
-    private int reserved5;
+    private final SpcUuid uuid;
 
     public SpcSipInfo(int version, SpcUuid uuid) {
         this.version = version;
@@ -64,11 +58,11 @@ public class SpcSipInfo extends ASN1Object {
         ASN1EncodableVector v = new ASN1EncodableVector();
         v.add(new ASN1Integer(version));
         v.add(uuid);
-        v.add(new ASN1Integer(reserved1));
-        v.add(new ASN1Integer(reserved2));
-        v.add(new ASN1Integer(reserved3));
-        v.add(new ASN1Integer(reserved4));
-        v.add(new ASN1Integer(reserved5));
+        v.add(new ASN1Integer(0)); // reserved1
+        v.add(new ASN1Integer(0)); // reserved2
+        v.add(new ASN1Integer(0)); // reserved3
+        v.add(new ASN1Integer(0)); // reserved4
+        v.add(new ASN1Integer(0)); // reserved5
         return new BERSequence(v);
     }
 }
