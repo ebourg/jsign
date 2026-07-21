@@ -45,6 +45,8 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.util.Store;
 
+import net.jsign.asn1.authenticode.SpcSpOpusInfo;
+
 import static net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers.*;
 
 /**
@@ -224,6 +226,17 @@ public class SignatureUtils {
         }
 
         return null;
+    }
+
+    /**
+     * Returns the SpcSpOpusInfo in the authenticated attributes of the signature.
+     *
+     * @since 8.0
+     */
+    static SpcSpOpusInfo getSpcSpOpusInfo(CMSSignedData signature) {
+        SignerInformation signerInformation = signature.getSignerInfos().iterator().next();
+        Attribute attribute = signerInformation.getSignedAttributes().get(SPC_SP_OPUS_INFO_OBJID);
+        return attribute != null ? SpcSpOpusInfo.parse(attribute.getAttrValues().getObjectAt(0)) : null;
     }
 
     /**

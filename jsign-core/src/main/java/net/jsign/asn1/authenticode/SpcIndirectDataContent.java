@@ -57,11 +57,8 @@ public class SpcIndirectDataContent extends ASN1Object {
         return new DERSequence(new ASN1Encodable[] { data, messageDigest });
     }
 
-    public static SpcIndirectDataContent parse(byte[] encoded) {
-        return parse(ASN1Sequence.getInstance(encoded));
-    }
-
-    public static SpcIndirectDataContent parse(ASN1Sequence sequence) {
+    public static SpcIndirectDataContent parse(ASN1Encodable encodable) {
+        ASN1Sequence  sequence = ASN1Sequence.getInstance(encodable);
         SpcAttributeTypeAndOptionalValue data = SpcAttributeTypeAndOptionalValue.parse(ASN1Sequence.getInstance(sequence.getObjectAt(0)));
         DigestInfo messageDigest = DigestInfo.getInstance(sequence.getObjectAt(1));
         return new SpcIndirectDataContent(data, messageDigest);

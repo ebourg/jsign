@@ -67,6 +67,8 @@ import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.bouncycastle.util.encoders.Hex;
 
 import net.jsign.asn1.authenticode.AuthenticodeObjectIdentifiers;
+import net.jsign.asn1.authenticode.SpcLink;
+import net.jsign.asn1.authenticode.SpcSpOpusInfo;
 import net.jsign.timestamp.Timestamper;
 import net.jsign.timestamp.TimestampingMode;
 
@@ -654,6 +656,17 @@ class SignerHelper {
                     log.info("  <b>Timestamp:</b>       " + datetimeFormat.format(timestamp) + " (" + formatName(timestampCertificate.getSubject(), verbose) + ")");
                 }
 
+                SpcSpOpusInfo spOpusInfo = SignatureUtils.getSpcSpOpusInfo(signature);
+                if (spOpusInfo != null) {
+                    if (spOpusInfo.getProgramName() != null && !spOpusInfo.getProgramName().trim().isEmpty()) {
+                        log.info("  <b>Program Name:</b>    " + spOpusInfo.getProgramName());
+                    }
+                    SpcLink moreInfo = spOpusInfo.getMoreInfo();
+                    if (moreInfo != null && moreInfo.getUrl() != null && !moreInfo.getUrl().trim().isEmpty()) {
+                        log.info("  <b>URL:</b>             " + moreInfo.getUrl());
+                    }
+                }
+
                 String tag = formatTag(SignatureUtils.getTag(signature));
                 if (tag != null) {
                     log.info("  <b>Tag:</b>             " + tag.trim());
@@ -668,7 +681,7 @@ class SignerHelper {
                 log.info("");
             }
         } catch (Exception e) {
-            throw new SignerException("Couldn't show the signatures of" + file, e);
+            throw new SignerException("Couldn't show the signatures of " + file, e);
         }
     }
 
