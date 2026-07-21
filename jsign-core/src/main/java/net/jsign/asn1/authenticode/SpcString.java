@@ -16,9 +16,14 @@
 
 package net.jsign.asn1.authenticode;
 
+import org.bouncycastle.asn1.ASN1BMPString;
 import org.bouncycastle.asn1.ASN1Choice;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.BERTags;
 import org.bouncycastle.asn1.DERBMPString;
 import org.bouncycastle.asn1.DERTaggedObject;
 
@@ -41,8 +46,32 @@ public class SpcString extends ASN1Object implements ASN1Choice {
         this.string = string;
     }
 
+    public String getString() {
+        return string;
+    }
+
     @Override
     public ASN1Primitive toASN1Primitive() {
         return new DERTaggedObject(false, 0, new DERBMPString(string));
+    }
+
+    public static SpcString parse(ASN1Encodable encodable) {
+        ASN1TaggedObject taggedObject = ASN1TaggedObject.getInstance(encodable);
+        String string = null;
+        switch (taggedObject.getTagNo()) {
+            case 0: {
+                ASN1Primitive base = taggedObject.getBaseUniversal(false, BERTags.BMP_STRING);
+                string = ASN1BMPString.getInstance(base).getString();
+                break;
+            }
+
+            case 1: {
+                ASN1Primitive base = taggedObject.getBaseUniversal(false, BERTags.IA5_STRING);
+                string = ASN1IA5String.getInstance(base).getString();
+                break;
+            }
+        }
+
+        return new SpcString(string);
     }
 }

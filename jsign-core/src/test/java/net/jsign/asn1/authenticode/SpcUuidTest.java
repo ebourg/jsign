@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package net.jsign.asn1;
+package net.jsign.asn1.authenticode;
 
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.DEROctetString;
 import org.junit.Test;
-
-import net.jsign.asn1.authenticode.SpcUuid;
 
 import static org.junit.Assert.*;
 
@@ -38,5 +36,14 @@ public class SpcUuidTest {
         SpcUuid uuid = new SpcUuid("1FCC3B60-594B-084E-B724-D2C6297EF351");
         ASN1OctetString asn1 = (DEROctetString) uuid.toASN1Primitive();
         assertArrayEquals(new byte[] {(byte) 0x1F, (byte) 0xCC, 0x3B, 0x60,/*-*/0x59, 0x4B,/*-*/0x08, 0x4E,/*-*/(byte) 0xB7, 0x24,/*-*/(byte) 0xD2, (byte) 0xC6, 0x29, 0x7E, (byte) 0xF3, 0x51}, asn1.getOctets());
+    }
+
+    @Test
+    public void testGetOctets() {
+        SpcUuid uuid1 = new SpcUuid("F1100C00-0000-0000-C000-000000000046");
+        assertArrayEquals(uuid1.getOctets(), ((DEROctetString) uuid1.toASN1Primitive()).getOctets());
+
+        SpcUuid uuid2 = new SpcUuid("1FCC3B60-594B-084E-B724-D2C6297EF351");
+        assertArrayEquals(uuid2.getOctets(), ((DEROctetString) uuid2.toASN1Primitive()).getOctets());
     }
 }

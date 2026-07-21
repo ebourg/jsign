@@ -19,6 +19,7 @@ package net.jsign.asn1.authenticode;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x509.DigestInfo;
 
@@ -54,5 +55,15 @@ public class SpcIndirectDataContent extends ASN1Object {
     @Override
     public ASN1Primitive toASN1Primitive() {
         return new DERSequence(new ASN1Encodable[] { data, messageDigest });
+    }
+
+    public static SpcIndirectDataContent parse(byte[] encoded) {
+        return parse(ASN1Sequence.getInstance(encoded));
+    }
+
+    public static SpcIndirectDataContent parse(ASN1Sequence sequence) {
+        SpcAttributeTypeAndOptionalValue data = SpcAttributeTypeAndOptionalValue.parse(ASN1Sequence.getInstance(sequence.getObjectAt(0)));
+        DigestInfo messageDigest = DigestInfo.getInstance(sequence.getObjectAt(1));
+        return new SpcIndirectDataContent(data, messageDigest);
     }
 }

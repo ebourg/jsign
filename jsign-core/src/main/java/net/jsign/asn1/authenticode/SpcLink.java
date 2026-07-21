@@ -17,8 +17,11 @@
 package net.jsign.asn1.authenticode;
 
 import org.bouncycastle.asn1.ASN1Choice;
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.BERTags;
 import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERTaggedObject;
 
@@ -36,7 +39,7 @@ import org.bouncycastle.asn1.DERTaggedObject;
  */
 public class SpcLink extends ASN1Object implements ASN1Choice {
 
-    private DERIA5String url;
+    private ASN1IA5String url;
     private SpcSerializedObject moniker;
     private SpcString file = new SpcString("");
 
@@ -47,6 +50,18 @@ public class SpcLink extends ASN1Object implements ASN1Choice {
         this.url = new DERIA5String(url);
     }
 
+    public String getUrl() {
+        return url != null ? url.getString() : null;
+    }
+
+    public SpcSerializedObject getMoniker() {
+        return moniker;
+    }
+
+    public SpcString getFile() {
+        return file;
+    }
+
     @Override
     public ASN1Primitive toASN1Primitive() {
         if (url != null) {
@@ -54,7 +69,25 @@ public class SpcLink extends ASN1Object implements ASN1Choice {
         } else if (moniker != null) {
             return new DERTaggedObject(false, 1, moniker);
         } else {
-            return new DERTaggedObject(false, 2, file);
+            return new DERTaggedObject(true, 2, file);
         }        
+    }
+
+    public static SpcLink parse(ASN1TaggedObject taggedObject) {
+        SpcLink link = new SpcLink();
+
+        switch (taggedObject.getTagNo()) {
+            case 0:
+                link.url = DERIA5String.getInstance(taggedObject.getBaseUniversal(false, BERTags.IA5_STRING));
+                break;
+            case 1:
+                link.moniker = SpcSerializedObject.parse(taggedObject.getBaseUniversal(false, BERTags.SEQUENCE));
+                break;
+            case 2:
+                link.file = SpcString.parse(taggedObject.getExplicitBaseTagged());
+                break;
+        }
+
+        return link;
     }
 }

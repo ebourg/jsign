@@ -16,9 +16,12 @@
 
 package net.jsign.asn1.authenticode;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.BERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
 
@@ -40,21 +43,29 @@ public class SpcSpOpusInfo extends ASN1Object {
      * - If publisher chooses not to specify a description, the SpcString structure contains a zero-length program name.
      * - If the publisher chooses to specify a description, the SpcString structure contains a Unicode string.
      */
-    private SpcString programName;
+    private final String programName;
 
     /**
      * This field is set to an SPCLink structure that contains a URL for a Web
      * site with more information about the signer. The URL is an ASCII string.
      */
-    private SpcLink moreInfo;
+    private final SpcLink moreInfo;
 
     public SpcSpOpusInfo(String programName, String url) {
-        if (programName != null) {
-            this.programName = new SpcString(programName);
-        }
-        if (url != null) {
-            this.moreInfo = new SpcLink(url);
-        }
+        this(programName, url != null ? new SpcLink(url) : null);
+    }
+
+    public SpcSpOpusInfo(String programName, SpcLink moreInfo) {
+        this.programName = programName;
+        this.moreInfo = moreInfo;
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public SpcLink getMoreInfo() {
+        return moreInfo;
     }
 
     @Override
@@ -62,7 +73,7 @@ public class SpcSpOpusInfo extends ASN1Object {
         ASN1EncodableVector v = new ASN1EncodableVector();
         
         if (programName != null) {
-            v.add(new DERTaggedObject(true, 0, programName));
+            v.add(new DERTaggedObject(true, 0, new SpcString(programName)));
         }
         
         if (moreInfo != null) {
@@ -70,5 +81,23 @@ public class SpcSpOpusInfo extends ASN1Object {
         }
         
         return new BERSequence(v);
+    }
+
+    public static SpcSpOpusInfo parse(ASN1Encodable encodable) {
+        ASN1Sequence sequence = ASN1Sequence.getInstance(encodable);
+        SpcString programName = null;
+        SpcLink moreInfo = null;
+        for (ASN1Encodable element : sequence) {
+            ASN1TaggedObject taggedObject = ASN1TaggedObject.getInstance(element);
+            switch (taggedObject.getTagNo()) {
+                case 0:
+                    programName = SpcString.parse(taggedObject.getExplicitBaseObject());
+                    break;
+                case 1:
+                    moreInfo = SpcLink.parse((ASN1TaggedObject) taggedObject.getExplicitBaseObject());
+                    break;
+            }
+        }
+        return new SpcSpOpusInfo(programName != null ? programName.getString() : null, moreInfo);
     }
 }

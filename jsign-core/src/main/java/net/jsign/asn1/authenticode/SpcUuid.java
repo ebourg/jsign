@@ -35,8 +35,15 @@ public class SpcUuid  extends ASN1Object {
     private final byte[] uuid = new byte[16];
 
     public SpcUuid(String uuid) {
-        byte[] tmp = new BigInteger(uuid.replaceAll("-", ""), 16).toByteArray();
-        System.arraycopy(tmp, tmp.length - this.uuid.length, this.uuid, 0, this.uuid.length);
+        this(new BigInteger(uuid.replaceAll("-", ""), 16).toByteArray());
+    }
+
+    public SpcUuid(byte[] uuid) {
+        System.arraycopy(uuid, uuid.length - this.uuid.length, this.uuid, 0, this.uuid.length);
+    }
+
+    public byte[] getOctets() {
+        return uuid;
     }
 
     @Override

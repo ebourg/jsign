@@ -16,9 +16,11 @@
 
 package net.jsign.asn1.authenticode;
 
-import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 
@@ -35,26 +37,41 @@ import org.bouncycastle.asn1.DERSequence;
  */
 public class SpcSerializedObject extends ASN1Object {
 
-    private final SpcUuid classId = new SpcUuid("A6B586D5-B4A1-2466-AE05-A217DA8E60D6");
+    private final SpcUuid classId;
 
     /**
      * The serializedData field contains a binary structure. When present in an
      * Authenticode signature generated in Windows Vista, serializedData
      * contains a binary structure that contains page hashes.
      */
-    private final DEROctetString serializedData;
+    private final byte[] serializedData;
 
     public SpcSerializedObject(byte[] serializedData) {
-        this.serializedData = new DEROctetString(serializedData);
+        this(new SpcUuid("A6B586D5-B4A1-2466-AE05-A217DA8E60D6"), serializedData);
+    }
+
+    public SpcSerializedObject(SpcUuid classId, byte[] serializedData) {
+        this.classId = classId;
+        this.serializedData = serializedData;
+    }
+
+    public SpcUuid getClassId() {
+        return classId;
+    }
+
+    public byte[] getSerializedData() {
+        return serializedData;
     }
 
     @Override
     public ASN1Primitive toASN1Primitive() {
-        ASN1EncodableVector v = new ASN1EncodableVector();
-        
-        v.add(classId);
-        v.add(serializedData);
-        
-        return new DERSequence(v);
+        return new DERSequence(new ASN1Encodable[] { classId, new DEROctetString(serializedData) });
+    }
+
+    public static SpcSerializedObject parse(ASN1Encodable encodable) {
+        ASN1Sequence sequence = ASN1Sequence.getInstance(encodable);
+        SpcUuid classId = new SpcUuid(((ASN1OctetString) sequence.getObjectAt(0)).getOctets());
+        DEROctetString serializedData = (DEROctetString) sequence.getObjectAt(1);
+        return new SpcSerializedObject(classId, serializedData.getOctets());
     }
 }

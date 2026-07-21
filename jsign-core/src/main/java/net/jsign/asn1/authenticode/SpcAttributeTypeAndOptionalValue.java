@@ -16,10 +16,12 @@
 
 package net.jsign.asn1.authenticode;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.BERSequence;
 
 /**
@@ -36,11 +38,19 @@ import org.bouncycastle.asn1.BERSequence;
 public class SpcAttributeTypeAndOptionalValue extends ASN1Object {
 
     private final ASN1ObjectIdentifier type;
-    private final ASN1Object value;
+    private final ASN1Encodable value;
 
-    public SpcAttributeTypeAndOptionalValue(ASN1ObjectIdentifier type, ASN1Object value) {
+    public SpcAttributeTypeAndOptionalValue(ASN1ObjectIdentifier type, ASN1Encodable value) {
         this.type = type;
         this.value = value;
+    }
+
+    public ASN1ObjectIdentifier getType() {
+        return type;
+    }
+
+    public ASN1Encodable getValue() {
+        return value;
     }
 
     public ASN1Primitive toASN1Primitive() {
@@ -51,5 +61,22 @@ public class SpcAttributeTypeAndOptionalValue extends ASN1Object {
         }
         
         return new BERSequence(v);
+    }
+
+    public static SpcAttributeTypeAndOptionalValue parse(ASN1Sequence sequence) {
+        ASN1ObjectIdentifier type = ASN1ObjectIdentifier.getInstance(sequence.getObjectAt(0));
+        ASN1Encodable value = null;
+        if (sequence.size() > 1) {
+            if (type.equals(AuthenticodeObjectIdentifiers.SPC_SIPINFO_OBJID)) {
+                value = SpcSipInfo.parse(sequence.getObjectAt(1));
+            } else if (type.equals(AuthenticodeObjectIdentifiers.SPC_CAB_DATA_OBJID)
+                    || type.equals(AuthenticodeObjectIdentifiers.SPC_PE_IMAGE_DATA_OBJID)) {
+                value = SpcPeImageData.parse(sequence.getObjectAt(1));
+            } else {
+                value = sequence.getObjectAt(1);
+            }
+        }
+        
+        return new SpcAttributeTypeAndOptionalValue(type, value);
     }
 }

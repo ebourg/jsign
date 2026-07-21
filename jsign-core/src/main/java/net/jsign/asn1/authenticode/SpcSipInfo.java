@@ -16,10 +16,13 @@
 
 package net.jsign.asn1.authenticode;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.BERSequence;
 
 /**
@@ -53,6 +56,14 @@ public class SpcSipInfo extends ASN1Object {
         this.uuid = uuid;
     }
 
+    public int getVersion() {
+        return version;
+    }
+
+    public SpcUuid getUUID() {
+        return uuid;
+    }
+
     @Override
     public ASN1Primitive toASN1Primitive() {
         ASN1EncodableVector v = new ASN1EncodableVector();
@@ -64,5 +75,12 @@ public class SpcSipInfo extends ASN1Object {
         v.add(new ASN1Integer(0)); // reserved4
         v.add(new ASN1Integer(0)); // reserved5
         return new BERSequence(v);
+    }
+
+    public static SpcSipInfo parse(ASN1Encodable encodable) {
+        ASN1Sequence sequence = ASN1Sequence.getInstance(encodable);
+        int version = ASN1Integer.getInstance(sequence.getObjectAt(0)).getValue().intValue();
+        SpcUuid uuid = new SpcUuid(ASN1OctetString.getInstance(sequence.getObjectAt(1)).getOctets());
+        return new SpcSipInfo(version, uuid);
     }
 }

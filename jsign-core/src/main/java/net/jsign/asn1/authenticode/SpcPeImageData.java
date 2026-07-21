@@ -16,9 +16,13 @@
 
 package net.jsign.asn1.authenticode;
 
+import org.bouncycastle.asn1.ASN1BitString;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.BERSequence;
 import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERTaggedObject;
@@ -29,6 +33,12 @@ import org.bouncycastle.asn1.DERTaggedObject;
  *    flags                   SpcPeImageFlags DEFAULT { includeResources },
  *    file                    SpcLink
  * } --#public--
+ *
+ * SpcPeImageFlags ::= BIT STRING {
+ *    includeResources            (0),
+ *    includeDebugInfo            (1),
+ *    includeImportAddressTable   (2)
+ * }
  * </pre>
  *
  * @author Emmanuel Bourg
@@ -42,7 +52,7 @@ public class SpcPeImageData extends ASN1Object {
      * Although flags is always present, it is ignored when calculating the
      * file hash for both signing and verification purposes.
      */
-    private DERBitString flags = new DERBitString(new byte[0]);
+    private ASN1BitString flags = new DERBitString(new byte[0]);
 
     /**
      * This field is always set to an SPCLink structure, even though the ASN.1
@@ -51,6 +61,14 @@ public class SpcPeImageData extends ASN1Object {
      */
     private SpcLink file = new SpcLink();
 
+    public ASN1BitString getFlags() {
+        return flags;
+    }
+
+    public SpcLink getFile() {
+        return file;
+    }
+
     @Override
     public ASN1Primitive toASN1Primitive() {
         ASN1EncodableVector v = new ASN1EncodableVector();
@@ -58,5 +76,13 @@ public class SpcPeImageData extends ASN1Object {
         v.add(new DERTaggedObject(0, file)); // contrary to the specification this is tagged (as observed in actual signed executables)
 
         return new BERSequence(v);
+    }
+
+    public static SpcPeImageData parse(ASN1Encodable encodable) {
+        ASN1Sequence sequence = ASN1Sequence.getInstance(encodable);
+        SpcPeImageData data = new SpcPeImageData();
+        data.flags = ASN1BitString.getInstance(sequence.getObjectAt(0));
+        data.file = SpcLink.parse(ASN1TaggedObject.getInstance(DERTaggedObject.getInstance(sequence.getObjectAt(1)).getBaseObject()));
+        return data;
     }
 }
