@@ -25,12 +25,13 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.util.encoders.Hex;
+import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
 import net.jsign.KeyStoreBuilder;
+import net.jsign.WindowsReadOnlyFileLock;
 
 import static net.jsign.DigestAlgorithm.*;
 import static net.jsign.SignatureAssert.*;
@@ -39,11 +40,25 @@ import static org.junit.Assert.*;
 public class PEFileTest {
 
     @Test
-    public void testIsMSCabinetFile() throws Exception {
+    public void testIsPEFile() throws Exception {
         assertTrue(PEFile.isPEFile(new File("target/test-classes/wineyes.exe")));
         assertFalse(PEFile.isPEFile(new File("target/test-classes/mscab/sample1.cab")));
         assertFalse(PEFile.isPEFile(new File("target")));
         assertFalse(PEFile.isPEFile(new File("target/non-existent")));
+    }
+
+    @Test
+    public void testIsPEFileWithLockedFile() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File srcFile = new File("target/test-classes/wineyes.exe");
+        File destFile = new File("target/test-classes/wineyes-locked.exe");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (WindowsReadOnlyFileLock lock = new WindowsReadOnlyFileLock(destFile)) {
+            lock.lock();
+            assertTrue(PEFile.isPEFile(destFile));
+        }
     }
 
     @Test

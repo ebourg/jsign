@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +32,7 @@ import org.bouncycastle.cms.CMSTypedData;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.util.CollectionStore;
 
+import net.jsign.ChannelUtils;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
 import net.jsign.SignatureUtils;
@@ -77,7 +76,7 @@ public class CatalogFile implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public CatalogFile(File file) throws IOException {
-        this(Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE));
+        this(ChannelUtils.openReadWriteOrReadOnly(file));
     }
 
     /**

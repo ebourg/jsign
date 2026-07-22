@@ -22,7 +22,11 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
+
+import net.jsign.WindowsReadOnlyFileLock;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +38,20 @@ public class NAVXFileTest {
         assertFalse(NAVXFile.isNAVXFile(new File("target/test-classes/wineyes.exe")));
         assertFalse(NAVXFile.isNAVXFile(new File("target")));
         assertFalse(NAVXFile.isNAVXFile(new File("target/non-existent")));
+    }
+
+    @Test
+    public void testIsNAVXFileWithLockedFile() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File srcFile = new File("target/test-classes/minimal.navx");
+        File destFile = new File("target/test-classes/minimal-locked.navx");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (WindowsReadOnlyFileLock lock = new WindowsReadOnlyFileLock(destFile)) {
+            lock.lock();
+            assertTrue(NAVXFile.isNAVXFile(destFile));
+        }
     }
 
     @Test

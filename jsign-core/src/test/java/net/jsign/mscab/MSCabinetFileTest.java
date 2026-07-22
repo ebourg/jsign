@@ -27,10 +27,12 @@ import java.security.KeyStore;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
 
 import net.jsign.AuthenticodeSigner;
 import net.jsign.KeyStoreBuilder;
+import net.jsign.WindowsReadOnlyFileLock;
 
 import static net.jsign.DigestAlgorithm.*;
 import static net.jsign.SignatureAssert.*;
@@ -44,6 +46,20 @@ public class MSCabinetFileTest {
         assertFalse(MSCabinetFile.isMSCabinetFile(new File("target/test-classes/wineyes.exe")));
         assertFalse(MSCabinetFile.isMSCabinetFile(new File("target")));
         assertFalse(MSCabinetFile.isMSCabinetFile(new File("target/non-existent")));
+    }
+
+    @Test
+    public void testIsMSCabinetFileWithLockedFile() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File srcFile = new File("target/test-classes/mscab/sample1.cab");
+        File destFile = new File("target/test-classes/mscab/sample1-locked.cab");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (WindowsReadOnlyFileLock lock = new WindowsReadOnlyFileLock(destFile)) {
+            lock.lock();
+            assertTrue(MSCabinetFile.isMSCabinetFile(destFile));
+        }
     }
 
     @Test
