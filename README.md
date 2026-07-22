@@ -72,6 +72,7 @@ See https://ebourg.github.io/jsign for more information.
 * The new `--lazy` signing parameter skips files that are already signed
 * Timed-out connections to the cloud signing services are now retried
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
+* Jsign can now open read-only or locked files
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
 * Upgraded Bouncy Castle LTS to 2.73.10

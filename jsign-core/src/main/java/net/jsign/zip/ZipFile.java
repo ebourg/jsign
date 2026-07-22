@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -57,7 +55,7 @@ public class ZipFile implements Closeable {
      * @throws IOException if an I/O error occurs
      */
     public ZipFile(File file) throws IOException {
-        this(Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE));
+        this(ChannelUtils.openReadWriteOrReadOnly(file));
     }
 
     /**

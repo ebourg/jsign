@@ -75,10 +75,69 @@ public class SignableTest {
 
             try (Signable signable = Signable.of(new File("target/test-classes/wineyes.exe"))) {
                 assertTrue(signable instanceof PEFile);
-            };
+            }
 
         } finally {
             Thread.currentThread().setContextClassLoader(contextClassLoader);
+        }
+    }
+
+    @Test
+    public void testOfWithReadOnlyEXE() throws Exception {
+        testOfWithReadOnlyFile(new File("target/test-classes/wineyes.exe"));
+    }
+
+    @Test
+    public void testOfWithReadOnlyCAT() throws Exception {
+        testOfWithReadOnlyFile(new File("target/test-classes/cat/wineyes.cat"));
+    }
+
+    @Test
+    public void testOfWithReadOnlyCAB() throws Exception {
+        testOfWithReadOnlyFile(new File("target/test-classes/mscab/sample1.cab"));
+    }
+
+    public void testOfWithReadOnlyFile(File srcFile) throws Exception {
+        File destFile = new File(srcFile.getPath().replace(".", "-read-only."));
+        destFile.delete();
+
+        FileUtils.copyFile(srcFile, destFile);
+        assertTrue(destFile.setWritable(false));
+
+        try (Signable signable = Signable.of(destFile)) {
+            assertNotNull(signable);
+        }
+    }
+
+    @Test
+    public void testOfWithLockedEXE() throws Exception {
+        testOfWithLockedFile(new File("target/test-classes/wineyes.exe"));
+    }
+
+    @Test
+    public void testOfWithLockedCAT() throws Exception {
+        testOfWithLockedFile(new File("target/test-classes/cat/wineyes.cat"));
+    }
+
+    @Test
+    public void testOfWithLockedCAB() throws Exception {
+        testOfWithLockedFile(new File("target/test-classes/mscab/sample1.cab"));
+    }
+
+    public void testOfWithLockedFile(File srcFile) throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File destFile = new File(srcFile.getPath().replace(".", "-locked."));
+        destFile.delete();
+
+        FileUtils.copyFile(srcFile, destFile);
+        assertTrue(destFile.setWritable(false));
+
+        try (WindowsReadOnlyFileLock lock = new WindowsReadOnlyFileLock(destFile)) {
+            lock.lock();
+            try (Signable signable = Signable.of(destFile)) {
+                assertNotNull(signable);
+            }
         }
     }
 

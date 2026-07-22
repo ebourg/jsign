@@ -19,7 +19,10 @@ package net.jsign.msi;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
+
+import net.jsign.WindowsReadOnlyFileLock;
 
 import static net.jsign.DigestAlgorithm.*;
 import static net.jsign.SignatureAssert.*;
@@ -36,6 +39,20 @@ public class MSIFileTest {
         File file = File.createTempFile("small", ".msi");
         FileUtils.writeByteArrayToFile(file, new byte[3]);
         assertFalse(MSIFile.isMSIFile(file));
+    }
+
+    @Test
+    public void testIsMSIFileWithLockedFile() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File srcFile = new File("target/test-classes/minimal.msi");
+        File destFile = new File("target/test-classes/minimal-locked.msi");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (WindowsReadOnlyFileLock lock =  new WindowsReadOnlyFileLock(destFile)) {
+            lock.lock();
+            assertTrue(MSIFile.isMSIFile(destFile));
+        }
     }
 
     @Test

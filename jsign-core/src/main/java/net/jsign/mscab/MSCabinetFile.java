@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +30,7 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.ChannelUtils;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
 import net.jsign.SignatureUtils;
@@ -90,7 +89,7 @@ public class MSCabinetFile implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public MSCabinetFile(File file) throws IOException {
-        this(Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE));
+        this(ChannelUtils.openReadWriteOrReadOnly(file));
     }
 
     /**

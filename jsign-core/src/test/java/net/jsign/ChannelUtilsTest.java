@@ -16,17 +16,42 @@
 
 package net.jsign;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.junit.Assume;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class ChannelUtilsTest {
+
+    @Test
+    public void testOpenReadWriteOrReadOnlyWithReadOnlyFile() throws Exception {
+        File tmp = File.createTempFile("jsign", ".tmp");
+        tmp.deleteOnExit();
+        tmp.setWritable(false);
+        SeekableByteChannel channel = ChannelUtils.openReadWriteOrReadOnly(tmp);
+        assertTrue("channel is not open", channel.isOpen());
+    }
+
+    @Test
+    public void testOpenReadWriteOrReadOnlyWithLockedFile() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File tmp = File.createTempFile("jsign", ".tmp");
+        tmp.deleteOnExit();
+
+        try (WindowsReadOnlyFileLock lock = new WindowsReadOnlyFileLock(tmp)) {
+            lock.lock();
+            SeekableByteChannel channel = ChannelUtils.openReadWriteOrReadOnly(tmp);
+            assertTrue("channel is not open", channel.isOpen());
+        }
+    }
 
     @Test
     public void testReadNullTerminatedString() throws Exception {

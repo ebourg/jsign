@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
@@ -33,6 +34,20 @@ import java.security.MessageDigest;
  * @since 4.0
  */
 public class ChannelUtils {
+
+    /**
+     * Opens a channel for the specified file with read/write access, falling back to read-only access
+     * if the file is not writable or locked.
+     *
+     * @since 8.0
+     */
+    public static SeekableByteChannel openReadWriteOrReadOnly(File file) throws IOException {
+        try {
+            return Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE);
+        } catch (FileSystemException e) {
+            return Files.newByteChannel(file.toPath(), StandardOpenOption.READ);
+        }
+    }
 
     public static void copy(SeekableByteChannel src, WritableByteChannel dest) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);

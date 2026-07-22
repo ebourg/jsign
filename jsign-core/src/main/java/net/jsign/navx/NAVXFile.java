@@ -32,6 +32,7 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cms.CMSSignedData;
 
+import net.jsign.ChannelUtils;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
 import net.jsign.SignatureUtils;
@@ -88,7 +89,7 @@ public class NAVXFile implements Signable {
      * @throws IOException if an I/O error occurs
      */
     public NAVXFile(File file) throws IOException {
-        this(Files.newByteChannel(file.toPath(), StandardOpenOption.READ, StandardOpenOption.WRITE));
+        this(ChannelUtils.openReadWriteOrReadOnly(file));
     }
 
     /**

@@ -18,17 +18,35 @@ package net.jsign.cat;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Test;
+
+import net.jsign.WindowsReadOnlyFileLock;
 
 import static org.junit.Assert.*;
 
 public class CatalogFileTest {
 
     @Test
-    public void testCatalogFile() {
+    public void testIsCatalogFile() {
         assertTrue(CatalogFile.isCatalogFile(new File("target/test-classes/cat/wineyes.cat")));
         assertFalse(CatalogFile.isCatalogFile(new File("target/test-classes/wineyes.exe")));
         assertFalse(CatalogFile.isCatalogFile(new File("target")));
         assertFalse(CatalogFile.isCatalogFile(new File("target/non-existent")));
+    }
+
+    @Test
+    public void testIsCatalogFileWithLockedFile() throws Exception {
+        Assume.assumeTrue(System.getProperty("os.name").contains("Windows"));
+
+        File srcFile = new File("target/test-classes/cat/wineyes.cat");
+        File destFile = new File("target/test-classes/cat/wineyes-locked.cat");
+        FileUtils.copyFile(srcFile, destFile);
+
+        try (WindowsReadOnlyFileLock lock = new WindowsReadOnlyFileLock(destFile)) {
+            lock.lock();
+            assertTrue(CatalogFile.isCatalogFile(destFile));
+        }
     }
 }
