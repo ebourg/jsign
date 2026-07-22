@@ -10,7 +10,7 @@ _jsign()
 
     declare -A opts
     opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -d --alg -t --tsaurl -m --tsmode -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --nonProxyHosts --replace --lazy -e --encoding --detached --quiet --verbose --debug -h --help"
-    opts["timestamp"]="-t --tsaurl -m --tsmode -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass --nonProxyHosts"
+    opts["timestamp"]="-t --tsaurl -m --tsmode -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass --nonProxyHosts --replace"
     opts["extract"]="--format"
     opts["remove"]=""
     opts["show"]="--verbose"
