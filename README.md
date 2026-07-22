@@ -75,6 +75,7 @@ See https://ebourg.github.io/jsign for more information.
 * Jsign can now open read-only or locked files
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
+* The bash completion script now supports the `--tsmode` and `--alg` parameters
 * Upgraded Bouncy Castle LTS to 2.73.10
 
 #### Version 7.5 (2026-07-16)

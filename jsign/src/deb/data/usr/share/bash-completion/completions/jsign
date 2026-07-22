@@ -9,8 +9,8 @@ _jsign()
     local commands="sign timestamp extract remove show tag"
 
     declare -A opts
-    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -t --tsaurl -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --nonProxyHosts --replace --lazy -e --encoding --detached --quiet --verbose --debug -h --help"
-    opts["timestamp"]="-t --tsaurl -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass --nonProxyHosts"
+    opts["sign"]="-s --keystore --storepass --storetype -a --alias --keypass --keyfile -c --certfile -d --alg -t --tsaurl -m --tsmode -r --tsretries -w --tsretrywait -n --name -u --url --proxyUrl --proxyUser --proxyPass --nonProxyHosts --replace --lazy -e --encoding --detached --quiet --verbose --debug -h --help"
+    opts["timestamp"]="-t --tsaurl -m --tsmode -r --tsretries -w --tsretrywait --proxyUrl --proxyUser --proxyPass --nonProxyHosts"
     opts["extract"]="--format"
     opts["remove"]=""
     opts["show"]="--verbose"
@@ -44,6 +44,14 @@ _jsign()
             ;;
         --storetype)
             COMPREPLY=( $( compgen -W 'JKS JCEKS PKCS12 PKCS11 AWS AZUREKEYVAULT CODESIGNSECURE CRYPTOCERTUM DIGICERTONE ESIGNER ETOKEN GARASIGN GOOGLECLOUD HASHICORPVAULT ORACLECLOUD SIGNPATH SIGNSERVER TRUSTEDSIGNING YUBIKEY NITROKEY OPENPGP OPENSC PIV' -- "$cur" ) )
+            return 0
+            ;;
+        --tsmode)
+            COMPREPLY=( $( compgen -W 'RFC3161 Authenticode' -- "$cur" ) )
+            return 0
+            ;;
+        --alg|-d)
+            COMPREPLY=( $( compgen -W 'SHA1 SHA256 SHA384 SHA512' -- "$cur" ) )
             return 0
             ;;
         --storepass|-a|--alias|--keypass|-t|--tsaurl|-r|--tsretries|-w|--tsretrywait|-n|--name|-u|--url|--proxyUrl|--proxyUser|--proxyPass|--nonProxyHosts|--value)
