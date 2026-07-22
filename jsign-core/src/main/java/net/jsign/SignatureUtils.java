@@ -17,6 +17,7 @@
 package net.jsign;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.cms.Time;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.tsp.TSTInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -271,13 +273,21 @@ public class SignatureUtils {
      *
      * @since 8.0
      */
-    static Date getTimestampDate(CMSSignedData signature) throws CMSException {
+    static Date getTimestampDate(CMSSignedData signature) throws CMSException, ParseException {
         SignerInformation counterSigner = getCounterSigner(signature);
         if (counterSigner != null) {
             Attribute signingTime = counterSigner.getSignedAttributes().get(CMSAttributes.signingTime);
             if (signingTime != null) {
                 return Time.getInstance(signingTime.getAttrValues().getObjectAt(0)).getDate();
             }
+        }
+
+        Attribute timestampAttribute = getUnsignedAttribute(signature, SPC_RFC3161_OBJID);
+        if (timestampAttribute != null) {
+            CMSSignedData signedData = new CMSSignedData(ContentInfo.getInstance(timestampAttribute.getAttrValues().getObjectAt(0)));
+
+            TSTInfo timestampTokenInfo = TSTInfo.getInstance(signedData.getSignedContent().getContent());
+            return timestampTokenInfo.getGenTime().getDate();
         }
 
         return null;
