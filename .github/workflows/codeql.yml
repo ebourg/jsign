@@ -1,0 +1,45 @@
+name: "CodeQL"
+
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: "30 2 * * 1"
+
+permissions:
+  security-events: write
+  packages: read
+  actions: read
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: java
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: "17"
+          cache: maven
+
+      - name: Compile
+        run: mvn -B clean compile
+
+      - name: CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
