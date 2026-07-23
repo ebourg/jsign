@@ -17,13 +17,19 @@
 package net.jsign.jca;
 
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.cedarsoftware.util.io.JsonReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -215,6 +221,49 @@ public class AzureTrustedSigningServiceTest {
         Exception e = assertThrows(GeneralSecurityException.class, () -> service.sign(privateKey, "SHA256withRSA", "Hello".getBytes()));
         assertEquals("message", "InternalError - Response status code does not indicate success: 403 (Forbidden).", e.getCause().getMessage());
     }
+
+    @Test
+    public void testSignWithRpcStyleApiVersion() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile:sign")
+                .havingQueryStringEqualTo("api-version=2024-06-15")
+                .respond()
+                .withStatus(202)
+                .withHeader("operation-location", "http://localhost:" + port() + "/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb?api-version=2024-06-15")
+                .withBody("{\"id\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"Running\"}");
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign/1f234bd9-16cf-4283-9ee6-a460d31207bb")
+                .havingQueryStringEqualTo("api-version=2024-06-15")
+                .respond()
+                .withStatus(200)
+                .withBody("{\"id\":\"1f234bd9-16cf-4283-9ee6-a460d31207bb\",\"status\":\"Running\"}")
+                .thenRespond()
+                .withStatus(200)
+                .withBody(loadSignSuccessResponse());
+
+        AzureTrustedSigningService service = new AzureTrustedSigningService("http://localhost:" + port(), "token", "2024-06-15");
+        SigningServicePrivateKey privateKey = service.getPrivateKey("MyAccount/MyProfile", null);
+
+        byte[] signature = service.sign(privateKey, "SHA256withRSA", "Hello".getBytes());
+
+        assertNotNull("null signature", signature);
+        assertEquals("length", 384, signature.length);
+    }
+
+        private String loadSignSuccessResponse() throws Exception {
+                String json = new String(Files.readAllBytes(Paths.get("target/test-classes/services/trustedsigning-sign.json")), StandardCharsets.UTF_8);
+                Map<String, Object> response = (Map<String, Object>) JsonReader.jsonToJava(json);
+                Map<String, Object> payload = new LinkedHashMap<>();
+                payload.put("operationId", response.get("operationId"));
+                payload.put("status", response.get("status"));
+                Map<String, Object> result = new LinkedHashMap<>();
+                result.put("signature", response.get("signature"));
+                result.put("signingCertificate", response.get("signingCertificate"));
+                payload.put("result", result);
+                return JsonWriter.format(payload);
+        }
 
     @Test
     public void testEndpointWithTrailingSlash() throws Exception {
