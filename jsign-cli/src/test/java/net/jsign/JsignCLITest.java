@@ -690,6 +690,29 @@ public class JsignCLITest {
     }
 
     @Test
+    public void testRemoveByAlgorithm() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-multi-signed.exe");
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--storepass=password", "--alg=SHA-1", "" + targetFile);
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--storepass=password", "--alg=SHA-1", "" + targetFile);
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--storepass=password", "--alg=SHA-256", "" + targetFile);
+        cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--storepass=password", "--alg=SHA-512", "" + targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA1, SHA1, SHA256, SHA512);
+        }
+
+        cli.execute("remove", "--alg=SHA-1", "" + targetFile);
+        cli.execute("remove", "--alg=SHA-512", "" + targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA256);
+        }
+    }
+
+    @Test
     public void testTag() {
         Exception e = assertThrows(SignerException.class, () -> cli.execute("tag", "--value", "userid:1234-ABCD-5678-EFGH", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());

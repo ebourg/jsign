@@ -130,7 +130,7 @@ the all-in-one jar:</p>
   <li><a href="#sign-options">sign</a> (default, can be omitted)</li>
   <li><a href="#timestamp-options">timestamp</a></li>
   <li><a href="#extract-options">extract</a></li>
-  <li>remove</li>
+  <li><a href="#remove-options">remove</a></li>
   <li><a href="#show-options">show</a></li>
   <li><a href="#tag-options">tag</a></li>
 </ul>
@@ -378,6 +378,18 @@ scan the installdir directory recursively and sign all the DLLs found.</p>
 <dl>
   <dt>--format</dt>
   <dd>The output format of the signature (DER or PEM)</dd>
+</dl>
+
+<br>
+
+<h4 id="remove-options">remove</h4>
+
+<p>Remove all signatures from a file. When the <code>--alg</code> option is specified, only signatures using that digest
+algorithm are removed.</p>
+
+<dl>
+  <dt>-d, --alg &lt;ALGORITHM&gt;</dt>
+  <dd>The digest algorithm of the signatures to remove (SHA-1, SHA-256, SHA-384 or SHA-512)</dd>
 </dl>
 
 <br>

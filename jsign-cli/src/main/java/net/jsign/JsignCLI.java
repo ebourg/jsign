@@ -150,6 +150,7 @@ public class JsignCLI {
         map.put("extract", options);
 
         options = new Options();
+        options.addOption(Option.builder("d").hasArg().longOpt(PARAM_ALG).argName("ALGORITHM").desc("The digest algorithm of the signatures to remove (SHA-1, SHA-256, SHA-384 or SHA-512)").build());
 
         map.put("remove", options);
 
@@ -313,8 +314,9 @@ public class JsignCLI {
         out.println("commands: " + options.keySet().stream().map(s -> "sign".equals(s) ? s + " (default)" : s).collect(Collectors.joining(", ")));
 
         Map<String, Integer> paddings = new HashMap<>();
-        paddings.put("extract", 6);
-        paddings.put("tag", 8);
+        paddings.put("extract", 7);
+        paddings.put("tag", 9);
+        paddings.put("remove", 7);
 
         for (String command : options.keySet()) {
             if (!options.get(command).getOptions().isEmpty()) {

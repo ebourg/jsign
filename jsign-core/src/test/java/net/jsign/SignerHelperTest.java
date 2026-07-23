@@ -641,6 +641,71 @@ public class SignerHelperTest {
     }
 
     @Test
+    public void testRemoveByAlgorithm() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.alg("SHA-1").execute(targetFile);
+        signer.alg("SHA-256").execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA1, SHA256);
+
+        signer.command("remove");
+        signer.alg("SHA-256").execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA1);
+    }
+
+    @Test
+    public void testRemoveByAlgorithmNotFound() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.alg("SHA-1").execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA1);
+
+        signer.command("remove");
+        signer.alg("SHA-256").execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA1);
+    }
+
+    @Test
+    public void testRemoveByAlgorithmUnsupported() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password");
+
+        signer.alg("SHA-1").execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA1);
+
+        signer.command("remove");
+        Exception e = assertThrows(SignerException.class, () -> signer.alg("MD4").execute(targetFile));
+        assertEquals("message", "The digest algorithm MD4 is not supported", e.getCause().getMessage());
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA1);
+    }
+
+    @Test
     public void testTagWithString() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");

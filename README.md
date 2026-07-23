@@ -70,6 +70,7 @@ See https://ebourg.github.io/jsign for more information.
 * New `show` command to display the signatures of a file (contributed by Daniel Schaefer)
 * The new `--nonProxyHosts` parameter allows to specify hosts that should bypass the HTTP proxy
 * The new `--lazy` signing parameter skips files that are already signed
+* The `remove` command can now filter signatures by digest algorithm with the `--alg` parameter
 * Timed-out connections to the cloud signing services are now retried
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
 * Jsign can now open read-only or locked files

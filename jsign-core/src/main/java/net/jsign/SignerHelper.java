@@ -592,8 +592,23 @@ class SignerHelper {
                 return;
             }
 
-            log.info("Removing " + signatures.size() + " signature" + (signatures.size() > 1 ? "s" : "") + " from " + file);
-            signable.setSignatures(null);
+            DigestAlgorithm removedAlgorithm = alg != null ? DigestAlgorithm.of(alg) : null;
+            if (alg != null && removedAlgorithm == null) {
+                throw new SignerException("The digest algorithm " + alg + " is not supported");
+            }
+
+            int signatureCount = signatures.size();
+            signatures.removeIf(signature -> alg == null || signature.getSignerInfos().iterator().next().getDigestAlgOID().equals(removedAlgorithm.oid.getId()));
+
+            if (alg != null && signatures.size() == signatureCount) {
+                log.info("No signature matching the digest algorithm " + alg + " found in " + file);
+                return;
+            }
+
+            int removedCount = signatureCount - signatures.size();
+            log.info("Removing " + removedCount + " signature" + (removedCount > 1 ? "s" : "") + " from " + file);
+
+            signable.setSignatures(signatures);
             signable.save();
         } catch (UnsupportedOperationException | IllegalArgumentException e) {
             throw new SignerException(e.getMessage(), e);
