@@ -692,7 +692,7 @@ public class JsignCLITest {
     @Test
     public void testRemoveByAlgorithm() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
-        File targetFile = new File("target/test-classes/wineyes-multi-signed.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-remove-by-algorithm.exe");
         FileUtils.copyFile(sourceFile, targetFile);
 
         cli.execute("--keystore=target/test-classes/keystores/" + keystore, "--storepass=password", "--alg=SHA-1", "" + targetFile);
@@ -709,6 +709,49 @@ public class JsignCLITest {
 
         try (Signable signable = Signable.of(targetFile)) {
             SignatureAssert.assertSigned(signable, SHA256);
+        }
+    }
+
+    @Test
+    public void testRemoveByName() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-remove-by-name.exe");
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        cli.execute("--keystore=target/test-classes/keystores/keystore-2022.p12", "--storepass=password", "--alg=SHA-256", "" + targetFile);
+        cli.execute("--keystore=target/test-classes/keystores/keystore.p12",      "--storepass=password", "--alg=SHA-1", "" + targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA256, SHA1);
+        }
+
+        cli.execute("remove", "--name=Test Certificate 2022", "" + targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA1);
+        }
+    }
+
+    @Test
+    public void testRemoveByNameAndAlgorithm() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-remove-by-name-and-algorithm.exe");
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        cli.execute("--keystore=target/test-classes/keystores/keystore-2022.p12", "--storepass=password", "--alg=SHA-384", "" + targetFile);
+        cli.execute("--keystore=target/test-classes/keystores/keystore-2022.p12", "--storepass=password", "--alg=SHA-256", "" + targetFile);
+        cli.execute("--keystore=target/test-classes/keystores/keystore.p12",      "--storepass=password", "--alg=SHA-1", "" + targetFile);
+
+        cli.execute("remove", "--name=Test Certificate 2022", "--alg=SHA-1", "" + targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA384, SHA256, SHA1);
+        }
+
+        cli.execute("remove", "--name=Test Certificate 2022", "--alg=SHA-256", "" + targetFile);
+
+        try (Signable signable = Signable.of(targetFile)) {
+            SignatureAssert.assertSigned(signable, SHA384, SHA1);
         }
     }
 

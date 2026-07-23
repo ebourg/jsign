@@ -48,6 +48,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections4.functors.AndPredicate;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1UTF8String;
@@ -598,10 +599,25 @@ class SignerHelper {
             }
 
             int signatureCount = signatures.size();
-            signatures.removeIf(signature -> alg == null || signature.getSignerInfos().iterator().next().getDigestAlgOID().equals(removedAlgorithm.oid.getId()));
+            
+            signatures.removeIf(new AndPredicate<>(
+                    signature -> alg == null || signature.getSignerInfos().iterator().next().getDigestAlgOID().equals(removedAlgorithm.oid.getId()),
+                    signature -> {
+                        SignerInformation signer = signature.getSignerInfos().iterator().next();
+                        X509CertificateHolder cert = (X509CertificateHolder) signature.getCertificates().getMatches(signer.getSID()).iterator().next();
+                        return name == null || formatName(cert.getSubject(), false).toLowerCase().contains(name.toLowerCase());
+                    }));
 
-            if (alg != null && signatures.size() == signatureCount) {
-                log.info("No signature matching the digest algorithm " + alg + " found in " + file);
+            if (signatures.size() == signatureCount) {
+                List<String> criteria = new ArrayList<>();
+                if (name != null) {
+                    criteria.add("the name '" + name + "'");
+                }
+                if (alg != null) {
+                    criteria.add("the digest algorithm " + alg);
+                }
+
+                log.info("No signature matching " + String.join(" and ", criteria) + " found in " + file);
                 return;
             }
 

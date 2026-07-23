@@ -151,6 +151,7 @@ public class JsignCLI {
 
         options = new Options();
         options.addOption(Option.builder("d").hasArg().longOpt(PARAM_ALG).argName("ALGORITHM").desc("The digest algorithm of the signatures to remove (SHA-1, SHA-256, SHA-384 or SHA-512)").build());
+        options.addOption(Option.builder("n").hasArg().longOpt(PARAM_NAME).argName("NAME").desc("The certificate name used to select the signatures to remove (partial match)").build());
 
         map.put("remove", options);
 

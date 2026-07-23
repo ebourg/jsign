@@ -706,6 +706,76 @@ public class SignerHelperTest {
     }
 
     @Test
+    public void testRemoveByName() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-remove-by-name.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore-2022.p12")
+                .storepass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("remove");
+        signer.name("Test Certificate 2022");
+        signer.execute(targetFile);
+
+        SignatureAssert.assertNotSigned(new PEFile(targetFile));
+    }
+
+    @Test
+    public void testRemoveByNameNotFound() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed-remove-by-name.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore-2022.p12")
+                .storepass("password");
+
+        signer.execute(targetFile);
+
+        signer.command("remove");
+        signer.name("Test Certificate 2024");
+        signer.execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile),  SHA256);
+    }
+
+    @Test
+    public void testRemoveByNameAndAlgorithm() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-signed.exe");
+
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        SignerHelper signer2022 = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore-2022.p12")
+                .storepass("password")
+                .alg("SHA-256");
+
+        signer2022.execute(targetFile);
+
+        SignerHelper signer2024 = new SignerHelper("parameter")
+                .keystore("target/test-classes/keystores/keystore.jks")
+                .keypass("password")
+                .alg("SHA-256");
+        signer2024.execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256, SHA256);
+
+        SignerHelper remover = new SignerHelper("parameter").command("remove");
+        remover.name("Test Certificate 2022");
+        remover.alg("SHA-256");
+        remover.execute(targetFile);
+
+        SignatureAssert.assertSigned(new PEFile(targetFile), SHA256);
+    }
+
+    @Test
     public void testTagWithString() throws Exception {
         File sourceFile = new File("target/test-classes/wineyes.exe");
         File targetFile = new File("target/test-classes/wineyes-signed-tagged.exe");
