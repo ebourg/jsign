@@ -489,7 +489,7 @@ require OpenSC and any key can be used by providing an external certificate.</p>
 <a href="https://knowledge.digicert.com/general-information/how-to-download-safenet-authentication-client">SafeNet Authentication Client</a>.</p>
 
 <pre>
-  jsign --storetype ETOKEN --storepass &ltPIN&gt; application.exe
+  jsign --storetype ETOKEN --storepass &lt;PIN&gt; application.exe
 </pre>
 
 <p>If multiple tokens are connected, the <code>keystore</code> parameter can be used to specify the slot number.</p>
@@ -892,8 +892,8 @@ of the key.</p>
 <p>The configuration file can be replaced (or overridden) by environment variables. Here are the variables expected:</p>
 
 <ul>
-  <li><code>OCI_CLI_USER</code>: OCID of the user (e.g. <code>ocid1.user.oc1..&ltunique_ID&gt</code>)</li>
-  <li><code>OCI_CLI_TENANCY</code>: The OCID of the tenancy (e.g. <code>ocid1.tenancy.oc1..&ltunique_ID&gt</code>)</li>
+  <li><code>OCI_CLI_USER</code>: OCID of the user (e.g. <code>ocid1.user.oc1..&lt;unique_ID&gt;</code>)</li>
+  <li><code>OCI_CLI_TENANCY</code>: The OCID of the tenancy (e.g. <code>ocid1.tenancy.oc1..&lt;unique_ID&gt;</code>)</li>
   <li><code>OCI_CLI_REGION</code>: The OCI region (e.g. <code>eu-paris-1</code>)</li>
   <li><code>OCI_CLI_KEY_FILE</code>: The path to the private key signing the API requests in PEM format</li>
   <li><code>OCI_CLI_PASS_PHRASE</code>: The pass phrase of the private key</li>
@@ -972,7 +972,7 @@ same as those described above for the command line tool (the long options only).
  &lt;jsign keystore="keystore.p12"
         storepass="password"
         alias="test">
-   &ltfileset dir="build/binaries" includes="*.exe"/>
+   &lt;fileset dir="build/binaries" includes="*.exe"/>
  &lt;/jsign>
 </pre>
 
