@@ -363,7 +363,7 @@ public class AuthenticodeSigner {
         if (file instanceof NugetFile && !replace) {
             List<CMSSignedData> signatures = file.getSignatures();
             if (!signatures.isEmpty()) {
-                throw new SignerException("The file is already signed, the existing signature must be replaced explicitly");
+                throw new CommandException("The file is already signed, the existing signature must be replaced explicitly");
             }
         }
 

@@ -56,7 +56,7 @@ public class JsignCLI {
     public static void main(String... args) {
         try {
             new JsignCLI().execute(args);
-        } catch (SignerException | IllegalArgumentException | ParseException e) {
+        } catch (CommandException | IllegalArgumentException | ParseException e) {
             System.err.println("jsign: " + e.getMessage());
             if (e.getCause() != null) {
                 e.getCause().printStackTrace(System.err);
@@ -167,7 +167,7 @@ public class JsignCLI {
         return map;
     }
 
-    void execute(String... args) throws SignerException, ParseException {
+    void execute(String... args) throws CommandException, ParseException {
         DefaultParser parser = new DefaultParser();
         
         String command = "sign";
@@ -230,9 +230,10 @@ public class JsignCLI {
         helper.detached(cmd.hasOption(PARAM_DETACHED));
         setOption(PARAM_FORMAT, helper, cmd);
         setOption(PARAM_VALUE, helper, cmd);
+        helper.verbose(cmd.hasOption(PARAM_VERBOSE));
 
         if (cmd.getArgList().isEmpty()) {
-            throw new SignerException("No file specified");
+            throw new CommandException("No file specified");
         }
 
         for (String arg : cmd.getArgList()) {

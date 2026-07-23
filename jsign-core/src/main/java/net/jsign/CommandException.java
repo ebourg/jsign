@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Emmanuel Bourg
+ * Copyright 2026 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,19 @@
 package net.jsign;
 
 /**
- * @author Emmanuel Bourg
+ * Exception thrown when the execution of a command fails.
+ *
+ * @since 8.0
  */
-class SignerException extends Exception {
+public class CommandException extends Exception {
 
-    private static final long serialVersionUID = 3709689275987235563L;
+    private static final long serialVersionUID = 4437404486476783534L;
 
-    public SignerException(String message) {
+    public CommandException(String message) {
         super(message);
     }
 
-    public SignerException(String message, Throwable cause) {
+    public CommandException(String message, Throwable cause) {
         super(message, cause);
     }
 }

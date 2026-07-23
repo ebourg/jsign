@@ -55,6 +55,6 @@ public class JsignGradlePluginTest {
         params.put("name", "WinEyes");
 
         Closure closure = (Closure) project.getExtensions().getByName("jsign");
-        assertThrows(SignerException.class, () -> closure.call(params));
+        assertThrows(CommandException.class, () -> closure.call(params));
     }
 }

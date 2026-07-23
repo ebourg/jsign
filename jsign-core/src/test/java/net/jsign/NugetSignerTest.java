@@ -78,7 +78,7 @@ public class NugetSignerTest {
             // second signature
             signer.withDigestAlgorithm(SHA512);
 
-            Exception e = assertThrows(SignerException.class, () -> signer.sign(file));
+            Exception e = assertThrows(CommandException.class, () -> signer.sign(file));
             assertTrue(e.getMessage().contains("The file is already signed"));
 
             SignatureAssert.assertSigned(file, SHA256);

@@ -98,7 +98,7 @@ public class JsignCLITest {
 
     @Test
     public void testMissingKeyStore() {
-        assertThrows(SignerException.class, () -> cli.execute("sign", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("sign", "" + targetFile));
     }
 
     @Test
@@ -108,98 +108,98 @@ public class JsignCLITest {
 
     @Test
     public void testKeyStoreNotFound() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=keystore2.jks", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=keystore2.jks", "" + targetFile));
     }
 
     @Test
     public void testCorruptedKeyStore() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=" + targetFile, "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=" + targetFile, "" + targetFile));
     }
 
     @Test
     public void testEmptyKeystore()  {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore-empty.p12", "--alias=unknown", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore-empty.p12", "--alias=unknown", "" + targetFile));
         assertTrue(e.getMessage().startsWith("No certificate found in the keystore"));
     }
 
     @Test
     public void testMissingAlias() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "" + targetFile));
     }
 
     @Test
     public void testAliasNotFound() throws Exception  {
         try {
             cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=unknown", "" + targetFile);
-        } catch (SignerException e) {
+        } catch (CommandException e) {
             assertEquals("message", "No certificate found under the alias 'unknown' in the keystore target/test-classes/keystores/keystore.jks (available aliases: test)", e.getMessage().replace('\\', '/'));
         }
     }
 
     @Test
     public void testMultipleAliases() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore-two-entries.p12", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore-two-entries.p12", "" + targetFile));
         assertEquals("message", "alias option must be set to select a certificate (available aliases: test, test2)", e.getMessage());
     }
 
     @Test
     public void testCertificateNotFound() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=foo", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=foo", "" + targetFile));
     }
 
     @Test
     public void testMissingFile() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password"));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password"));
     }
 
     @Test
     public void testFileNotFound() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "wineyes-foo.exe"));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "wineyes-foo.exe"));
     }
 
     @Test
     public void testCorruptedFile() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "target/test-classes/keystore.jks"));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "target/test-classes/keystore.jks"));
     }
 
     @Test
     public void testConflictingAttributes() {
-        assertThrows(SignerException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "--keyfile=privatekey.pvk", "--certfile=jsign-test-certificate-full-chain.spc", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "--keyfile=privatekey.pvk", "--certfile=jsign-test-certificate-full-chain.spc", "" + targetFile));
     }
 
     @Test
     public void testMissingCertFile() {
-        assertThrows(SignerException.class, () -> cli.execute("--keyfile=target/test-classes/keystores/privatekey.pvk", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--keyfile=target/test-classes/keystores/privatekey.pvk", "" + targetFile));
     }
 
     @Test
     public void testMissingKeyFile() {
-        assertThrows(SignerException.class, () -> cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "" + targetFile));
     }
 
     @Test
     public void testCertFileNotFound() {
-        assertThrows(SignerException.class, () -> cli.execute("--certfile=target/test-classes/keystores/certificate2.spc", "--keyfile=target/test-classes/privatekey.pvk", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--certfile=target/test-classes/keystores/certificate2.spc", "--keyfile=target/test-classes/privatekey.pvk", "" + targetFile));
     }
 
     @Test
     public void testKeyFileNotFound() {
-        assertThrows(SignerException.class, () -> cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey2.pvk", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/privatekey2.pvk", "" + targetFile));
     }
 
     @Test
     public void testCorruptedCertFile() {
-        assertThrows(SignerException.class, () -> cli.execute("--certfile=target/test-classes/keystores/privatekey.pvk", "--keyfile=target/test-classes/privatekey.pvk", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--certfile=target/test-classes/keystores/privatekey.pvk", "--keyfile=target/test-classes/privatekey.pvk", "" + targetFile));
     }
 
     @Test
     public void testCorruptedKeyFile() {
-        assertThrows(SignerException.class, () -> cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--certfile=target/test-classes/keystores/jsign-test-certificate-full-chain.spc", "--keyfile=target/test-classes/jsign-test-certificate-full-chain.spc", "" + targetFile));
     }
 
     @Test
     public void testUnsupportedDigestAlgorithm() {
-        assertThrows(SignerException.class, () -> cli.execute("--alg=SHA-123", "--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile));
+        assertThrows(CommandException.class, () -> cli.execute("--alg=SHA-123", "--keystore=target/test-classes/keystores/keystore.jks", "--alias=test", "--keypass=password", "" + targetFile));
     }
 
     @Test
@@ -644,18 +644,18 @@ public class JsignCLITest {
 
     @Test
     public void testUnknownPKCS11Provider() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--storetype=PKCS11", "--keystore=SunPKCS11-jsigntest", "--keypass=password", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("--storetype=PKCS11", "--keystore=SunPKCS11-jsigntest", "--keypass=password", "" + targetFile));
         assertEquals("message", "Security provider SunPKCS11-jsigntest not found", e.getMessage());}
 
     @Test
     public void testMissingPKCS11Configuration() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--storetype=PKCS11", "--keystore=jsigntest.cfg", "--keypass=password", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("--storetype=PKCS11", "--keystore=jsigntest.cfg", "--keypass=password", "" + targetFile));
         assertEquals("message", "keystore option should either refer to the SunPKCS11 configuration file or to the name of the provider configured in jre/lib/security/java.security", e.getMessage());
     }
 
     @Test
     public void testBrokenPKCS11Configuration() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("--storetype=PKCS11", "--keystore=pom.xml", "--keypass=password", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("--storetype=PKCS11", "--keystore=pom.xml", "--keypass=password", "" + targetFile));
         assertTrue(e.getCause() instanceof ProviderException // JDK < 9
                 || e.getCause().getCause() instanceof InvalidParameterException); // JDK 9+
     }
@@ -679,13 +679,13 @@ public class JsignCLITest {
 
     @Test
     public void testExtract() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("extract", "--verbose", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("extract", "--verbose", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
     }
 
     @Test
     public void testRemove() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("remove", "--debug", "xeyes.exe"));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("remove", "--debug", "xeyes.exe"));
         assertEquals("message", "Couldn't find xeyes.exe", e.getMessage());
     }
 
@@ -757,13 +757,13 @@ public class JsignCLITest {
 
     @Test
     public void testTag() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("tag", "--value", "userid:1234-ABCD-5678-EFGH", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("tag", "--value", "userid:1234-ABCD-5678-EFGH", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
     }
 
     @Test
     public void testTimestamp() {
-        Exception e = assertThrows(SignerException.class, () -> cli.execute("timestamp", "--quiet", "" + targetFile));
+        Exception e = assertThrows(CommandException.class, () -> cli.execute("timestamp", "--quiet", "" + targetFile));
         assertEquals("message", "No signature found in " + targetFile.getPath(), e.getMessage());
     }
 

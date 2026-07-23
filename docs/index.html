@@ -1200,6 +1200,24 @@ are the same as those described above for the command line tool (the long option
  }
 </pre>
 
+<p>A higher level API that mimics the command line tool is also available:</p>
+
+<pre>
+  JsignTool.sign()
+           .keystore("keystore.p12")
+           .storepass("password")
+           .alias("test")
+           .name("My Application")
+           .tsaurl("http://timestamp.sectigo.com")
+           .execute(file);
+
+  JsignTool.tag().value("userid:1234-ABCD-5678-EFGH").execute(file);
+
+  JsignTool.extract().format("PEM").execute(file);
+
+  JsignTool.remove().execute(file);
+</pre>
+
 <p>See the <a href="https://javadoc.io/doc/net.jsign/jsign-core">Javadoc</a> for more details about the API.</p>
 
 

@@ -211,7 +211,7 @@ public class JsignTask extends Task {
             log.addHandler(new AntLogHandler(this));
 
             SignerHelper helper = new SignerHelper("attribute");
-            helper.setBaseDir(getProject().getBaseDir());
+            helper.basedir(getProject().getBaseDir());
             
             helper.command(command);
             helper.name(name);

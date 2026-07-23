@@ -40,7 +40,7 @@ public class JsignExtension extends Closure<Void> {
         this.project = project;
     }
 
-    public void doCall(Map<String, ?> params) throws SignerException {
+    public void doCall(Map<String, ?> params) throws CommandException {
         String file = (String) params.get("file");
         params.remove("file");
 
@@ -54,7 +54,7 @@ public class JsignExtension extends Closure<Void> {
         Logger.getLogger("net.jsign").setLevel(quiet ? Level.WARNING : Level.ALL);
 
         SignerHelper helper = new SignerHelper("property");
-        helper.setBaseDir(project.getProjectDir());
+        helper.basedir(project.getProjectDir());
         for (Map.Entry<String, ?> param : params.entrySet()) {
             helper.param(param.getKey(), (String) param.getValue());
         }
@@ -68,7 +68,7 @@ public class JsignExtension extends Closure<Void> {
         }
     }
 
-    public void doCall(kotlin.Pair<String, ?>... pairs) throws SignerException {
+    public void doCall(kotlin.Pair<String, ?>... pairs) throws CommandException {
         Map<String, Object> params = new HashMap<>();
         for (kotlin.Pair<String, ?> pair : pairs) {
             params.put(pair.getFirst(), pair.getSecond());

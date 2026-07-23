@@ -213,7 +213,7 @@ public class JsignMojo extends AbstractMojo {
         log.addHandler(new MavenLogHandler(getLog()));
 
         SignerHelper helper = new SignerHelper("element");
-        helper.setBaseDir(project.getBasedir());
+        helper.basedir(project.getBasedir());
         
         helper.command(command);
         helper.name(name);
@@ -255,7 +255,7 @@ public class JsignMojo extends AbstractMojo {
                     helper.execute(file);
                 }
             }
-        } catch (SignerException e) {
+        } catch (CommandException e) {
             throw new MojoFailureException(e.getMessage(), e);
         }
     }
