@@ -403,3 +403,56 @@ Small Device Styles
     content: "Required: ";
   }
 }
+
+
+/* Gradle snippet */
+
+.gradle-snippet {
+  margin: 10px 0 15px 0;
+}
+
+#gradle-groovy-button,
+#gradle-kotlin-button {
+  position: absolute;
+  left: -9999px;
+}
+
+.gradle-snippet-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: -1px;
+}
+
+.gradle-snippet-tabs label {
+  padding: 3px 14px;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: #f3f3f3;
+  color: #666666;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#gradle-groovy-button:checked ~ * .gradle-snippet-tabs label[for="gradle-groovy-button"],
+#gradle-kotlin-button:checked ~ * .gradle-snippet-tabs label[for="gradle-kotlin-button"] {
+  background: #ffffff;
+  color: #222222;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(to bottom, #e8e8e8 0%, #ffffff 25%);
+}
+
+.gradle-snippet pre.prettyprint {
+  padding: 14px 4px 14px 4px;
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+}
+
+#gradle-groovy-button:checked ~ * pre.lang-groovy,
+#gradle-kotlin-button:checked ~ * pre.lang-kotlin {
+  display: block;
+}
+
+#gradle-groovy-button:checked ~ * pre.lang-kotlin,
+#gradle-kotlin-button:checked ~ * pre.lang-groovy {
+  display: none;
+}

@@ -1082,7 +1082,14 @@ in the <a href="https://maven.apache.org/settings.html">Maven settings file</a>.
 <p>Here is an example showing how to use Jsign with Gradle. The parameters
 are the same as those described above for the command line tool (the long options only).</p>
 
-<p>With the Groovy syntax:</p>
+<input type="radio" name="gradle-syntax" id="gradle-groovy-button" checked>
+<input type="radio" name="gradle-syntax" id="gradle-kotlin-button">
+
+<div class="gradle-snippet">
+  <div class="gradle-snippet-tabs">
+    <label for="gradle-groovy-button">Groovy</label>
+    <label for="gradle-kotlin-button">Kotlin</label>
+  </div>
 
 <pre class="prettyprint lang-groovy">
     plugins {
@@ -1098,11 +1105,12 @@ are the same as those described above for the command line tool (the long option
                   alias     : 'test',
                   storepass : 'secret',
                   tsaurl    : 'http://timestamp.sectigo.com')
+
         }
     }
+
 </pre>
 
-<p>With the Kotlin syntax:</p>
 
 <pre class="prettyprint lang-kotlin">
     plugins {
@@ -1122,12 +1130,17 @@ are the same as those described above for the command line tool (the long option
         }
     }
 </pre>
+</div>
 
 <br>
 
 <p>The <code>file</code> parameter can be replaced by a <code>fileset</code> parameter to sign multiple files:</p>
 
-<p>Groovy:</p>
+<div class="gradle-snippet">
+  <div class="gradle-snippet-tabs" aria-label="Gradle syntax">
+    <label for="gradle-groovy-button">Groovy</label>
+    <label for="gradle-kotlin-button">Kotlin</label>
+  </div>
 
 <pre class="prettyprint lang-groovy">
     jsign(fileset   : fileTree(dir: 'build', include: '**/*.exe'),
@@ -1135,13 +1148,13 @@ are the same as those described above for the command line tool (the long option
           storepass : '123456')
 </pre>
 
-<p>Kotlin:</p>
-
 <pre class="prettyprint lang-kotlin">
     jsign("fileset"   to fileTree("build") { include ("**/*.exe") },
           "storetype" to "YUBIKEY",
           "storepass" to "123456",)
 </pre>
+
+</div>
 
 
 <h3 id="github-actions">GitHub Actions</h3>
