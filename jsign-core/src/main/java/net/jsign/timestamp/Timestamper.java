@@ -198,7 +198,7 @@ public abstract class Timestamper {
             if (conn.getErrorStream() != null) {
                 log("Error", error);
             }
-            throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage());
+            throw new IOException("Unable to complete the timestamping due to HTTP error: " + conn.getResponseCode() + " - " + conn.getResponseMessage() + " (" + url + ")");
         }
 
         byte[] content = IOUtils.toByteArray(conn.getInputStream());
