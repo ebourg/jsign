@@ -15,6 +15,12 @@ dependencies {
     implementation "net.jsign:jsign-core:$version"
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
 tasks.withType(Copy).all { duplicatesStrategy 'exclude' }
 
 gradlePlugin {

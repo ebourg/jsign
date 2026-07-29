@@ -63,6 +63,10 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
+#### Version 7.6 (in development)
+
+* The Gradle plugin published on the Gradle plugin portal is compiled with Java 8 again
+
 #### Version 7.5 (2026-07-16)
 
 * The "_Unknown JSON value type_" error with DigiCert ONE has been fixed (contributed by Rhys Hansen)
