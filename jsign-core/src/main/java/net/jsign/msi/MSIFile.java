@@ -119,7 +119,7 @@ public class MSIFile implements Signable {
         this.file = file;
         try {
             this.fsRead = new POIFSFileSystem(file, true);
-            this.fsWrite = new POIFSFileSystem(file, false);
+            this.fsWrite = fsRead;
         } catch (NegativeArraySizeException | IndexOutOfBoundsException | IllegalStateException | ClassCastException e) {
             throw new IOException("MSI file format error", e);
         }
@@ -237,6 +237,12 @@ public class MSIFile implements Signable {
         return new SpcIndirectDataContent(data, digestInfo);
     }
 
+    private void initWritableFileSystem() throws IOException {
+        if (file != null && fsWrite == fsRead) {
+            fsWrite = new POIFSFileSystem(file, false);
+        }
+    }
+
     @Override
     public List<CMSSignedData> getSignatures() throws IOException {
         try {
@@ -254,6 +260,8 @@ public class MSIFile implements Signable {
 
     @Override
     public void setSignature(CMSSignedData signature) throws IOException {
+        initWritableFileSystem();
+
         if (signature != null) {
             byte[] signatureBytes = signature.toASN1Structure().getEncoded("DER");
             try {
@@ -274,6 +282,8 @@ public class MSIFile implements Signable {
 
     @Override
     public void save() throws IOException {
+        initWritableFileSystem();
+
         // get the number of directory sectors to be written in the header to work around https://bz.apache.org/bugzilla/show_bug.cgi?id=66590
         ByteBuffer directorySectorsCount = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
         directorySectorsCount.putInt(fsWrite.getPropertyTable().countBlocks()).flip();
