@@ -193,6 +193,8 @@ public class JsignCLI {
         Stream.of(log.getHandlers()).forEach(log::removeHandler);
         log.addHandler(new StdOutLogHandler());
 
+        Logger.getLogger("org.bouncycastle.crypto.NativeLoader").setLevel(Level.INFO);
+
         SignerHelper helper = new SignerHelper("option");
         helper.command(command);
         
