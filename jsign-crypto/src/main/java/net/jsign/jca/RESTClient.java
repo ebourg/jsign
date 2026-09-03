@@ -51,7 +51,7 @@ class RESTClient {
     /** Number of attempts for a request */
     private int retries = 5;
 
-    /** Pause between retries in milliseconds */
+    /** Initial pause between retries in milliseconds, doubled after each attempt on HTTP error (not on timeouts) */
     private int retryWait = 1000;
 
     /** Connect timeout in milliseconds */
@@ -237,37 +237,90 @@ class RESTClient {
     }
 
     /**
-     * Opens a connection to the specified URL and makes several attempts if a timeout occurs.
+     * Opens a connection to the specified URL and makes several attempts if an error occurs.
      * The provided configurator is used to set up the connection before making the request.
      */
     private HttpURLConnection open(URL url, HttpURLConnectionHandler configurator) throws IOException {
-        boolean retry = true;
         int attempt = 1;
 
-        HttpURLConnection conn = null;
+        HttpURLConnection conn;
 
-        while (retry) {
+        while (true) {
             try {
                 conn = (HttpURLConnection) url.openConnection();
                 configurator.handle(conn);
 
-                conn.getResponseCode();
-                retry = false;
-            } catch (SocketTimeoutException e) {
-                if (attempt++ < retries) {
-                    try {
-                        Thread.sleep(retryWait);
-                        log.fine("Connection to " + url + " timed out, attempt " + attempt + " of " + retries);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
+                int responseCode = conn.getResponseCode();
+                if (isRetryableError(responseCode) && attempt < retries) {
+                    if (conn.getErrorStream() != null) {
+                        conn.getErrorStream().close();
                     }
+                    long delay = getRetryDelay(conn, attempt);
+                    log.fine("Connection attempt " + attempt + " of " + retries + " to " + url + " failed with HTTP error " + responseCode + ", retrying in " + delay + " ms");
+                    pause(delay);
+                } else {
+                    break;
+                }
+
+            } catch (SocketTimeoutException e) {
+                if (attempt < retries) {
+                    log.fine("Connection attempt " + attempt + " of " + retries + " to " + url + " timed out, retrying in " + retryWait + " ms");
+                    pause(retryWait);
                 } else {
                     throw (IOException) new SocketTimeoutException("Unable to connect to " + url + " after " + retries + " attempts").initCause(e);
                 }
             }
+            attempt++;
         }
 
         return conn;
+    }
+
+    private boolean isRetryableError(int responseCode) {
+        return responseCode == 429 // Too Many Requests
+                || responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR
+                || responseCode == HttpURLConnection.HTTP_BAD_GATEWAY
+                || responseCode == HttpURLConnection.HTTP_UNAVAILABLE
+                || responseCode == HttpURLConnection.HTTP_GATEWAY_TIMEOUT;
+    }
+
+    /**
+     * Returns the retry delay in milliseconds, either the value specified in the <code>Retry-After</code> header, or an
+     * exponential backoff delay for the specified attempt capped to the connect timeout.
+     */
+    private long getRetryDelay(HttpURLConnection conn, int attempt) {
+        Long retryAfter = getRetryAfter(conn);
+        if (retryAfter != null) {
+            return retryAfter;
+        } else {
+            return (long) Math.min(connectTimeout, retryWait * Math.pow(2, attempt - 1));
+        }
+    }
+
+    /**
+     * Returns the pause in milliseconds requested by the server with the <code>Retry-After</code> header,
+     * or <code>null</code> if the header is absent or unparseable.
+     */
+    private Long getRetryAfter(HttpURLConnection conn) {
+        String retryAfter = conn.getHeaderField("Retry-After");
+        if (retryAfter == null) {
+            return null;
+        }
+
+        try {
+            return Long.parseLong(retryAfter.trim()) * 1000;
+        } catch (NumberFormatException e) {
+            long date = conn.getHeaderFieldDate("Retry-After", 0);
+            return date > 0 ? Math.max(0, date - System.currentTimeMillis()) : null;
+        }
+    }
+
+    private void pause(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private interface HttpURLConnectionHandler {

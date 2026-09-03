@@ -76,6 +76,7 @@ See https://ebourg.github.io/jsign for more information.
 * The Azure credentials can now be specified with `--storepass <tenantId>|<clientId>|<clientSecret>`
   or with the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` environment variables
 * Timed-out connections to the cloud signing services are now retried
+* Failed connections due to HTTP 429 and 5xx errors are retried with an exponential backoff (contributed by Simon Schwendele)
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
 * Jsign can now open read-only or locked files
 * The error message displayed when the PE certificate table is corrupted has been improved
