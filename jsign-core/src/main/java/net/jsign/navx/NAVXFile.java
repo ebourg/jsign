@@ -55,9 +55,6 @@ public class NAVXFile implements Signable {
     /** The channel used for in-memory signing */
     private final SeekableByteChannel channel;
 
-    /** The underlying file */
-    private File file;
-
     /** The file header */
     private final NAVXHeader header = new NAVXHeader();
 
