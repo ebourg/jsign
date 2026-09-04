@@ -386,26 +386,26 @@ slot = 0
 
 Then, pass the filename to the keystore parameter:
 
-jsign --storetype PKCS11 \
-      --keystore pkcs11.cfg \
-      --storepass 123456 \
-      --alias test \
+jsign --storetype PKCS11 \\
+      --keystore pkcs11.cfg \\
+      --storepass 123456 \\
+      --alias test \\
       application.exe
 
-For an inline configuration, prefix the keystore parameter value with -- and separate the lines with \n:
+For an inline configuration, prefix the keystore parameter value with -- and separate the lines with \\n:
 
-jsign --storetype PKCS11 \
-      --keystore="--name=MyToken\nlibrary=/path/to/pkcs11/library\nslot=0" \
-      --storepass 123456 \
-      --alias test \
+jsign --storetype PKCS11 \\
+      --keystore="--name=MyToken\\nlibrary=/path/to/pkcs11/library\\nslot=0" \\
+      --storepass 123456 \\
+      --alias test \\
       application.exe
 
 The keystore parameter can also refer to a provider named SunPKCS11-<name> defined in the java.security file:
 
-jsign --storetype PKCS11 \
-      --keystore SunPKCS11-MyToken \
-      --storepass 123456 \
-      --alias test \
+jsign --storetype PKCS11 \\
+      --keystore SunPKCS11-MyToken \\
+      --storepass 123456 \\
+      --alias test \\
       application.exe
 
 
@@ -470,9 +470,9 @@ and the alias combines the account name and the certificate profile.
 The storepass parameter provides either the Azure access token or the Azure credentials
 (in the form <tenantId>|<clientId>|<clientSecret>).
 
-jsign --storetype TRUSTEDSIGNING \
-      --keystore weu.codesigning.azure.net \
-      --storepass <api-access-token> \
+jsign --storetype TRUSTEDSIGNING \\
+      --keystore weu.codesigning.azure.net \\
+      --storepass <api-access-token> \\
       --alias <account>/<profile> application.exe
 
 The access token can be obtained with the Azure CLI:
@@ -636,27 +636,27 @@ The alias parameter specifies the id or the name of the worker.
 
 Authenticating with a username and a password:
 
-jsign --storetype SIGNSERVER \
-      --keystore https://example.com/signserver \
-      --storepass "<username>|<password>" \
-      --alias test \
+jsign --storetype SIGNSERVER \\
+      --keystore https://example.com/signserver \\
+      --storepass "<username>|<password>" \\
+      --alias test \\
       application.exe
 
 Authenticating with a TLS client certificate:
 
-jsign --storetype SIGNSERVER \
-      --keystore https://example.com/signserver \
-      --storepass "/path/to/client-certificate.p12" \
-      --keypass <client-certificate-password> \
-      --alias test \
+jsign --storetype SIGNSERVER \\
+      --keystore https://example.com/signserver \\
+      --storepass "/path/to/client-certificate.p12" \\
+      --keypass <client-certificate-password> \\
+      --alias test \\
       application.exe
 
 Using server-side hashing, the digest algorithm must match the one configured for the worker:
 
-jsign --storetype SIGNSERVER \
-      --keystore https://example.com/signserver \
-      --alias 'test|serverside' \
-      --alg SHA-512 \
+jsign --storetype SIGNSERVER \\
+      --keystore https://example.com/signserver \\
+      --alias 'test|serverside' \\
+      --alg SHA-512 \\
       application.exe
 
 
