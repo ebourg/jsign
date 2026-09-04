@@ -262,14 +262,18 @@ a list of files to sign, one per line.
 .TP
 Signing with a PKCS#12 keystore and timestamping:
 
-jsign --keystore keystore.p12 --storepass password --alias test \\
-      --tsaurl http://timestamp.sectigo.com application.exe
+.EX
+\&jsign --keystore keystore.p12 --storepass password --alias test \\
+\&      --tsaurl http://timestamp.sectigo.com application.exe
+.EE
 
 
 .TP
 Signing with a SPC certificate and a PVK key:
 
-jsign --certfile certificate.spc --keyfile key.pvk --keypass password installer.msi
+.EX
+\&jsign --certfile certificate.spc --keyfile key.pvk --keypass password installer.msi
+.EE
 
 
 .TP
@@ -282,7 +286,9 @@ the slot 9c, or "X.509 Certificate for PIV Authentication" for the slot 9a). The
 from the Yubico PIV Tool must be installed on the system at the default location. The library
 is provided by the yubico-piv-tool package on Fedora, and by the ykcs11 package on Debian/Ubuntu.
 
-jsign --storetype YUBIKEY --storepass 123456 --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype YUBIKEY --storepass 123456 --certfile full-chain.pem application.exe
+.EE
 
 Alternatively, the PIV storetype can also be used to sign with a Yubikey and doesn't require
 the ykcs11 library.
@@ -294,7 +300,9 @@ Signing with a Nitrokey HSM:
 Signing with a Nitrokey HSM requires the installation of the OpenSC PKCS#11 module. The module
 is provided by the opensc package on Fedora, and by the opensc-pkcs11 package on Debian/Ubuntu.
 
-jsign --storetype NITROKEY --storepass 123456 --alias test --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype NITROKEY --storepass 123456 --alias test --certfile full-chain.pem application.exe
+.EE
 
 Other Nitrokeys based on the OpenPGP card standard are also supported with this storetype,
 but an X.509 certificate must be imported into the Nitrokey (using the gnupg writecert command).
@@ -308,7 +316,9 @@ Signing with a SafeNet eToken:
 
 Signing with a SafeNet eToken requires the installation of the SafeNet Authentication Client.
 
-jsign --storetype ETOKEN --storepass <PIN> --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype ETOKEN --storepass <PIN> --certfile full-chain.pem application.exe
+.EE
 
 
 .TP
@@ -318,7 +328,9 @@ Signing with a smart card:
 Signing with a smart card requires the installation of the OpenSC PKCS#11 module. The module
 is provided by the opensc package on Fedora, and by the opensc-pkcs11 package on Debian/Ubuntu.
 
-jsign --storetype OPENSC --storepass 123456 --alias test --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype OPENSC --storepass 123456 --alias test --certfile full-chain.pem application.exe
+.EE
 
 If multiple devices are connected, the keystore parameter can be used to specify the name of the one to use.
 
@@ -332,7 +344,9 @@ All of them can be used for code signing (except encryption keys based on an ell
 to select the key is either, SIGNATURE, ENCRYPTION or AUTHENTICATION. The OPENPGP storetype can be used
 with a Nitrokey (non-HSM models) or a Yubikey.
 
-jsign --storetype OPENPGP --storepass 123456 --alias SIGNATURE --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype OPENPGP --storepass 123456 --alias SIGNATURE --certfile full-chain.pem application.exe
+.EE
 
 X.509 certificates stored on the card are automatically used, and the certfile parameter is only required
 if the certificate chain contains an intermediate certificate.
@@ -348,7 +362,9 @@ PIV cards contain up to 24 keys and certificates. The alias to select the key is
 SIGNATURE, KEY_MANAGEMENT, CARD_AUTHENTICATION, or RETIRED<1-20>. Slot numbers are also accepted
 (for example '9c' for the digital signature key).
 
-jsign --storetype PIV --storepass 123456 --alias SIGNATURE --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype PIV --storepass 123456 --alias SIGNATURE --certfile full-chain.pem application.exe
+.EE
 
 X.509 certificates stored on the card are automatically used, and the certfile parameter is only required
 if the certificate chain contains an intermediate certificate.
@@ -364,7 +380,9 @@ The CryptoCertum cryptographic card from Certum is supported using the CRYPTOCER
 is required, Jsign communicates directly with the card and uses the keys and certificates stored in the common file
 (the secure profile containing eIDAS certificates is not supported).
 
-jsign --storetype CRYPTOCERTUM --storepass 123456 --alias test application.exe
+.EX
+\&jsign --storetype CRYPTOCERTUM --storepass 123456 --alias test application.exe
+.EE
 
 The alias parameter specifies the common name of the certificate.
 
@@ -380,33 +398,41 @@ a SunPKCS11 provider name defined in java.security.
 
 With a file, create a SunPKCS11 configuration file such as pkcs11.cfg:
 
-name = MyToken
-library = /path/to/pkcs11/library
-slot = 0
+.EX
+\&name = MyToken
+\&library = /path/to/pkcs11/library
+\&slot = 0
+.EE
 
 Then, pass the filename to the keystore parameter:
 
-jsign --storetype PKCS11 \\
-      --keystore pkcs11.cfg \\
-      --storepass 123456 \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype PKCS11 \\
+\&      --keystore pkcs11.cfg \\
+\&      --storepass 123456 \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 For an inline configuration, prefix the keystore parameter value with -- and separate the lines with \\n:
 
-jsign --storetype PKCS11 \\
-      --keystore="--name=MyToken\\nlibrary=/path/to/pkcs11/library\\nslot=0" \\
-      --storepass 123456 \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype PKCS11 \\
+\&      --keystore="--name=MyToken\\nlibrary=/path/to/pkcs11/library\\nslot=0" \\
+\&      --storepass 123456 \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 The keystore parameter can also refer to a provider named SunPKCS11-<name> defined in the java.security file:
 
-jsign --storetype PKCS11 \\
-      --keystore SunPKCS11-MyToken \\
-      --storepass 123456 \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype PKCS11 \\
+\&      --keystore SunPKCS11-MyToken \\
+\&      --storepass 123456 \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 
 .TP
@@ -426,11 +452,13 @@ In any case, the credentials must allow the following actions: kms:ListKeys, kms
 
 The alias parameter can specify either the key id or an alias.
 
-jsign --storetype AWS \\
-      --keystore eu-west-3 \\
-      --storepass "<access-key>|<secret-key>|<session-token>" \\
-      --alias 12345678-abcd-1234-cdef-1234567890ab \\
-      --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype AWS \\
+\&      --keystore eu-west-3 \\
+\&      --storepass "<access-key>|<secret-key>|<session-token>" \\
+\&      --alias 12345678-abcd-1234-cdef-1234567890ab \\
+\&      --certfile full-chain.pem application.exe
+.EE
 
 
 .TP
@@ -439,21 +467,27 @@ Signing with Azure Key Vault:
 
 Certificates and keys stored in the Azure Key Vault key management system can be used with:
 
-jsign --storetype AZUREKEYVAULT \\
-      --keystore vaultname \\
-      --storepass <api-access-token> \\
-      --alias test application.exe
+.EX
+\&jsign --storetype AZUREKEYVAULT \\
+\&      --keystore vaultname \\
+\&      --storepass <api-access-token> \\
+\&      --alias test application.exe
+.EE
 
 The access token can be obtained with the Azure CLI:
 
-az account get-access-token --resource "https://vault.azure.net"
+.EX
+\&az account get-access-token --resource "https://vault.azure.net"
+.EE
 
 The storepass parameter may also specify the Azure credentials:
 
-jsign --storetype AZUREKEYVAULT \\
-      --keystore vaultname \\
-      --storepass <tenantId>|<clientId>|<clientSecret> \\
-      --alias test application.exe
+.EX
+\&jsign --storetype AZUREKEYVAULT \\
+\&      --keystore vaultname \\
+\&      --storepass <tenantId>|<clientId>|<clientSecret> \\
+\&      --alias test application.exe
+.EE
 
 If the storepass parameter is omitted Jsign loads the credentials from the environment variables
 (AZURE_TENANT_ID, AZURE_CLIENT_ID and AZURE_CLIENT_SECRET).
@@ -470,14 +504,18 @@ and the alias combines the account name and the certificate profile.
 The storepass parameter provides either the Azure access token or the Azure credentials
 (in the form <tenantId>|<clientId>|<clientSecret>).
 
-jsign --storetype TRUSTEDSIGNING \\
-      --keystore weu.codesigning.azure.net \\
-      --storepass <api-access-token> \\
-      --alias <account>/<profile> application.exe
+.EX
+\&jsign --storetype TRUSTEDSIGNING \\
+\&      --keystore weu.codesigning.azure.net \\
+\&      --storepass <api-access-token> \\
+\&      --alias <account>/<profile> application.exe
+.EE
 
 The access token can be obtained with the Azure CLI:
 
-az account get-access-token --resource https://codesigning.azure.net
+.EX
+\&az account get-access-token --resource https://codesigning.azure.net
+.EE
 
 If the storepass parameter is omitted Jsign loads the credentials from the environment variables
 (AZURE_TENANT_ID, AZURE_CLIENT_ID and AZURE_CLIENT_SECRET).
@@ -501,9 +539,11 @@ the DigiCert client tools. It requires an API key and a PKCS#12 keystore holding
 authentication. The US DigiCert ONE host is used by default (https://clientauth.one.digicert.com) but a different
 host can be specified with the --keystore parameter.
 
-jsign --storetype DIGICERTONE \\
-      --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
-      --alias test application.exe
+.EX
+\&jsign --storetype DIGICERTONE \\
+\&      --storepass "<api-key>|/path/to/Certificate_pkcs12.p12|<password>" \\
+\&      --alias test application.exe
+.EE
 
 
 .TP
@@ -516,11 +556,13 @@ CodeSign Secure username, password and the path to the PKCS#12 keystore containi
 by a pipe character. If the TLS client certificate is stored in a password protected keystore, the password is specified
 in the keypass parameter.
 
-jsign --storetype CODESIGNSECURE \\
-      --storepass "<username>|<password>|/path/to/client-certificate.p12" \\
-      --keypass <client-certificate-password> \\
-      --alias <keyname> \\
-      application.exe
+.EX
+\&jsign --storetype CODESIGNSECURE \\
+\&      --storepass "<username>|<password>|/path/to/client-certificate.p12" \\
+\&      --keypass <client-certificate-password> \\
+\&      --alias <keyname> \\
+\&      application.exe
+.EE
 
 
 .TP
@@ -530,10 +572,12 @@ Signing with SSL.com eSigner:
 When signing with the SSL.com eSigner service, the SSL.com username and password are used as the keystore password,
 and the base64 encoded TOTP secret is used as the key password:
 
-jsign --storetype ESIGNER \\
-      --storepass "<username>|<password>" \\
-      --alias 8b072e22-7685-4771-b5c6-48e46614915f \\
-      --keypass <totp-secret> application.exe
+.EX
+\&jsign --storetype ESIGNER \\
+\&      --storepass "<username>|<password>" \\
+\&      --alias 8b072e22-7685-4771-b5c6-48e46614915f \\
+\&      --keypass <totp-secret> application.exe
+.EE
 
 SSL.com provides a sandbox environment, to use a test certificate simply add the parameter
 "--keystore https://cs-try.ssl.com".
@@ -550,19 +594,23 @@ parameter references the URL of the GaraSign REST API (https://garasign.com:8443
 
 Authenticating with a username and a password:
 
-jsign --storetype GARASIGN \\
-      --storepass "<username>|<password>" \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype GARASIGN \\
+\&      --storepass "<username>|<password>" \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 Authenticating with a TLS client certificate and a non-default endpoint:
 
-jsign --storetype GARASIGN \\
-      --keystore https://demo.garantir.io/CodeSigningRestService \\
-      --storepass "/path/to/client-certificate.p12" \\
-      --keypass <client-certificate-password> \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype GARASIGN \\
+\&      --keystore https://demo.garantir.io/CodeSigningRestService \\
+\&      --storepass "/path/to/client-certificate.p12" \\
+\&      --keypass <client-certificate-password> \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 
 .TP
@@ -572,11 +620,13 @@ Signing with Google Cloud KMS:
 Google Cloud KMS stores only the private key, the certificate must be provided separately. The keystore parameter
 references the path of the keyring. The alias specifies the name and the version of the key:
 
-jsign --storetype GOOGLECLOUD \\
-      --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \\
-      --storepass <api-access-token> \\
-      --alias test/cryptoKeyVersions/1 \\
-      --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype GOOGLECLOUD \\
+\&      --keystore projects/first-rain-123/locations/global/keyRings/mykeyring \\
+\&      --storepass <api-access-token> \\
+\&      --alias test/cryptoKeyVersions/1 \\
+\&      --certfile full-chain.pem application.exe
+.EE
 
 The version of the key can be omitted (e.g. --alias test), in this case the most recent version
 of the key is picked automatically. This avoids modifying the parameters every time the key is updated, but the signing
@@ -584,7 +634,9 @@ process is slightly slower due to an additional API call, and it requires an ext
 
 The access token is typically provided by the gcloud tool:
 
-gcloud auth print-access-token
+.EX
+\&gcloud auth print-access-token
+.EE
 
 When creating the key the purpose must be set to "Asymmetric sign", and the algorithm must be either Elliptic Curve
 or RSA with PKCS#1 v1.5 padding and SHA digest. Keys with PSS padding or raw RSA mode are not supported.
@@ -611,11 +663,13 @@ API version 'v1' followed by the secrets engine path. The certificate must be pr
 parameter. The alias parameter specifies the name of the key in Vault. For the Google Cloud KMS secrets engine, the
 version of the Google Cloud key is appended to the key name, separated by a colon character.
 
-jsign --storetype HASHICORPVAULT \\
-      --keystore https://vault.example.com/v1/gcpkms \\
-      --storepass <vault-token> \\
-      --alias test:1 \\
-      --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype HASHICORPVAULT \\
+\&      --keystore https://vault.example.com/v1/gcpkms \\
+\&      --storepass <vault-token> \\
+\&      --alias test:1 \\
+\&      --certfile full-chain.pem application.exe
+.EE
 
 
 .TP
@@ -636,28 +690,34 @@ The alias parameter specifies the id or the name of the worker.
 
 Authenticating with a username and a password:
 
-jsign --storetype SIGNSERVER \\
-      --keystore https://example.com/signserver \\
-      --storepass "<username>|<password>" \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype SIGNSERVER \\
+\&      --keystore https://example.com/signserver \\
+\&      --storepass "<username>|<password>" \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 Authenticating with a TLS client certificate:
 
-jsign --storetype SIGNSERVER \\
-      --keystore https://example.com/signserver \\
-      --storepass "/path/to/client-certificate.p12" \\
-      --keypass <client-certificate-password> \\
-      --alias test \\
-      application.exe
+.EX
+\&jsign --storetype SIGNSERVER \\
+\&      --keystore https://example.com/signserver \\
+\&      --storepass "/path/to/client-certificate.p12" \\
+\&      --keypass <client-certificate-password> \\
+\&      --alias test \\
+\&      application.exe
+.EE
 
 Using server-side hashing, the digest algorithm must match the one configured for the worker:
 
-jsign --storetype SIGNSERVER \\
-      --keystore https://example.com/signserver \\
-      --alias 'test|serverside' \\
-      --alg SHA-512 \\
-      application.exe
+.EX
+\&jsign --storetype SIGNSERVER \\
+\&      --keystore https://example.com/signserver \\
+\&      --alias 'test|serverside' \\
+\&      --alg SHA-512 \\
+\&      application.exe
+.EE
 
 
 .TP
@@ -678,16 +738,20 @@ The certificate must be provided separately using the certfile parameter. The al
 
 The general syntax looks like this:
 
-jsign --storetype ORACLECLOUD \\
-      --storepass "<oci-config-file>|<profile>" \\
-      --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
-      --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype ORACLECLOUD \\
+\&      --storepass "<oci-config-file>|<profile>" \\
+\&      --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
+\&      --certfile full-chain.pem application.exe
+.EE
 
 When using the default configuration file and profile, the command is simplified to:
 
-jsign --storetype ORACLECLOUD \\
-      --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
-      --certfile full-chain.pem application.exe
+.EX
+\&jsign --storetype ORACLECLOUD \\
+\&      --alias ocid1.key.oc1.eu-paris-1.abcdefghijklm.abrwiljrwkhgllb5zfqchmvdkmqnzutqeq5pz7 \\
+\&      --certfile full-chain.pem application.exe
+.EE
 
 The configuration file can be replaced (or overridden) by environment variables. Here are the variables expected:
 
@@ -712,11 +776,13 @@ for hash signing. The keystore parameter specifies the organization identifier, 
 access token. The alias parameter is the concatenation of the project slug and the signing policy slug, separated
 by a slash character.
 
-jsign --storetype SIGNPATH \\
-      --keystore <organizationId> \\
-      --storepass <accessToken> \\
-      --alias <projectSlug>/<signingPolicySlug> \\
-       application.exe
+.EX
+\&jsign --storetype SIGNPATH \\
+\&      --keystore <organizationId> \\
+\&      --storepass <accessToken> \\
+\&      --alias <projectSlug>/<signingPolicySlug> \\
+\&       application.exe
+.EE
 
 
 .TP
@@ -726,19 +792,21 @@ Displaying the signatures
 The show command displays information about the signatures of a file (certificate, timestamp, digest, tag).
 The --verbose option can be used to display more details.
 
-$ jsign show application.exe
-
-Signature of application.exe:
-
-Digest:        (SHA-1) d27ec498912807ddfc4bec2be4f62c42814836f3 (matches)
-Timestamp:     2026-04-15 19:56:53 CEST (DigiCert SHA256 RSA4096 Timestamp Responder 2025)
-Tag:           userid:1234-ABCD-5678-EFGH
-Certificate
-  Subject:     Jsign Code Signing Test Certificate 2024 (RSA)
-  Issuer:      Jsign Code Signing CA 2024
-  Key:         RSA 2048
-  Validity:    2024-05-10 - 2044-05-10 (6511 days left)
-  Serial:      232ae74743b0ae4da74beae15387644af6ca7a03
+.EX
+\&$ jsign show application.exe
+\&
+\&Signature of application.exe:
+\&
+\&Digest:        (SHA-1) d27ec498912807ddfc4bec2be4f62c42814836f3 (matches)
+\&Timestamp:     2026-04-15 19:56:53 CEST (DigiCert SHA256 RSA4096 Timestamp Responder 2025)
+\&Tag:           userid:1234-ABCD-5678-EFGH
+\&Certificate
+\&  Subject:     Jsign Code Signing Test Certificate 2024 (RSA)
+\&  Issuer:      Jsign Code Signing CA 2024
+\&  Key:         RSA 2048
+\&  Validity:    2024-05-10 - 2044-05-10 (6511 days left)
+\&  Serial:      232ae74743b0ae4da74beae15387644af6ca7a03
+.EE
 
 .TP
 
@@ -751,7 +819,9 @@ authenticate the user without requiring credentials.
 
 For example, to tag a signed installer with a licence key:
 
-jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
+.EX
+\&jsign tag --value userid:1234-ABCD-5678-EFGH installer.exe
+.EE
 
 For an executable file, the tag can be found next to the timestamp of the signature, in the last few kilobytes
 of the file.
@@ -760,7 +830,9 @@ A common pattern consist in embedding a default template at build time, providin
 to be inserted when the file is downloaded. This allows a simple search-and-replace operation to be performed
 on the download server without needing Jsign to be installed. For example:
 
-jsign tag --value "<TEMPLATE>XXXXXXXXXXXXXXXXXXXXXXXXXXX</TEMPLATE>" installer.exe
+.EX
+\&jsign tag --value "<TEMPLATE>XXXXXXXXXXXXXXXXXXXXXXXXXXX</TEMPLATE>" installer.exe
+.EE
 
 If the value parameter is omitted Jsign will insert a default 1KB template filled with zeros, delimited by
 -----BEGIN TAG----- and -----END TAG----- markers.
