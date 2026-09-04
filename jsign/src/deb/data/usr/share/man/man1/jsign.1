@@ -6,7 +6,7 @@ jsign \- code signing tool for Windows executable files, installer packages and 
 
 .SH SYNOPSIS
 .B jsign
-[OPTIONS] [FILE] [PATTERN] [@FILELIST]...
+[COMMAND] [OPTIONS] [FILE] [PATTERN] [@FILELIST]...
 
 .SH DESCRIPTION
 Jsign is a code signing tool that allows you to sign and timestamp
@@ -40,8 +40,57 @@ Jsign can use private keys and certificates in various formats, either PKCS#12 k
 Java keystores, PKCS#11 hardware tokens, SPC/PVK files or from cloud key management
 systems.
 
+
+.SH COMMANDS
+.TP
+.B sign
+Sign the specified files. This is the default command, it may be omitted.
+.TP
+.B timestamp
+Add a timestamp to the signatures of the specified files.
+.TP
+.B extract
+Extract the signatures of a signed file, in DER or PEM format.
+.TP
+.B remove
+Remove the signatures of a file.
+.TP
+.B show
+Display the signatures of a file (certificate, timestamp, digest, tag).
+.TP
+.B tag
+Embed extra data into a signed file, without invalidating the signature.
+.TP
+.B verify
+Verify the signatures of the specified files and report the issues found.
+
+
 .SH OPTIONS
 
+.SS General Options
+
+.TP
+.B -h, --help
+Print the help
+
+.TP
+.B -h, --version
+Display version information
+
+.TP
+.B --quiet
+Print only error messages
+
+.TP
+.B --verbose
+Print more information
+
+.TP
+.B --debug
+Print debugging information
+
+
+.SS sign
 .TP
 .B -s, --keystore <FILE>
 Either the keystore file containing the certificate and the private key used for
@@ -162,17 +211,8 @@ The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512).
 .TP
 .B -t, --tsaurl <URL>
 The URL of the timestamping authority, either RFC 3161 or Authenticode services.
-You can use the Sectigo or the DigiCert services:
-.RS
-.PD 0
-.IP \- 2
-http://timestamp.sectigo.com
-.IP \- 2
-http://timestamp.digicert.com
-.PD
-.RE
-.IP
-Several URLs separated by a comma can be specified to fallback on alternative servers.
+You can use the Sectigo (http://timestamp.sectigo.com) or the DigiCert (http://timestamp.digicert.com)
+services. Several URLs separated by a comma can be specified to fallback on alternative servers.
 
 .TP
 .B -m, --tsmode <MODE>
@@ -235,6 +275,69 @@ If the signature exists it is attached to the file, replacing any existing signa
 (in this case the private key isn't used for signing and no timestamping is performed).
 .RE
 
+
+.SS timestamp
+.TP
+.B -t, --tsaurl <URL>
+The URL of the timestamping authority, either RFC 3161 or Authenticode services.
+You can use the Sectigo (http://timestamp.sectigo.com) or the DigiCert (http://timestamp.digicert.com)
+services. Several URLs separated by a comma can be specified to fallback on alternative servers.
+
+.TP
+.B -m, --tsmode <MODE>
+The timestamping mode (RFC3161 or Authenticode). The default mode is Authenticode.
+
+.TP
+.B -r, --tsretries <NUMBER>
+The number of retries for timestamping (default to 3 attempts).
+
+.TP
+.B -w, --tsretrywait <SECONDS>
+The number of seconds to wait between timestamping retries (10 seconds by default).
+
+.TP
+.B --proxyUrl <URL>
+The URL of the HTTP proxy.
+
+.TP
+.B --proxyUser <NAME>
+The user for the HTTP proxy. If a user is needed.
+
+.TP
+.B --proxyPass <PASSWORD>
+The password for the HTTP proxy user. If a user is needed.
+
+.TP
+.B --nonProxyHosts <HOSTS>
+The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns.
+
+.TP
+.B --replace
+Tells if the previous timestamps should be replaced. By default the new timestamp is
+added to the existing signatures.
+
+
+.SS extract
+.TP
+.B --format <FORMAT>
+The output format of the signature (DER or PEM).
+
+
+.SS remove
+
+Remove the signatures from a file. The signatures to remove can be selected by digest algorithm and by certificate name.
+
+.TP
+.B -d, --alg <ALGORITHM>
+The digest algorithm of the signatures to remove (SHA-1, SHA-256, SHA-384 or SHA-512).
+
+.TP
+.B -n, --name <NAME>
+The certificate name used to select the signatures to remove (partial match). Only signatures
+whose certificate common name contains this value are removed.
+
+
+.SS tag
 .TP
 .B --value
 The value of the unsigned attribute when tagging a file. The value is either:
@@ -252,26 +355,114 @@ a binary value in hexadecimal format, prefixed with 0x
 If no value is specified a default 1KB template is used, filled with zeros and delimited by
 -----BEGIN TAG----- and -----END TAG----- markers.
 
-.TP
-.B --quiet
-Print only error messages
 
+.SS verify
+
+The verify command verifies the signatures of one or more files. The following verifications are performed:
+.PD 0
+.IP \- 2
+The computed digest of the file must match the digest stored in the signature.
+.IP \- 2
+If a timestamp is present, its structure must be valid and its certificate chain trusted.
+.IP \- 2
+The signature must be standard-compliant and cryptographically correct.
+.IP \- 2
+The certificate chain must be trusted and valid at the verification date. The extended key usage (EKU)
+for Code Signing is required. The revocation status (CRL/OCSP) of the certificates in the chain is not checked.
+.PD
+.PP
+By default, the certificate chains are validated against the root certificates supported by Windows. Extra root
+anchors can be supplied with the certfile parameter.
+
+The command has two levels of detail, by default a summary line is displayed for each signature:
+
+.EX
+\&$ jsign verify application.exe
+\&Signature #1 (SHA1 with RSA 2048) by Jsign Code Signing Test Certificate 2024 is invalid (The file digest does not match the signature)
+\&Signature #2 (SHA256 with RSA 4096) by Jsign Code Signing Test Certificate 2026 is valid
+.EE
+
+In verbose mode, a detailed diagnostic is displayed:
+
+.EX
+\&$ jsign verify --verbose application.exe
+\&Signature #1 (SHA1 with RSA 2048) by Jsign Code Signing Test Certificate 2024 is invalid
+\&    FAIL  File Integrity:          The file digest does not match the signature
+\&                                   expected: d27ec498912807ddfc4bec2be4f62c42814836f3
+\&                                   actual:   cb4bc7a2995e6d4b67a56546ecaaf68de6a2efa7
+\&    PASS  Timestamp:               Valid RFC 3161 timestamp (Mon Aug 03 19:49:33 CEST 2026)
+\&    FAIL  Certificate Chain Trust: Certificate chain is not trusted
+\&                                   No trust anchor could be established for the chain:
+\&                                   Jsign Code Signing Test Certificate 2024
+\&                                     Jsign Code Signing CA 2024
+\&                                       Jsign Root Certificate Authority 2024
+\&    PASS  Signature Integrity:     Signature data is valid
+\&
+\&Signature #2 (SHA256 with RSA 4096) by Jsign Code Signing Test Certificate 2026 is valid
+\&    PASS  File Integrity:          The file digest matches the signature
+\&    SKIP  Timestamp:               No timestamp found
+\&    PASS  Certificate Chain Trust: Certificate chain is trusted
+\&    PASS  Signature Integrity:     Signature data is valid
+.EE
+
+The command returns the following error codes:
+.PD 0
+.TP 8
+.B 0
+Success (at least one signature is valid)
+.TP 8
+.B 1
+Execution error (invalid command arguments, I/O failure, etc.)
+.TP 8
+.B 2
+The file is not signed
+.TP 8
+.B 4
+Verification failed (all signatures are invalid)
+.PD
+
+
+.TP
+.B --date <DATE>
+The date at which the signature is verified (overridden by a timestamp).
+
+.TP
+.B -c, --certfile <FILE>
+The file containing supplementary trusted CA certificates, in PEM or DER format (.p7b or .spc
+files). This parameter is required when the signature doesn't contain the root certificate and
+the URL of the root certificate isn't referenced in the Authority Information Access field of the
+intermediate certificates, or when the root certificate of the signature is not a known
+Authenticode trust anchor.
+
+.TP
+.B --lazy
+Lazy verification stopping at the first issue found for each signature.
+
+.TP
+.B -e, --encoding <ENCODING>
+The encoding of the script to be verified (if it doesn't contain a byte order mark).
+Defaults to "UTF-8".
+
+.TP
+.B --proxyUrl <URL>
+The URL of the HTTP proxy.
+
+.TP
+.B --proxyUser <NAME>
+The user for the HTTP proxy. If a user is needed.
+
+.TP
+.B --proxyPass <PASSWORD>
+The password for the HTTP proxy user. If a user is needed.
+
+.TP
+.B --nonProxyHosts <HOSTS>
+The hosts that bypass the HTTP proxy, as a pipe-separated list of patterns.
 .TP
 .B --verbose
-Print more information
+Print a detailed report of the verification.
 
-.TP
-.B --debug
-Print debugging information
-
-.TP
-.B -h, --help
-Print the help
-
-.TP
-.B -h, --version
-Display version information
-
+.PP
 After the options Jsign accepts one or more files to sign as arguments. The arguments may contain '*' or '**'
 wildcards to match multiple files and scan through directories recursively. For example using "build/*.exe" will
 sign the executables in the build directory, and "installdir/**/*.dll" will scan the installdir directory
