@@ -15,25 +15,27 @@ independent and provides an alternative to native tools like signtool on Windows
 or the Mono development tools on Unix systems.
 
 It supports the following file formats:
-.br
-- Windows executable files (.exe) and libraries (.dll)
-.br
-- Microsoft Installers (.msi)
-.br
-- Cabinet files (.cab)
-.br
-- Catalog files (.cat)
-.br
-- Windows packages (.appx, .msix)
-.br
-- Microsoft Dynamics 365 extension packages (.navx)
-.br
-- NuGet packages (.nupkg)
-.br
-- Windows scripts (PowerShell, VBScript, JScript, WSF)
-.br
-- UEFI executables (.efi)
-
+.PD 0
+.IP \- 2
+Windows executable files (.exe) and libraries (.dll)
+.IP \- 2
+Microsoft Installers (.msi)
+.IP \- 2
+Cabinet files (.cab)
+.IP \- 2
+Catalog files (.cat)
+.IP \- 2
+Windows packages (.appx, .msix)
+.IP \- 2
+Microsoft Dynamics 365 extension packages (.navx)
+.IP \- 2
+NuGet packages (.nupkg)
+.IP \- 2
+Windows scripts (PowerShell, VBScript, JScript, WSF)
+.IP \- 2
+UEFI executables (.efi)
+.PD
+.PP
 Jsign can use private keys and certificates in various formats, either PKCS#12 keystores,
 Java keystores, PKCS#11 hardware tokens, SPC/PVK files or from cloud key management
 systems.
@@ -60,57 +62,69 @@ by using the env: prefix followed by the name of the variable.
 The type of the keystore:
 
 File based:
-.br
-- PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
-.br
-- JKS           : Java keystore (.jks files)
-.br
-- JCEKS         : SunJCE keystore (.jceks files)
-
-Hardware tokens;
-.br
-- PKCS11        : PKCS#11 hardware token
-.br
-- CRYPTOCERTUM  : CryptoCertum card
-.br
-- ETOKEN        : SafeNet eToken
-.br
-- NITROKEY      : Nitrokey HSM
-.br
-- OPENPGP       : OpenPGP card
-.br
-- OPENSC        : Smart card
-.br
-- PIV           : PIV card
-.br
-- YUBIKEY       : YubiKey security key (requires ykcs11)
-
+.RS
+.PD 0
+.IP \- 2 
+PKCS12        : Standard PKCS#12 keystore (.p12 or .pfx files)
+.IP \- 2
+JKS           : Java keystore (.jks files)
+.IP \- 2
+JCEKS         : SunJCE keystore (.jceks files)
+.PD
+.RE
+.IP
+Hardware tokens:
+.RS
+.PD 0
+.IP \- 2
+PKCS11        : PKCS#11 hardware token
+.IP \- 2
+CRYPTOCERTUM  : CryptoCertum card
+.IP \- 2
+ETOKEN        : SafeNet eToken
+.IP \- 2
+NITROKEY      : Nitrokey HSM
+.IP \- 2
+OPENPGP       : OpenPGP card
+.IP \- 2
+OPENSC        : Smart card
+.IP \- 2
+PIV           : PIV card
+.IP \- 2
+YUBIKEY       : YubiKey security key (requires ykcs11)
+.PD
+.RE
+.IP
 Cloud key management systems:
-.br
-- AWS           : AWS Key Management Service
-.br
-- AZUREKEYVAULT : Azure Key Vault key management system
-.br
-- CODESIGNSECURE: Encryption Consulting CodeSign Secure
-.br
-- DIGICERTONE   : DigiCert ONE Secure Software Manager
-.br
-- ESIGNER       : SSL.com eSigner
-.br
-- GARASIGN      : Garantir Remote Signing
-.br
-- GOOGLECLOUD   : Google Cloud KMS
-.br
-- HASHICORPVAULT: HashiCorp Vault
-.br
-- ORACLECLOUD   : Oracle Cloud Key Management Service
-.br
-- SIGNPATH      : SignPath
-.br
-- SIGNSERVER    : Keyfactor SignServer
-.br
-- TRUSTEDSIGNING: Azure Artifact Signing
-
+.RS
+.PD 0
+.IP \- 2
+AWS           : AWS Key Management Service
+.IP \- 2
+AZUREKEYVAULT : Azure Key Vault key management system
+.IP \- 2
+CODESIGNSECURE: Encryption Consulting CodeSign Secure
+.IP \- 2
+DIGICERTONE   : DigiCert ONE Secure Software Manager
+.IP \- 2
+ESIGNER       : SSL.com eSigner
+.IP \- 2
+GARASIGN      : Garantir Remote Signing
+.IP \- 2
+GOOGLECLOUD   : Google Cloud KMS
+.IP \- 2
+HASHICORPVAULT: HashiCorp Vault
+.IP \- 2
+ORACLECLOUD   : Oracle Cloud Key Management Service
+.IP \- 2
+SIGNPATH      : SignPath
+.IP \- 2
+SIGNSERVER    : Keyfactor SignServer
+.IP \- 2
+TRUSTEDSIGNING: Azure Artifact Signing
+.PD
+.RE
+.IP
 This option is not required for file based keystores (JKS, JCEKS and PKCS12).
 
 .TP
@@ -149,11 +163,15 @@ The digest algorithm (SHA-1, SHA-256, SHA-384 or SHA-512).
 .B -t, --tsaurl <URL>
 The URL of the timestamping authority, either RFC 3161 or Authenticode services.
 You can use the Sectigo or the DigiCert services:
-.br
-- http://timestamp.sectigo.com
-.br
-- http://timestamp.digicert.com
-
+.RS
+.PD 0
+.IP \- 2
+http://timestamp.sectigo.com
+.IP \- 2
+http://timestamp.digicert.com
+.PD
+.RE
+.IP
 Several URLs separated by a comma can be specified to fallback on alternative servers.
 
 .TP
@@ -220,13 +238,17 @@ If the signature exists it is attached to the file, replacing any existing signa
 .TP
 .B --value
 The value of the unsigned attribute when tagging a file. The value is either:
-.br
-- a string (such as a user id, a license key or a JWT token)
-.br
-- the name of the file to include, prefixed with file:
-.br
-- a binary value in hexadecimal format, prefixed with 0x
-
+.RS
+.PD 0
+.IP \- 2
+a string (such as a user id, a license key or a JWT token)
+.IP \- 2
+the name of the file to include, prefixed with file:
+.IP \- 2
+a binary value in hexadecimal format, prefixed with 0x
+.PD
+.RE
+.IP
 If no value is specified a default 1KB template is used, filled with zeros and delimited by
 -----BEGIN TAG----- and -----END TAG----- markers.
 
@@ -642,14 +664,17 @@ When creating the key the purpose must be set to "Asymmetric sign", and the algo
 or RSA with PKCS#1 v1.5 padding and SHA digest. Keys with PSS padding or raw RSA mode are not supported.
 
 The Google Cloud account used must have the following permissions:
-
-.br
-\- cloudkms.cryptoKeyVersions.useToSign
-.br
-\- cloudkms.cryptoKeyVersions.list (required if the version of the key isn't specified)
-.br
-\- cloudkms.cryptoKeys.list (required to list the key availables when the alias isn't found)
-
+.RS
+.PD 0
+.IP \- 2
+cloudkms.cryptoKeyVersions.useToSign
+.IP \- 2
+cloudkms.cryptoKeyVersions.list (required if the version of the key isn't specified)
+.IP \- 2
+cloudkms.cryptoKeys.list (required to list the key availables when the alias isn't found)
+.PD
+.RE
+.IP
 These permissions are covered by the 'Cloud KMS CryptoKey Signer' and 'Cloud KMS Viewer' roles.
 
 
@@ -754,17 +779,20 @@ When using the default configuration file and profile, the command is simplified
 .EE
 
 The configuration file can be replaced (or overridden) by environment variables. Here are the variables expected:
-
-.br
-\- OCI_CLI_USER        : OCID of the user (e.g. ocid1.user.oc1..<unique_ID>)
-.br
-\- OCI_CLI_TENANCY     : The OCID of the tenancy (e.g. ocid1.tenancy.oc1..<unique_ID>)
-.br
-\- OCI_CLI_REGION      : The OCI region (e.g. eu-paris-1)
-.br
-\- OCI_CLI_KEY_FILE    : The path to the private key signing the API requests in PEM format
-.br
-\- OCI_CLI_PASS_PHRASE : The pass phrase of the private key
+.RS
+.PD 0
+.IP \- 2
+OCI_CLI_USER        : OCID of the user (e.g. ocid1.user.oc1..<unique_ID>)
+.IP \- 2
+OCI_CLI_TENANCY     : The OCID of the tenancy (e.g. ocid1.tenancy.oc1..<unique_ID>)
+.IP \- 2
+OCI_CLI_REGION      : The OCI region (e.g. eu-paris-1)
+.IP \- 2
+OCI_CLI_KEY_FILE    : The path to the private key signing the API requests in PEM format
+.IP \- 2
+OCI_CLI_PASS_PHRASE : The pass phrase of the private key
+.PD
+.RE
 
 
 .TP
