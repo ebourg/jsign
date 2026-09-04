@@ -309,10 +309,19 @@
             <configuration>
               <target>
                 <mkdir dir="${project.build.directory}/deb"/>
+                <loadresource property="build.date">
+                  <string value="${project.build.outputTimestamp}"/>
+                  <filterchain>
+                    <tokenfilter>
+                      <replaceregex pattern="T.*" replace=""/>
+                    </tokenfilter>
+                  </filterchain>
+                </loadresource>
                 <copy todir="${project.build.directory}/deb" filtering="true">
                   <fileset dir="src/deb"/>
                   <filterset>
                     <filter token="VERSION" value="${project.version}"/>
+                    <filter token="DATE" value="${build.date}"/>
                   </filterset>
                 </copy>
               </target>
