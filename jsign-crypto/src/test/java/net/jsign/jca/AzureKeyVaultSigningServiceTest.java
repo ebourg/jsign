@@ -68,7 +68,50 @@ public class AzureKeyVaultSigningServiceTest {
     }
 
     @Test
-    public void testGetAliasesError() {
+    public void testGetAliasesWithAuthentication() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/tenant/oauth2/v2.0/token")
+                .respond()
+                .withStatus(200)
+                .withContentType("application/json")
+                .withBody("{\"token_type\":\"Bearer\",\"expires_in\":3599,\"access_token\":\"token\"}");
+        onRequest()
+                .havingMethodEqualTo("GET")
+                .havingPathEqualTo("/certificates")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .respond()
+                .withStatus(200)
+                .withBody(new FileReader("target/test-classes/services/azure-certificates.json"));
+
+        AzureCredentials credentials = new AzureCredentials("tenant", "client", "secret");
+        credentials.setEndpoint("http://localhost:" + port());
+        SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), credentials);
+
+        assertEquals("aliases", Arrays.asList("test1", "test2", "test3"), service.aliases());
+    }
+
+    @Test
+    public void testGetAliasesWithAuthenticationError() {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/tenant/oauth2/v2.0/token")
+                .respond()
+                .withStatus(401)
+                .withContentType("application/json")
+                .withBody("{\"error\":\"invalid_client\",\"error_description\":\"AADSTS7000215: Invalid client secret provided.\"}");
+
+        AzureCredentials credentials = new AzureCredentials("tenant", "client", "secret");
+        credentials.setEndpoint("http://localhost:" + port());
+        SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), credentials);
+
+        Exception e = assertThrows(RuntimeException.class, service::aliases);
+        assertEquals("message", "Unable to get the Azure API access token", e.getMessage());
+        assertEquals("cause", "invalid_client: AADSTS7000215: Invalid client secret provided.", e.getCause().getMessage());
+    }
+
+    @Test
+    public void testGetAliasesWithInvalidToken() {
         SigningService service = new AzureKeyVaultSigningService("http://localhost:" + port(), "token");
 
         Exception e = assertThrows(KeyStoreException.class, service::aliases);

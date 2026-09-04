@@ -85,6 +85,54 @@ public class AzureTrustedSigningServiceTest {
     }
 
     @Test
+    public void testGetCertificateChainWithAuthentication() {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/tenant/oauth2/v2.0/token")
+                .respond()
+                .withStatus(200)
+                .withContentType("application/json")
+                .withBody("{\"token_type\":\"Bearer\",\"expires_in\":3599,\"access_token\":\"token\"}");
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/codesigningaccounts/MyAccount/certificateprofiles/MyProfile/sign")
+                .havingHeaderEqualTo("Authorization", "Bearer token")
+                .respond()
+                .withStatus(403);
+
+        AzureCredentials credentials = new AzureCredentials("tenant", "client", "secret");
+        credentials.setEndpoint("http://localhost:" + port());
+        SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), credentials);
+
+        // the token is only fetched when the service is used
+        verifyThatRequest().havingPathEqualTo("/tenant/oauth2/v2.0/token").receivedNever();
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("MyAccount/MyProfile"));
+        assertEquals("message", "Unable to retrieve the certificate chain 'MyAccount/MyProfile'", e.getMessage());
+
+        verifyThatRequest().havingPathEqualTo("/tenant/oauth2/v2.0/token").receivedOnce();
+    }
+
+    @Test
+    public void testGetCertificateChainWithAuthenticationError() {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/tenant/oauth2/v2.0/token")
+                .respond()
+                .withStatus(401)
+                .withContentType("application/json")
+                .withBody("{\"error\":\"invalid_client\",\"error_description\":\"AADSTS7000215: Invalid client secret provided.\"}");
+
+        AzureCredentials credentials = new AzureCredentials("tenant", "client", "secret");
+        credentials.setEndpoint("http://localhost:" + port());
+        SigningService service = new AzureTrustedSigningService("http://localhost:" + port(), credentials);
+
+        Exception e = assertThrows(KeyStoreException.class, () -> service.getCertificateChain("MyAccount/MyProfile"));
+        assertEquals("message", "Unable to retrieve the certificate chain 'MyAccount/MyProfile'", e.getMessage());
+        assertEquals("cause", "invalid_client: AADSTS7000215: Invalid client secret provided.", e.getCause().getCause().getMessage());
+    }
+
+    @Test
     public void testGetCertificateChainWithError() {
         onRequest()
                 .havingMethodEqualTo("POST")

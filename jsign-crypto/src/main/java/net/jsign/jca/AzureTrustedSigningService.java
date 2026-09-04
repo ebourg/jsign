@@ -51,7 +51,7 @@ public class AzureTrustedSigningService implements SigningService {
 
     /**
      * Mapping between Java and Azure signing algorithms.
-     * @see <a href="https://docs.microsoft.com/en-us/rest/api/keyvault/sign/sign#jsonwebkeysignaturealgorithm">Key Vault API - JonWebKeySignatureAlgorithm</a>
+     * @see <a href="https://docs.microsoft.com/en-us/rest/api/keyvault/sign/sign#jsonwebkeysignaturealgorithm">Key Vault API - JsonWebKeySignatureAlgorithm</a>
      */
     private final Map<String, String> algorithmMapping = new HashMap<>();
     {
@@ -66,13 +66,37 @@ public class AzureTrustedSigningService implements SigningService {
         algorithmMapping.put("SHA512withRSA/PSS", "PS512");
     }
 
+    /**
+     * Creates a new Azure Artifact Signing service.
+     *
+     * @param endpoint the API endpoint (e.g. <tt>weu.codesigning.azure.net</tt>)
+     * @param token    the Azure API access token
+     */
     public AzureTrustedSigningService(String endpoint, String token) {
+        this(endpoint, new AzureCredentials(token));
+    }
+
+    /**
+     * Creates a new Azure Artifact Signing service.
+     *
+     * @param endpoint    the API endpoint (e.g. <tt>weu.codesigning.azure.net</tt>)
+     * @param credentials the Azure credentials used to fetch the API access token
+     * @since 8.0
+     */
+    public AzureTrustedSigningService(String endpoint, AzureCredentials credentials) {
         if (!endpoint.startsWith("http")) {
             endpoint = "https://" + endpoint;
         }
         endpoint = endpoint.replaceFirst("/+$", "");
         client = new RESTClient(endpoint)
-                .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token))
+                .authentication(conn -> {
+                    try {
+                        String token = credentials.getAccessToken("https://codesigning.azure.net");
+                        conn.setRequestProperty("Authorization", "Bearer " + token);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Unable to get the Azure API access token", e);
+                    }
+                })
                 .errorHandler(response -> {
                     if (response.containsKey("errorDetail")) {
                         Map error = (Map) response.get("errorDetail");

@@ -545,13 +545,28 @@ key management system can be used with:</p>
  az account get-access-token --resource "https://vault.azure.net"
 </pre>
 
+<p>The <code>storepass</code> parameter may also specify the Azure credentials:</p>
+
+<pre>
+ jsign --storetype AZUREKEYVAULT \
+       --keystore vaultname \
+       --storepass &lt;tenantId&gt;|&lt;clientId&gt;|&lt;clientSecret&gt; \
+       --alias test application.exe
+</pre>
+
+<p>If the <code>storepass</code> parameter is omitted Jsign loads the credentials from the environment variables
+(<code>AZURE_TENANT_ID</code>, <code>AZURE_CLIENT_ID</code> and <code>AZURE_CLIENT_SECRET</code>).</p>
+
 <p>The Azure account used must have the <em>"Key Vault Crypto User"</em> and <em>"Key Vault Certificate User"</em> roles.</p>
 
 <h4 id="example-trustedsigning">Signing with Azure Trusted Signing</h4>
 
 <p>With the Azure <a href="https://learn.microsoft.com/en-us/azure/trusted-signing/overview">Trusted Signing</a> service
 the <code>keystore</code> parameter specifies the endpoint URI, and the <code>alias</code> combines the account name and
-the certificate profile. The Azure API access token is used as the keystore password.</p>
+the certificate profile.</p>
+
+<p>The <code>storepass</code> parameter provides either the Azure access token or the Azure credentials
+(in the form <code>&lt;tenantId&gt;|&lt;clientId&gt;|&lt;clientSecret&gt;</code>).</p>
 
 <pre>
  jsign --storetype TRUSTEDSIGNING \
@@ -563,8 +578,11 @@ the certificate profile. The Azure API access token is used as the keystore pass
 <p>The access token can be obtained with the <a href="https://learn.microsoft.com/en-us/cli/azure/">Azure CLI</a>:</p>
 
 <pre>
- az account get-access-token --resource https://codesigning.azure.net
+  az account get-access-token --resource https://codesigning.azure.net
 </pre>
+
+<p>If the <code>storepass</code> parameter is omitted Jsign loads the credentials from the environment variables
+(<code>AZURE_TENANT_ID</code>, <code>AZURE_CLIENT_ID</code> and <code>AZURE_CLIENT_SECRET</code>).</p>
 
 <p>The Azure account used must have the <em>"Code Signing Certificate Profile Signer"</em> role.</p>
 

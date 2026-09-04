@@ -37,6 +37,7 @@ import javax.smartcardio.CardException;
 
 import net.jsign.jca.AmazonCredentials;
 import net.jsign.jca.AmazonSigningService;
+import net.jsign.jca.AzureCredentials;
 import net.jsign.jca.AzureKeyVaultSigningService;
 import net.jsign.jca.AzureTrustedSigningService;
 import net.jsign.jca.CryptoCertumCardSigningService;
@@ -337,7 +338,13 @@ public enum KeyStoreType {
     /**
      * Azure Key Vault. The keystore parameter specifies the name of the key vault, either the short name
      * (e.g. <code>myvault</code>), or the full URL (e.g. <code>https://myvault.vault.azure.net</code>).
-     * The Azure API access token is used as the keystore password.
+     * The storepass parameter specifies either the Azure API access token obtained with the Azure CLI:
+     *
+     * <pre>  az account get-access-token --resource https://vault.azure.net</pre>
+     *
+     * Or the Azure credentials used to fetch the access token in the form <code>&lt;tenantId&gt;|&lt;clientId&gt;|&lt;clientSecret&gt;</code>.
+     * If the password isn't specified the credentials are read from the <code>AZURE_TENANT_ID</code>,
+     * <code>AZURE_CLIENT_ID</code> and <code>AZURE_CLIENT_SECRET</code> environment variables.
      */
     AZUREKEYVAULT(false, false) {
         @Override
@@ -345,14 +352,15 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the Azure vault name");
             }
-            if (params.storepass() == null) {
-                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Azure API access token");
+            if (params.storepass() != null && params.storepass().contains("|") && params.storepass().split("\\|").length != 3) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Azure access token or the Azure credentials: <tenantId>|<clientId>|<clientSecret>");
             }
         }
 
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            return new SigningServiceJcaProvider(new AzureKeyVaultSigningService(params.keystore(), params.storepass()));
+            AzureCredentials credentials = params.storepass() != null ? new AzureCredentials(params.storepass()) : AzureCredentials.getDefault();
+            return new SigningServiceJcaProvider(new AzureKeyVaultSigningService(params.keystore(), credentials));
         }
     },
 
@@ -512,10 +520,14 @@ public enum KeyStoreType {
 
     /**
      * Azure Trusted Signing Service. The keystore parameter specifies the API endpoint (for example
-     * <code>weu.codesigning.azure.net</code>). The Azure API access token is used as the keystore password,
-     * it can be obtained using the Azure CLI with:
+     * <code>weu.codesigning.azure.net</code>). The storepass parameter specifies either the Azure API access token
+     * obtained with the Azure CLI:
      *
      * <pre>  az account get-access-token --resource https://codesigning.azure.net</pre>
+     *
+     * Or the Azure credentials used to fetch the access token in the form <code>&lt;tenantId&gt;|&lt;clientId&gt;|&lt;clientSecret&gt;</code>.
+     * If the password isn't specified the credentials are read from the <code>AZURE_TENANT_ID</code>,
+     * <code>AZURE_CLIENT_ID</code> and <code>AZURE_CLIENT_SECRET</code> environment variables.
      */
     TRUSTEDSIGNING(false, false) {
         @Override
@@ -523,14 +535,15 @@ public enum KeyStoreType {
             if (params.keystore() == null) {
                 throw new IllegalArgumentException("keystore " + params.parameterName() + " must specify the Azure endpoint (<region>.codesigning.azure.net)");
             }
-            if (params.storepass() == null) {
-                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Azure API access token");
+            if (params.storepass() != null && params.storepass().contains("|") && params.storepass().split("\\|").length != 3) {
+                throw new IllegalArgumentException("storepass " + params.parameterName() + " must specify the Azure access token or the Azure credentials: <tenantId>|<clientId>|<clientSecret>");
             }
         }
 
         @Override
         Provider getProvider(KeyStoreBuilder params) {
-            return new SigningServiceJcaProvider(new AzureTrustedSigningService(params.keystore(), params.storepass()));
+            AzureCredentials credentials = params.storepass() != null ? new AzureCredentials(params.storepass()) : AzureCredentials.getDefault();
+            return new SigningServiceJcaProvider(new AzureTrustedSigningService(params.keystore(), credentials));
         }
     },
 

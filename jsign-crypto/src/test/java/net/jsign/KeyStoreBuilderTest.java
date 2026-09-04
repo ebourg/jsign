@@ -128,7 +128,12 @@ public class KeyStoreBuilderTest {
         builder.keystore("jsigntestkeyvault");
 
         e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
+        assertEquals("message", "Azure credentials are missing from the environment variables: AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET", e.getMessage());
+
+        builder.storepass("0123456789|ABCDEF");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the Azure access token or the Azure credentials: <tenantId>|<clientId>|<clientSecret>", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 
@@ -265,7 +270,12 @@ public class KeyStoreBuilderTest {
         builder.keystore("https://weu.codesigning.azure.net");
 
         e = assertThrows(IllegalArgumentException.class, builder::build);
-        assertEquals("message", "storepass parameter must specify the Azure API access token", e.getMessage());
+        assertEquals("message", "Azure credentials are missing from the environment variables: AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET", e.getMessage());
+
+        builder.storepass("0123456789|ABCDEF");
+
+        e = assertThrows(IllegalArgumentException.class, builder::build);
+        assertEquals("message", "storepass parameter must specify the Azure access token or the Azure credentials: <tenantId>|<clientId>|<clientSecret>", e.getMessage());
 
         builder.storepass("0123456789ABCDEF");
 

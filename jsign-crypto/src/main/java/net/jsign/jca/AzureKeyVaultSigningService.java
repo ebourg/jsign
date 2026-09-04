@@ -76,11 +76,30 @@ public class AzureKeyVaultSigningService implements SigningService {
      * @param token the Azure API access token
      */
     public AzureKeyVaultSigningService(String vault, String token) {
+        this(vault, new AzureCredentials(token));
+    }
+
+    /**
+     * Creates a new Azure Key Vault signing service.
+     *
+     * @param vault       the name of the key vault, either the short name (e.g. <tt>myvault</tt>),
+     *                    or the full URL (e.g. <tt>https://myvault.vault.azure.net</tt>).
+     * @param credentials the Azure credentials used to fetch the API access token
+     * @since 8.0
+     */
+    public AzureKeyVaultSigningService(String vault, AzureCredentials credentials) {
         if (!vault.startsWith("http")) {
             vault = "https://" + vault + ".vault.azure.net";
         }
         this.client = new RESTClient(vault)
-                .authentication(conn -> conn.setRequestProperty("Authorization", "Bearer " + token))
+                .authentication(conn -> {
+                    try {
+                        String token = credentials.getAccessToken("https://vault.azure.net");
+                        conn.setRequestProperty("Authorization", "Bearer " + token);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Unable to get the Azure API access token", e);
+                    }
+                })
                 .errorHandler(response -> {
                     Map error = (Map) response.get("error");
                     return error.get("code") + ": " + error.get("message");
