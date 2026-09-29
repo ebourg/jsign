@@ -53,7 +53,7 @@ public class HttpClientTest {
     public void testNonRoutableAddressBlocked() throws Exception {
         HttpClient client = new HttpClient(null, 0);
 
-        for (String url : new String[] {"http://127.0.0.1:1/cert.crt", "http://169.254.169.254/latest/meta-data/", "http://[::1]/cert.crt", "http://10.0.0.1/cert.crt"}) {
+        for (String url : new String[] {"http://127.0.0.1:1/cert.crt", "http://169.254.169.254/latest/meta-data/", "http://[::1]/cert.crt"}) {
             try {
                 client.getInputStream(new URL(url));
                 fail("SSRF to a non routable address was not blocked: " + url);

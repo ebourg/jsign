@@ -102,16 +102,18 @@ class HttpClient {
     }
 
     /**
-     * Rejects URLs resolving to a non-routable address (loopback, link-local, private, wildcard or multicast).
+     * Rejects URLs resolving to a non-routable address (loopback, link-local, wildcard or multicast).
      * The certificate URLs fetched here come from the Authority Information Access extension of untrusted
-     * certificates, so an unchecked fetch (and its redirects) would let a crafted signature probe internal
-     * hosts or the cloud metadata endpoint when the signature is verified.
+     * certificates, so an unchecked fetch (and its redirects) would let a crafted signature reach the
+     * loopback interface or the cloud metadata endpoint (169.254.169.254) when the signature is verified.
+     * Private ranges (10.x, 172.16.x, 192.168.x) are left reachable since a private CA legitimately serves
+     * its AIA URLs from there.
      */
     private void checkAddress(URL url) throws IOException {
         String host = url.getHost();
         try {
             for (InetAddress address : InetAddress.getAllByName(host)) {
-                if (address.isLoopbackAddress() || address.isLinkLocalAddress() || address.isSiteLocalAddress()
+                if (address.isLoopbackAddress() || address.isLinkLocalAddress()
                         || address.isAnyLocalAddress() || address.isMulticastAddress()) {
                     throw new IOException("Access to a non routable address is not allowed: " + url);
                 }
