@@ -22,7 +22,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 
@@ -78,6 +80,7 @@ class HttpClient {
         int redirections = 0;
 
         while (redirections++ < 10) {
+            checkAddress(url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             String userAgent = System.getProperty("http.agent");
             conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
@@ -96,6 +99,26 @@ class HttpClient {
         }
 
         throw new IOException("Too many redirections for " + url);
+    }
+
+    /**
+     * Rejects URLs resolving to a non-routable address (loopback, link-local, private, wildcard or multicast).
+     * The certificate URLs fetched here come from the Authority Information Access extension of untrusted
+     * certificates, so an unchecked fetch (and its redirects) would let a crafted signature probe internal
+     * hosts or the cloud metadata endpoint when the signature is verified.
+     */
+    private void checkAddress(URL url) throws IOException {
+        String host = url.getHost();
+        try {
+            for (InetAddress address : InetAddress.getAllByName(host)) {
+                if (address.isLoopbackAddress() || address.isLinkLocalAddress() || address.isSiteLocalAddress()
+                        || address.isAnyLocalAddress() || address.isMulticastAddress()) {
+                    throw new IOException("Access to a non routable address is not allowed: " + url);
+                }
+            }
+        } catch (UnknownHostException e) {
+            throw new IOException("Unable to resolve the host: " + host, e);
+        }
     }
 
     String getRequestHash(URL url) {
