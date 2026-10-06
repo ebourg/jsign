@@ -79,6 +79,8 @@ See https://ebourg.github.io/jsign for more information.
 * Failed connections due to HTTP 429 and 5xx errors are retried with an exponential backoff (contributed by Simon Schwendele)
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
 * Jsign can now open read-only or locked files
+* MSI files are no longer mapped into memory (this solves write issues on Windows with mounted volumes)
+* The terminally deprecated method warning displayed when signing MSI files has been fixed (from the build tools and the API)
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
 * The bash completion script now supports the `--tsmode` and `--alg` parameters
