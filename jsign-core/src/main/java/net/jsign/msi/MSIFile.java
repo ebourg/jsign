@@ -239,7 +239,7 @@ public class MSIFile implements Signable {
 
     private void initWritableFileSystem() throws IOException {
         if (file != null && fsWrite == fsRead) {
-            fsWrite = new POIFSFileSystem(file, false);
+            fsWrite = new UnmappedPOIFSFileSystem(file);
         }
     }
 
@@ -300,7 +300,7 @@ public class MSIFile implements Signable {
                     in.write(directorySectorsCount.array());
                 }
                 try {
-                    fsWrite = new POIFSFileSystem(file, false);
+                    fsWrite = new UnmappedPOIFSFileSystem(file);
                 } catch (IndexOutOfBoundsException e) {
                     throw new IOException("MSI file format error", e);
                 }
