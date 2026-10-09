@@ -71,6 +71,7 @@ See https://ebourg.github.io/jsign for more information.
 * MSI files are no longer mapped into memory (this solves write issues on Windows with mounted volumes)
 * The terminally deprecated method warning displayed when signing MSI files has been fixed (from the build tools and the API)
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
+* The Maven plugin no longer timestamps the signature by default (contributed by Daniel Fischer)
 * The Gradle plugin published on the Gradle plugin portal is compiled with Java 8 again
 
 #### Version 7.5 (2026-07-16)

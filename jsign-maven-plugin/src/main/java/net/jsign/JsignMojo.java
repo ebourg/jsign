@@ -133,8 +133,8 @@ public class JsignMojo extends AbstractMojo {
     @Parameter( property = "jsign.tsaurl" )
     private String tsaurl;
 
-    /** The protocol used for the timestamping (RFC3161 or Authenticode) */
-    @Parameter( property = "jsign.tsmode", defaultValue = "Authenticode" )
+    /** The protocol used for the timestamping (RFC3161 or Authenticode, Authenticode by default) */
+    @Parameter( property = "jsign.tsmode" )
     private String tsmode;
 
     /** The number of retries for timestamping */
