@@ -84,6 +84,7 @@ See https://ebourg.github.io/jsign for more information.
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
 * The bash completion script now supports the `--tsmode` and `--alg` parameters
+* The Maven plugin no longer timestamps the signature by default (contributed by Daniel Fischer)
 * API changes:
   * The new JsignTool class provides a high level API equivalent to the command line tool
 * Upgraded Bouncy Castle LTS to 2.73.10

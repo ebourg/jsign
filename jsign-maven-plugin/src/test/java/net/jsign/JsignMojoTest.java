@@ -17,18 +17,23 @@
 package net.jsign;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.Collections;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
+import org.apache.maven.plugin.descriptor.PluginDescriptorBuilder;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Proxy;
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 import org.apache.maven.shared.model.fileset.FileSet;
+import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.mockito.MockedConstruction;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
@@ -234,6 +239,18 @@ public class JsignMojoTest extends AbstractMojoTestCase {
 
         Exception e = assertThrows(MojoFailureException.class, mojo::execute);
         assertEquals("Unsupported file: pom.xml", e.getMessage());
+    }
+
+    public void testNoTimestampingByDefault() throws Exception {
+        // a default value for tsaurl or tsmode would enable the timestamping although none is configured
+        PluginDescriptor descriptor;
+        try (Reader reader = new FileReader("target/classes/META-INF/maven/plugin.xml")) {
+            descriptor = new PluginDescriptorBuilder().build(reader);
+        }
+        PlexusConfiguration configuration = descriptor.getMojo("sign").getMojoConfiguration();
+
+        assertNull("tsaurl default value", configuration.getChild("tsaurl").getAttribute("default-value"));
+        assertNull("tsmode default value", configuration.getChild("tsmode").getAttribute("default-value"));
     }
 
     public void testDetachedSignature() throws Exception {
