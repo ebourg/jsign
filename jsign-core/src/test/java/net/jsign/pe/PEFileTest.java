@@ -32,6 +32,9 @@ import org.junit.Test;
 import net.jsign.AuthenticodeSigner;
 import net.jsign.KeyStoreBuilder;
 import net.jsign.WindowsReadOnlyFileLock;
+import net.jsign.verify.CheckResult;
+import net.jsign.verify.SignatureVerifier;
+import net.jsign.verify.VerificationResult;
 
 import static net.jsign.DigestAlgorithm.*;
 import static net.jsign.SignatureAssert.*;
@@ -239,6 +242,62 @@ public class PEFileTest {
             assertSigned(file, SHA256);
             file.setSignatures(null);
             assertNotSigned(file);
+        }
+    }
+
+    @Test
+    public void testCertificateTableWithExtraData() throws Exception {
+        File sourceFile = new File("target/test-classes/wineyes.exe");
+        File targetFile = new File("target/test-classes/wineyes-cert-table-extra-data.exe");
+        FileUtils.copyFile(sourceFile, targetFile);
+
+        KeyStore keystore = new KeyStoreBuilder().keystore("target/test-classes/keystores/keystore.jks").storepass("password").build();
+        AuthenticodeSigner signer = new AuthenticodeSigner(keystore, "test", "password").withTimestamping(false);
+
+        long virtualAddress;
+        long size;
+        byte[] digest;
+        try (PEFile file = new PEFile(targetFile)) {
+            signer.sign(file);
+            assertSigned(file, SHA256);
+            assertEquals("trailing bytes", 0, file.getCertificateTableTrailingBytes());
+            DataDirectory certificateTable = file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE);
+            virtualAddress = certificateTable.getVirtualAddress();
+            size = certificateTable.getSize();
+            digest = file.computeDigest(SHA256);
+        }
+
+        // append data at the end of the file and extend the certificate table over it
+        int extra = 32;
+        try (RandomAccessFile raf = new RandomAccessFile(targetFile, "rw")) {
+            raf.seek(raf.length());
+            raf.write(new byte[extra]);
+        }
+        try (PEFile file = new PEFile(targetFile)) {
+            file.getDataDirectory(DataDirectoryType.CERTIFICATE_TABLE).write(virtualAddress, (int) (size + extra));
+        }
+
+        try (PEFile file = new PEFile(targetFile)) {
+            // the appended data sits in the excluded certificate table area, so the file digest is unchanged
+            assertArrayEquals("digest", digest, file.computeDigest(SHA256));
+
+            // the signature is still readable, but the extra data is now reported
+            assertEquals("number of signatures", 1, file.getSignatures().size());
+            assertEquals("trailing bytes", extra, file.getCertificateTableTrailingBytes());
+
+            // the verification fails because of the smuggled data
+            VerificationResult result = new SignatureVerifier().verify(file);
+            assertFalse("valid signature", result.isValid());
+
+            CheckResult check = null;
+            for (CheckResult c : result.getSignatureVerifications().get(0).getChecks()) {
+                if ("Certificate Table".equals(c.getRule())) {
+                    check = c;
+                }
+            }
+            assertNotNull("missing certificate table check", check);
+            assertEquals("verification status", CheckResult.Status.FAILED, check.getStatus());
+            assertEquals("verification message", "The certificate table contains " + extra + " extra bytes after the signature", check.getMessage());
         }
     }
 

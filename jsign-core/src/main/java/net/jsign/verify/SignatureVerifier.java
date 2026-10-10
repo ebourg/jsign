@@ -35,6 +35,7 @@ import org.bouncycastle.util.Selector;
 import net.jsign.DigestAlgorithm;
 import net.jsign.Signable;
 import net.jsign.cat.CatalogFile;
+import net.jsign.pe.PEFile;
 
 import static net.jsign.verify.CheckResult.Status.*;
 
@@ -124,6 +125,9 @@ public class SignatureVerifier {
             rules.add(new TimestampRule());
             rules.add(new CertificateChainTrustRule().withTrustedCertificates(trustedCertificates));
             rules.add(new SignatureIntegrityRule());
+            if (signable instanceof PEFile) {
+                rules.add(new CertificateTableRule());
+            }
 
             List<CheckResult> checks = new ArrayList<>();
             for (VerificationRule rule : rules) {
