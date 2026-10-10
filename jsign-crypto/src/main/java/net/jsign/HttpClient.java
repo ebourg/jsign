@@ -22,7 +22,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 
@@ -78,6 +80,7 @@ class HttpClient {
         int redirections = 0;
 
         while (redirections++ < 10) {
+            checkAddress(url);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             String userAgent = System.getProperty("http.agent");
             conn.setRequestProperty("User-Agent", "Jsign (https://ebourg.github.io/jsign/)" + (userAgent != null ? " " + userAgent : ""));
@@ -96,6 +99,28 @@ class HttpClient {
         }
 
         throw new IOException("Too many redirections for " + url);
+    }
+
+    /**
+     * Rejects URLs resolving to a non-routable address (loopback, link-local, wildcard or multicast).
+     * The certificate URLs fetched here come from the Authority Information Access extension of untrusted
+     * certificates, so an unchecked fetch (and its redirects) would let a crafted signature reach the
+     * loopback interface or the cloud metadata endpoint (169.254.169.254) when the signature is verified.
+     * Private ranges (10.x, 172.16.x, 192.168.x) are left reachable since a private CA legitimately serves
+     * its AIA URLs from there.
+     */
+    private void checkAddress(URL url) throws IOException {
+        String host = url.getHost();
+        try {
+            for (InetAddress address : InetAddress.getAllByName(host)) {
+                if (address.isLoopbackAddress() || address.isLinkLocalAddress()
+                        || address.isAnyLocalAddress() || address.isMulticastAddress()) {
+                    throw new IOException("Access to a non routable address is not allowed: " + url);
+                }
+            }
+        } catch (UnknownHostException e) {
+            throw new IOException("Unable to resolve the host: " + host, e);
+        }
     }
 
     String getRequestHash(URL url) {
