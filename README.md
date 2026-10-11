@@ -73,6 +73,7 @@ See https://ebourg.github.io/jsign for more information.
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
 * The Maven plugin no longer timestamps the signature by default (contributed by Daniel Fischer)
 * The Gradle plugin published on the Gradle plugin portal is compiled with Java 8 again
+* Upgraded Bouncy Castle LTS to 2.73.13
 
 #### Version 7.5 (2026-07-16)
 

@@ -136,7 +136,7 @@ public class CatalogFile implements Signable {
             try {
                 signedData = CMSSignedData.replaceSigners(signedData, new SignerInformationStore(Collections.emptyList()));
                 CollectionStore<?> emptyStore = new CollectionStore<>(Collections.emptyList());
-                signedData = CMSSignedData.replaceCertificatesAndCRLs(signedData, emptyStore, emptyStore, emptyStore);
+                signedData = CMSSignedData.replaceCertificatesAndCRLs(signedData, emptyStore, emptyStore, emptyStore).asVersion(1);
             } catch (CMSException e) {
                 throw new RuntimeException(e);
             }

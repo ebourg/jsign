@@ -436,7 +436,7 @@
   </reporting>
 
   <properties>
-    <bouncycastle.version>2.73.9</bouncycastle.version>
+    <bouncycastle.version>2.73.13</bouncycastle.version>
     <javadoc.link.jdk>https://docs.oracle.com/javase/8/docs/api</javadoc.link.jdk>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
