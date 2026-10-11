@@ -147,7 +147,7 @@ public class SignatureUtils {
         unsignedAttributes = new AttributeTable(attributes);
 
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
-        return CMSSignedData.replaceSigners(parent, new SignerInformationStore(signerInformation));
+        return CMSSignedData.replaceSigners(parent, new SignerInformationStore(signerInformation)).asVersion(1);
     }
 
     /**
@@ -206,7 +206,7 @@ public class SignatureUtils {
         }
 
         signerInformation = SignerInformation.replaceUnsignedAttributes(signerInformation, unsignedAttributes);
-        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signerInformation));
+        return CMSSignedData.replaceSigners(signature, new SignerInformationStore(signerInformation)).asVersion(1);
     }
 
     /**

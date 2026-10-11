@@ -445,7 +445,7 @@
 
   <properties>
     <javadoc.link.jdk>https://docs.oracle.com/javase/8/docs/api</javadoc.link.jdk>
-    <bouncycastle.version>2.73.10</bouncycastle.version>
+    <bouncycastle.version>2.73.13</bouncycastle.version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputTimestamp>2026-07-16T08:44:33Z</project.build.outputTimestamp>
