@@ -73,20 +73,24 @@ See https://ebourg.github.io/jsign for more information.
 * The new `--nonProxyHosts` parameter allows to specify hosts that should bypass the HTTP proxy
 * The new `--lazy` signing parameter skips files that are already signed
 * The `remove` command can now filter signatures by digest algorithm and certificate name
-* The Azure credentials can now be specified with `--storepass <tenantId>|<clientId>|<clientSecret>`
-  or with the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` environment variables
 * Timed-out connections to the cloud signing services are now retried
 * Failed connections due to HTTP 429 and 5xx errors are retried with an exponential backoff (contributed by Simon Schwendele)
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
+* The error message displayed when the PE certificate table is corrupted has been improved
+* The bash completion script now supports the `--tsmode` and `--alg` parameters
+* API changes:
+  * The new JsignTool class provides a high level API equivalent to the command line tool
+
+#### Version 7.6 (2026-10-12)
+
+* The Azure credentials can now be specified with `--storepass <tenantId>|<clientId>|<clientSecret>`
+  or with the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` environment variables
 * Jsign can now open read-only or locked files
 * MSI files are no longer mapped into memory (this solves write issues on Windows with mounted volumes)
 * The terminally deprecated method warning displayed when signing MSI files has been fixed (from the build tools and the API)
-* The error message displayed when the PE certificate table is corrupted has been improved
 * The "_missing provider_" error with the Jsign JCA provider has been fixed (contributed by Lukas Schmitt)
-* The bash completion script now supports the `--tsmode` and `--alg` parameters
 * The Maven plugin no longer timestamps the signature by default (contributed by Daniel Fischer)
-* API changes:
-  * The new JsignTool class provides a high level API equivalent to the command line tool
+* The Gradle plugin published on the Gradle plugin portal is compiled with Java 8 again
 * Upgraded Bouncy Castle LTS to 2.73.13
 
 #### Version 7.5 (2026-07-16)

@@ -62,7 +62,7 @@ public class SignatureUtils {
      * Parse the specified signature.
      *
      * @param signature the signature to analyze
-     * @since 8.0
+     * @since 7.6
      */
     public static CMSSignedData getSignature(byte[] signature) throws IOException {
         try {

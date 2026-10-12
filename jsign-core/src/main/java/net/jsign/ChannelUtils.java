@@ -39,7 +39,7 @@ public class ChannelUtils {
      * Opens a channel for the specified file with read/write access, falling back to read-only access
      * if the file is not writable or locked.
      *
-     * @since 8.0
+     * @since 7.6
      */
     public static SeekableByteChannel openReadWriteOrReadOnly(File file) throws IOException {
         try {

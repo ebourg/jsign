@@ -24,7 +24,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 /**
  * POI file system modifying the file in place without mapping it in memory.
  *
- * @since 8.0
+ * @since 7.6
  */
 class UnmappedPOIFSFileSystem extends POIFSFileSystem {
 

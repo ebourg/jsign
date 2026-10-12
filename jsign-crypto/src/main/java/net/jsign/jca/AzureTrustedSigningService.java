@@ -81,7 +81,7 @@ public class AzureTrustedSigningService implements SigningService {
      *
      * @param endpoint    the API endpoint (e.g. <tt>weu.codesigning.azure.net</tt>)
      * @param credentials the Azure credentials used to fetch the API access token
-     * @since 8.0
+     * @since 7.6
      */
     public AzureTrustedSigningService(String endpoint, AzureCredentials credentials) {
         if (!endpoint.startsWith("http")) {

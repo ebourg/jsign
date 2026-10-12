@@ -85,7 +85,7 @@ public class AzureKeyVaultSigningService implements SigningService {
      * @param vault       the name of the key vault, either the short name (e.g. <tt>myvault</tt>),
      *                    or the full URL (e.g. <tt>https://myvault.vault.azure.net</tt>).
      * @param credentials the Azure credentials used to fetch the API access token
-     * @since 8.0
+     * @since 7.6
      */
     public AzureKeyVaultSigningService(String vault, AzureCredentials credentials) {
         if (!vault.startsWith("http")) {

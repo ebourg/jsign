@@ -28,7 +28,7 @@ import org.apache.poi.poifs.nio.FileBackedDataSource;
 /**
  * POI data source modifying the file without mapping it in memory.
  *
- * @since 8.0
+ * @since 7.6
  */
 class UnmappedFileDataSource extends FileBackedDataSource {
 

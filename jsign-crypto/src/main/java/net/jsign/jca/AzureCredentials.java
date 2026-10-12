@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * Azure API credentials
  *
- * @since 8.0
+ * @since 7.6
  */
 public class AzureCredentials {
 
