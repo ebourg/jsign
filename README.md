@@ -63,7 +63,7 @@ See https://ebourg.github.io/jsign for more information.
 
 ## Changes
 
-#### Version 7.6 (in development)
+#### Version 7.6 (2026-10-12)
 
 * The Azure credentials can now be specified with `--storepass <tenantId>|<clientId>|<clientSecret>`
   or with the `AZURE_TENANT_ID`, `AZURE_CLIENT_ID` and `AZURE_CLIENT_SECRET` environment variables
