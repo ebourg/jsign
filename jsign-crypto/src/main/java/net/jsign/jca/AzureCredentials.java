@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public class AzureCredentials {
 
-    private String endpoint = "https://login.microsoftonline.com";
+    private String endpoint = getDefaultEndpoint();
 
     /** The Microsoft Entra tenant ID */
     private String tenantId;
@@ -132,6 +132,18 @@ public class AzureCredentials {
         }
 
         return new AzureCredentials(getenv("AZURE_TENANT_ID"), getenv("AZURE_CLIENT_ID"), getenv("AZURE_CLIENT_SECRET"));
+    }
+
+    /**
+     * Returns the Microsoft Entra authority host defined by the <tt>AZURE_AUTHORITY_HOST</tt> environment variable
+     * (for example <tt>https://login.microsoftonline.us</tt> for Azure Government), or the public cloud by default.
+     */
+    static String getDefaultEndpoint() {
+        String host = getenv("AZURE_AUTHORITY_HOST");
+        if (host == null || host.trim().isEmpty()) {
+            return "https://login.microsoftonline.com";
+        }
+        return host.trim().replaceAll("/+$", "");
     }
 
     static String getenv(String name) {

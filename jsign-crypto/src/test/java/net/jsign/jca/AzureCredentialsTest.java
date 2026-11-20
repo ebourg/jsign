@@ -123,6 +123,35 @@ public class AzureCredentialsTest {
     }
 
     @Test
+    public void testGetAccessTokenWithAuthorityHost() throws Exception {
+        onRequest()
+                .havingMethodEqualTo("POST")
+                .havingPathEqualTo("/tenant/oauth2/v2.0/token")
+                .respond()
+                .withStatus(200)
+                .withContentType("application/json")
+                .withBody("{\"token_type\":\"Bearer\",\"expires_in\":3599,\"access_token\":\"token\"}");
+
+        try (MockedStatic<?> mock = mockStatic(AzureCredentials.class, CALLS_REAL_METHODS)) {
+            when(AzureCredentials.getenv("AZURE_AUTHORITY_HOST")).thenReturn("http://localhost:" + port() + "/");
+
+            AzureCredentials credentials = new AzureCredentials("tenant|client|secret");
+            assertEquals("access token", "token", credentials.getAccessToken("https://vault.azure.net"));
+        }
+    }
+
+    @Test
+    public void testDefaultEndpoint() {
+        try (MockedStatic<?> mock = mockStatic(AzureCredentials.class, CALLS_REAL_METHODS)) {
+            when(AzureCredentials.getenv("AZURE_AUTHORITY_HOST")).thenReturn(null);
+            assertEquals("endpoint", "https://login.microsoftonline.com", AzureCredentials.getDefaultEndpoint());
+
+            when(AzureCredentials.getenv("AZURE_AUTHORITY_HOST")).thenReturn(" https://login.microsoftonline.us/ ");
+            assertEquals("endpoint", "https://login.microsoftonline.us", AzureCredentials.getDefaultEndpoint());
+        }
+    }
+
+    @Test
     public void testGetDefaultWithMissingVariables() {
         try (MockedStatic<?> mock = mockStatic(AzureCredentials.class, CALLS_REAL_METHODS)) {
             when(AzureCredentials.getenv("AZURE_TENANT_ID")).thenReturn("tenant");
