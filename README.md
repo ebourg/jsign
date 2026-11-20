@@ -78,6 +78,8 @@ See https://ebourg.github.io/jsign for more information.
 * Jsign now retries loading PKCS#11 keystores if the token is not ready (contributed by Saad Benbouzid)
 * The error message displayed when the PE certificate table is corrupted has been improved
 * The bash completion script now supports the `--tsmode` and `--alg` parameters
+* The Microsoft Entra authority host used to authenticate with Azure can be changed with the `AZURE_AUTHORITY_HOST`
+  environment variable (for example `https://login.microsoftonline.us` for Azure Government)
 * API changes:
   * The new JsignTool class provides a high level API equivalent to the command line tool
 
